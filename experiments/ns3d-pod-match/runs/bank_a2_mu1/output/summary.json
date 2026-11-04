@@ -1,0 +1,5423 @@
+{
+  "autodiff_divergence_relative": 1.6235577637071857e-15,
+  "compression": {
+    "K": 512,
+    "spectrum": [
+      1.0,
+      0.00030295659391255835,
+      2.9155274963960774e-05,
+      3.374405898046849e-06,
+      9.312048279002361e-07,
+      3.147864399164707e-07,
+      1.225591234356166e-07,
+      4.79396266316266e-08,
+      2.7339737455473135e-08,
+      1.3616490973970148e-08,
+      8.318997200073257e-09,
+      5.195266434280253e-09,
+      3.048378541085126e-09,
+      1.8292305028701383e-09,
+      1.2132052517834888e-09,
+      7.786409964773253e-10,
+      5.6248189255349e-10,
+      3.957278084338326e-10,
+      2.571390013846993e-10,
+      1.7647398527886836e-10,
+      1.3352600115594556e-10,
+      9.361992500372723e-11,
+      6.6209368824813e-11,
+      5.23232434999908e-11,
+      3.677165658524643e-11,
+      2.989257269693958e-11,
+      2.3708434616648282e-11,
+      1.707386931540511e-11,
+      1.363745935528397e-11,
+      1.0616529982820769e-11,
+      8.236848566652256e-12,
+      6.516160425795449e-12,
+      5.0396628557553995e-12,
+      4.1349106349954814e-12,
+      3.2265614114464166e-12,
+      2.575837584199427e-12,
+      2.0860823277478076e-12,
+      1.7219647818010317e-12,
+      1.3851082161798336e-12,
+      1.194721465001622e-12,
+      9.609308307795355e-13,
+      7.710882734173353e-13,
+      6.238270836903512e-13,
+      5.361232259014021e-13,
+      4.332342385023562e-13,
+      3.719482108290845e-13,
+      3.019982407597251e-13,
+      2.564261343658395e-13,
+      2.1131935710224194e-13,
+      1.7496791892226503e-13,
+      1.5234848875510954e-13,
+      1.3073905754861105e-13,
+      1.076099012655554e-13,
+      9.24474980163978e-14,
+      7.911919987990765e-14,
+      6.675520519435553e-14,
+      5.826952334761274e-14,
+      4.8518768799453047e-14,
+      4.242200126174328e-14,
+      3.6781479432099635e-14,
+      3.1669147301632763e-14,
+      2.695812130352157e-14,
+      2.3571202862044673e-14,
+      2.059960014037713e-14
+    ],
+    "tail_fraction": 1.0446020713140036e-12
+  },
+  "config": {
+    "adam": {
+      "final_lr_ratio": 0.001,
+      "lr": 0.001,
+      "train_seconds": 0,
+      "warmup": 1000
+    },
+    "architecture": {
+      "band_kcut": 10,
+      "band_weight": 1.0,
+      "depth": 4,
+      "g3_chunk": 32768,
+      "g3_mesh": 64,
+      "g3_weight": 1.0,
+      "kmax": 4,
+      "name": "A",
+      "width": 512
+    },
+    "bank_cases": 512,
+    "centred": true,
+    "checkpoint_seconds": 900,
+    "closed_seeds": [
+      202609203,
+      202609211,
+      202609221
+    ],
+    "compress_K": 512,
+    "data_meshes": [
+      32,
+      64,
+      96
+    ],
+    "derivative_meshes": [
+      32,
+      64
+    ],
+    "dev_cases": 16,
+    "dev_seed": 202609202,
+    "dt_truth": 0.001,
+    "floor_meshes": [
+      32,
+      64,
+      96
+    ],
+    "gram_block": 64,
+    "horizon": 0.2,
+    "init_from": "experiments/ns3d-pod-match/runs/bank_a/output/bank_final.npz",
+    "init_sha256": "ef37ea3897b50edd10235451fd5c95d9011f988d8d6e65f9771a0ad17c3ba6d9",
+    "lbfgs": {
+      "iterations_per_call": 25,
+      "max_linesearch_steps": 30,
+      "memory": 20,
+      "stall_atol": 1e-15,
+      "stall_calls": 8,
+      "stall_rtol": 1e-10,
+      "train_seconds": 21600
+    },
+    "log_every": 500,
+    "name": "bank_a2_mu1",
+    "objective": "vp_band_g3",
+    "parent_pod_cases": 128,
+    "parent_pod_floor_reference": {
+      "32": 0.0012472927220064634,
+      "64": 0.001289117915622264,
+      "96": 0.001289089833132612
+    },
+    "parent_pod_floor_reference_source": {
+      "32": "ns3d-shift-head a2_h32 job 4198840",
+      "64": "a2_h64 job 4198090",
+      "96": "a3_h96 job 4198101"
+    },
+    "parent_pod_meshes": [
+      32,
+      64,
+      96
+    ],
+    "prefixes": [
+      8,
+      16,
+      32,
+      48
+    ],
+    "rank": 64,
+    "sample_chunk_eval": 32768,
+    "seed": 20261001,
+    "smoke": {
+      "adam": {
+        "final_lr_ratio": 0.001,
+        "lr": 0.001,
+        "train_seconds": 6,
+        "warmup": 5
+      },
+      "architecture": {
+        "band_kcut": 3,
+        "band_weight": 1.0,
+        "depth": 2,
+        "g3_chunk": 512,
+        "g3_mesh": 16,
+        "g3_weight": 1.0,
+        "kmax": 2,
+        "name": "s",
+        "width": 16
+      },
+      "bank_cases": 6,
+      "compress_K": 16,
+      "data_meshes": [
+        8,
+        16
+      ],
+      "derivative_meshes": [
+        8
+      ],
+      "dev_cases": 2,
+      "dev_seed": 8,
+      "dt_truth": 0.005,
+      "floor_meshes": [
+        8,
+        16
+      ],
+      "gram_block": 8,
+      "horizon": 0.05,
+      "init_from": null,
+      "lbfgs": {
+        "iterations_per_call": 5,
+        "max_linesearch_steps": 10,
+        "memory": 5,
+        "stall_atol": 1e-15,
+        "stall_calls": 8,
+        "stall_rtol": 1e-10,
+        "train_seconds": 6
+      },
+      "log_every": 10,
+      "offgrid_points": 256,
+      "parent_pod_cases": 4,
+      "parent_pod_floor_reference": {},
+      "prefixes": [
+        2
+      ],
+      "rank": 4,
+      "train_grid": 12,
+      "train_seed": 7
+    },
+    "target_relative": 0.05,
+    "train_grid": 48,
+    "train_seed": 202609201
+  },
+  "config_sha256": "4de24a47ec31b5d6182ea0dc601ec4dfcdaa863ffd148d083c1d094be5a059d8",
+  "data": {
+    "cases": 512,
+    "centred": true,
+    "meshes": [
+      32,
+      64,
+      96
+    ],
+    "resample_dropped_energy_worst": 6.7325367503201505e-09,
+    "state_sha256": "17e56de7f025635ec8a287d25e8c01166b85e1e92d5035d26e283c2a0e345768",
+    "states": 3072,
+    "train_grid": 48
+  },
+  "device": "[CudaDevice(id=0)]",
+  "eckart_young_optimum": 3.729483897399407e-07,
+  "elapsed_seconds": 22600.955887794495,
+  "failures": [],
+  "files": {
+    "experiments/ns3d-coordnet/bankio.py": "85991c64ff1fc507e3df57a351f5c31b7a3114cd38e617f22d2e230d81e30051",
+    "experiments/ns3d-coordnet/coordnet.py": "d9e9c7fd090396ecb28af9da817f2454e9839a55fa6cd6bc6b9266e7723f6ff9",
+    "experiments/ns3d-grok/diag_floor.py": "fc951362f184192535cefd6b18a08467746f210bc74f9acd559d41c7b294db8c",
+    "experiments/ns3d-pod-match/train_bank2.py": "ecfd55315053c22f16f2d2ceda6a8a665135ecf6ac161e403f393147c1acccc0",
+    "experiments/ns3d-shift/shift_rom.py": "22921d34d486bc3939f8ad3dfdae220390e78d57bc4ca9e88812290007bda4a3",
+    "experiments/ns3d/ns3d_fom.py": "e4ffdbe6ec97dc77c457d4a92ac596cd9bfffa01a37e286f5f1a09358b7daff7"
+  },
+  "final_bank": "bank_final.npz (end of the L-BFGS stage; pre-registered)",
+  "floors": {
+    "32": {
+      "bank": {
+        "leray_removed_median": 3.301012706537142e-08,
+        "leray_removed_worst": 1.079650442974853e-06,
+        "lowdin_relative_change": 0.09792351715581846,
+        "lowdin_worst_column_change": 0.758707173486538,
+        "n": 32,
+        "orthonormality_after": 3.774758283725532e-15,
+        "orthonormality_before_lowdin": 0.6082371623255525,
+        "orthonormality_before_lowdin_spectral": 0.8037202604005538
+      },
+      "coordnet_R16": {
+        "all_times_median_of_case_max": 0.013062708353448698,
+        "all_times_worst": 0.021684325593118507,
+        "cases": 16,
+        "cases_evolved_over_target": 0,
+        "cases_grew": 13,
+        "cases_initial_over_target": 0,
+        "evolved_mean": 0.012265889426923223,
+        "evolved_median": 0.013062708353448698,
+        "evolved_worst": 0.019637954918059853,
+        "initial_median": 0.0074712276209958715,
+        "initial_worst": 0.021684325593118507,
+        "max_evolved_minus_initial": 0.008812190926182895,
+        "median_evolved_minus_initial": 0.002692467858576407,
+        "per_time_median": [
+          0.0074712276209958715,
+          0.00806596091669318,
+          0.007563821809610244,
+          0.00832038275253413,
+          0.0075551782368024,
+          0.013062708353448698
+        ],
+        "per_time_worst": [
+          0.021684325593118507,
+          0.010447034560455183,
+          0.012926417492136463,
+          0.015466200848457942,
+          0.016578746520309752,
+          0.019637954918059853
+        ],
+        "times": 6
+      },
+      "coordnet_R32": {
+        "all_times_median_of_case_max": 0.003577931392775899,
+        "all_times_worst": 0.006491310900677219,
+        "cases": 16,
+        "cases_evolved_over_target": 0,
+        "cases_grew": 16,
+        "cases_initial_over_target": 0,
+        "evolved_mean": 0.003644781681643402,
+        "evolved_median": 0.003577931392775899,
+        "evolved_worst": 0.006491310900677219,
+        "initial_median": 0.0016010298322060785,
+        "initial_worst": 0.0042641747304511405,
+        "max_evolved_minus_initial": 0.004824928032050465,
+        "median_evolved_minus_initial": 0.0016044055386497664,
+        "per_time_median": [
+          0.0016010298322060785,
+          0.0021259196355826416,
+          0.0022431475748913763,
+          0.002335842612119955,
+          0.0024320509615368647,
+          0.003577931392775899
+        ],
+        "per_time_worst": [
+          0.0042641747304511405,
+          0.0035773544889075525,
+          0.00336060658358866,
+          0.0034687606577283,
+          0.004515319125945411,
+          0.006491310900677219
+        ],
+        "times": 6
+      },
+      "coordnet_R48": {
+        "all_times_median_of_case_max": 0.0012638412190115302,
+        "all_times_worst": 0.0026510909054572726,
+        "cases": 16,
+        "cases_evolved_over_target": 0,
+        "cases_grew": 15,
+        "cases_initial_over_target": 0,
+        "evolved_mean": 0.0013959651333312582,
+        "evolved_median": 0.0012341825969089263,
+        "evolved_worst": 0.0026510909054572726,
+        "initial_median": 0.0005957974924701105,
+        "initial_worst": 0.0012811922643285744,
+        "max_evolved_minus_initial": 0.0017499818158248758,
+        "median_evolved_minus_initial": 0.000561330691555413,
+        "per_time_median": [
+          0.0005957974924701105,
+          0.0008358879634587479,
+          0.0008019695446146947,
+          0.000891132497431373,
+          0.001069439820049728,
+          0.0012341825969089263
+        ],
+        "per_time_worst": [
+          0.0012811922643285744,
+          0.0014337839155116909,
+          0.0015702467995360862,
+          0.0015177398998615546,
+          0.001970364429376645,
+          0.0026510909054572726
+        ],
+        "times": 6
+      },
+      "coordnet_R64": {
+        "all_times_median_of_case_max": 0.0007413611130854506,
+        "all_times_worst": 0.001653195565223941,
+        "cases": 16,
+        "cases_evolved_over_target": 0,
+        "cases_grew": 16,
+        "cases_initial_over_target": 0,
+        "evolved_mean": 0.0008809277187934079,
+        "evolved_median": 0.0007413611130854506,
+        "evolved_worst": 0.001653195565223941,
+        "initial_median": 0.00034567942706324,
+        "initial_worst": 0.0006195663219534053,
+        "max_evolved_minus_initial": 0.0012155377314354244,
+        "median_evolved_minus_initial": 0.00038674619821064884,
+        "per_time_median": [
+          0.00034567942706324,
+          0.00044690054771232425,
+          0.0004457606724863303,
+          0.0005793104787330133,
+          0.0005604406183868827,
+          0.0007413611130854506
+        ],
+        "per_time_worst": [
+          0.0006195663219534053,
+          0.000825863059939468,
+          0.0008969349760684869,
+          0.0009749923633716829,
+          0.0012923182925735032,
+          0.001653195565223941
+        ],
+        "times": 6
+      },
+      "coordnet_R8": {
+        "all_times_median_of_case_max": 0.029508924269911613,
+        "all_times_worst": 0.05285243079620749,
+        "cases": 16,
+        "cases_evolved_over_target": 0,
+        "cases_grew": 11,
+        "cases_initial_over_target": 1,
+        "evolved_mean": 0.030561122921472512,
+        "evolved_median": 0.02743425898322777,
+        "evolved_worst": 0.04979330131951476,
+        "initial_median": 0.022854195700086094,
+        "initial_worst": 0.05285243079620749,
+        "max_evolved_minus_initial": 0.016033203466482224,
+        "median_evolved_minus_initial": 0.003448367441526436,
+        "per_time_median": [
+          0.022854195700086094,
+          0.02461555005022473,
+          0.022905363597041505,
+          0.021984690381673742,
+          0.021901751160770717,
+          0.02716330349458422
+        ],
+        "per_time_worst": [
+          0.05285243079620749,
+          0.044604744149897374,
+          0.04024393299216139,
+          0.04076011765134894,
+          0.042325066918968854,
+          0.04979330131951476
+        ],
+        "times": 6
+      },
+      "coordnet_no_centring": {
+        "all_times_median_of_case_max": 0.9847480614170165,
+        "all_times_worst": 0.9979780895153583,
+        "cases": 16,
+        "cases_evolved_over_target": 16,
+        "cases_grew": 0,
+        "cases_initial_over_target": 16,
+        "evolved_mean": 0.9247469004491161,
+        "evolved_median": 0.9483874016975762,
+        "evolved_worst": 0.9748273728387563,
+        "initial_median": 0.9847480614170165,
+        "initial_worst": 0.9979780895153583,
+        "max_evolved_minus_initial": -0.011401336343563773,
+        "median_evolved_minus_initial": -0.031684183673034605,
+        "per_time_median": [
+          0.9847480614170165,
+          0.9483874016975762,
+          0.9102627010251669,
+          0.886645902543666,
+          0.8561640326709802,
+          0.8258353493133864
+        ],
+        "per_time_worst": [
+          0.9979780895153583,
+          0.9748273728387563,
+          0.9589774499019317,
+          0.9431707592594017,
+          0.9272441687157956,
+          0.9112271102533576
+        ],
+        "times": 6
+      },
+      "derivatives": {
+        "n": 32,
+        "relative_per_direction": [
+          0.06632600574122478,
+          0.043267913926834774,
+          0.020842380407002814
+        ],
+        "worst_column": 0.0981187824392614
+      },
+      "parent_pod_R64": {
+        "all_times_median_of_case_max": 0.0007046882530423394,
+        "all_times_worst": 0.0012472927222005703,
+        "cases": 16,
+        "cases_evolved_over_target": 0,
+        "cases_grew": 14,
+        "cases_initial_over_target": 0,
+        "evolved_mean": 0.0006955669270290242,
+        "evolved_median": 0.0006940494764581266,
+        "evolved_worst": 0.0012472927222005703,
+        "initial_median": 0.00028202820629245407,
+        "initial_worst": 0.0006605440589419729,
+        "max_evolved_minus_initial": 0.0008813019934205357,
+        "median_evolved_minus_initial": 0.000430591620433686,
+        "per_time_median": [
+          0.00028202820629245407,
+          0.0003395243261023362,
+          0.0004058249717443224,
+          0.0003997241023839742,
+          0.0004664970463361724,
+          0.0006940494764581266
+        ],
+        "per_time_worst": [
+          0.0006605440589419729,
+          0.0005555731659933243,
+          0.0007161415977132288,
+          0.0007350404080099395,
+          0.0010101237195463066,
+          0.0012472927222005703
+        ],
+        "times": 6
+      },
+      "parent_pod_R64_reproduction": {
+        "passed": true,
+        "reference": 0.0012472927220064634,
+        "relative_gap": 1.5562255749570468e-10
+      },
+      "same_data_pod_G3_statistic": 0.6067076943601946,
+      "same_data_pod_R64": {
+        "all_times_median_of_case_max": 0.0006531293354894723,
+        "all_times_worst": 0.0014153363205169753,
+        "cases": 16,
+        "cases_evolved_over_target": 0,
+        "cases_grew": 15,
+        "cases_initial_over_target": 0,
+        "evolved_mean": 0.0007727194168442135,
+        "evolved_median": 0.0006457648268799782,
+        "evolved_worst": 0.0014153363205169753,
+        "initial_median": 0.00033102219026155753,
+        "initial_worst": 0.0006450263561900918,
+        "max_evolved_minus_initial": 0.0010848195568033611,
+        "median_evolved_minus_initial": 0.00031769186273482406,
+        "per_time_median": [
+          0.00033102219026155753,
+          0.0003888998735563818,
+          0.0003948445072340954,
+          0.0004901867519640515,
+          0.0004509693617234429,
+          0.0006362421356349113
+        ],
+        "per_time_worst": [
+          0.0006450263561900918,
+          0.0007505640183661946,
+          0.0007487905280026925,
+          0.0009245633837592155,
+          0.0011189768714001851,
+          0.0014153363205169753
+        ],
+        "times": 6
+      },
+      "same_data_pod_orthonormality_before_qr": 0.8617371195489968,
+      "travel": {
+        "centroid_travel_median": 0.04421722046383378,
+        "centroid_travel_worst": 0.04947290299393042
+      }
+    },
+    "64": {
+      "bank": {
+        "leray_removed_median": 1.6133231104612591e-10,
+        "leray_removed_worst": 1.6759533164637678e-09,
+        "lowdin_relative_change": 2.1954398226586465e-06,
+        "lowdin_worst_column_change": 2.957298468477872e-06,
+        "n": 64,
+        "orthonormality_after": 4.884981308350689e-15,
+        "orthonormality_before_lowdin": 4.497064842956533e-06,
+        "orthonormality_before_lowdin_spectral": 1.2220859290657668e-05
+      },
+      "coordnet_R16": {
+        "all_times_median_of_case_max": 0.013029538719081322,
+        "all_times_worst": 0.02166922927069298,
+        "cases": 16,
+        "cases_evolved_over_target": 0,
+        "cases_grew": 13,
+        "cases_initial_over_target": 0,
+        "evolved_mean": 0.012190177009439293,
+        "evolved_median": 0.013029538719081322,
+        "evolved_worst": 0.019639020897824756,
+        "initial_median": 0.007457586949099376,
+        "initial_worst": 0.02166922927069298,
+        "max_evolved_minus_initial": 0.00851957173148867,
+        "median_evolved_minus_initial": 0.0026668862482253208,
+        "per_time_median": [
+          0.007457586949099376,
+          0.00802884448996955,
+          0.00755282979442971,
+          0.008337065173177425,
+          0.00747817240830016,
+          0.013029538719081322
+        ],
+        "per_time_worst": [
+          0.02166922927069298,
+          0.01041700435918929,
+          0.012940133587807828,
+          0.015472123277935347,
+          0.016583084850866743,
+          0.019639020897824756
+        ],
+        "times": 6
+      },
+      "coordnet_R32": {
+        "all_times_median_of_case_max": 0.0031772137940054125,
+        "all_times_worst": 0.006490629878989063,
+        "cases": 16,
+        "cases_evolved_over_target": 0,
+        "cases_grew": 16,
+        "cases_initial_over_target": 0,
+        "evolved_mean": 0.003374984339543366,
+        "evolved_median": 0.0031772137940054125,
+        "evolved_worst": 0.006490629878989063,
+        "initial_median": 0.001444175856279741,
+        "initial_worst": 0.004175255408522945,
+        "max_evolved_minus_initial": 0.004917929696433366,
+        "median_evolved_minus_initial": 0.0012698821364842978,
+        "per_time_median": [
+          0.001444175856279741,
+          0.002025196716332703,
+          0.002177256403876855,
+          0.002282694020327338,
+          0.002267738841023318,
+          0.0031772137940054125
+        ],
+        "per_time_worst": [
+          0.004175255408522945,
+          0.0035056063410179622,
+          0.0033093314953204158,
+          0.003500251915911071,
+          0.004576757196735668,
+          0.006490629878989063
+        ],
+        "times": 6
+      },
+      "coordnet_R48": {
+        "all_times_median_of_case_max": 0.001273896826053087,
+        "all_times_worst": 0.0027568112238999815,
+        "cases": 16,
+        "cases_evolved_over_target": 0,
+        "cases_grew": 15,
+        "cases_initial_over_target": 0,
+        "evolved_mean": 0.0014222913037732132,
+        "evolved_median": 0.0012530339603358954,
+        "evolved_worst": 0.0027568112238999815,
+        "initial_median": 0.0006056968312179499,
+        "initial_worst": 0.0012679903904236924,
+        "max_evolved_minus_initial": 0.0018628980007272414,
+        "median_evolved_minus_initial": 0.0005680580592615334,
+        "per_time_median": [
+          0.0006056968312179499,
+          0.0008330004923472297,
+          0.0008149245870683803,
+          0.0008842458612251442,
+          0.0010589788253011372,
+          0.0012530339603358954
+        ],
+        "per_time_worst": [
+          0.0012679903904236924,
+          0.0014445674776845676,
+          0.0015535515590021083,
+          0.0015821729056495332,
+          0.002028952390883816,
+          0.0027568112238999815
+        ],
+        "times": 6
+      },
+      "coordnet_R64": {
+        "all_times_median_of_case_max": 0.000785668112947391,
+        "all_times_worst": 0.0018378070755804353,
+        "cases": 16,
+        "cases_evolved_over_target": 0,
+        "cases_grew": 16,
+        "cases_initial_over_target": 0,
+        "evolved_mean": 0.0009261040325653733,
+        "evolved_median": 0.000785668112947391,
+        "evolved_worst": 0.0018378070755804353,
+        "initial_median": 0.0003509183418014842,
+        "initial_worst": 0.0006253322973420182,
+        "max_evolved_minus_initial": 0.00133534815460361,
+        "median_evolved_minus_initial": 0.00041010107056212836,
+        "per_time_median": [
+          0.0003509183418014842,
+          0.0004547962418818864,
+          0.000465357054529472,
+          0.0006057424227291406,
+          0.0006507313430897999,
+          0.000785668112947391
+        ],
+        "per_time_worst": [
+          0.0006253322973420182,
+          0.0008338976127626588,
+          0.0009117938342813168,
+          0.0010691413732335287,
+          0.0014358965032805857,
+          0.0018378070755804353
+        ],
+        "times": 6
+      },
+      "coordnet_R8": {
+        "all_times_median_of_case_max": 0.02950133498876452,
+        "all_times_worst": 0.05284841552495025,
+        "cases": 16,
+        "cases_evolved_over_target": 0,
+        "cases_grew": 11,
+        "cases_initial_over_target": 1,
+        "evolved_mean": 0.03054763312854379,
+        "evolved_median": 0.027422355874875695,
+        "evolved_worst": 0.0497708039937437,
+        "initial_median": 0.022843226675714152,
+        "initial_worst": 0.05284841552495025,
+        "max_evolved_minus_initial": 0.016036646822330112,
+        "median_evolved_minus_initial": 0.0034488894201353,
+        "per_time_median": [
+          0.022843226675714152,
+          0.02460529298767169,
+          0.022902296703356584,
+          0.02198775831177017,
+          0.021871958141938617,
+          0.027157369578482825
+        ],
+        "per_time_worst": [
+          0.05284841552495025,
+          0.044600933661336786,
+          0.04024608002772593,
+          0.04076450531032645,
+          0.04232534343494727,
+          0.0497708039937437
+        ],
+        "times": 6
+      },
+      "coordnet_no_centring": {
+        "all_times_median_of_case_max": 0.9847770631243176,
+        "all_times_worst": 0.9979982907659091,
+        "cases": 16,
+        "cases_evolved_over_target": 16,
+        "cases_grew": 0,
+        "cases_initial_over_target": 16,
+        "evolved_mean": 0.924859600046571,
+        "evolved_median": 0.9484169967007282,
+        "evolved_worst": 0.9748484383680783,
+        "initial_median": 0.9847770631243176,
+        "initial_worst": 0.9979982907659091,
+        "max_evolved_minus_initial": -0.011400822129982058,
+        "median_evolved_minus_initial": -0.03173591563809697,
+        "per_time_median": [
+          0.9847770631243176,
+          0.9484169967007282,
+          0.9103822013395378,
+          0.8867593836614264,
+          0.8561863479238927,
+          0.8258579140520301
+        ],
+        "per_time_worst": [
+          0.9979982907659091,
+          0.9748484383680783,
+          0.9589935511036811,
+          0.9431861509916108,
+          0.9272589364768222,
+          0.9112410665393965
+        ],
+        "times": 6
+      },
+      "cross_mesh_vs_smallest": {
+        "against": 32,
+        "median_column": 0.06594368609525447,
+        "worst_column": 0.9124454648477247
+      },
+      "derivatives": {
+        "n": 64,
+        "relative_per_direction": [
+          0.024677370091414467,
+          0.0023894656030934865,
+          0.0008589278615169829
+        ],
+        "worst_column": 0.033118336270778224
+      },
+      "parent_pod_R64": {
+        "all_times_median_of_case_max": 0.0007049945761440934,
+        "all_times_worst": 0.0012891179156507713,
+        "cases": 16,
+        "cases_evolved_over_target": 0,
+        "cases_grew": 15,
+        "cases_initial_over_target": 0,
+        "evolved_mean": 0.000711560638975575,
+        "evolved_median": 0.0007049945761440934,
+        "evolved_worst": 0.0012891179156507713,
+        "initial_median": 0.0002841897237935208,
+        "initial_worst": 0.000650278610485012,
+        "max_evolved_minus_initial": 0.000911128876617049,
+        "median_evolved_minus_initial": 0.0004364550867677308,
+        "per_time_median": [
+          0.0002841897237935208,
+          0.00034698461287399125,
+          0.00042052125582332073,
+          0.00040128781837611986,
+          0.0004777665697777637,
+          0.0007049945761440934
+        ],
+        "per_time_worst": [
+          0.000650278610485012,
+          0.0005550632455689329,
+          0.0007340719745646898,
+          0.0007495687257327192,
+          0.0010547113994247871,
+          0.0012891179156507713
+        ],
+        "times": 6
+      },
+      "parent_pod_R64_reproduction": {
+        "passed": true,
+        "reference": 0.001289117915622264,
+        "relative_gap": 2.2113850918183625e-11
+      },
+      "same_data_pod_G3_statistic": 0.009084787220645651,
+      "same_data_pod_R64": {
+        "all_times_median_of_case_max": 0.0007284523987844377,
+        "all_times_worst": 0.0015243090643881207,
+        "cases": 16,
+        "cases_evolved_over_target": 0,
+        "cases_grew": 15,
+        "cases_initial_over_target": 0,
+        "evolved_mean": 0.0007903200514518002,
+        "evolved_median": 0.0007244080790969803,
+        "evolved_worst": 0.0015243090643881207,
+        "initial_median": 0.00034357720767174733,
+        "initial_worst": 0.0006648384701793523,
+        "max_evolved_minus_initial": 0.0009769582393610525,
+        "median_evolved_minus_initial": 0.0003446557880013311,
+        "per_time_median": [
+          0.00034357720767174733,
+          0.0004028982947978313,
+          0.0004190645625108465,
+          0.0005051141160719883,
+          0.0004784124306067482,
+          0.0007244080790969803
+        ],
+        "per_time_worst": [
+          0.0006648384701793523,
+          0.0007704195910794611,
+          0.0008214127858331695,
+          0.0009892056067273176,
+          0.0013015322394900146,
+          0.0015243090643881207
+        ],
+        "times": 6
+      },
+      "same_data_pod_orthonormality_before_qr": 1.370370370370198,
+      "travel": {
+        "centroid_travel_median": 0.044217247563340875,
+        "centroid_travel_worst": 0.04947395501000329
+      }
+    },
+    "96": {
+      "bank": {
+        "leray_removed_median": 7.1184550869483375e-12,
+        "leray_removed_worst": 8.865954769674015e-11,
+        "lowdin_relative_change": 5.156895525915944e-05,
+        "lowdin_worst_column_change": 0.0001905879219486087,
+        "n": 96,
+        "orthonormality_after": 6.994405055138486e-15,
+        "orthonormality_before_lowdin": 0.00026430742847383115,
+        "orthonormality_before_lowdin_spectral": 0.0007356889260199111
+      },
+      "coordnet_R16": {
+        "all_times_median_of_case_max": 0.013029557447194468,
+        "all_times_worst": 0.02166923585907233,
+        "cases": 16,
+        "cases_evolved_over_target": 0,
+        "cases_grew": 13,
+        "cases_initial_over_target": 0,
+        "evolved_mean": 0.012190192773762706,
+        "evolved_median": 0.013029557447194468,
+        "evolved_worst": 0.01963903450800363,
+        "initial_median": 0.007457599429923526,
+        "initial_worst": 0.02166923585907233,
+        "max_evolved_minus_initial": 0.008519598386393734,
+        "median_evolved_minus_initial": 0.002666889469297952,
+        "per_time_median": [
+          0.007457599429923526,
+          0.008028851464295855,
+          0.007552843419320923,
+          0.008337082518467183,
+          0.00747817846390668,
+          0.013029557447194468
+        ],
+        "per_time_worst": [
+          0.02166923585907233,
+          0.010417010363126415,
+          0.012940144577077704,
+          0.015472134346034222,
+          0.016583097329023775,
+          0.01963903450800363
+        ],
+        "times": 6
+      },
+      "coordnet_R32": {
+        "all_times_median_of_case_max": 0.0031772895439672356,
+        "all_times_worst": 0.006490701024018931,
+        "cases": 16,
+        "cases_evolved_over_target": 0,
+        "cases_grew": 16,
+        "cases_initial_over_target": 0,
+        "evolved_mean": 0.003375090708648247,
+        "evolved_median": 0.0031772895439672356,
+        "evolved_worst": 0.006490701024018931,
+        "initial_median": 0.0014442405983942168,
+        "initial_worst": 0.004175279817623418,
+        "max_evolved_minus_initial": 0.0049179126413836285,
+        "median_evolved_minus_initial": 0.001269866547296726,
+        "per_time_median": [
+          0.0014442405983942168,
+          0.0020252339115180464,
+          0.0021773313649679957,
+          0.002282741368530963,
+          0.002267818174141281,
+          0.0031772895439672356
+        ],
+        "per_time_worst": [
+          0.004175279817623418,
+          0.003505631971134526,
+          0.0033093673982773344,
+          0.003500294993101997,
+          0.004576815110034884,
+          0.006490701024018931
+        ],
+        "times": 6
+      },
+      "coordnet_R48": {
+        "all_times_median_of_case_max": 0.0012740442599814303,
+        "all_times_worst": 0.002757229478530965,
+        "cases": 16,
+        "cases_evolved_over_target": 0,
+        "cases_grew": 15,
+        "cases_initial_over_target": 0,
+        "evolved_mean": 0.0014226941972844123,
+        "evolved_median": 0.0012531754434428979,
+        "evolved_worst": 0.002757229478530965,
+        "initial_median": 0.0006058468180032341,
+        "initial_worst": 0.001268059571505882,
+        "max_evolved_minus_initial": 0.0018631747273362444,
+        "median_evolved_minus_initial": 0.000568046096600331,
+        "per_time_median": [
+          0.0006058468180032341,
+          0.0008331171979309698,
+          0.0008151358925819927,
+          0.0008843639533589237,
+          0.0010595531469764369,
+          0.0012531754434428979
+        ],
+        "per_time_worst": [
+          0.001268059571505882,
+          0.0014446476544042912,
+          0.0015536937141642383,
+          0.0015824748354679233,
+          0.0020291998976811622,
+          0.002757229478530965
+        ],
+        "times": 6
+      },
+      "coordnet_R64": {
+        "all_times_median_of_case_max": 0.0007860588836611148,
+        "all_times_worst": 0.0018384438246241825,
+        "cases": 16,
+        "cases_evolved_over_target": 0,
+        "cases_grew": 16,
+        "cases_initial_over_target": 0,
+        "evolved_mean": 0.0009267209695512284,
+        "evolved_median": 0.0007860588836611148,
+        "evolved_worst": 0.0018384438246241825,
+        "initial_median": 0.00035115046381787814,
+        "initial_worst": 0.0006254760031756245,
+        "max_evolved_minus_initial": 0.0013357298069355873,
+        "median_evolved_minus_initial": 0.00040991584412535713,
+        "per_time_median": [
+          0.00035115046381787814,
+          0.00045501056183155073,
+          0.0004657468871828673,
+          0.0006059833898918596,
+          0.0006530902278685158,
+          0.0007860588836611148
+        ],
+        "per_time_worst": [
+          0.0006254760031756245,
+          0.0008340185645201705,
+          0.0009119377695852729,
+          0.001069596297990302,
+          0.0014362258141657727,
+          0.0018384438246241825
+        ],
+        "times": 6
+      },
+      "coordnet_R8": {
+        "all_times_median_of_case_max": 0.02950133822848619,
+        "all_times_worst": 0.05284841776054763,
+        "cases": 16,
+        "cases_evolved_over_target": 0,
+        "cases_grew": 11,
+        "cases_initial_over_target": 1,
+        "evolved_mean": 0.030547636250920482,
+        "evolved_median": 0.02742235905564216,
+        "evolved_worst": 0.049770802183581354,
+        "initial_median": 0.0228432297858248,
+        "initial_worst": 0.05284841776054763,
+        "max_evolved_minus_initial": 0.01603664630670136,
+        "median_evolved_minus_initial": 0.003448889730978351,
+        "per_time_median": [
+          0.0228432297858248,
+          0.024605295740841058,
+          0.022902300481180384,
+          0.021987758360270816,
+          0.021871946997954854,
+          0.02715737400703165
+        ],
+        "per_time_worst": [
+          0.05284841776054763,
+          0.04460093627965884,
+          0.04024608270137893,
+          0.04076450839570844,
+          0.04232534397008533,
+          0.049770802183581354
+        ],
+        "times": 6
+      },
+      "coordnet_no_centring": {
+        "all_times_median_of_case_max": 0.9847770688973831,
+        "all_times_worst": 0.9979982972472594,
+        "cases": 16,
+        "cases_evolved_over_target": 16,
+        "cases_grew": 0,
+        "cases_initial_over_target": 16,
+        "evolved_mean": 0.9248596383017438,
+        "evolved_median": 0.9484170082006361,
+        "evolved_worst": 0.9748484448953967,
+        "initial_median": 0.9847770688973831,
+        "initial_worst": 0.9979982972472594,
+        "max_evolved_minus_initial": -0.011400822116683917,
+        "median_evolved_minus_initial": -0.03173593787938778,
+        "per_time_median": [
+          0.9847770688973831,
+          0.9484170082006361,
+          0.9103822306242381,
+          0.8867594124192547,
+          0.8561863636068789,
+          0.8258579309291291
+        ],
+        "per_time_worst": [
+          0.9979982972472594,
+          0.9748484448953967,
+          0.9589935618044845,
+          0.9431861610987659,
+          0.9272589462961918,
+          0.9112410762510885
+        ],
+        "times": 6
+      },
+      "cross_mesh_vs_smallest": {
+        "against": 32,
+        "median_column": 0.06593990278961284,
+        "worst_column": 0.9123640728616342
+      },
+      "parent_pod_R64": {
+        "all_times_median_of_case_max": 0.000705008869741914,
+        "all_times_worst": 0.001289089833081661,
+        "cases": 16,
+        "cases_evolved_over_target": 0,
+        "cases_grew": 15,
+        "cases_initial_over_target": 0,
+        "evolved_mean": 0.0007115625817687343,
+        "evolved_median": 0.000705008869741914,
+        "evolved_worst": 0.001289089833081661,
+        "initial_median": 0.00028418494071246337,
+        "initial_worst": 0.0006502655966129333,
+        "max_evolved_minus_initial": 0.000911142366804669,
+        "median_evolved_minus_initial": 0.0004364638815615714,
+        "per_time_median": [
+          0.00028418494071246337,
+          0.0003469875715650909,
+          0.0004205315562310826,
+          0.0004012853620434986,
+          0.00047777117405177266,
+          0.000705008869741914
+        ],
+        "per_time_worst": [
+          0.0006502655966129333,
+          0.0005550611613211945,
+          0.000734077513292255,
+          0.0007495764192265885,
+          0.0010547099352599446,
+          0.001289089833081661
+        ],
+        "times": 6
+      },
+      "parent_pod_R64_reproduction": {
+        "passed": true,
+        "reference": 0.001289089833132612,
+        "relative_gap": 3.952478375379626e-11
+      },
+      "same_data_pod_G3_statistic": 0.009117258392302707,
+      "same_data_pod_R64": {
+        "all_times_median_of_case_max": 0.0007284701434598702,
+        "all_times_worst": 0.0015243636859330464,
+        "cases": 16,
+        "cases_evolved_over_target": 0,
+        "cases_grew": 15,
+        "cases_initial_over_target": 0,
+        "evolved_mean": 0.0007904250483023421,
+        "evolved_median": 0.0007244259082624125,
+        "evolved_worst": 0.0015243636859330464,
+        "initial_median": 0.00034357773574768155,
+        "initial_worst": 0.0006648388858152836,
+        "max_evolved_minus_initial": 0.0009770125023444308,
+        "median_evolved_minus_initial": 0.00034465975276822187,
+        "per_time_median": [
+          0.00034357773574768155,
+          0.00040290035542623573,
+          0.00041906764519824446,
+          0.0005051184133249183,
+          0.0004785409295535263,
+          0.0007244259082624125
+        ],
+        "per_time_worst": [
+          0.0006648388858152836,
+          0.0007704198231110805,
+          0.0008214134821881657,
+          0.000989207602788368,
+          0.0013015319701156856,
+          0.0015243636859330464
+        ],
+        "times": 6
+      },
+      "same_data_pod_orthonormality_before_qr": 7.000000000000027,
+      "travel": {
+        "centroid_travel_median": 0.044217247563399384,
+        "centroid_travel_worst": 0.04947395518476322
+      }
+    }
+  },
+  "floors_only": null,
+  "gates": {
+    "G1_floor_vs_pod": {
+      "bound": 1.5,
+      "passed": true,
+      "ratio": {
+        "32": 1.3254270916511448,
+        "64": 1.4256314750328136,
+        "96": 1.4261564845556587
+      }
+    },
+    "G2_cross_mesh_floor": {
+      "bound": 1.25,
+      "max_over_min": 1.1120546554183066,
+      "passed": true
+    },
+    "G3_orthonormality_64_96": {
+      "bound": 0.001,
+      "passed": true,
+      "reported_32": 0.6082371623255525,
+      "value": {
+        "64": 4.497064842956533e-06,
+        "96": 0.00026430742847383115
+      }
+    },
+    "all_passed": true,
+    "verdict": "pass"
+  },
+  "gpu": "NVIDIA A100 80GB PCIe, GPU-793c50be-fdce-eeff-be9d-e2286320ae0d, 81920 MiB",
+  "init_from": {
+    "path": "experiments/ns3d-pod-match/runs/bank_a/output/bank_final.npz",
+    "sha256": "ef37ea3897b50edd10235451fd5c95d9011f988d8d6e65f9771a0ad17c3ba6d9"
+  },
+  "job_id": "6850334",
+  "ordering": {
+    "final": {
+      "grid": 48,
+      "leray_removed_worst": 2.7613371462838876e-08,
+      "singular_values": [
+        53.202986316113524,
+        10.365596646622254,
+        8.924343421440462,
+        5.642007305050832,
+        2.820591653064165,
+        2.352425123775321,
+        2.0129301403434607,
+        1.3592551889941717,
+        0.9253900675953732,
+        0.7878165646268146,
+        0.6420999316778625,
+        0.4813369697839927,
+        0.4663941354281222,
+        0.40537481603774683,
+        0.3741474376296413,
+        0.34678926420087264,
+        0.30599192623450616,
+        0.25587556715186516,
+        0.20729513748376077,
+        0.17264833129613294,
+        0.14962125525521955,
+        0.13213240555966613,
+        0.11904167447395396,
+        0.11411747281768658,
+        0.0977911531601757,
+        0.09152280790477087,
+        0.08038711298179695,
+        0.07415974897201025,
+        0.07191335305439252,
+        0.06498678013226247,
+        0.060824286112732266,
+        0.05796198127529009,
+        0.05130789095118507,
+        0.048382482452348455,
+        0.04477239005686617,
+        0.042910175980343614,
+        0.03858407097384424,
+        0.03536000935010008,
+        0.03339059429484715,
+        0.03176984143943421,
+        0.030782598069159492,
+        0.028836937295038532,
+        0.02729893113666693,
+        0.025453200885882068,
+        0.023868210161224042,
+        0.02252191561082715,
+        0.02129909614843153,
+        0.020192313091996365,
+        0.01915258466269441,
+        0.017657809989566613,
+        0.017391565193060822,
+        0.01665555708900802,
+        0.015064524825431835,
+        0.01458522549722758,
+        0.012862472167732567,
+        0.012116430583354014,
+        0.011722690564844231,
+        0.010954065592295914,
+        0.010489912515462484,
+        0.009830144339578377,
+        0.006997980152106158,
+        0.003840072112444632,
+        0.0022368810056768284,
+        0.001178949300943531
+      ]
+    }
+  },
+  "same_data_pod": {
+    "orthonormality_before_qr": 9.757894674569667e-10,
+    "qr_column_change": 1.2471328891077026e-09
+  },
+  "schema": "ns3d-pod-match-bank-v1",
+  "smoke": false,
+  "source_commit": "78ac5c10fc1a54496ecd6df36eaa79a03944e17c",
+  "stages": [
+    {
+      "band_fraction_above_10": 4.169436211359867e-09,
+      "bank_singular_value_ratio": 8.378980395143425e-06,
+      "eckart_young_optimum": 3.729483897399407e-07,
+      "objective": {
+        "band": 4.169436211359867e-09,
+        "g3_frob2": 0.00038617444373442814,
+        "g3_max": 0.007302711042062926,
+        "total": 0.0003867268009676843,
+        "vp_fit": 5.481877970447968e-07
+      },
+      "stage": "init",
+      "vp_exact_projected": 5.618528471362794e-07,
+      "vp_exact_raw": 5.473511440756695e-07,
+      "vp_raw_over_optimum": 1.4676324100965845
+    },
+    {
+      "band_fraction_above_10": 3.6131790483548253e-09,
+      "bank_singular_value_ratio": 8.688980825784986e-06,
+      "curve": [
+        [
+          25,
+          2.36994996409935e-06,
+          53.83754253387451,
+          28
+        ],
+        [
+          50,
+          1.8144324985785763e-06,
+          93.32003235816956,
+          53
+        ],
+        [
+          75,
+          1.6284615071168422e-06,
+          125.71013236045837,
+          78
+        ],
+        [
+          100,
+          1.531336265598157e-06,
+          159.50941395759583,
+          104
+        ],
+        [
+          125,
+          1.4669563217241604e-06,
+          191.91109323501587,
+          129
+        ],
+        [
+          150,
+          1.4216821108487547e-06,
+          224.32112455368042,
+          154
+        ],
+        [
+          175,
+          1.3841944905160234e-06,
+          256.7370822429657,
+          179
+        ],
+        [
+          200,
+          1.354587169460292e-06,
+          289.1515417098999,
+          204
+        ],
+        [
+          225,
+          1.3280177670983964e-06,
+          321.56853222846985,
+          229
+        ],
+        [
+          250,
+          1.2995863053436872e-06,
+          355.2744765281677,
+          255
+        ],
+        [
+          275,
+          1.2704318786342417e-06,
+          388.97656750679016,
+          281
+        ],
+        [
+          300,
+          1.2460391231358166e-06,
+          422.67590832710266,
+          307
+        ],
+        [
+          325,
+          1.2305602578876948e-06,
+          456.37417817115784,
+          333
+        ],
+        [
+          350,
+          1.2211719606455922e-06,
+          490.0772306919098,
+          359
+        ],
+        [
+          375,
+          1.2135866664454693e-06,
+          522.4997081756592,
+          384
+        ],
+        [
+          400,
+          1.206108681909706e-06,
+          557.4847481250763,
+          411
+        ],
+        [
+          425,
+          1.1971908908250604e-06,
+          589.9093744754791,
+          436
+        ],
+        [
+          450,
+          1.190507090490104e-06,
+          624.887268781662,
+          463
+        ],
+        [
+          475,
+          1.1848447618594097e-06,
+          658.5939931869507,
+          489
+        ],
+        [
+          500,
+          1.1777770866309526e-06,
+          692.2958738803864,
+          515
+        ],
+        [
+          525,
+          1.1698568667546564e-06,
+          724.7159943580627,
+          540
+        ],
+        [
+          550,
+          1.1625003516222048e-06,
+          758.4173266887665,
+          566
+        ],
+        [
+          575,
+          1.1543983343927605e-06,
+          792.1174871921539,
+          592
+        ],
+        [
+          600,
+          1.1442464665919123e-06,
+          825.8109424114227,
+          618
+        ],
+        [
+          625,
+          1.1319941283611416e-06,
+          859.5131785869598,
+          644
+        ],
+        [
+          650,
+          1.1171645078634158e-06,
+          894.4865019321442,
+          671
+        ],
+        [
+          675,
+          1.102601230911308e-06,
+          928.1930246353149,
+          697
+        ],
+        [
+          700,
+          1.0852538323492995e-06,
+          960.6443130970001,
+          722
+        ],
+        [
+          725,
+          1.0647633025661545e-06,
+          994.3524219989777,
+          748
+        ],
+        [
+          750,
+          1.0406103563512187e-06,
+          1026.7696948051453,
+          773
+        ],
+        [
+          775,
+          1.0208662883897098e-06,
+          1059.1874749660492,
+          798
+        ],
+        [
+          800,
+          1.0034548872458485e-06,
+          1092.8894383907318,
+          824
+        ],
+        [
+          825,
+          9.890490596110468e-07,
+          1126.5877499580383,
+          850
+        ],
+        [
+          850,
+          9.766474575702154e-07,
+          1161.57004404068,
+          877
+        ],
+        [
+          875,
+          9.655696066277314e-07,
+          1193.9950313568115,
+          902
+        ],
+        [
+          900,
+          9.54893841388219e-07,
+          1226.413010597229,
+          927
+        ],
+        [
+          925,
+          9.462837079203998e-07,
+          1258.8361525535583,
+          952
+        ],
+        [
+          950,
+          9.398416444615131e-07,
+          1291.253979921341,
+          977
+        ],
+        [
+          975,
+          9.338847701368954e-07,
+          1324.9607059955597,
+          1003
+        ],
+        [
+          1000,
+          9.284060943898481e-07,
+          1358.6630432605743,
+          1029
+        ],
+        [
+          1025,
+          9.234782810569721e-07,
+          1391.0845031738281,
+          1054
+        ],
+        [
+          1050,
+          9.189888275622195e-07,
+          1426.073094367981,
+          1081
+        ],
+        [
+          1075,
+          9.149268501895552e-07,
+          1458.4953827857971,
+          1106
+        ],
+        [
+          1100,
+          9.113407477018843e-07,
+          1490.9177613258362,
+          1131
+        ],
+        [
+          1125,
+          9.081332084874772e-07,
+          1523.3420572280884,
+          1156
+        ],
+        [
+          1150,
+          9.051070892169682e-07,
+          1557.0379574298859,
+          1182
+        ],
+        [
+          1175,
+          9.021718637705836e-07,
+          1589.4649720191956,
+          1207
+        ],
+        [
+          1200,
+          8.996149886441056e-07,
+          1621.8808794021606,
+          1232
+        ],
+        [
+          1225,
+          8.972467964968378e-07,
+          1654.3041305541992,
+          1257
+        ],
+        [
+          1250,
+          8.949289190646815e-07,
+          1686.7210245132446,
+          1282
+        ],
+        [
+          1275,
+          8.92690852240101e-07,
+          1719.139944076538,
+          1307
+        ],
+        [
+          1300,
+          8.905692041460604e-07,
+          1751.5630507469177,
+          1332
+        ],
+        [
+          1325,
+          8.884981791530769e-07,
+          1783.9798126220703,
+          1357
+        ],
+        [
+          1350,
+          8.86421661763887e-07,
+          1816.400652885437,
+          1382
+        ],
+        [
+          1375,
+          8.845148772964452e-07,
+          1848.83127784729,
+          1407
+        ],
+        [
+          1400,
+          8.827085162477308e-07,
+          1882.5692808628082,
+          1433
+        ],
+        [
+          1425,
+          8.807828677283781e-07,
+          1914.9894506931305,
+          1458
+        ],
+        [
+          1450,
+          8.789424618293657e-07,
+          1949.9710421562195,
+          1485
+        ],
+        [
+          1475,
+          8.770949818047504e-07,
+          1982.395435810089,
+          1510
+        ],
+        [
+          1500,
+          8.751710468602293e-07,
+          2014.8150911331177,
+          1535
+        ],
+        [
+          1525,
+          8.733405229350437e-07,
+          2048.5133497714996,
+          1561
+        ],
+        [
+          1550,
+          8.713768299029198e-07,
+          2083.491818189621,
+          1588
+        ],
+        [
+          1575,
+          8.694708913404346e-07,
+          2118.472227334976,
+          1615
+        ],
+        [
+          1600,
+          8.674321117885387e-07,
+          2152.1709768772125,
+          1641
+        ],
+        [
+          1625,
+          8.651341481276885e-07,
+          2187.1588385105133,
+          1668
+        ],
+        [
+          1650,
+          8.626147040951568e-07,
+          2220.8579750061035,
+          1694
+        ],
+        [
+          1675,
+          8.600396480620257e-07,
+          2254.561039686203,
+          1720
+        ],
+        [
+          1700,
+          8.572271412361156e-07,
+          2286.9794318675995,
+          1745
+        ],
+        [
+          1725,
+          8.543060454604277e-07,
+          2320.68008685112,
+          1771
+        ],
+        [
+          1750,
+          8.512361777910307e-07,
+          2353.104013442993,
+          1796
+        ],
+        [
+          1775,
+          8.482393919579663e-07,
+          2385.5254378318787,
+          1821
+        ],
+        [
+          1800,
+          8.452111740134575e-07,
+          2419.2355632781982,
+          1847
+        ],
+        [
+          1825,
+          8.421094678274486e-07,
+          2452.9458758831024,
+          1873
+        ],
+        [
+          1850,
+          8.3913245067213e-07,
+          2485.3732645511627,
+          1898
+        ],
+        [
+          1875,
+          8.358326156977319e-07,
+          2519.071808576584,
+          1924
+        ],
+        [
+          1900,
+          8.325412427759438e-07,
+          2552.778213262558,
+          1950
+        ],
+        [
+          1925,
+          8.291775483476277e-07,
+          2587.7615497112274,
+          1977
+        ],
+        [
+          1950,
+          8.261494835426153e-07,
+          2620.187575817108,
+          2002
+        ],
+        [
+          1975,
+          8.233896793119489e-07,
+          2653.8890211582184,
+          2028
+        ],
+        [
+          2000,
+          8.207087820292645e-07,
+          2687.5964040756226,
+          2054
+        ],
+        [
+          2025,
+          8.180665697821222e-07,
+          2720.0197961330414,
+          2079
+        ],
+        [
+          2050,
+          8.157666652854439e-07,
+          2753.7243497371674,
+          2105
+        ],
+        [
+          2075,
+          8.135320697522585e-07,
+          2787.452512025833,
+          2131
+        ],
+        [
+          2100,
+          8.110858877146701e-07,
+          2819.8759417533875,
+          2156
+        ],
+        [
+          2125,
+          8.086172689846932e-07,
+          2853.5779824256897,
+          2182
+        ],
+        [
+          2150,
+          8.061675033721334e-07,
+          2887.2834479808807,
+          2208
+        ],
+        [
+          2175,
+          8.038197477484239e-07,
+          2920.9889969825745,
+          2234
+        ],
+        [
+          2200,
+          8.015083561446183e-07,
+          2954.697271823883,
+          2260
+        ],
+        [
+          2225,
+          7.992862566535807e-07,
+          2987.1193006038666,
+          2285
+        ],
+        [
+          2250,
+          7.972871141446656e-07,
+          3019.549190759659,
+          2310
+        ],
+        [
+          2275,
+          7.952820747983486e-07,
+          3051.9749302864075,
+          2335
+        ],
+        [
+          2300,
+          7.933850137427245e-07,
+          3084.401272058487,
+          2360
+        ],
+        [
+          2325,
+          7.91539360580784e-07,
+          3118.1095480918884,
+          2386
+        ],
+        [
+          2350,
+          7.897181527263761e-07,
+          3151.8191771507263,
+          2412
+        ],
+        [
+          2375,
+          7.87953333921937e-07,
+          3184.2417590618134,
+          2437
+        ],
+        [
+          2400,
+          7.862404147051226e-07,
+          3217.9532737731934,
+          2463
+        ],
+        [
+          2425,
+          7.845402903559064e-07,
+          3251.6653382778168,
+          2489
+        ],
+        [
+          2450,
+          7.829950012169637e-07,
+          3284.085840702057,
+          2514
+        ],
+        [
+          2475,
+          7.814568410939646e-07,
+          3317.7923226356506,
+          2540
+        ],
+        [
+          2500,
+          7.797649451731327e-07,
+          3351.5024416446686,
+          2566
+        ],
+        [
+          2525,
+          7.777587805576677e-07,
+          3385.20520567894,
+          2592
+        ],
+        [
+          2550,
+          7.757525402921867e-07,
+          3417.622677087784,
+          2617
+        ],
+        [
+          2575,
+          7.737641248229642e-07,
+          3450.0456125736237,
+          2642
+        ],
+        [
+          2600,
+          7.718580835512962e-07,
+          3482.468242406845,
+          2667
+        ],
+        [
+          2625,
+          7.698909835713597e-07,
+          3516.170393705368,
+          2693
+        ],
+        [
+          2650,
+          7.679997087856588e-07,
+          3549.8788208961487,
+          2719
+        ],
+        [
+          2675,
+          7.658561487604193e-07,
+          3582.2971868515015,
+          2744
+        ],
+        [
+          2700,
+          7.635084877746205e-07,
+          3617.281254529953,
+          2771
+        ],
+        [
+          2725,
+          7.609495217490662e-07,
+          3650.9808745384216,
+          2797
+        ],
+        [
+          2750,
+          7.583102982220316e-07,
+          3684.687251329422,
+          2823
+        ],
+        [
+          2775,
+          7.556406392698299e-07,
+          3718.4185168743134,
+          2849
+        ],
+        [
+          2800,
+          7.52248400481439e-07,
+          3752.123847723007,
+          2875
+        ],
+        [
+          2825,
+          7.485292602709062e-07,
+          3784.54269695282,
+          2900
+        ],
+        [
+          2850,
+          7.444269074075789e-07,
+          3818.2496383190155,
+          2926
+        ],
+        [
+          2875,
+          7.40135044409475e-07,
+          3850.672171354294,
+          2951
+        ],
+        [
+          2900,
+          7.359232344135162e-07,
+          3883.099796295166,
+          2976
+        ],
+        [
+          2925,
+          7.315707296722296e-07,
+          3915.518130540848,
+          3001
+        ],
+        [
+          2950,
+          7.273404933975409e-07,
+          3947.9412910938263,
+          3026
+        ],
+        [
+          2975,
+          7.224898714576791e-07,
+          3982.9242713451385,
+          3053
+        ],
+        [
+          3000,
+          7.175504421762819e-07,
+          4016.632857322693,
+          3079
+        ],
+        [
+          3025,
+          7.134097649710421e-07,
+          4050.338338136673,
+          3105
+        ],
+        [
+          3050,
+          7.09565443768095e-07,
+          4084.0452609062195,
+          3131
+        ],
+        [
+          3075,
+          7.061806812973245e-07,
+          4117.749084949493,
+          3157
+        ],
+        [
+          3100,
+          7.026542575557016e-07,
+          4150.172313213348,
+          3182
+        ],
+        [
+          3125,
+          6.988507287713842e-07,
+          4182.595331907272,
+          3207
+        ],
+        [
+          3150,
+          6.952345064502893e-07,
+          4216.306925058365,
+          3233
+        ],
+        [
+          3175,
+          6.921439547425258e-07,
+          4248.727792263031,
+          3258
+        ],
+        [
+          3200,
+          6.894161064850492e-07,
+          4281.145401716232,
+          3283
+        ],
+        [
+          3225,
+          6.866697487571624e-07,
+          4314.848521947861,
+          3309
+        ],
+        [
+          3250,
+          6.840539350564866e-07,
+          4349.833612918854,
+          3336
+        ],
+        [
+          3275,
+          6.815206573700126e-07,
+          4383.543231964111,
+          3362
+        ],
+        [
+          3300,
+          6.791525622715832e-07,
+          4415.963411331177,
+          3387
+        ],
+        [
+          3325,
+          6.767480561640039e-07,
+          4449.667429685593,
+          3413
+        ],
+        [
+          3350,
+          6.74459049878047e-07,
+          4483.373905181885,
+          3439
+        ],
+        [
+          3375,
+          6.722780654134413e-07,
+          4515.7957627773285,
+          3464
+        ],
+        [
+          3400,
+          6.702736249820459e-07,
+          4548.22504734993,
+          3489
+        ],
+        [
+          3425,
+          6.683190621419091e-07,
+          4581.932577610016,
+          3515
+        ],
+        [
+          3450,
+          6.663985103475905e-07,
+          4615.635070800781,
+          3541
+        ],
+        [
+          3475,
+          6.645852912024376e-07,
+          4648.080638170242,
+          3566
+        ],
+        [
+          3500,
+          6.627932692051881e-07,
+          4680.499437093735,
+          3591
+        ],
+        [
+          3525,
+          6.610219748592846e-07,
+          4712.921422958374,
+          3616
+        ],
+        [
+          3550,
+          6.593239712218335e-07,
+          4745.346255779266,
+          3641
+        ],
+        [
+          3575,
+          6.576518436401414e-07,
+          4779.0471885204315,
+          3667
+        ],
+        [
+          3600,
+          6.559958062455053e-07,
+          4811.472574472427,
+          3692
+        ],
+        [
+          3625,
+          6.544349717664653e-07,
+          4845.168347358704,
+          3718
+        ],
+        [
+          3650,
+          6.529847368612702e-07,
+          4877.588850021362,
+          3743
+        ],
+        [
+          3675,
+          6.515240227299772e-07,
+          4911.296632051468,
+          3769
+        ],
+        [
+          3700,
+          6.502040385664714e-07,
+          4946.276844024658,
+          3796
+        ],
+        [
+          3725,
+          6.487569674225463e-07,
+          4978.705193042755,
+          3821
+        ],
+        [
+          3750,
+          6.473174563012564e-07,
+          5012.4113509655,
+          3847
+        ],
+        [
+          3775,
+          6.458775322063111e-07,
+          5046.115441083908,
+          3873
+        ],
+        [
+          3800,
+          6.445133218188742e-07,
+          5078.533994674683,
+          3898
+        ],
+        [
+          3825,
+          6.432519025632173e-07,
+          5112.231185436249,
+          3924
+        ],
+        [
+          3850,
+          6.420380649065931e-07,
+          5144.656645774841,
+          3949
+        ],
+        [
+          3875,
+          6.408592501907984e-07,
+          5177.0810668468475,
+          3974
+        ],
+        [
+          3900,
+          6.39690054078993e-07,
+          5210.780423402786,
+          4000
+        ],
+        [
+          3925,
+          6.386017745600889e-07,
+          5244.485481739044,
+          4026
+        ],
+        [
+          3950,
+          6.374942805886926e-07,
+          5276.907084941864,
+          4051
+        ],
+        [
+          3975,
+          6.362789824097154e-07,
+          5310.606933832169,
+          4077
+        ],
+        [
+          4000,
+          6.350593131771947e-07,
+          5344.304933547974,
+          4103
+        ],
+        [
+          4025,
+          6.339534636116483e-07,
+          5378.0111474990845,
+          4129
+        ],
+        [
+          4050,
+          6.328223490811309e-07,
+          5411.7105231285095,
+          4155
+        ],
+        [
+          4075,
+          6.317735402008995e-07,
+          5446.700838565826,
+          4182
+        ],
+        [
+          4100,
+          6.307280491588607e-07,
+          5479.122521162033,
+          4207
+        ],
+        [
+          4125,
+          6.296343606618014e-07,
+          5514.104567289352,
+          4234
+        ],
+        [
+          4150,
+          6.286052009387976e-07,
+          5547.808490753174,
+          4260
+        ],
+        [
+          4175,
+          6.274951805900451e-07,
+          5581.540600061417,
+          4286
+        ],
+        [
+          4200,
+          6.264269916433418e-07,
+          5613.963494062424,
+          4311
+        ],
+        [
+          4225,
+          6.254400888830148e-07,
+          5646.3900735378265,
+          4336
+        ],
+        [
+          4250,
+          6.244661113774314e-07,
+          5680.092695474625,
+          4362
+        ],
+        [
+          4275,
+          6.235291751829252e-07,
+          5713.793348789215,
+          4388
+        ],
+        [
+          4300,
+          6.225590548633095e-07,
+          5747.495691776276,
+          4414
+        ],
+        [
+          4325,
+          6.215318113248766e-07,
+          5782.482959032059,
+          4441
+        ],
+        [
+          4350,
+          6.205088314438427e-07,
+          5814.905750989914,
+          4466
+        ],
+        [
+          4375,
+          6.195603691947307e-07,
+          5848.61359667778,
+          4492
+        ],
+        [
+          4400,
+          6.186449832330587e-07,
+          5882.326609611511,
+          4518
+        ],
+        [
+          4425,
+          6.177067202400632e-07,
+          5916.031441450119,
+          4544
+        ],
+        [
+          4450,
+          6.167557930877141e-07,
+          5949.736936330795,
+          4570
+        ],
+        [
+          4475,
+          6.158332813529722e-07,
+          5983.455003023148,
+          4596
+        ],
+        [
+          4500,
+          6.149431001590458e-07,
+          6017.161420345306,
+          4622
+        ],
+        [
+          4525,
+          6.14073484094127e-07,
+          6050.881056308746,
+          4648
+        ],
+        [
+          4550,
+          6.132009983084404e-07,
+          6083.3053340911865,
+          4673
+        ],
+        [
+          4575,
+          6.123277463652667e-07,
+          6118.295697450638,
+          4700
+        ],
+        [
+          4600,
+          6.115241899960242e-07,
+          6150.720467329025,
+          4725
+        ],
+        [
+          4625,
+          6.106639048208226e-07,
+          6184.429887294769,
+          4751
+        ],
+        [
+          4650,
+          6.098217537634388e-07,
+          6218.135938644409,
+          4777
+        ],
+        [
+          4675,
+          6.089549428598682e-07,
+          6250.562244653702,
+          4802
+        ],
+        [
+          4700,
+          6.082100869015427e-07,
+          6282.988595962524,
+          4827
+        ],
+        [
+          4725,
+          6.074719706039815e-07,
+          6316.692118406296,
+          4853
+        ],
+        [
+          4750,
+          6.067110983257144e-07,
+          6349.121813058853,
+          4878
+        ],
+        [
+          4775,
+          6.05935530617664e-07,
+          6382.824385404587,
+          4904
+        ],
+        [
+          4800,
+          6.051968193789164e-07,
+          6417.808211565018,
+          4931
+        ],
+        [
+          4825,
+          6.044257622700704e-07,
+          6450.2386882305145,
+          4956
+        ],
+        [
+          4850,
+          6.037351558288825e-07,
+          6482.6938853263855,
+          4981
+        ],
+        [
+          4875,
+          6.030727839264369e-07,
+          6516.400690793991,
+          5007
+        ],
+        [
+          4900,
+          6.024192634422147e-07,
+          6551.385275363922,
+          5034
+        ],
+        [
+          4925,
+          6.017627964202782e-07,
+          6583.807543039322,
+          5059
+        ],
+        [
+          4950,
+          6.011126608335249e-07,
+          6617.516213417053,
+          5085
+        ],
+        [
+          4975,
+          6.004690081638349e-07,
+          6649.939482927322,
+          5110
+        ],
+        [
+          5000,
+          5.998845935178827e-07,
+          6683.644961118698,
+          5136
+        ],
+        [
+          5025,
+          5.993075113085326e-07,
+          6717.349429130554,
+          5162
+        ],
+        [
+          5050,
+          5.987179746824528e-07,
+          6749.765035390854,
+          5187
+        ],
+        [
+          5075,
+          5.981167786394245e-07,
+          6784.74995136261,
+          5214
+        ],
+        [
+          5100,
+          5.975293552907452e-07,
+          6818.450835943222,
+          5240
+        ],
+        [
+          5125,
+          5.96972012289491e-07,
+          6852.150861501694,
+          5266
+        ],
+        [
+          5150,
+          5.964403028378906e-07,
+          6884.568964719772,
+          5291
+        ],
+        [
+          5175,
+          5.958996584265621e-07,
+          6916.991523265839,
+          5316
+        ],
+        [
+          5200,
+          5.953626000309403e-07,
+          6950.696449995041,
+          5342
+        ],
+        [
+          5225,
+          5.948685364958408e-07,
+          6984.404113769531,
+          5368
+        ],
+        [
+          5250,
+          5.944087010317291e-07,
+          7018.108540296555,
+          5394
+        ],
+        [
+          5275,
+          5.939585659696026e-07,
+          7051.809883356094,
+          5420
+        ],
+        [
+          5300,
+          5.935193779604319e-07,
+          7085.509383678436,
+          5446
+        ],
+        [
+          5325,
+          5.930473715221801e-07,
+          7119.210689067841,
+          5472
+        ],
+        [
+          5350,
+          5.925983233798265e-07,
+          7151.627855539322,
+          5497
+        ],
+        [
+          5375,
+          5.921651046050819e-07,
+          7184.053613901138,
+          5522
+        ],
+        [
+          5400,
+          5.917565372234524e-07,
+          7216.478600502014,
+          5547
+        ],
+        [
+          5425,
+          5.913508062830536e-07,
+          7251.462406873703,
+          5574
+        ],
+        [
+          5450,
+          5.909516698514674e-07,
+          7283.878567934036,
+          5599
+        ],
+        [
+          5475,
+          5.905421645498612e-07,
+          7316.298333644867,
+          5624
+        ],
+        [
+          5500,
+          5.901397483628399e-07,
+          7349.998883962631,
+          5650
+        ],
+        [
+          5525,
+          5.897490851626198e-07,
+          7382.421907663345,
+          5675
+        ],
+        [
+          5550,
+          5.893389028951312e-07,
+          7416.150290966034,
+          5701
+        ],
+        [
+          5575,
+          5.889571981043705e-07,
+          7448.569249391556,
+          5726
+        ],
+        [
+          5600,
+          5.885926823181481e-07,
+          7483.543801784515,
+          5753
+        ],
+        [
+          5625,
+          5.882038579442758e-07,
+          7515.964400291443,
+          5778
+        ],
+        [
+          5650,
+          5.878163408892754e-07,
+          7549.6592581272125,
+          5804
+        ],
+        [
+          5675,
+          5.874390413742555e-07,
+          7583.349557638168,
+          5830
+        ],
+        [
+          5700,
+          5.870723768492428e-07,
+          7617.0474762916565,
+          5856
+        ],
+        [
+          5725,
+          5.867340398619839e-07,
+          7649.468556404114,
+          5881
+        ],
+        [
+          5750,
+          5.863892837490162e-07,
+          7683.167994737625,
+          5907
+        ],
+        [
+          5775,
+          5.860373561695731e-07,
+          7718.154692411423,
+          5934
+        ],
+        [
+          5800,
+          5.857029459476577e-07,
+          7750.5742926597595,
+          5959
+        ],
+        [
+          5825,
+          5.853737853271164e-07,
+          7783.004757642746,
+          5984
+        ],
+        [
+          5850,
+          5.850542380163376e-07,
+          7816.702635526657,
+          6010
+        ],
+        [
+          5875,
+          5.847142786131579e-07,
+          7849.118976831436,
+          6035
+        ],
+        [
+          5900,
+          5.844075097823797e-07,
+          7882.829087734222,
+          6061
+        ],
+        [
+          5925,
+          5.841212806442886e-07,
+          7915.248325824738,
+          6086
+        ],
+        [
+          5950,
+          5.838140483833633e-07,
+          7948.951466798782,
+          6112
+        ],
+        [
+          5975,
+          5.835182280171236e-07,
+          7981.368392467499,
+          6137
+        ],
+        [
+          6000,
+          5.832323680999997e-07,
+          8015.064692735672,
+          6163
+        ],
+        [
+          6025,
+          5.829470640506076e-07,
+          8050.044981241226,
+          6190
+        ],
+        [
+          6050,
+          5.8266735391314e-07,
+          8082.460830450058,
+          6215
+        ],
+        [
+          6075,
+          5.823927930991023e-07,
+          8116.1631672382355,
+          6241
+        ],
+        [
+          6100,
+          5.821240799222538e-07,
+          8151.14478802681,
+          6268
+        ],
+        [
+          6125,
+          5.818590351364288e-07,
+          8184.8422062397,
+          6294
+        ],
+        [
+          6150,
+          5.816032481525927e-07,
+          8219.81794500351,
+          6321
+        ],
+        [
+          6175,
+          5.813477450948796e-07,
+          8253.517294883728,
+          6347
+        ],
+        [
+          6200,
+          5.810717999228578e-07,
+          8287.213172912598,
+          6373
+        ],
+        [
+          6225,
+          5.808146747879803e-07,
+          8320.94992184639,
+          6399
+        ],
+        [
+          6250,
+          5.805612947736403e-07,
+          8353.366821289062,
+          6424
+        ],
+        [
+          6275,
+          5.80318654217741e-07,
+          8387.061488628387,
+          6450
+        ],
+        [
+          6300,
+          5.80093048883615e-07,
+          8419.479654788971,
+          6475
+        ],
+        [
+          6325,
+          5.798420110499662e-07,
+          8454.462052822113,
+          6502
+        ],
+        [
+          6350,
+          5.796002248302686e-07,
+          8486.881063461304,
+          6527
+        ],
+        [
+          6375,
+          5.793632254487151e-07,
+          8519.303025007248,
+          6552
+        ],
+        [
+          6400,
+          5.791221254928779e-07,
+          8551.71958732605,
+          6577
+        ],
+        [
+          6425,
+          5.788894922066278e-07,
+          8585.418016433716,
+          6603
+        ],
+        [
+          6450,
+          5.786536275891055e-07,
+          8619.122397899628,
+          6629
+        ],
+        [
+          6475,
+          5.784280537586571e-07,
+          8651.545766353607,
+          6654
+        ],
+        [
+          6500,
+          5.782112071113189e-07,
+          8685.240872621536,
+          6680
+        ],
+        [
+          6525,
+          5.780011816079601e-07,
+          8717.66665482521,
+          6705
+        ],
+        [
+          6550,
+          5.777800172693519e-07,
+          8750.087494134903,
+          6730
+        ],
+        [
+          6575,
+          5.775530284723593e-07,
+          8782.507768154144,
+          6755
+        ],
+        [
+          6600,
+          5.77338388409947e-07,
+          8816.213013410568,
+          6781
+        ],
+        [
+          6625,
+          5.771121876667318e-07,
+          8848.632721424103,
+          6806
+        ],
+        [
+          6650,
+          5.769039608621442e-07,
+          8882.327559947968,
+          6832
+        ],
+        [
+          6675,
+          5.76682038968912e-07,
+          8914.743885278702,
+          6857
+        ],
+        [
+          6700,
+          5.764779873563705e-07,
+          8948.443889379501,
+          6883
+        ],
+        [
+          6725,
+          5.762806846717169e-07,
+          8982.140599012375,
+          6909
+        ],
+        [
+          6750,
+          5.760863028399015e-07,
+          9014.561171531677,
+          6934
+        ],
+        [
+          6775,
+          5.758847731056011e-07,
+          9048.258051633835,
+          6960
+        ],
+        [
+          6800,
+          5.756884881831869e-07,
+          9080.675441503525,
+          6985
+        ],
+        [
+          6825,
+          5.754852533538164e-07,
+          9113.098884344101,
+          7010
+        ],
+        [
+          6850,
+          5.752762153647642e-07,
+          9145.519147872925,
+          7035
+        ],
+        [
+          6875,
+          5.750692223635108e-07,
+          9179.218320131302,
+          7061
+        ],
+        [
+          6900,
+          5.748673325503237e-07,
+          9212.918955564499,
+          7087
+        ],
+        [
+          6925,
+          5.746615168561574e-07,
+          9245.369231939316,
+          7112
+        ],
+        [
+          6950,
+          5.744629587791819e-07,
+          9277.783281087875,
+          7137
+        ],
+        [
+          6975,
+          5.742854067037847e-07,
+          9310.196728229523,
+          7162
+        ],
+        [
+          7000,
+          5.741119034142093e-07,
+          9342.617639541626,
+          7187
+        ],
+        [
+          7025,
+          5.739329380019936e-07,
+          9376.321136951447,
+          7213
+        ],
+        [
+          7050,
+          5.737478613307126e-07,
+          9410.023547649384,
+          7239
+        ],
+        [
+          7075,
+          5.735570432497157e-07,
+          9442.440199136734,
+          7264
+        ],
+        [
+          7100,
+          5.733754666950467e-07,
+          9477.425498723984,
+          7291
+        ],
+        [
+          7125,
+          5.731844321379822e-07,
+          9509.843639612198,
+          7316
+        ],
+        [
+          7150,
+          5.730086969184398e-07,
+          9543.549126625061,
+          7342
+        ],
+        [
+          7175,
+          5.728386816721035e-07,
+          9577.242486476898,
+          7368
+        ],
+        [
+          7200,
+          5.72676376192907e-07,
+          9610.941238880157,
+          7394
+        ],
+        [
+          7225,
+          5.725012696044161e-07,
+          9643.348552465439,
+          7419
+        ],
+        [
+          7250,
+          5.723251742914169e-07,
+          9677.049423217773,
+          7445
+        ],
+        [
+          7275,
+          5.721506564783343e-07,
+          9709.46588730812,
+          7470
+        ],
+        [
+          7300,
+          5.719849131189361e-07,
+          9741.886392116547,
+          7495
+        ],
+        [
+          7325,
+          5.718198471224545e-07,
+          9774.305357456207,
+          7520
+        ],
+        [
+          7350,
+          5.716551762286925e-07,
+          9809.289172410965,
+          7547
+        ],
+        [
+          7375,
+          5.714886596305578e-07,
+          9841.71693277359,
+          7572
+        ],
+        [
+          7400,
+          5.713134211300287e-07,
+          9875.416672229767,
+          7598
+        ],
+        [
+          7425,
+          5.711338021814379e-07,
+          9909.113347053528,
+          7624
+        ],
+        [
+          7450,
+          5.709558880595151e-07,
+          9942.826320409775,
+          7650
+        ],
+        [
+          7475,
+          5.707805115217036e-07,
+          9975.244475603104,
+          7675
+        ],
+        [
+          7500,
+          5.706166047489638e-07,
+          10008.954611301422,
+          7701
+        ],
+        [
+          7525,
+          5.704613266625893e-07,
+          10042.657826423645,
+          7727
+        ],
+        [
+          7550,
+          5.703084925350142e-07,
+          10076.364223718643,
+          7753
+        ],
+        [
+          7575,
+          5.701502576147717e-07,
+          10111.344374895096,
+          7780
+        ],
+        [
+          7600,
+          5.699908194526191e-07,
+          10143.767500400543,
+          7805
+        ],
+        [
+          7625,
+          5.698301014649808e-07,
+          10177.496127843857,
+          7831
+        ],
+        [
+          7650,
+          5.696684563174042e-07,
+          10209.9203414917,
+          7856
+        ],
+        [
+          7675,
+          5.695046299243916e-07,
+          10243.622814893723,
+          7882
+        ],
+        [
+          7700,
+          5.693452206382381e-07,
+          10278.610377073288,
+          7909
+        ],
+        [
+          7725,
+          5.691958290660305e-07,
+          10312.310317516327,
+          7935
+        ],
+        [
+          7750,
+          5.690509277539243e-07,
+          10344.746981859207,
+          7960
+        ],
+        [
+          7775,
+          5.688895128135553e-07,
+          10379.732136249542,
+          7987
+        ],
+        [
+          7800,
+          5.687391187646475e-07,
+          10413.442913293839,
+          8013
+        ],
+        [
+          7825,
+          5.685926755179138e-07,
+          10447.14952802658,
+          8039
+        ],
+        [
+          7850,
+          5.68438260875255e-07,
+          10480.857810020447,
+          8065
+        ],
+        [
+          7875,
+          5.682948050043175e-07,
+          10514.555353403091,
+          8091
+        ],
+        [
+          7900,
+          5.681499330339814e-07,
+          10548.256537437439,
+          8117
+        ],
+        [
+          7925,
+          5.679967272087587e-07,
+          10581.96145272255,
+          8143
+        ],
+        [
+          7950,
+          5.67852816936124e-07,
+          10615.6720495224,
+          8169
+        ],
+        [
+          7975,
+          5.677093923198719e-07,
+          10648.08770442009,
+          8194
+        ],
+        [
+          8000,
+          5.675602536561603e-07,
+          10680.513940572739,
+          8219
+        ],
+        [
+          8025,
+          5.674191125285821e-07,
+          10712.939722061157,
+          8244
+        ],
+        [
+          8050,
+          5.672824961446683e-07,
+          10745.365965127945,
+          8269
+        ],
+        [
+          8075,
+          5.671444829872384e-07,
+          10779.071215391159,
+          8295
+        ],
+        [
+          8100,
+          5.669904344717606e-07,
+          10811.502176523209,
+          8320
+        ],
+        [
+          8125,
+          5.66844843562642e-07,
+          10843.927454948425,
+          8345
+        ],
+        [
+          8150,
+          5.667022889307368e-07,
+          10876.348136901855,
+          8370
+        ],
+        [
+          8175,
+          5.665621971930223e-07,
+          10910.05347776413,
+          8396
+        ],
+        [
+          8200,
+          5.664088859412167e-07,
+          10943.761986255646,
+          8422
+        ],
+        [
+          8225,
+          5.662599182398186e-07,
+          10977.467071294785,
+          8448
+        ],
+        [
+          8250,
+          5.661110561948928e-07,
+          11009.890388965607,
+          8473
+        ],
+        [
+          8275,
+          5.659645152149532e-07,
+          11042.305916070938,
+          8498
+        ],
+        [
+          8300,
+          5.65821017962063e-07,
+          11076.010512113571,
+          8524
+        ],
+        [
+          8325,
+          5.656758797503485e-07,
+          11108.473720788956,
+          8549
+        ],
+        [
+          8350,
+          5.65528213540244e-07,
+          11142.174217700958,
+          8575
+        ],
+        [
+          8375,
+          5.653757877379519e-07,
+          11175.870078086853,
+          8601
+        ],
+        [
+          8400,
+          5.652232443688268e-07,
+          11210.849532604218,
+          8628
+        ],
+        [
+          8425,
+          5.650752693998661e-07,
+          11244.553323030472,
+          8654
+        ],
+        [
+          8450,
+          5.649137477267848e-07,
+          11276.972892999649,
+          8679
+        ],
+        [
+          8475,
+          5.647668773080787e-07,
+          11311.95150566101,
+          8706
+        ],
+        [
+          8500,
+          5.646210590328421e-07,
+          11344.37109041214,
+          8731
+        ],
+        [
+          8525,
+          5.644761321582519e-07,
+          11376.795187711716,
+          8756
+        ],
+        [
+          8550,
+          5.643343696571607e-07,
+          11409.218632221222,
+          8781
+        ],
+        [
+          8575,
+          5.641963360505515e-07,
+          11441.640841007233,
+          8806
+        ],
+        [
+          8600,
+          5.6405230282622e-07,
+          11476.626761674881,
+          8833
+        ],
+        [
+          8625,
+          5.638981299924796e-07,
+          11509.044251918793,
+          8858
+        ],
+        [
+          8650,
+          5.637481593672663e-07,
+          11541.470476865768,
+          8883
+        ],
+        [
+          8675,
+          5.636107552901481e-07,
+          11575.16598534584,
+          8909
+        ],
+        [
+          8700,
+          5.634642731834876e-07,
+          11608.875131607056,
+          8935
+        ],
+        [
+          8725,
+          5.633192031028055e-07,
+          11641.297347784042,
+          8960
+        ],
+        [
+          8750,
+          5.631772644558116e-07,
+          11673.72212433815,
+          8985
+        ],
+        [
+          8775,
+          5.630455883907082e-07,
+          11706.145771980286,
+          9010
+        ],
+        [
+          8800,
+          5.629147385040286e-07,
+          11739.854143619537,
+          9036
+        ],
+        [
+          8825,
+          5.627788860786198e-07,
+          11776.122878551483,
+          9064
+        ],
+        [
+          8850,
+          5.626417631051037e-07,
+          11809.824961900711,
+          9090
+        ],
+        [
+          8875,
+          5.625019584416282e-07,
+          11843.52844452858,
+          9116
+        ],
+        [
+          8900,
+          5.62367441035792e-07,
+          11877.235035419464,
+          9142
+        ],
+        [
+          8925,
+          5.622391287394828e-07,
+          11909.65942454338,
+          9167
+        ],
+        [
+          8950,
+          5.621030544424263e-07,
+          11943.35745215416,
+          9193
+        ],
+        [
+          8975,
+          5.619622349808976e-07,
+          11975.784815788269,
+          9218
+        ],
+        [
+          9000,
+          5.618343972102846e-07,
+          12009.47610616684,
+          9244
+        ],
+        [
+          9025,
+          5.617008760589415e-07,
+          12041.924725532532,
+          9269
+        ],
+        [
+          9050,
+          5.615695938215461e-07,
+          12074.348953962326,
+          9294
+        ],
+        [
+          9075,
+          5.614329217588814e-07,
+          12108.054455518723,
+          9320
+        ],
+        [
+          9100,
+          5.612940863820743e-07,
+          12140.482319116592,
+          9345
+        ],
+        [
+          9125,
+          5.611535198882633e-07,
+          12172.903703212738,
+          9370
+        ],
+        [
+          9150,
+          5.610131470771821e-07,
+          12205.327917575836,
+          9395
+        ],
+        [
+          9175,
+          5.608764598717254e-07,
+          12237.757493495941,
+          9420
+        ],
+        [
+          9200,
+          5.607450053614422e-07,
+          12270.186613798141,
+          9445
+        ],
+        [
+          9225,
+          5.606091460044843e-07,
+          12302.619441986084,
+          9470
+        ],
+        [
+          9250,
+          5.604757621887806e-07,
+          12336.318878173828,
+          9496
+        ],
+        [
+          9275,
+          5.603428191960058e-07,
+          12370.03747677803,
+          9522
+        ],
+        [
+          9300,
+          5.601991063278286e-07,
+          12402.462288856506,
+          9547
+        ],
+        [
+          9325,
+          5.600607084391066e-07,
+          12436.16755604744,
+          9573
+        ],
+        [
+          9350,
+          5.599368822067322e-07,
+          12468.588104963303,
+          9598
+        ],
+        [
+          9375,
+          5.598037025011542e-07,
+          12502.294908046722,
+          9624
+        ],
+        [
+          9400,
+          5.596742302075473e-07,
+          12535.999744176865,
+          9650
+        ],
+        [
+          9425,
+          5.595407857419401e-07,
+          12568.41819524765,
+          9675
+        ],
+        [
+          9450,
+          5.594129549139209e-07,
+          12602.114466905594,
+          9701
+        ],
+        [
+          9475,
+          5.592734207076502e-07,
+          12635.82064819336,
+          9727
+        ],
+        [
+          9500,
+          5.591410425684479e-07,
+          12668.244608163834,
+          9752
+        ],
+        [
+          9525,
+          5.590053017898087e-07,
+          12701.946151256561,
+          9778
+        ],
+        [
+          9550,
+          5.588708035930076e-07,
+          12734.363418340683,
+          9803
+        ],
+        [
+          9575,
+          5.587355444064009e-07,
+          12766.790863275528,
+          9828
+        ],
+        [
+          9600,
+          5.586033425906352e-07,
+          12800.496129274368,
+          9854
+        ],
+        [
+          9625,
+          5.584672664889592e-07,
+          12834.197149515152,
+          9880
+        ],
+        [
+          9650,
+          5.583413264201823e-07,
+          12866.62453198433,
+          9905
+        ],
+        [
+          9675,
+          5.582128733038519e-07,
+          12900.326489686966,
+          9931
+        ],
+        [
+          9700,
+          5.580861977024747e-07,
+          12932.74011349678,
+          9956
+        ],
+        [
+          9725,
+          5.579630796664969e-07,
+          12966.649876594543,
+          9982
+        ],
+        [
+          9750,
+          5.57827653440228e-07,
+          12999.068539619446,
+          10007
+        ],
+        [
+          9775,
+          5.576958065796279e-07,
+          13032.771694421768,
+          10033
+        ],
+        [
+          9800,
+          5.575678570616753e-07,
+          13065.186512470245,
+          10058
+        ],
+        [
+          9825,
+          5.574364460156802e-07,
+          13100.169796228409,
+          10085
+        ],
+        [
+          9850,
+          5.573009386225985e-07,
+          13132.589337587357,
+          10110
+        ],
+        [
+          9875,
+          5.571684905596093e-07,
+          13167.564170837402,
+          10137
+        ],
+        [
+          9900,
+          5.570425866855635e-07,
+          13199.992110013962,
+          10162
+        ],
+        [
+          9925,
+          5.569083004495037e-07,
+          13233.693689107895,
+          10188
+        ],
+        [
+          9950,
+          5.567750259723632e-07,
+          13267.398564100266,
+          10214
+        ],
+        [
+          9975,
+          5.566443204878587e-07,
+          13299.816349506378,
+          10239
+        ],
+        [
+          10000,
+          5.565160452530417e-07,
+          13333.516819238663,
+          10265
+        ],
+        [
+          10025,
+          5.563894284982589e-07,
+          13367.22671675682,
+          10291
+        ],
+        [
+          10050,
+          5.562464729273915e-07,
+          13400.928889513016,
+          10317
+        ],
+        [
+          10075,
+          5.560950520272621e-07,
+          13433.358694076538,
+          10342
+        ],
+        [
+          10100,
+          5.559482746004975e-07,
+          13465.78311252594,
+          10367
+        ],
+        [
+          10125,
+          5.558051100670711e-07,
+          13499.482667446136,
+          10393
+        ],
+        [
+          10150,
+          5.556641838290579e-07,
+          13533.18354511261,
+          10419
+        ],
+        [
+          10175,
+          5.555252697869836e-07,
+          13565.604839086533,
+          10444
+        ],
+        [
+          10200,
+          5.553740548889934e-07,
+          13598.023751020432,
+          10469
+        ],
+        [
+          10225,
+          5.552330333189402e-07,
+          13633.011666059494,
+          10496
+        ],
+        [
+          10250,
+          5.55098001192196e-07,
+          13666.711615800858,
+          10522
+        ],
+        [
+          10275,
+          5.549560975618113e-07,
+          13700.419307470322,
+          10548
+        ],
+        [
+          10300,
+          5.548017059849116e-07,
+          13734.121389865875,
+          10574
+        ],
+        [
+          10325,
+          5.546494454411704e-07,
+          13766.542855501175,
+          10599
+        ],
+        [
+          10350,
+          5.54492261615139e-07,
+          13800.244507312775,
+          10625
+        ],
+        [
+          10375,
+          5.5434146626234e-07,
+          13832.66374373436,
+          10650
+        ],
+        [
+          10400,
+          5.541916625289078e-07,
+          13865.08464884758,
+          10675
+        ],
+        [
+          10425,
+          5.540390995374904e-07,
+          13898.803649663925,
+          10701
+        ],
+        [
+          10450,
+          5.538879893335877e-07,
+          13932.494596481323,
+          10727
+        ],
+        [
+          10475,
+          5.537400353083526e-07,
+          13964.921550273895,
+          10752
+        ],
+        [
+          10500,
+          5.535983101788415e-07,
+          13998.627077102661,
+          10778
+        ],
+        [
+          10525,
+          5.5344055483071e-07,
+          14032.32984995842,
+          10804
+        ],
+        [
+          10550,
+          5.532875322693507e-07,
+          14064.753195047379,
+          10829
+        ],
+        [
+          10575,
+          5.531461733374535e-07,
+          14099.735949516296,
+          10856
+        ],
+        [
+          10600,
+          5.529985037162278e-07,
+          14132.151544570923,
+          10881
+        ],
+        [
+          10625,
+          5.528508851333473e-07,
+          14165.852200508118,
+          10907
+        ],
+        [
+          10650,
+          5.5270593026279e-07,
+          14198.274463176727,
+          10932
+        ],
+        [
+          10675,
+          5.52570995336663e-07,
+          14230.694877386093,
+          10957
+        ],
+        [
+          10700,
+          5.524326348036867e-07,
+          14264.394725322723,
+          10983
+        ],
+        [
+          10725,
+          5.522940920249852e-07,
+          14298.092427253723,
+          11009
+        ],
+        [
+          10750,
+          5.521583124839981e-07,
+          14330.513786792755,
+          11034
+        ],
+        [
+          10775,
+          5.520214595486603e-07,
+          14362.929763793945,
+          11059
+        ],
+        [
+          10800,
+          5.518846881999696e-07,
+          14397.907141685486,
+          11086
+        ],
+        [
+          10825,
+          5.517500205485537e-07,
+          14431.604989528656,
+          11112
+        ],
+        [
+          10850,
+          5.516196728562779e-07,
+          14465.307006597519,
+          11138
+        ],
+        [
+          10875,
+          5.514898642453662e-07,
+          14498.996717691422,
+          11164
+        ],
+        [
+          10900,
+          5.513430718495256e-07,
+          14531.413685560226,
+          11189
+        ],
+        [
+          10925,
+          5.512154097414016e-07,
+          14565.109399080276,
+          11215
+        ],
+        [
+          10950,
+          5.510719804794006e-07,
+          14598.812310218811,
+          11241
+        ],
+        [
+          10975,
+          5.509305915920877e-07,
+          14631.230511903763,
+          11266
+        ],
+        [
+          11000,
+          5.507874687050729e-07,
+          14664.926697969437,
+          11292
+        ],
+        [
+          11025,
+          5.506435070759771e-07,
+          14698.626772642136,
+          11318
+        ],
+        [
+          11050,
+          5.504988674234648e-07,
+          14731.042053937912,
+          11343
+        ],
+        [
+          11075,
+          5.503669787042793e-07,
+          14763.464231014252,
+          11368
+        ],
+        [
+          11100,
+          5.502384573381087e-07,
+          14795.893950462341,
+          11393
+        ],
+        [
+          11125,
+          5.500972058703543e-07,
+          14830.907184362411,
+          11420
+        ],
+        [
+          11150,
+          5.499615768793435e-07,
+          14864.60957956314,
+          11446
+        ],
+        [
+          11175,
+          5.498217362076842e-07,
+          14897.029081106186,
+          11471
+        ],
+        [
+          11200,
+          5.496798820199638e-07,
+          14930.731951236725,
+          11497
+        ],
+        [
+          11225,
+          5.495317626134316e-07,
+          14963.157852888107,
+          11522
+        ],
+        [
+          11250,
+          5.4937672930332e-07,
+          14995.579746484756,
+          11547
+        ],
+        [
+          11275,
+          5.492392799690497e-07,
+          15030.555558681488,
+          11574
+        ],
+        [
+          11300,
+          5.490967733479882e-07,
+          15062.976438522339,
+          11599
+        ],
+        [
+          11325,
+          5.489542209612511e-07,
+          15095.391446590424,
+          11624
+        ],
+        [
+          11350,
+          5.488126773144642e-07,
+          15129.085619688034,
+          11650
+        ],
+        [
+          11375,
+          5.486656415182396e-07,
+          15162.776799917221,
+          11676
+        ],
+        [
+          11400,
+          5.485313219594058e-07,
+          15196.473980903625,
+          11702
+        ],
+        [
+          11425,
+          5.483959343692889e-07,
+          15228.886153697968,
+          11727
+        ],
+        [
+          11450,
+          5.482641711750654e-07,
+          15261.309530735016,
+          11752
+        ],
+        [
+          11475,
+          5.481320777390826e-07,
+          15296.293481349945,
+          11779
+        ],
+        [
+          11500,
+          5.480006011685098e-07,
+          15329.99478816986,
+          11805
+        ],
+        [
+          11525,
+          5.478713071693231e-07,
+          15363.694425582886,
+          11831
+        ],
+        [
+          11550,
+          5.477315527990543e-07,
+          15396.113536596298,
+          11856
+        ],
+        [
+          11575,
+          5.475970940258486e-07,
+          15428.535117864609,
+          11881
+        ],
+        [
+          11600,
+          5.474604093690799e-07,
+          15460.956573963165,
+          11906
+        ],
+        [
+          11625,
+          5.473364883593603e-07,
+          15494.658817529678,
+          11932
+        ],
+        [
+          11650,
+          5.472083755461159e-07,
+          15527.072729349136,
+          11957
+        ],
+        [
+          11675,
+          5.470818829802984e-07,
+          15562.051565170288,
+          11984
+        ],
+        [
+          11700,
+          5.469559086663533e-07,
+          15595.75160241127,
+          12010
+        ],
+        [
+          11725,
+          5.468312579523184e-07,
+          15628.172485589981,
+          12035
+        ],
+        [
+          11750,
+          5.466965268937074e-07,
+          15663.154505491257,
+          12062
+        ],
+        [
+          11775,
+          5.465652911901005e-07,
+          15696.850518226624,
+          12088
+        ],
+        [
+          11800,
+          5.464333737102352e-07,
+          15730.586241960526,
+          12114
+        ],
+        [
+          11825,
+          5.462990736190683e-07,
+          15764.279247522354,
+          12140
+        ],
+        [
+          11850,
+          5.46170786879477e-07,
+          15796.699444293976,
+          12165
+        ],
+        [
+          11875,
+          5.46031777337194e-07,
+          15829.11706829071,
+          12190
+        ],
+        [
+          11900,
+          5.458942233748074e-07,
+          15861.536766767502,
+          12215
+        ],
+        [
+          11925,
+          5.45754146560204e-07,
+          15893.952300310135,
+          12240
+        ],
+        [
+          11950,
+          5.456225675739067e-07,
+          15926.374193906784,
+          12265
+        ],
+        [
+          11975,
+          5.454942939117534e-07,
+          15960.070074796677,
+          12291
+        ],
+        [
+          12000,
+          5.453692414168264e-07,
+          15995.05411696434,
+          12318
+        ],
+        [
+          12025,
+          5.452374355368578e-07,
+          16030.029542207718,
+          12345
+        ],
+        [
+          12050,
+          5.451106421912815e-07,
+          16063.730974435806,
+          12371
+        ],
+        [
+          12075,
+          5.449786572595493e-07,
+          16097.429094314575,
+          12397
+        ],
+        [
+          12100,
+          5.448518730022168e-07,
+          16131.123195648193,
+          12423
+        ],
+        [
+          12125,
+          5.447166889581408e-07,
+          16164.818569421768,
+          12449
+        ],
+        [
+          12150,
+          5.445904140707563e-07,
+          16198.526092767715,
+          12475
+        ],
+        [
+          12175,
+          5.444647557583994e-07,
+          16230.944680929184,
+          12500
+        ],
+        [
+          12200,
+          5.443277453356072e-07,
+          16264.63908457756,
+          12526
+        ],
+        [
+          12225,
+          5.442028228582292e-07,
+          16298.335906267166,
+          12552
+        ],
+        [
+          12250,
+          5.44081578633253e-07,
+          16330.756331682205,
+          12577
+        ],
+        [
+          12275,
+          5.439541693469632e-07,
+          16364.457590818405,
+          12603
+        ],
+        [
+          12300,
+          5.438233262857936e-07,
+          16396.87918162346,
+          12628
+        ],
+        [
+          12325,
+          5.436980737572413e-07,
+          16430.576162815094,
+          12654
+        ],
+        [
+          12350,
+          5.435711195663347e-07,
+          16464.272248506546,
+          12680
+        ],
+        [
+          12375,
+          5.434432772404131e-07,
+          16499.252295970917,
+          12707
+        ],
+        [
+          12400,
+          5.433129782965377e-07,
+          16531.673087358475,
+          12732
+        ],
+        [
+          12425,
+          5.43186082620928e-07,
+          16566.653971672058,
+          12759
+        ],
+        [
+          12450,
+          5.430563392932945e-07,
+          16600.3586435318,
+          12785
+        ],
+        [
+          12475,
+          5.429275693072988e-07,
+          16632.813884973526,
+          12810
+        ],
+        [
+          12500,
+          5.427933170125656e-07,
+          16666.512718439102,
+          12836
+        ],
+        [
+          12525,
+          5.426663670717863e-07,
+          16700.20862030983,
+          12862
+        ],
+        [
+          12550,
+          5.42538637250474e-07,
+          16733.91265964508,
+          12888
+        ],
+        [
+          12575,
+          5.424115944874642e-07,
+          16767.613067626953,
+          12914
+        ],
+        [
+          12600,
+          5.422785688072546e-07,
+          16800.0382065773,
+          12939
+        ],
+        [
+          12625,
+          5.421492203228907e-07,
+          16835.019068956375,
+          12966
+        ],
+        [
+          12650,
+          5.420232608192055e-07,
+          16867.438991069794,
+          12991
+        ],
+        [
+          12675,
+          5.418961498290576e-07,
+          16899.864591360092,
+          13016
+        ],
+        [
+          12700,
+          5.417731171159794e-07,
+          16933.570892572403,
+          13042
+        ],
+        [
+          12725,
+          5.416484259797525e-07,
+          16967.2751121521,
+          13068
+        ],
+        [
+          12750,
+          5.415203719362043e-07,
+          16999.695189237595,
+          13093
+        ],
+        [
+          12775,
+          5.41390828643031e-07,
+          17033.39375114441,
+          13119
+        ],
+        [
+          12800,
+          5.412626829751231e-07,
+          17067.10227417946,
+          13145
+        ],
+        [
+          12825,
+          5.411456028857823e-07,
+          17100.804580926895,
+          13171
+        ],
+        [
+          12850,
+          5.410258786925023e-07,
+          17133.226977825165,
+          13196
+        ],
+        [
+          12875,
+          5.409020639448872e-07,
+          17165.648956537247,
+          13221
+        ],
+        [
+          12900,
+          5.407739326034004e-07,
+          17199.358315467834,
+          13247
+        ],
+        [
+          12925,
+          5.406466960253113e-07,
+          17234.33869743347,
+          13274
+        ],
+        [
+          12950,
+          5.405214662298249e-07,
+          17266.76716184616,
+          13299
+        ],
+        [
+          12975,
+          5.403932227416353e-07,
+          17300.47018623352,
+          13325
+        ],
+        [
+          13000,
+          5.4027189750052e-07,
+          17332.897181987762,
+          13350
+        ],
+        [
+          13025,
+          5.401384032396692e-07,
+          17366.60167479515,
+          13376
+        ],
+        [
+          13050,
+          5.400059393631293e-07,
+          17399.02223443985,
+          13401
+        ],
+        [
+          13075,
+          5.398778860434429e-07,
+          17432.714584112167,
+          13427
+        ],
+        [
+          13100,
+          5.397500833572319e-07,
+          17465.138016700745,
+          13452
+        ],
+        [
+          13125,
+          5.396219415148551e-07,
+          17498.841217279434,
+          13478
+        ],
+        [
+          13150,
+          5.394946882613779e-07,
+          17531.261126995087,
+          13503
+        ],
+        [
+          13175,
+          5.393794711204516e-07,
+          17564.990463256836,
+          13529
+        ],
+        [
+          13200,
+          5.3926134861952e-07,
+          17597.407684326172,
+          13554
+        ],
+        [
+          13225,
+          5.391363315697645e-07,
+          17631.11069059372,
+          13580
+        ],
+        [
+          13250,
+          5.390122298055327e-07,
+          17664.817123174667,
+          13606
+        ],
+        [
+          13275,
+          5.388869881835374e-07,
+          17697.233405828476,
+          13631
+        ],
+        [
+          13300,
+          5.387713768236964e-07,
+          17730.931695461273,
+          13657
+        ],
+        [
+          13325,
+          5.386598805655289e-07,
+          17764.636010169983,
+          13683
+        ],
+        [
+          13350,
+          5.385365863827191e-07,
+          17797.05524778366,
+          13708
+        ],
+        [
+          13375,
+          5.384265653252479e-07,
+          17829.48291325569,
+          13733
+        ],
+        [
+          13400,
+          5.383041164660715e-07,
+          17861.898418426514,
+          13758
+        ],
+        [
+          13425,
+          5.381856068097662e-07,
+          17894.320735692978,
+          13783
+        ],
+        [
+          13450,
+          5.380699843026524e-07,
+          17926.738146543503,
+          13808
+        ],
+        [
+          13475,
+          5.379543272626239e-07,
+          17963.006299734116,
+          13836
+        ],
+        [
+          13500,
+          5.37840094742718e-07,
+          17995.429114818573,
+          13861
+        ],
+        [
+          13525,
+          5.377297690446541e-07,
+          18027.853986740112,
+          13886
+        ],
+        [
+          13550,
+          5.376186404987234e-07,
+          18061.55735731125,
+          13912
+        ],
+        [
+          13575,
+          5.374956411226484e-07,
+          18095.258912801743,
+          13938
+        ],
+        [
+          13600,
+          5.373847341722143e-07,
+          18127.68244433403,
+          13963
+        ],
+        [
+          13625,
+          5.372670698023431e-07,
+          18161.3901283741,
+          13989
+        ],
+        [
+          13650,
+          5.371345640507962e-07,
+          18193.81750845909,
+          14014
+        ],
+        [
+          13675,
+          5.370179806496104e-07,
+          18227.524731874466,
+          14040
+        ],
+        [
+          13700,
+          5.368972198500003e-07,
+          18261.225692987442,
+          14066
+        ],
+        [
+          13725,
+          5.367732824194356e-07,
+          18294.932477235794,
+          14092
+        ],
+        [
+          13750,
+          5.366548355996124e-07,
+          18327.354110956192,
+          14117
+        ],
+        [
+          13775,
+          5.36534677709651e-07,
+          18361.066601991653,
+          14143
+        ],
+        [
+          13800,
+          5.364262623541639e-07,
+          18393.489007472992,
+          14168
+        ],
+        [
+          13825,
+          5.363100172435454e-07,
+          18427.19874715805,
+          14194
+        ],
+        [
+          13850,
+          5.361907978316565e-07,
+          18460.894050836563,
+          14220
+        ],
+        [
+          13875,
+          5.360786236819851e-07,
+          18494.621806144714,
+          14246
+        ],
+        [
+          13900,
+          5.359666547786668e-07,
+          18527.046885252,
+          14271
+        ],
+        [
+          13925,
+          5.358591015259247e-07,
+          18560.75850057602,
+          14297
+        ],
+        [
+          13950,
+          5.357446000189077e-07,
+          18594.46522116661,
+          14323
+        ],
+        [
+          13975,
+          5.356236906140141e-07,
+          18629.457906484604,
+          14350
+        ],
+        [
+          14000,
+          5.355081136199211e-07,
+          18663.165588617325,
+          14376
+        ],
+        [
+          14025,
+          5.353930552882661e-07,
+          18696.869998455048,
+          14402
+        ],
+        [
+          14050,
+          5.352715180910961e-07,
+          18730.57803440094,
+          14428
+        ],
+        [
+          14075,
+          5.351573035314636e-07,
+          18764.290113210678,
+          14454
+        ],
+        [
+          14100,
+          5.350391289784546e-07,
+          18797.988080978394,
+          14480
+        ],
+        [
+          14125,
+          5.349229275355787e-07,
+          18831.693157434464,
+          14506
+        ],
+        [
+          14150,
+          5.348101999993486e-07,
+          18865.394231796265,
+          14532
+        ],
+        [
+          14175,
+          5.346898585013975e-07,
+          18899.10004758835,
+          14558
+        ],
+        [
+          14200,
+          5.345731268472725e-07,
+          18932.803527355194,
+          14584
+        ],
+        [
+          14225,
+          5.344505084611908e-07,
+          18966.51100230217,
+          14610
+        ],
+        [
+          14250,
+          5.343370369838561e-07,
+          19000.21201467514,
+          14636
+        ],
+        [
+          14275,
+          5.342182184739341e-07,
+          19033.917360305786,
+          14662
+        ],
+        [
+          14300,
+          5.341060931064964e-07,
+          19067.61914753914,
+          14688
+        ],
+        [
+          14325,
+          5.339943289982086e-07,
+          19102.604029655457,
+          14715
+        ],
+        [
+          14350,
+          5.338784373975696e-07,
+          19135.02906179428,
+          14740
+        ],
+        [
+          14375,
+          5.337644424324144e-07,
+          19167.45234966278,
+          14765
+        ],
+        [
+          14400,
+          5.336557864816692e-07,
+          19199.876050710678,
+          14790
+        ],
+        [
+          14425,
+          5.33544627592045e-07,
+          19233.585406303406,
+          14816
+        ],
+        [
+          14450,
+          5.334379175265295e-07,
+          19268.57464313507,
+          14843
+        ],
+        [
+          14475,
+          5.333279424612028e-07,
+          19301.00117611885,
+          14868
+        ],
+        [
+          14500,
+          5.332236452932219e-07,
+          19333.431169748306,
+          14893
+        ],
+        [
+          14525,
+          5.331131018088031e-07,
+          19367.13691687584,
+          14919
+        ],
+        [
+          14550,
+          5.330078713783431e-07,
+          19399.59644985199,
+          14944
+        ],
+        [
+          14575,
+          5.328988794244871e-07,
+          19432.02979040146,
+          14969
+        ],
+        [
+          14600,
+          5.327975638186424e-07,
+          19464.467242479324,
+          14994
+        ],
+        [
+          14625,
+          5.326910082910193e-07,
+          19499.460587739944,
+          15021
+        ],
+        [
+          14650,
+          5.325818102357579e-07,
+          19531.887431144714,
+          15046
+        ],
+        [
+          14675,
+          5.32478797045516e-07,
+          19565.58733177185,
+          15072
+        ],
+        [
+          14700,
+          5.323710228939023e-07,
+          19600.572180747986,
+          15099
+        ],
+        [
+          14725,
+          5.322613861208358e-07,
+          19635.561391592026,
+          15126
+        ],
+        [
+          14750,
+          5.321534891713414e-07,
+          19669.27370095253,
+          15152
+        ],
+        [
+          14775,
+          5.320444422549475e-07,
+          19702.985742092133,
+          15178
+        ],
+        [
+          14800,
+          5.319416693596875e-07,
+          19735.4228079319,
+          15203
+        ],
+        [
+          14825,
+          5.318357702819634e-07,
+          19769.134046792984,
+          15229
+        ],
+        [
+          14850,
+          5.317258150900344e-07,
+          19802.846526145935,
+          15255
+        ],
+        [
+          14875,
+          5.31614183783032e-07,
+          19836.55991911888,
+          15281
+        ],
+        [
+          14900,
+          5.315063197943523e-07,
+          19870.27187347412,
+          15307
+        ],
+        [
+          14925,
+          5.313970754113159e-07,
+          19903.982506275177,
+          15333
+        ],
+        [
+          14950,
+          5.31286778601556e-07,
+          19937.69194507599,
+          15359
+        ],
+        [
+          14975,
+          5.311826109632203e-07,
+          19971.40297150612,
+          15385
+        ],
+        [
+          15000,
+          5.310813324906306e-07,
+          20005.10797739029,
+          15411
+        ],
+        [
+          15025,
+          5.309731558995528e-07,
+          20040.101120710373,
+          15438
+        ],
+        [
+          15050,
+          5.308648269539421e-07,
+          20073.80936384201,
+          15464
+        ],
+        [
+          15075,
+          5.30752779874088e-07,
+          20107.518882989883,
+          15490
+        ],
+        [
+          15100,
+          5.306509905893462e-07,
+          20139.94478702545,
+          15515
+        ],
+        [
+          15125,
+          5.305341788300359e-07,
+          20172.382789373398,
+          15540
+        ],
+        [
+          15150,
+          5.304285694711063e-07,
+          20204.809372663498,
+          15565
+        ],
+        [
+          15175,
+          5.30323806291301e-07,
+          20237.242352962494,
+          15590
+        ],
+        [
+          15200,
+          5.302164206954761e-07,
+          20269.662925243378,
+          15615
+        ],
+        [
+          15225,
+          5.301083965803499e-07,
+          20303.401055812836,
+          15641
+        ],
+        [
+          15250,
+          5.300000396763106e-07,
+          20337.103784561157,
+          15667
+        ],
+        [
+          15275,
+          5.298918244955352e-07,
+          20370.81000304222,
+          15693
+        ],
+        [
+          15300,
+          5.297811478911922e-07,
+          20405.799149513245,
+          15720
+        ],
+        [
+          15325,
+          5.296776358583234e-07,
+          20439.51273417473,
+          15746
+        ],
+        [
+          15350,
+          5.295731513329378e-07,
+          20471.939690589905,
+          15771
+        ],
+        [
+          15375,
+          5.294686877154974e-07,
+          20504.37092614174,
+          15796
+        ],
+        [
+          15400,
+          5.29365748909369e-07,
+          20536.794095277786,
+          15821
+        ],
+        [
+          15425,
+          5.292666042442579e-07,
+          20570.502618312836,
+          15847
+        ],
+        [
+          15450,
+          5.291606291514401e-07,
+          20602.93245434761,
+          15872
+        ],
+        [
+          15475,
+          5.290563639979017e-07,
+          20637.922426462173,
+          15899
+        ],
+        [
+          15500,
+          5.289445861585757e-07,
+          20671.635951280594,
+          15925
+        ],
+        [
+          15525,
+          5.288426817259577e-07,
+          20704.065450429916,
+          15950
+        ],
+        [
+          15550,
+          5.287370856144521e-07,
+          20736.495055913925,
+          15975
+        ],
+        [
+          15575,
+          5.286379751442749e-07,
+          20768.91498208046,
+          16000
+        ],
+        [
+          15600,
+          5.285345892458428e-07,
+          20803.90291404724,
+          16027
+        ],
+        [
+          15625,
+          5.284283336009208e-07,
+          20837.614324569702,
+          16053
+        ],
+        [
+          15650,
+          5.283211724213191e-07,
+          20870.042536973953,
+          16078
+        ],
+        [
+          15675,
+          5.282200164157138e-07,
+          20903.749331474304,
+          16104
+        ],
+        [
+          15700,
+          5.281185678902274e-07,
+          20937.45065665245,
+          16130
+        ],
+        [
+          15725,
+          5.280183281777913e-07,
+          20969.87550187111,
+          16155
+        ],
+        [
+          15750,
+          5.279196651538421e-07,
+          21003.581889629364,
+          16181
+        ],
+        [
+          15775,
+          5.278192703952528e-07,
+          21037.286955833435,
+          16207
+        ],
+        [
+          15800,
+          5.277130882347115e-07,
+          21070.992715358734,
+          16233
+        ],
+        [
+          15825,
+          5.276149367717703e-07,
+          21103.414471149445,
+          16258
+        ],
+        [
+          15850,
+          5.275043964128931e-07,
+          21137.108511924744,
+          16284
+        ],
+        [
+          15875,
+          5.274018269874446e-07,
+          21169.526533842087,
+          16309
+        ],
+        [
+          15900,
+          5.272951546988954e-07,
+          21203.22688651085,
+          16335
+        ],
+        [
+          15925,
+          5.271972238935651e-07,
+          21236.95322918892,
+          16361
+        ],
+        [
+          15950,
+          5.270978493087515e-07,
+          21270.65451693535,
+          16387
+        ],
+        [
+          15975,
+          5.27000603686361e-07,
+          21304.353719472885,
+          16413
+        ],
+        [
+          16000,
+          5.269027934208548e-07,
+          21336.771168470383,
+          16438
+        ],
+        [
+          16025,
+          5.268111368524167e-07,
+          21369.185964107513,
+          16463
+        ],
+        [
+          16050,
+          5.267177686443461e-07,
+          21404.168338298798,
+          16490
+        ],
+        [
+          16075,
+          5.26625307845356e-07,
+          21437.87620472908,
+          16516
+        ],
+        [
+          16100,
+          5.265266706872935e-07,
+          21470.305849552155,
+          16541
+        ],
+        [
+          16125,
+          5.264344292136607e-07,
+          21502.73012280464,
+          16566
+        ],
+        [
+          16150,
+          5.263401411483854e-07,
+          21537.713310956955,
+          16593
+        ],
+        [
+          16175,
+          5.2623984324309e-07,
+          21571.41313934326,
+          16619
+        ],
+        [
+          16200,
+          5.261407403368669e-07,
+          21605.120797634125,
+          16645
+        ]
+      ],
+      "eckart_young_optimum": 3.729483897399407e-07,
+      "iterations": 16200,
+      "linesearch_evaluations": 16645,
+      "objective": {
+        "band": 3.6131790483548244e-09,
+        "g3_frob2": 1.233915816136945e-09,
+        "g3_max": 5.316187984716336e-06,
+        "total": 5.261407615421275e-07,
+        "vp_fit": 5.212936666776358e-07
+      },
+      "seconds": 21608.433964014053,
+      "stage": "lbfgs",
+      "start_value": 0.0003867268009660195,
+      "stop": "deadline",
+      "vp_exact_projected": 5.311039473765433e-07,
+      "vp_exact_raw": 5.205462576540754e-07,
+      "vp_raw_over_optimum": 1.3957594991013518
+    }
+  ],
+  "status": "final",
+  "target_spectral_content": {
+    "above_10": [
+      3.317336230877026e-08,
+      2.0745120231437266e-06,
+      1.0987561905282935e-06,
+      4.176146104569275e-07,
+      2.356360745121326e-05,
+      2.2340529939683735e-05,
+      1.0714223873995108e-05,
+      0.00016595889028481935,
+      2.256916490584071e-05,
+      7.350885331081456e-05,
+      0.0008688196760915089,
+      0.0009030970889585834,
+      0.00040293421877995723,
+      0.00011153314495487218,
+      0.00021427816537543992,
+      0.0004192655025433966,
+      0.00013627812065562138,
+      0.0006799477753305544,
+      0.002812836404906202,
+      0.012249255668250893,
+      0.0005330932766124637,
+      0.0015549961112232716,
+      0.0019496462688309492,
+      0.006808267744757439,
+      0.005124776031196596,
+      0.0027170915692617385,
+      0.005171396011608179,
+      0.0023480434272191734,
+      0.003302959360393135,
+      0.003825227659979076,
+      0.009712116836707764,
+      0.006037200883568652,
+      0.0445280398996915,
+      0.01794064661766759,
+      0.013974000895486885,
+      0.015881982869537018,
+      0.012455855652890922,
+      0.016932204677631266,
+      0.040113904723519035,
+      0.05130624658743095,
+      0.1224199198523675,
+      0.5100082127737678,
+      0.20571415313193056,
+      0.06371354101718288,
+      0.42360007488180385,
+      0.013106010706131835,
+      0.030095493061502096,
+      0.012826409711669467,
+      0.004670540731444564,
+      0.03541136531868464,
+      0.029472981436174574,
+      0.016331541182336748,
+      0.05314198366457478,
+      0.03888444259561098,
+      0.05732147844977554,
+      0.06432696333706674,
+      0.049746196286691295,
+      0.048178471454387764,
+      0.02680914301074272,
+      0.03096429979248682,
+      0.1094735703254264,
+      0.24076692286988563,
+      0.08350316743784014,
+      0.5333627784778596
+    ],
+    "above_15": [
+      1.1639374317819155e-10,
+      1.0236123665785263e-08,
+      3.926786384854769e-09,
+      2.8593199709170307e-09,
+      1.7480824021986178e-07,
+      1.1664907816950958e-07,
+      6.826757508028262e-08,
+      9.776510887986466e-07,
+      1.230645422651143e-07,
+      4.6700822965747616e-07,
+      8.937726845353071e-06,
+      8.439138343308175e-06,
+      4.696312360478155e-06,
+      1.6540793540751213e-06,
+      1.2281774411572e-06,
+      3.1986135558656917e-06,
+      1.1395286367787316e-06,
+      8.290796994333792e-06,
+      2.4259319669442934e-05,
+      0.00024319480472888717,
+      6.598635672975308e-06,
+      2.0801364079439014e-05,
+      2.2256279937120595e-05,
+      9.387642363722418e-05,
+      0.00012750019901583553,
+      7.724991384042791e-05,
+      4.0111189156892104e-05,
+      3.0451748205135225e-05,
+      6.14706102768497e-05,
+      9.073611524999621e-05,
+      0.0001580002418658301,
+      0.00012555428471974948,
+      0.0015632940050256925,
+      0.0005546081000083855,
+      0.0007605591278559668,
+      0.0004957133527508401,
+      0.0002898490033877053,
+      0.0003427452482786635,
+      0.0005756207138706129,
+      0.0005782590216394577,
+      0.0015705836888331352,
+      0.004988614615664886,
+      0.00475110306948275,
+      0.001623145387106233,
+      0.0035180701740667323,
+      0.0001035571790499535,
+      0.0003345695968516048,
+      0.0007242733505921569,
+      9.778918238441917e-05,
+      0.0011276914634471033,
+      0.0011141851611538745,
+      0.0008019073313360385,
+      0.004756619341166599,
+      0.002397105668841673,
+      0.003286679225256989,
+      0.003847374762308861,
+      0.0031728820996956807,
+      0.0011532439541026831,
+      0.0019421278926683723,
+      0.001905001980232126,
+      0.003783928507644568,
+      0.008049012710620052,
+      0.002749427377221714,
+      0.005390881959502066
+    ],
+    "above_15_note": "max_i|k_i|>15 is outside P_48 (2/3 rule at 48^3)",
+    "above_21": [
+      7.252208662562874e-14,
+      9.160546936922213e-12,
+      1.4583311044137064e-12,
+      2.7951717216044897e-12,
+      2.001899601289478e-10,
+      9.358181061487974e-11,
+      5.747867217632874e-11,
+      5.615598623867819e-10,
+      9.500124174559493e-11,
+      6.891152187058148e-10,
+      1.1781640200362042e-08,
+      8.546162084941355e-09,
+      6.5967929525521066e-09,
+      1.8798098019227423e-09,
+      6.984677974513054e-10,
+      2.524057922788828e-09,
+      8.261678265392894e-10,
+      7.2731692550440715e-09,
+      1.0762467577053258e-08,
+      4.604811733248519e-07,
+      9.611009998228274e-09,
+      1.8391169631614373e-08,
+      3.2144879101503636e-08,
+      1.2639443838244894e-07,
+      1.3949300623231524e-07,
+      2.3508938618609607e-07,
+      4.610008079395238e-08,
+      3.516226560098595e-08,
+      3.576162399103234e-08,
+      1.0423750828792676e-07,
+      1.9140073263280033e-07,
+      1.878784663199314e-07,
+      2.7706636507335543e-06,
+      1.092181000003335e-06,
+      2.5627060736511718e-06,
+      1.8306776872790175e-06,
+      6.378623236701654e-07,
+      5.171946793564018e-07,
+      1.0243652899955382e-06,
+      7.847832072144892e-07,
+      1.4277205758595098e-06,
+      2.6372276051965476e-06,
+      8.959813410701364e-06,
+      2.8821365688053403e-06,
+      3.2219440833413055e-06,
+      2.3101940601703675e-07,
+      1.0015968960563646e-06,
+      2.358675245911353e-06,
+      3.90850685511721e-07,
+      3.475335280805815e-06,
+      3.6185658423049957e-06,
+      1.1041568748528557e-06,
+      1.8644883133595238e-05,
+      1.1342598114411844e-05,
+      1.1190118693162076e-05,
+      1.2533306589160626e-05,
+      5.458365305946677e-06,
+      3.0735727735763427e-06,
+      8.74599776908968e-06,
+      8.006561499805908e-06,
+      2.0862618843565216e-05,
+      2.3542287703857123e-05,
+      4.95458119374879e-06,
+      8.598137732755896e-06
+    ],
+    "nyquist": [
+      1.4791646962571643e-31,
+      1.4688344003738976e-31,
+      1.5311698410133231e-31,
+      1.7051395555937994e-31,
+      1.5015439976943287e-31,
+      1.4494085985844784e-31,
+      1.6588315381418843e-31,
+      1.6776319271340373e-31,
+      4.413479308666323e-31,
+      2.792388364160053e-31,
+      2.0270052664811425e-31,
+      2.0452966384944968e-31,
+      7.079113627621607e-31,
+      3.6790147937273237e-31,
+      5.777540989708152e-31,
+      9.181449939548629e-31,
+      1.5016926100286985e-30,
+      7.675967259949506e-31,
+      8.49561498253635e-31,
+      4.727861465232107e-31,
+      6.982303044706958e-30,
+      9.278934086245244e-30,
+      1.0128334904429906e-29,
+      1.9776410635147164e-29,
+      7.106302735525124e-30,
+      2.388933701280331e-30,
+      1.1914870871968448e-29,
+      9.790183966402841e-30,
+      3.46707008742156e-29,
+      1.3918558506595958e-29,
+      1.409164013760134e-29,
+      1.533021607630061e-29,
+      1.3983701379444635e-29,
+      2.4371970028365828e-29,
+      3.7406811584409854e-29,
+      5.751037541463496e-29,
+      8.00320324209433e-29,
+      3.1377266477680545e-28,
+      2.0941656693235157e-29,
+      6.042128852453661e-29,
+      7.182916988647299e-28,
+      2.9777387602376445e-28,
+      1.1846389462931656e-28,
+      8.425804617363995e-29,
+      5.05045764704004e-29,
+      6.007703233785216e-29,
+      4.181551071683615e-29,
+      2.1019505491209696e-28,
+      7.520385215186006e-28,
+      1.8521954668969315e-28,
+      3.095870366518118e-28,
+      8.28722824835396e-28,
+      1.2572887534416442e-28,
+      4.337181117573378e-28,
+      2.497065375339697e-28,
+      3.0230082602275743e-28,
+      3.993254043377221e-28,
+      9.408621718679627e-28,
+      7.23585898655814e-28,
+      7.375481686152505e-28,
+      3.066473077470251e-27,
+      4.757934661139906e-28,
+      3.1115817370193723e-27,
+      4.869436870919505e-28
+    ]
+  }
+}

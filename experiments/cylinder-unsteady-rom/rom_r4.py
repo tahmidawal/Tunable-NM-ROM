@@ -1,0 +1,132 @@
+"""G5 R4/R5 rollouts (DESIGN-G5 §5.3–5.5): every arm on one trajectory.
+
+Usage: rom_r4.py --export <dir> --manifest <json> --case <name> --dt <dt0> --arms <json list>
+       --out <dir> [--trained-bank <npz from bank_eval>]
+Arm spec: {"name": "pod_r16", "kind": "pod", "r": 16} or {"name": "bank_r16", "kind": "bank",
+"r": 16, "key": "trained"} or {"name": "frozen_bank_r4", "kind": "bank", "r": 4, "key": "frozen"}.
+"""
+import argparse
+import json
+import math
+from pathlib import Path
+import time
+
+import numpy as np
+
+import cycles as cyc
+import rom_core as rc
+
+TARGETS = {'e_u_rms': 1e-2, 'e_u_max': 3e-2, 'e_p_rms': 2e-2, 'St_rel': 1e-2, 'CD_max_rel': 2e-2, 'CL_max_abs': 2e-2}
+
+
+def rms(a):
+    return float(np.sqrt(np.mean(np.asarray(a) ** 2)))
+
+
+def reference_history(run_dir, stage):
+    st = json.loads((Path(run_dir) / 'stages.json').read_text())
+    (s,) = [x for x in st['stages'] if x['name'] == stage]
+    h = np.load(Path(run_dir) / 'history.npz')['rows']
+    keep = (h[:, 0] >= s['t_start'] - 1e-9) & (h[:, 0] <= s['t_end'] + 1e-9)
+    return h[keep]
+
+
+def stats(t, cd, cl, dp):
+    recs = cyc.cycles(t, cd, cl, dp)
+    if not recs:
+        return None
+    keys = ('CD_max', 'CL_max', 'CL_min', 'St', 'dp_at_t0_plus_half_period', 'period')
+    return {k: float(np.mean([r[k] for r in recs])) for k in keys} | {'cycles': len(recs)}
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--export', required=True); ap.add_argument('--manifest', required=True)
+    ap.add_argument('--case', required=True); ap.add_argument('--dt', type=float, required=True)
+    ap.add_argument('--arms', required=True); ap.add_argument('--out', required=True)
+    ap.add_argument('--trained-bank')
+    a = ap.parse_args()
+    out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
+    man = json.loads(Path(a.manifest).read_text())
+    (case,) = [c for c in man['cases'] if c['name'] == a.case]
+    nu = 0.1 / case['Re']
+    ex = rc.Export(a.export)
+    if a.trained_bank:
+        z = np.load(a.trained_bank)
+        ex.add_bank('trained', z['V'], z['G'], z['outlet_V'])
+    proj = dict(np.load(Path(a.export) / f"proj_{a.case}.npz"))
+    ts = proj['t']; t0 = ts[0]
+    idx = np.rint((ts - t0) / a.dt).astype(int)
+    if np.max(np.abs(t0 + idx * a.dt - ts)) > 1e-9:
+        raise ValueError('save times are not on the rollout grid')
+    n_steps = int(idx[-1])
+    href = reference_history(case['run_dir'], case['stage'])
+    tr = href[:, 0]
+    ref_stats = stats(tr[1:], href[1:, 1], href[1:, 2], href[1:, 5] - href[1:, 6])
+    period = ref_stats['period'] if ref_stats else 1 / 3.0
+    summary = {'case': a.case, 'Re': case['Re'], 'nu': nu, 'dt': a.dt, 'steps': n_steps, 'reference_cycles': ref_stats,
+               'targets': TARGETS, 'arms': {}}
+    for spec in json.loads(a.arms):
+        name = spec['name']; rec = {'spec': spec}
+        try:
+            arm = rc.Arm(ex, spec['kind'], spec['r'], spec.get('key'))
+            rec.update(dimension=arm.d, pressure_dimension=arm.dp, retained=arm.retained, raw=arm.raw_count)
+            full, _ = arm.ref_coeffs(proj)
+            a0 = full[0]
+            w0 = time.perf_counter()
+            A, C, F, probes, its = arm.rollout(nu, a.dt, a0, n_steps)
+            rec['rollout_seconds'] = time.perf_counter() - w0
+            rec['newton_iterations'] = {'median': float(np.median(its[2:])), 'max': int(its.max())}
+            err = arm.errors(proj, A, C, idx)
+            t_rom = t0 + np.arange(n_steps + 1) * a.dt
+            # forces on common step times (reference rows are every reference step = dt)
+            ref_on = np.interp(t_rom, tr, href[:, 1]), np.interp(t_rom, tr, href[:, 2])
+            ok = np.isfinite(F[:, 0])
+            rec['force'] = {'CD_maxabs_rel': float(np.max(np.abs(F[ok, 0] - ref_on[0][ok])) / np.max(np.abs(ref_on[0][ok]))),
+                            'CL_maxabs': float(np.max(np.abs(F[ok, 1] - ref_on[1][ok])))}
+            st = stats(t_rom[ok], F[ok, 0], F[ok, 1], (probes[:, 0] - probes[:, 1])[ok])
+            rec['cycles'] = st
+            if st and ref_stats:
+                rec['cycle_errors'] = {'St_rel': abs(st['St'] - ref_stats['St']) / ref_stats['St'],
+                                       'CD_max_rel': abs(st['CD_max'] - ref_stats['CD_max']) / ref_stats['CD_max'],
+                                       'CL_max_abs': abs(st['CL_max'] - ref_stats['CL_max']),
+                                       'dp_rel': abs(st['dp_at_t0_plus_half_period'] - ref_stats['dp_at_t0_plus_half_period'])
+                                       / abs(ref_stats['dp_at_t0_plus_half_period'])}
+            last = ts >= ts[-1] - period
+            rec['e_u'] = {'rms': rms(err['e_u']), 'max': float(err['e_u'].max()), 'last_period_mean': float(err['e_u'][last].mean())}
+            rec['e_p'] = {'rms': rms(err['e_p']), 'max': float(err['e_p'].max()), 'last_period_mean': float(err['e_p'][last].mean())}
+            rec['divergence'] = {'median': float(np.median(err['divergence'])), 'max': float(err['divergence'].max())}
+            rec['mass'] = {'max': float(err['mass'].max())}
+            # Phase-aligned (supplemental): lag on the save grid minimizing lift mismatch over the last two periods.
+            two = ts >= ts[-1] - 2 * period
+            cl_rom_s = np.interp(ts, t_rom[ok], F[ok, 1]); cl_ref_s = np.interp(ts, tr, href[:, 2])
+            kmax = int(round(0.5 * period / (ts[1] - ts[0])))
+            best = None
+            for k in range(-kmax, kmax + 1):
+                i = np.where(two)[0]; j = i + k
+                m = (j >= 0) & (j < len(ts)); i, j = i[m], j[m]
+                val = rms(cl_rom_s[i] - cl_ref_s[j])
+                if best is None or val < best[1]:
+                    best = (k, val)
+            k = best[0]
+            i = np.arange(len(ts)); j = i + k; m = (j >= 0) & (j < len(ts))
+            shifted = {kk: vv[j[m]] for kk, vv in proj.items() if kk in ('uv', 'uu', 'pp', 'pv')}
+            err_al = arm.errors(shifted, A, C, idx[i[m]])
+            rec['phase_aligned'] = {'lag_saves': int(k), 'lag_seconds': float(k * (ts[1] - ts[0])), 'lift_rms_at_lag': best[1],
+                                    'e_u_rms': rms(err_al['e_u']), 'e_p_rms': rms(err_al['e_p'])}
+            ce = rec.get('cycle_errors', {})
+            got = {'e_u_rms': rec['e_u']['rms'], 'e_u_max': rec['e_u']['max'], 'e_p_rms': rec['e_p']['rms'], **ce}
+            rec['targets_met'] = {k2: (got.get(k2) is not None and got[k2] <= v) for k2, v in TARGETS.items()}
+            rec['status'] = 'completed'
+            np.savez(out / f'series_{a.case}_{name}.npz', t_save=ts, e_u=err['e_u'], e_p=err['e_p'], divergence=err['divergence'],
+                     mass=err['mass'], t=t_rom, CD=F[:, 0], CL=F[:, 1], p_front=probes[:, 0], p_back=probes[:, 1],
+                     CD_ref=ref_on[0], CL_ref=ref_on[1], A=A[idx], C=C[idx], newton=its)
+        except Exception as exc:  # retained failure, never dropped
+            rec['status'] = 'failed'; rec['error'] = repr(exc)
+        summary['arms'][name] = rec
+        print(name, rec['status'], rec.get('e_u'), rec.get('error', ''), flush=True)
+    (out / f'R4-{a.case}.json').write_text(json.dumps(summary, indent=2, default=float) + '\n')
+
+
+if __name__ == '__main__':
+    main()

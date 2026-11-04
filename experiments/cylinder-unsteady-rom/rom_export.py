@@ -282,7 +282,10 @@ def main():
                 rows['pref'].append(float(w @ p))
             np.savez(out / f"proj_{c['name']}.npz", **{k: np.asarray(v) for k, v in rows.items()},
                      columns=np.array(names + [f'bank{i}' for i in range(bv.shape[2])]))
-    log['finished'] = time.time()
+    import resource
+    log['finished'] = time.time(); log['elapsed_seconds'] = log['finished'] - log['started']
+    log['peak_rss_bytes'] = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1024
+    log['quadrature_points'] = int(len(w))
     log['files'] = {p.name: sha(p) for p in sorted(out.glob('*.npz'))}
     (out / 'EXPORT.json').write_text(json.dumps(log, indent=2) + '\n')
 

@@ -376,7 +376,8 @@ class Stepper:
         Vs = ng.VectorH1(self.mesh, order=k, dirichlet='inlet|wall.*|obstacle')
         Xs = Vs * ng.H1(self.mesh, order=k - 1)
         gs = ng.GridFunction(Xs); gs.vec.FV().NumPy()[:] = z['x']
-        self.g.components[0].Set(gs.components[0]); self.g.components[1].Set(gs.components[1])
+        bo = self.cfg['assembly_bonus_order']
+        self.g.components[0].Set(gs.components[0], bonus_intorder=bo); self.g.components[1].Set(gs.components[1], bonus_intorder=bo)
         x = self.g.vec.FV().NumPy().copy()
         self.interpolation = {'from_order': k, 'to_order': self.cfg['velocity_order']}
         return x, float(z['t'])

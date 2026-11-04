@@ -346,6 +346,9 @@ class Stepper:
         self.factorizations = 0
         self.check_next = True
         t_wall0 = time.perf_counter()
+        def on_term(signum, frame):
+            raise SystemExit(143)
+        signal.signal(signal.SIGTERM, on_term)  # main() writes FAILED.json for pre-loop kills
         init = c['initial']
         steady_start = init['kind'] == 'steady_newton'
         if steady_start:
@@ -381,9 +384,6 @@ class Stepper:
                                             'layout_sha256': self.layout_sha256, 'ndof': self.X.ndof,
                                             'elapsed_seconds': time.perf_counter() - t_wall0})
         sbdf = c['scheme'] == 'sbdf2'
-        def on_term(signum, frame):
-            raise SystemExit(143)
-        signal.signal(signal.SIGTERM, on_term)
         try:
             self._stages(c, x, t, sbdf, steady_start, rows, walls, diag_rows, stage_records, states, buf, flush, persist, t_wall0)
         except BaseException as exc:
@@ -495,7 +495,9 @@ def main():
         ng.SetNumThreads(int(cfg['threads']))
         with ng.TaskManager():
             Stepper(cfg, out, ng).run()
-    except Exception as exc:
+    except BaseException as exc:
+        if isinstance(exc, SystemExit) and exc.code == EXIT_WALL:
+            raise
         dump(out / 'FAILED.json', {'error': repr(exc), 'traceback': traceback.format_exc(),
                                    'peak_rss_bytes': resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1024,
                                    'job_id': os.environ.get('SLURM_JOB_ID')})

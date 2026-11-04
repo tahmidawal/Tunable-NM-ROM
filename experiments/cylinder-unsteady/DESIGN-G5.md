@@ -478,3 +478,12 @@ deterministic L-BFGS with Armijo search — same method class, different impleme
   NaN and excluded from that statistic (counts reported); no extrapolation.
 - **A4 is a post-failure extension.** Success of any settle under the 6 s cap qualifies the
   amended 6 s protocol only; the original 4 s protocol failed for Re 95 and Re 105.
+
+## 8b. Review status update — 2026-11-04
+
+Codex reviews 02–05 (`reviews/DESIGN-codex-0{2,3,4,5}.md`) completed the missing Codex gate:
+review 04 **DESIGN: RELEASE** for the amended protocol (with the heuristic-uncertainty
+qualification of A5 rev.2 retained wherever accuracy conclusions appear); review 05
+**CODE: READY FOR R1b** after the cycles.py NaN fix. The R1b–R1f reference stages are
+released; R2–R5 code (quadrature check, R5 timing implementation) needs its own review
+before those stages execute.

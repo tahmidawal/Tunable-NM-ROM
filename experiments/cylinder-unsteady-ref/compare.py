@@ -19,6 +19,8 @@ def load_run(d):
     d = Path(d)
     cfg = json.loads((d / 'config.json').read_text())
     st = json.loads((d / 'stages.json').read_text())
+    if st.get('status') != 'completed' or any(s.get('status') != 'completed' for s in st['stages']):
+        raise ValueError(f'run not completed: {d} ({st.get("status")})')
     ts, xs = [], []
     for rec in st['snapshots']:
         z = np.load(d / rec['file'])
@@ -50,6 +52,8 @@ def main():
     cb, tb, xb, hb = load_run(args.b)
     if ca['mesh_sha256'] != cb['mesh_sha256'] or ca['nu'] != cb['nu']:
         raise ValueError('runs differ in mesh or viscosity')
+    if ca['initial'] != cb['initial'] or ca['initial'].get('kind') != 'state':
+        raise ValueError('runs do not start from the identical hash-bound state')
     mesh = ng.Mesh(ca['mesh_path'])
     def space(k):
         V = ng.VectorH1(mesh, order=k, dirichlet='inlet|wall.*|obstacle')
@@ -79,8 +83,16 @@ def main():
     win = lambda tt: (tt >= args.t0 - 1e-9) & (tt <= args.t1 + 1e-9)
     ia, ib = common(ta, tb)
     keep = win(ta[ia]); ia, ib = ia[keep], ib[keep]
-    if len(ia) < 2:
-        raise ValueError('fewer than two common save times')
+    expected = int(round((args.t1 - args.t0) * 400)) + 1
+    tc = ta[ia]
+    reasons = []
+    if len(ia) != expected:
+        reasons.append(f'common saves {len(ia)} != expected {expected}')
+    elif abs(tc[0] - args.t0) > 1e-9 or abs(tc[-1] - args.t1) > 1e-9 or np.max(np.abs(np.diff(tc) - 1 / 400)) > 1e-9:
+        reasons.append('save window/cadence differs from [t0, t1] at 1/400')
+    if reasons:
+        Path(args.out).write_text(json.dumps({'valid': False, 'invalid_reason': '; '.join(reasons), 'a': args.a, 'b': args.b}) + '\n')
+        raise SystemExit('invalid comparison: ' + '; '.join(reasons))
     eu, ep = [], []
     for i, j in zip(ia, ib):
         a, b = embed(xa[i], ka), embed(xb[j], kb)
@@ -90,8 +102,14 @@ def main():
     fa, fb = common(ha[:, 0], hb[:, 0])
     ok = win(ha[fa, 0]) & np.isfinite(ha[fa, 1:3]).all(1) & np.isfinite(hb[fb, 1:3]).all(1)
     fa, fb = fa[ok], fb[ok]  # stage-start/startup rows carry no reaction force
+    dt_coarse = max(ca['stages'][0]['dt'], cb['stages'][0]['dt'])
+    expected_f = int(round((args.t1 - args.t0) / dt_coarse)) - 1   # all coarse steps but the two startup rows
+    if len(fa) < expected_f:
+        Path(args.out).write_text(json.dumps({'valid': False, 'invalid_reason': f'force times {len(fa)} < {expected_f}'}) + '\n')
+        raise SystemExit('invalid comparison: incomplete force coverage')
     cda, cdb, cla, clb = ha[fa, 1], hb[fb, 1], ha[fa, 2], hb[fb, 2]
-    res = {'a': str(args.a), 'b': str(args.b), 'common_save_times': len(ia), 'common_force_times': len(fa),
+    res = {'valid': True, 'a': str(args.a), 'b': str(args.b), 'common_save_times': len(ia), 'common_force_times': len(fa),
+           'initial_state_sha256': ca['initial']['sha256'],
            'window': [float(ta[ia[0]]), float(ta[ia[-1]])],
            'e_u_max': float(max(eu)), 'e_p_max': float(max(ep)),
            'e_D': float(np.max(np.abs(cda - cdb)) / np.max(np.abs(cdb))),

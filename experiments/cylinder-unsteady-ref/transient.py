@@ -379,7 +379,17 @@ class Stepper:
         bo = self.cfg['assembly_bonus_order']
         self.g.components[0].Set(gs.components[0], bonus_intorder=bo); self.g.components[1].Set(gs.components[1], bonus_intorder=bo)
         x = self.g.vec.FV().NumPy().copy()
-        self.interpolation = {'from_order': k, 'to_order': self.cfg['velocity_order']}
+        # G5-A5 witness: embedded fields equal the source fields to roundoff (L2, high order).
+        qo = 2 * self.cfg['velocity_order'] + 6
+        du = self.g.components[0] - gs.components[0]; dp = self.g.components[1] - gs.components[1]
+        ev = math.sqrt(max(scalar_value(ng.Integrate(du * du, self.mesh, order=qo), 'emb'), 0)) / \
+            math.sqrt(scalar_value(ng.Integrate(gs.components[0] * gs.components[0], self.mesh, order=qo), 'emb'))
+        ep = math.sqrt(max(scalar_value(ng.Integrate(dp * dp, self.mesh, order=qo), 'emb'), 0)) / \
+            math.sqrt(scalar_value(ng.Integrate(gs.components[1] * gs.components[1], self.mesh, order=qo), 'emb'))
+        self.interpolation = {'from_order': k, 'to_order': self.cfg['velocity_order'],
+                              'velocity_relative_L2_change': ev, 'pressure_relative_L2_change': ep, 'bound': 1e-10}
+        if not (ev <= 1e-10 and ep <= 1e-10):
+            raise ArithmeticError(f'embedding is not exact: velocity {ev:.3e}, pressure {ep:.3e}')
         return x, float(z['t'])
 
     def save_state(self, name, x, t):

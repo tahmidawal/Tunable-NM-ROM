@@ -110,7 +110,7 @@ def settle(Re, state, state_sha, k=4, duration=6.0, tag=''):
                                                 'diagnostics_every_saves': 1, 'save_state': True}])}
 
 
-def study_p4(state, state_sha, dts=(800, 1600, 3200, 6400), startup16=(1600, 3200), p3=()):
+def study_p4(state, state_sha, dts=(800, 1600, 3200, 6400), startup16=(800, 1600, 3200), p3=()):
     # G5-A3: R1b on the production P4/P3 from S* (embedded); R1c P3/P2 runs at dt0 later.
     init = {'kind': 'state', 'path': state, 'sha256': state_sha}
     def one(n, k=4, **kw):

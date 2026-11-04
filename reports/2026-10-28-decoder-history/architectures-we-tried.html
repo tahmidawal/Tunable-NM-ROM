@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Why We Moved</title>
+<title>Architectures We Tried</title>
 <style>
   @page { size: Letter; margin: 0.7in 0.75in; }
   :root { --ink:#1f2328; --muted:#59636e; --line:#d0d7de; --soft:#f6f8fa; --blue:#0969da; }
@@ -29,15 +29,15 @@
 </head>
 <body>
 
-<h1>Why we moved</h1>
-<div class="meta">Tunable NM-ROM decoders, May to November 2026. Tahmid Awal, November 3, 2026.</div>
+<h1>Architectures we tried</h1>
+<div class="meta">Tunable NM-ROM decoder architectures, May to November 2026. Tahmid Awal, November 3, 2026.</div>
 
 <p>We build reduced-order models that solve a PDE for a few numbers instead of one value per grid point. The decoder turns those few numbers into the full field, and a Gauss-Newton solver adjusts them until the field satisfies the PDE. We need two things from a decoder: the solve has to be accurate, and each solver iteration has to be cheap, or there is no point in using a reduced model.</p>
 
-<p>We went through five decoder designs. The short version:</p>
+<p>We tried five decoder architectures. The short version:</p>
 
 <table>
-  <tr><th>Period</th><th>Decoder</th><th>Why we left it</th></tr>
+  <tr><th>Period</th><th>Architecture</th><th>Why we left it</th></tr>
   <tr><td>May–Jul</td><td>ViT encoder + CP / LinearCP</td><td>Worked on heat and Poisson, but the rollout diverged on Burgers 2D</td></tr>
   <tr><td>May</td><td>ViT decoder</td><td>Slower than the full solver (0.00–0.02×), and the solves failed</td></tr>
   <tr><td>May</td><td>SIREN coordinate decoder</td><td>Too slow: 3–8× at CP-level accuracy, against 183× for CP</td></tr>
@@ -290,7 +290,7 @@
 </div>
 
 <!-- ================================================================ -->
-<h2>Other things we tried on top of the bank</h2>
+<h2>Variants we tried on top of the bank</h2>
 <p>These kept the bank and changed something else. None of them became the main method.</p>
 <table>
   <tr><th>Variant</th><th>Result</th><th>Code</th></tr>

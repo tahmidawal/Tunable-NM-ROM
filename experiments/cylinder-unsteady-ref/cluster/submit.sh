@@ -12,7 +12,8 @@ git diff --quiet HEAD -- . || { echo "uncommitted changes in lane; commit first"
 COMMIT=$(git rev-parse HEAD)
 FILES=(transient.py cycles.py compare.py install_deps.py vendor/scalars.py vendor/oriented_normals.py
        vendor/dependencies.py vendor/DEPENDENCIES.json inputs/admitted_mesh.vol.bin cluster/run.sh "$@")
-ssh tufts-login "test ! -e $DIR && mkdir -p $DIR && squeue -u \$USER -h -o '%i %j %Z' | grep -c cyl-unsteady-20261103 || true"
+echo "squeue before:"; ssh tufts-login "squeue -u \$USER -h -o '%i %j %Z'" | grep cyl-unsteady-20261103 || echo "(no campaign jobs)"
+ssh tufts-login "test ! -e $DIR && mkdir -p $DIR" || { echo "attempt directory exists or cannot be created: $DIR"; exit 4; }
 tar -cf - "${FILES[@]}" | ssh tufts-login "cd $DIR && tar -xf - && echo $COMMIT > SOURCE_COMMIT.txt && sha256sum ${FILES[*]} > SOURCE-SHA256SUMS"
 # Verify staged bytes against the local committed bytes.
 local_sums=$(sha256sum "${FILES[@]}")
@@ -20,7 +21,10 @@ remote_sums=$(ssh tufts-login "cd $DIR && cat SOURCE-SHA256SUMS")
 [ "$local_sums" = "$remote_sums" ] || { echo "staged checksum mismatch"; exit 3; }
 CFGS=("$@")
 JOB=$(ssh tufts-login "cd $DIR && sbatch --parsable --job-name=ctol_cylu_$ATTEMPT --time=$WALL cluster/run.sh ${CFGS[*]}")
-ssh tufts-login "squeue -u \$USER -h -o '%i %j %Z' | grep cyl-unsteady-20261103 || true"
+echo "squeue after:"; AFTER=$(ssh tufts-login "squeue -u \$USER -h -o '%i %Z'")
+echo "$AFTER" | grep cyl-unsteady-20261103 || true
+n=$(echo "$AFTER" | awk -v d="$DIR" '$2==d' | wc -l)
+[ "$n" -eq 1 ] || { echo "expected exactly one job in $DIR, found $n (job $JOB)"; exit 5; }
 echo "submitted job=$JOB dir=$DIR commit=$COMMIT"
 mkdir -p ledger
 printf '{"attempt":"%s","job":"%s","dir":"%s","commit":"%s","wall":"%s","configs":"%s","submitted_utc":"%s"}\n' \

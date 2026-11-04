@@ -26,6 +26,11 @@ BASE = {
     'initial': {'kind': 'steady_newton'},
     'wall_limit_seconds': 3600,
     'precision': 'float64',
+    # FD1-admitted Re 20 P4/P3 reference (obstacle-2d artifacts/g2-population-re20-02/retained/
+    # p4_g4_h3_baseline/result.json, config sha 2fbe6cd9...; reaction-force drag not stored there,
+    # gradient-stress order-16 surface coefficient used): R1a gate, 2e-3 relative.
+    'steady_reference': {'CD': 5.579548183731313, 'CL': 0.010615714195317974,
+                         'source': 'FD1 Re20 P4/P3 gradient_order16 coefficient'},
 }
 
 
@@ -38,7 +43,9 @@ def cfg(**kw):
 
 def smoke():
     # Smoke only: compressed ramp/kick so that full inflow speed is reached within the
-    # window (stability at production speeds); NOT a production setting.
+    # 0.2 s windows of a and b (SBDF2 stability at production speed); NOT a production
+    # setting. c (Oseen) and d (P4/P3) stop at t=0.025 (U_mean=0.6, kick off): they are
+    # import/assembly/factorization and per-step cost checks only, not stability results.
     fast = {'ramp_time': 0.05, 'kick': dict(BASE['kick'], t_start=0.06, duration=0.04)}
     st = lambda dt, dur: [{'name': 'smoke', 'dt': dt, 'duration': dur, 'save_every_steps': int(round(1 / 400 / dt)),
                            'diagnostics_every_saves': 10}]

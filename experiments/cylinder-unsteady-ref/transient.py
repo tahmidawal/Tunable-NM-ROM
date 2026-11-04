@@ -23,6 +23,7 @@ import os
 from pathlib import Path
 import platform
 import resource
+import signal
 import sys
 import time
 import traceback
@@ -112,6 +113,8 @@ class Stepper:
         self.tau_n = (self.nu * gub - self.ph * ng.Id(2)) * self.normal
         self.probe_pts = [mesh(c['center'][0] - c['radius'], c['center'][1]),
                           mesh(c['center'][0] + c['radius'], c['center'][1])]
+        if any(mp.nr < 0 for mp in self.probe_pts):
+            raise ValueError('exact pressure probe outside the FE mesh')
         self.tmp = [self.g.vec.CreateVector() for _ in range(3)]
         self.solver_key = None
         self.wgf = ng.GridFunction(self.V)
@@ -216,6 +219,20 @@ class Stepper:
         return [t, react[0] / norm, react[1] / norm, surf[0] / norm, surf[1] / norm,
                 probes[0], probes[1], E]
 
+    def steady_forces(self, x, U):
+        """R1a: forces of the Newton state (exact zero time derivative), Re-20 scaling."""
+        row = self.observe(x, 0 * x, self.apply('conv', x), 0.0)
+        scale = 1.0 / U ** 2  # observe() normalizes by U_mean=1; rescale to U_mean0
+        rec = {'U_mean': U, 'nu': self.nu, 'CD_reaction': row[1] * scale, 'CL_reaction': row[2] * scale,
+               'CD_surface': row[3] * scale, 'CL_surface': row[4] * scale, 'dp': row[5] - row[6],
+               'admitted_P4P3_reference': self.cfg.get('steady_reference')}
+        ref = rec['admitted_P4P3_reference']
+        if ref:
+            rec['CD_relative_error'] = abs(rec['CD_reaction'] - ref['CD']) / abs(ref['CD'])
+            rec['R1a_drag_pass'] = rec['CD_relative_error'] <= 2e-3
+        dump(self.out / 'steady_forces.json', rec)
+        return rec
+
     def diagnostics(self, x, dudt, t):
         ng = self.ng
         self.g.vec.FV().NumPy()[:] = x
@@ -242,7 +259,7 @@ class Stepper:
         if dudt is not None:
             dt_gf = ng.GridFunction(self.X); dt_gf.vec.FV().NumPy()[:] = dudt
             terms['kinetic_rate'] = integ(uh * dt_gf.components[0])
-        return {'t': t, 'divergence': self.D * math.sqrt(max(integ(div * div), 0)) / (1.0 * math.sqrt(vol)),
+        return {'t': t, 'divergence': self.D * math.sqrt(max(integ(div * div), 0)) / (self.U_mean(t) * math.sqrt(vol)),
                 'Qin': qin, 'Qout': qout, 'mass': abs(qout - qin) / abs(qin),
                 'energy_terms': terms,
                 'energy_balance': (abs(sum(terms.values())) / max(sum(abs(z) for z in terms.values()), 1e-12)
@@ -330,8 +347,10 @@ class Stepper:
         self.check_next = True
         t_wall0 = time.perf_counter()
         init = c['initial']
-        if init['kind'] == 'steady_newton':
+        steady_start = init['kind'] == 'steady_newton'
+        if steady_start:
             x, t = self.steady(c['U_mean0']), 0.0
+            self.steady_forces(x, c['U_mean0'])
         else:
             x, t = self.load_state(init)
         rows, walls, diag_rows, stage_records, states, snap_files = [], [], [], [], [], []
@@ -343,19 +362,37 @@ class Stepper:
             np.savez(p, t=np.asarray(buf['t']), x=np.asarray(buf['x']))
             snap_files.append({'file': p.name, 'sha256': sha(p), 'count': len(buf['x'])})
             buf.update(x=[], t=[], chunk=buf['chunk'] + 1)
+            meta('running')
         def persist(status):
             flush()
+            meta(status)
+        def meta(status):
+            np.savez(self.out / 'linear_checks.npz', t=np.array([z['t'] for z in self.lin_checks]),
+                     rel=np.array([z['relative_linear_residual'] for z in self.lin_checks]))
             np.savez(self.out / 'history.npz', rows=np.asarray(rows), wall=np.asarray(walls),
                      columns=np.array(['t', 'CD_reaction', 'CL_reaction', 'CD_surface', 'CL_surface',
                                        'p_front', 'p_back', 'kinetic_energy', 'stage']))
             dump(self.out / 'diagnostics.json', diag_rows)
             dump(self.out / 'stages.json', {'status': status, 'stages': stage_records, 'states': states,
-                                            'snapshots': snap_files, 'linear_checks': self.lin_checks[-500:],
+                                            'snapshots': snap_files, 'linear_checks_count': len(self.lin_checks),
+                                            'linear_checks_max': max([z['relative_linear_residual'] for z in self.lin_checks], default=None),
                                             'factorizations': self.factorizations,
                                             'interpolation': getattr(self, 'interpolation', None),
                                             'layout_sha256': self.layout_sha256, 'ndof': self.X.ndof,
                                             'elapsed_seconds': time.perf_counter() - t_wall0})
         sbdf = c['scheme'] == 'sbdf2'
+        def on_term(signum, frame):
+            raise SystemExit(143)
+        signal.signal(signal.SIGTERM, on_term)
+        try:
+            self._stages(c, x, t, sbdf, steady_start, rows, walls, diag_rows, stage_records, states, buf, flush, persist, t_wall0)
+        except BaseException as exc:
+            if not (isinstance(exc, SystemExit) and exc.code == EXIT_WALL):
+                persist(f'aborted: {exc!r}')
+            raise
+        persist('completed')
+
+    def _stages(self, c, x, t, sbdf, steady_start, rows, walls, diag_rows, stage_records, states, buf, flush, persist, t_wall0):
         for si, st in enumerate(c['stages']):
             dt = float(st['dt'])
             n_steps = int(round(st['duration'] / dt))
@@ -383,7 +420,8 @@ class Stepper:
                         flush()
             # k=0: the stage's initial state (derivative unknown; reaction uses zero).
             x0, N0 = x, self.apply('conv', x)
-            emit(0, x0, None, N0, t)
+            # A steady initial state has an exactly zero time derivative.
+            emit(0, x0, 0 * x0 if (si == 0 and steady_start) else None, N0, t)
             # Startup: first-order substeps spanning exactly one dt.
             hs = dt / int(c['startup_substeps'])
             xs, Ns, ts = x0, N0, t
@@ -394,12 +432,14 @@ class Stepper:
                 dudt = (xn - xs) / hs
                 xs, ts, Ns = xn, tn, self.apply('conv', xn)
             x_prev, N_prev, x, Nx, t = x0, N0, xs, Ns, t + dt
-            emit(1, x, dudt, Nx, t)
+            emit(1, x, None, Nx, t)  # startup derivative is first order: no reaction force here
             self.check_next = True
             coef = 1.5 / dt
             k = 1
             periodic = False
             while k < n_steps:
+                if (k + 1) % 200 == 0 or k + 1 == n_steps:
+                    self.check_next = True
                 tn = t + dt
                 rhs = self.apply('M', 4 * x - x_prev) / (2 * dt) + self.forcing(tn)
                 if sbdf:
@@ -414,19 +454,18 @@ class Stepper:
                     rec.update(status='nonfinite_or_energy_blowup', steps=k)
                     stage_records.append(rec); persist('failed'); raise ArithmeticError('instability')
                 emit(k, x, dudt, Nx, t)
-                if k % 200 == 0 or k == n_steps:
-                    self.check_next = True
-                    if rec['until_periodic'] and k % 200 == 0:
+                if time.perf_counter() - t_wall0 > c['wall_limit_seconds']:
+                    rec.update(status='wall_limit', steps=k, t_end=t)
+                    stage_records.append(rec)
+                    states.append(self.save_state('interrupted', x, t))
+                    persist('wall_limit'); sys.exit(EXIT_WALL)
+                if k % 200 == 0:
+                    if rec['until_periodic']:
                         sr = np.asarray(stage_rows)[1:]
                         recs = cyc.cycles(sr[:, 0], sr[:, 1], sr[:, 2], sr[:, 5] - sr[:, 6])
                         if cyc.periodic(recs, **c['periodicity']):
                             periodic = True
                             break
-                    if time.perf_counter() - t_wall0 > c['wall_limit_seconds']:
-                        rec.update(status='wall_limit', steps=k, t_end=t)
-                        stage_records.append(rec)
-                        states.append(self.save_state('interrupted', x, t))
-                        persist('wall_limit'); sys.exit(EXIT_WALL)
             sr = np.asarray(stage_rows)[1:]
             recs = cyc.cycles(sr[:, 0], sr[:, 1], sr[:, 2], sr[:, 5] - sr[:, 6])
             rec.update(status='completed', steps=k, t_end=t, periodic_reached=periodic or cyc.periodic(recs, **c['periodicity']),
@@ -437,9 +476,7 @@ class Stepper:
                 states.append(self.save_state(st['name'], x, t))
             persist('running')
             if rec['until_periodic'] and st.get('require_periodic') and not rec['periodic_reached']:
-                persist('failed_periodicity'); raise ArithmeticError(f"stage {st['name']} not periodic by cap")
-        persist('completed')
-        return x
+                raise ArithmeticError(f"stage {st['name']} not periodic by cap")
 
 
 def main():

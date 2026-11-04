@@ -14,13 +14,20 @@ def lift_minima(t, cl):
             y0, y1, y2 = cl[i - 1], cl[i], cl[i + 1]
             h = t[i + 1] - t[i]
             den = y0 - 2 * y1 + y2
-            out.append((i, t[i] + (0.5 * h * (y0 - y2) / den if den != 0 else 0.0)))
+            shift = 0.5 * h * (y0 - y2) / den if den != 0 else 0.0
+            out.append((i, t[i] + float(np.clip(shift, -h, h))))
     return out
 
 
 def cycles(t, cd, cl, dp=None):
     """Return one record per complete cycle (lift minimum to lift minimum)."""
     t, cd, cl = (np.asarray(a, float) for a in (t, cd, cl))
+    keep = np.isfinite(t) & np.isfinite(cd) & np.isfinite(cl)
+    if dp is not None:
+        dp = np.asarray(dp, float)
+        keep &= np.isfinite(dp)
+        dp = dp[keep]
+    t, cd, cl = t[keep], cd[keep], cl[keep]
     mins = lift_minima(t, cl)
     recs = []
     for (i0, t0), (i1, t1) in zip(mins[:-1], mins[1:]):
@@ -38,6 +45,8 @@ def cycles(t, cd, cl, dp=None):
 def periodic(recs, n=3, cl_tol=1e-4, cd_rel_tol=1e-4, period_rel_tol=1e-4):
     """Predeclared developed-flow rule: the last n consecutive cycle pairs agree."""
     if len(recs) < n + 1:
+        return False
+    if not all(np.isfinite(list(r.values())).all() for r in recs[-n - 1:]):
         return False
     for a, b in zip(recs[-n - 1:-1], recs[-n:]):
         if abs(b['CL_max'] - a['CL_max']) > cl_tol or abs(b['CL_min'] - a['CL_min']) > cl_tol:

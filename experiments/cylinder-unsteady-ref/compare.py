@@ -42,6 +42,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--a', required=True); ap.add_argument('--b', required=True)
     ap.add_argument('--out', required=True)
+    ap.add_argument('--t0', type=float, required=True, help='window start (DESIGN-G5: S* time)')
+    ap.add_argument('--t1', type=float, required=True, help='window end (S* + W)')
     args = ap.parse_args()
     import ngsolve as ng
     ca, ta, xa, ha = load_run(args.a)
@@ -57,23 +59,26 @@ def main():
     Vf, Qf = space(kf)
     Xf = Vf * Qf
     (u, p), (v, q) = Xf.TnT()
-    mv = ng.BilinearForm(Xf); mv += u * v * ng.dx; mv.Assemble()
-    mp = ng.BilinearForm(Xf); mp += p * q * ng.dx; mp.Assemble()
-    vol = ng.Integrate(1, mesh, order=8)
+    dxb = ng.dx(bonus_intorder=6)
+    mv = ng.BilinearForm(Xf); mv += u * v * dxb; mv.Assemble()
+    mp = ng.BilinearForm(Xf); mp += p * q * dxb; mp.Assemble()
+    vol = ng.Integrate(1, mesh, order=2 * kf + 6)
     gf = ng.GridFunction(Xf)
     def embed(x, k):
         if k == kf:
             return x
         Vs, Qs = space(k)
         gs = ng.GridFunction(Vs * Qs); gs.vec.FV().NumPy()[:] = x
-        gf.components[0].Set(gs.components[0]); gf.components[1].Set(gs.components[1])
+        gf.components[0].Set(gs.components[0], bonus_intorder=6); gf.components[1].Set(gs.components[1], bonus_intorder=6)
         return gf.vec.FV().NumPy().copy()
     tmp, out = gf.vec.CreateVector(), gf.vec.CreateVector()
     def quad(mat, x):
         tmp.FV().NumPy()[:] = x
         out.data = mat.mat * tmp
         return float(x @ out.FV().NumPy())
+    win = lambda tt: (tt >= args.t0 - 1e-9) & (tt <= args.t1 + 1e-9)
     ia, ib = common(ta, tb)
+    keep = win(ta[ia]); ia, ib = ia[keep], ib[keep]
     if len(ia) < 2:
         raise ValueError('fewer than two common save times')
     eu, ep = [], []
@@ -83,7 +88,8 @@ def main():
         eu.append(np.sqrt(quad(mv, d) / quad(mv, b)))
         ep.append(np.sqrt(quad(mp, d)) / (1.0 ** 2 * np.sqrt(vol)))
     fa, fb = common(ha[:, 0], hb[:, 0])
-    fa, fb = fa[1:], fb[1:]  # stage-start row has no reaction force
+    ok = win(ha[fa, 0]) & np.isfinite(ha[fa, 1:3]).all(1) & np.isfinite(hb[fb, 1:3]).all(1)
+    fa, fb = fa[ok], fb[ok]  # stage-start/startup rows carry no reaction force
     cda, cdb, cla, clb = ha[fa, 1], hb[fb, 1], ha[fa, 2], hb[fb, 2]
     res = {'a': str(args.a), 'b': str(args.b), 'common_save_times': len(ia), 'common_force_times': len(fa),
            'window': [float(ta[ia[0]]), float(ta[ia[-1]])],

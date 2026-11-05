@@ -28,13 +28,33 @@ class Export:
         self.probes = b['probes']
         self.bank = {'frozen': (b['frozen_bank_V'], b['frozen_bank_G'])}
         self.out_w = q['outlet_weights']; self.out_V = b['outlet_V']; self.out_bank = {'frozen': b['frozen_bank_outlet_V']}
+        # inlet/outlet traces for the reduced energy balance (normals (-1,0) and (1,0))
+        self.bnd = {lab: {'w': q[f'{lab}_weights'], 'V': b[f'{lab}_V'], 'G': b[f'{lab}_G'], 'P': b[f'{lab}_P'],
+                          'n': np.array([-1.0, 0.0]) if lab == 'inlet' else np.array([1.0, 0.0])}
+                    for lab in ('inlet', 'outlet')}
+        self.bnd_bank = {'frozen': {lab: (b[f'frozen_bank_{lab}_V'], b[f'frozen_bank_{lab}_G']) for lab in ('inlet', 'outlet')}}
         self.dir = d
 
     def col(self, name):
         return self.names.index(name)
 
-    def add_bank(self, key, V, G, outlet_V):
+    def add_bank(self, key, V, G, outlet_V, bnd=None):
         self.bank[key] = (V, G); self.out_bank[key] = outlet_V
+        if bnd is not None:
+            self.bnd_bank[key] = bnd
+
+
+def orthonormal_transform(gram):
+    """Eigen-truncated transform, then one Cholesky re-orthogonalization pass, verified."""
+    lam, U = np.linalg.eigh(gram)
+    keep = lam > RANK_CUTOFF * lam.max()
+    T = U[:, keep] / np.sqrt(lam[keep])
+    G1 = T.T @ gram @ T
+    T = T @ np.linalg.inv(np.linalg.cholesky(G1)).T
+    defect = float(np.max(np.abs(T.T @ gram @ T - np.eye(T.shape[1]))))
+    if defect > 1e-12:
+        raise ArithmeticError(f'basis not orthonormal after re-orthogonalization: {defect:.2e}')
+    return T, int(keep.sum()), len(lam), defect
 
 
 def wdot(w, A, B):
@@ -65,20 +85,26 @@ class Arm:
             raw_out = np.concatenate([ex.out_bank[bank_key], ex.out_V[..., sup]], axis=-1)
             self.raw_cols = [('bank', i) for i in range(r)] + sup
         gram = wdot(w, raw_V, raw_V)
-        lam, U = np.linalg.eigh(gram)
-        keep = lam > RANK_CUTOFF * lam.max()
-        self.raw_count, self.retained = len(lam), int(keep.sum())
-        self.T = U[:, keep] / np.sqrt(lam[keep])          # raw -> orthonormal
+        self.T, self.retained, self.raw_count, self.orth_defect = orthonormal_transform(gram)
         if not orthonormalize:   # quadrature check (G5-A5 rev.2): operators in the raw basis
-            self.T = np.eye(len(lam))
+            self.T = np.eye(len(gram))
         # Basis-only (no supremizer) transform for the gated projection floor.
-        g0 = gram[:r, :r]; l0, U0 = np.linalg.eigh(g0); k0 = l0 > RANK_CUTOFF * l0.max()
-        self.T0 = U0[:, k0] / np.sqrt(l0[k0])
+        self.T0, self.retained0, _, self.orth_defect0 = orthonormal_transform(gram[:r, :r])
         self.raw_V, self.raw_G = raw_V, raw_G
         self.Vb = raw_V @ self.T; self.Gb = raw_G @ self.T
         self.lV, self.lG = ex.V[..., L], ex.G[..., L]
         self.Pb = ex.P[:, :r]
         self.out_b = raw_out @ self.T; self.out_l = ex.out_V[..., L]
+        self.bnd_b = {}
+        for lab, bd in ex.bnd.items():
+            if kind == 'pod':
+                cols = [ex.col(f'pod{i}') for i in range(r)] + sup
+                rv, rg = bd['V'][..., cols], bd['G'][..., cols]
+            else:
+                bbv, bbg = ex.bnd_bank[bank_key][lab]
+                rv = np.concatenate([bbv, bd['V'][..., sup]], -1); rg = np.concatenate([bbg, bd['G'][..., sup]], -1)
+            self.bnd_b[lab] = {'w': bd['w'], 'n': bd['n'], 'V': rv @ self.T, 'G': rg @ self.T, 'P': bd['P'][:, :r],
+                               'lV': bd['V'][..., L], 'lG': bd['G'][..., L]}
         self.chiV = ex.V[..., [ex.col('chi_x'), ex.col('chi_y')]]
         self.chiG = ex.G[..., [ex.col('chi_x'), ex.col('chi_y')]]
         self.build()
@@ -86,7 +112,7 @@ class Arm:
     def build(self):
         w, V, G, lV, lG, P = self.ex.w, self.Vb, self.Gb, self.lV, self.lG, self.Pb
         d = V.shape[-1]
-        self.d, self.dp = d, P.shape[-1]
+        self.d, self.dp = d, P.shape[-1]          # velocity and pressure dimensions; total d + dp
         div = G[:, 0, 0, :] + G[:, 1, 1, :]; ldiv = lG[:, 0, 0] + lG[:, 1, 1]
         self.M = wdot(w, V, V)
         self.K = wdot(w, G, G)
@@ -165,11 +191,11 @@ class Arm:
         self.initial = {'continuity_defect': float(np.linalg.norm(self.B @ a0 + self.BL)),
                         'continuity_scale': float(max(np.linalg.norm(self.BL), 1e-300)),
                         'initial_acceleration_norm': float(np.linalg.norm(sol[:d]))}
-        hs = dt / substeps; a = a0.copy()
+        hs = dt / substeps; a = a0.copy(); it_start = 0
         for _ in range(substeps):
             a_new, c, it, _ = self.step(nu, 1 / hs, self.M @ a / hs, a, c)
-            adot = (a_new - a) / hs; a = a_new
-        A[1], C[1], its[1] = a, c, it
+            it_start += it; a = a_new
+        A[1], C[1], its[1] = a, c, it_start
         for n in range(1, n_steps):
             rhs = self.M @ (4 * A[n] - A[n - 1]) / (2 * dt)
             guess = 2 * A[n] - A[n - 1]
@@ -198,15 +224,40 @@ class Arm:
             return proj[key][:, c[1]]
         return proj['uv'][:, c]
 
+    def _nonneg(self, e2, scale):
+        """Squared errors from norm expansions: roundoff negatives (|.| <= 1e-12 scale) -> 0, else refuse."""
+        bad = e2 < -1e-12 * np.abs(scale)
+        if np.any(bad):
+            raise ArithmeticError(f'negative squared error beyond roundoff: {e2[bad].min():.3e}')
+        self.clipped = getattr(self, 'clipped', 0) + int(np.sum(e2 < 0))
+        return np.maximum(e2, 0)
+
+    def energy_balance(self, nu, a, adot, c):
+        """Reduced gradient-form energy balance (walls/cylinder carry u = 0), normalized residual."""
+        w = self.ex.w
+        u = self.lV + self.Vb @ a; g = self.lG + self.Gb @ a; ut = self.Vb @ adot; p = self.Pb @ c
+        div = g[:, 0, 0] + g[:, 1, 1]
+        t = {'kinetic_rate': float(w @ np.einsum('qc,qc->q', u, ut)),
+             'dissipation': nu * float(w @ np.einsum('qcd,qcd->q', g, g)),
+             'finite_divergence_convection': -0.5 * float(w @ (np.einsum('qc,qc->q', u, u) * div)),
+             'finite_divergence_pressure': -float(w @ (p * div))}
+        for lab, bd in self.bnd_b.items():
+            ub = bd['lV'] + bd['V'] @ a; gb = bd['lG'] + bd['G'] @ a; pb = bd['P'] @ c; n = bd['n']
+            un = ub @ n
+            t[f'convection_{lab}'] = 0.5 * float(bd['w'] @ (np.einsum('qc,qc->q', ub, ub) * un))
+            tn = nu * np.einsum('qcd,d->qc', gb, n) - pb[:, None] * n[None, :]
+            t[f'traction_work_{lab}'] = -float(bd['w'] @ np.einsum('qc,qc->q', ub, tn))
+        return {'terms': t, 'residual': abs(sum(t.values())) / max(sum(abs(z) for z in t.values()), 1e-12)}
+
     def floors(self, proj):
         uu = proj['uu']; ul = proj['uv'][:, self.ex.col('lift')]
         fluct2 = uu - 2 * ul + self.L2l
         full, base = self.ref_coeffs(proj)
-        e_full = np.sqrt(np.maximum(fluct2 - np.sum(full ** 2, 1), 0)) / np.sqrt(uu)
-        e_base = np.sqrt(np.maximum(fluct2 - np.sum(base ** 2, 1), 0)) / np.sqrt(uu)
+        e_full = np.sqrt(self._nonneg(fluct2 - np.sum(full ** 2, 1), uu)) / np.sqrt(uu)
+        e_base = np.sqrt(self._nonneg(fluct2 - np.sum(base ** 2, 1), uu)) / np.sqrt(uu)
         pv = proj['pv'][:, :self.dp]
         cp = np.linalg.solve(self.Gp, pv.T).T
-        e_p = np.sqrt(np.maximum(proj['pp'] - np.einsum('tk,tk->t', cp, pv), 0)) / math.sqrt(self.ex.vol)
+        e_p = np.sqrt(self._nonneg(proj['pp'] - np.einsum('tk,tk->t', cp, pv), proj['pp'])) / math.sqrt(self.ex.vol)
         return {'velocity_basis_only': e_base, 'velocity_with_supremizers': e_full, 'pressure': e_p}
 
     def errors(self, proj, A, C, idx):
@@ -216,9 +267,9 @@ class Arm:
         a = A[idx]
         # ||lift + Phi a - u_ref||^2 = ||u_ref - lift||^2 - 2 a.<u_ref - lift, phi> + |a|^2 (orthonormal)
         fluct2 = uu - 2 * ul + self.L2l
-        e_u = np.sqrt(np.maximum(fluct2 - 2 * np.einsum('tj,tj->t', a, full) + np.einsum('tj,tj->t', a, a), 0)) / np.sqrt(uu)
+        e_u = np.sqrt(self._nonneg(fluct2 - 2 * np.einsum('tj,tj->t', a, full) + np.einsum('tj,tj->t', a, a), uu)) / np.sqrt(uu)
         c = C[idx]; pv = proj['pv'][:, :self.dp]
-        e_p = np.sqrt(np.maximum(proj['pp'] - 2 * np.einsum('tk,tk->t', c, pv) + np.einsum('tk,kl,tl->t', c, self.Gp, c), 0)) / math.sqrt(self.ex.vol)
+        e_p = np.sqrt(self._nonneg(proj['pp'] - 2 * np.einsum('tk,tk->t', c, pv) + np.einsum('tk,kl,tl->t', c, self.Gp, c), proj['pp'])) / math.sqrt(self.ex.vol)
         div = np.sqrt(np.maximum(self.D0 + 2 * a @ self.D1 + np.einsum('tj,jk,tk->t', a, self.D2, a), 0)) * 0.1 / math.sqrt(self.ex.vol)
         qin = 1.0 * 0.41  # U_mean*H: the lift carries the inlet trace; fluctuation traces vanish there
         qout = self.qout_l + a @ self.qout_b

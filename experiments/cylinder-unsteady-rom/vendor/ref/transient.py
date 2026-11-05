@@ -250,11 +250,16 @@ class Stepper:
         self.g.vec.FV().NumPy()[:] = x
         res = self.apply('M', 0 * x if dudt is None else dudt) + self.apply('A', x) + Nx - self.forcing(t)
         react = [-float(ch @ res) for ch in self.chi]
+        norm = 0.5 * self.cfg['U_mean'] ** 2 * self.D
+        probes = [scalar_value(self.ph(mp), 'probe') for mp in self.probe_pts]
+        if self.cfg.get('timing_mode'):
+            # R5 output contract (G5-A5 rev.3): the same outputs as the ROM (reaction forces and
+            # probes every step); surface forces and kinetic energy are not computed.
+            nan = float('nan')
+            return [t, react[0] / norm, react[1] / norm, nan, nan, probes[0], probes[1], nan]
         qo = self.cfg['diagnostic_order']
         surf = [-scalar_value(ng.Integrate(self.tau_n[i], self.mesh, definedon=self.mesh.Boundaries('obstacle'),
                                            order=qo), 'surface_force') for i in range(2)]
-        norm = 0.5 * self.cfg['U_mean'] ** 2 * self.D
-        probes = [scalar_value(self.ph(mp), 'probe') for mp in self.probe_pts]
         E = 0.5 * float(x @ self.apply('M', x))
         return [t, react[0] / norm, react[1] / norm, surf[0] / norm, surf[1] / norm,
                 probes[0], probes[1], E]

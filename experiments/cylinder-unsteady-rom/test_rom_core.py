@@ -31,11 +31,18 @@ def make(d):
     P = np.sin(pts @ rng.normal(size=(2, R)) + rng.normal(size=R))
     bV, bG = field(4, pts)
     op = rng.uniform([2.2, 0], [2.2, 0.41], size=(40, 2)); ow = np.full(40, 0.41 / 40)
-    oV, _ = field(len(names), op); obV, _ = field(4, op)
+    ip = op.copy(); ip[:, 0] = 0.0
+    bnd = {}
+    for lab, pp in (('inlet', ip), ('outlet', op)):
+        bV_, bG_ = field(len(names), pp); fV_, fG_ = field(4, pp)
+        bnd.update({f'{lab}_V': bV_, f'{lab}_G': bG_, f'{lab}_P': np.sin(pp @ rng.normal(size=(2, R))),
+                    f'frozen_bank_{lab}_V': fV_, f'frozen_bank_{lab}_G': fG_})
+    # Near-dependent bank: function 3 = function 0 + 1e-7 * function 1 (Codex review regression).
+    bV[..., 3] = bV[..., 0] + 1e-7 * bV[..., 1]; bG[..., 3] = bG[..., 0] + 1e-7 * bG[..., 1]
     np.savez(d / 'quadrature.npz', points=pts, weights=w, outlet_points=op, outlet_weights=ow,
-             inlet_points=op * 0, inlet_weights=ow)
+             inlet_points=ip, inlet_weights=ow)
     np.savez(d / 'basis.npz', names=np.array(names), V=V, G=G, P=P, probes=rng.normal(size=(R, 2)),
-             outlet_V=oV, frozen_bank_V=bV, frozen_bank_G=bG, frozen_bank_outlet_V=obV)
+             frozen_bank_V=bV, frozen_bank_G=bG, **bnd)
 
 
 def direct_conv(arm, a, test_V):
@@ -94,6 +101,18 @@ def main():
             adot0 = np.linalg.solve(S, np.r_[-F0, np.zeros(arm.dp)])[:arm.d]
             assert np.allclose(arm.M @ adot0 + F0 - arm.B.T @ Cc[0], 0, atol=1e-10 * max(1, np.abs(F0).max()))
             assert np.allclose(arm.B @ adot0, 0, atol=1e-10)
+        # identical fields must give zero error even with a near-dependent basis
+        arm = rc.Arm(ex, 'bank', 4, 'frozen')
+        a = rng.normal(size=arm.d) * 0.2
+        uref = arm.lV + arm.Vb @ a
+        proj = {'uv': np.einsum('q,qc,qcj->j', ex.w, uref, ex.V)[None],
+                'uv_frozen': np.einsum('q,qc,qcj->j', ex.w, uref, ex.bank['frozen'][0])[None],
+                'uu': np.array([np.einsum('q,qc,qc->', ex.w, uref, uref)]), 'pp': np.array([1.0]), 'pv': np.ones((1, R))}
+        err = arm.errors(proj, a[None], np.zeros((1, arm.dp)), [0])
+        print(f'near-dependent bank: retained {arm.retained}/{arm.raw_count}, orth defect {arm.orth_defect:.1e}, identical-field e_u {err["e_u"][0]:.1e}')
+        assert err['e_u'][0] < 1e-6
+        eb = arm.energy_balance(0.01, a, a * 0.1, np.ones(arm.dp))
+        assert np.isfinite(eb['residual'])
     print('all rom_core synthetic checks passed')
 
 

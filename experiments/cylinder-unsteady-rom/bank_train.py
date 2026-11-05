@@ -34,6 +34,7 @@ def sha(p):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--export', required=True); ap.add_argument('--rank', type=int, required=True)
+    ap.add_argument('--eval-only', help='trained_bank_params.npz: evaluate on this export Q only (quadrature check)')
     ap.add_argument('--out', required=True); ap.add_argument('--smoke', action='store_true',
                                                              help='code smoke: 20 Adam, 5+5 L-BFGS steps')
     a = ap.parse_args()
@@ -94,35 +95,40 @@ def main():
             raise FloatingPointError('nonfinite objective')
         return f, g
 
-    # ---- parent: Adam then L-BFGS ---------------------------------------
-    rng = np.random.default_rng(3112026)
-    theta = theta0.copy(); m = np.zeros_like(theta); v = np.zeros_like(theta)
-    best = (full(pg, theta)[0], theta.copy(), 'initial')
-    t0 = time.time()
-    for k in range(1, steps['adam'] + 1):
-        idx = rng.integers(0, len(w), 4096)
-        _, g = pg(jnp.asarray(theta), x[idx], Vt[idx], Gt[idx], w[idx] * len(w) / len(idx))
-        g = np.asarray(g)
-        m = 0.9 * m + 0.1 * g; v = 0.999 * v + 0.001 * g * g
-        rate = 1e-3 * (0.1 + 0.9 * 0.5 * (1 + np.cos(np.pi * k / steps['adam'])))
-        theta = theta - rate * (m / (1 - 0.9 ** k)) / (np.sqrt(v / (1 - 0.999 ** k)) + 1e-8)
-        if k % 200 == 0 or k == steps['adam']:
-            f = full(pg, theta)[0]
-            record['history'].append({'phase': 'adam', 'step': k, 'objective': f, 'seconds': time.time() - t0})
-            if f < best[0]:
-                best = (f, theta.copy(), f'adam{k}')
-    theta = best[1].copy()
-    seen = {'best': best}
+    loaded = np.load(a.eval_only) if a.eval_only else None
+    if loaded is not None and int(loaded['rank']) != r:
+        raise ValueError('eval-only parameters have a different rank')
+    seen = {'best': (None, loaded['parent'], 'loaded')} if loaded is not None else None
+    if loaded is None:
+        # ---- parent: Adam then L-BFGS ---------------------------------------
+        rng = np.random.default_rng(3112026)
+        theta = theta0.copy(); m = np.zeros_like(theta); v = np.zeros_like(theta)
+        best = (full(pg, theta)[0], theta.copy(), 'initial')
+        t0 = time.time()
+        for k in range(1, steps['adam'] + 1):
+            idx = rng.integers(0, len(w), 4096)
+            _, g = pg(jnp.asarray(theta), x[idx], Vt[idx], Gt[idx], w[idx] * len(w) / len(idx))
+            g = np.asarray(g)
+            m = 0.9 * m + 0.1 * g; v = 0.999 * v + 0.001 * g * g
+            rate = 1e-3 * (0.1 + 0.9 * 0.5 * (1 + np.cos(np.pi * k / steps['adam'])))
+            theta = theta - rate * (m / (1 - 0.9 ** k)) / (np.sqrt(v / (1 - 0.999 ** k)) + 1e-8)
+            if k % 200 == 0 or k == steps['adam']:
+                f = full(pg, theta)[0]
+                record['history'].append({'phase': 'adam', 'step': k, 'objective': f, 'seconds': time.time() - t0})
+                if f < best[0]:
+                    best = (f, theta.copy(), f'adam{k}')
+        theta = best[1].copy()
+        seen = {'best': best}
 
-    def fun_parent(t):
-        f, g = full(pg, t)
-        if f < seen['best'][0]:
-            seen['best'] = (f, t.copy(), 'lbfgs')
-        return f, g
-    res = minimize(fun_parent, theta, jac=True, method='L-BFGS-B',
-                   options={'maxiter': steps['lbfgs'], 'maxcor': 10, 'maxls': 20, 'gtol': 1e-10, 'ftol': 0.0})
-    record['parent'] = {'lbfgs_iterations': int(res.nit), 'lbfgs_message': str(res.message),
-                        'selected': seen['best'][2], 'objective': seen['best'][0], 'seconds': time.time() - t0}
+        def fun_parent(t):
+            f, g = full(pg, t)
+            if f < seen['best'][0]:
+                seen['best'] = (f, t.copy(), 'lbfgs')
+            return f, g
+        res = minimize(fun_parent, theta, jac=True, method='L-BFGS-B',
+                       options={'maxiter': steps['lbfgs'], 'maxcor': 10, 'maxls': 20, 'gtol': 1e-10, 'ftol': 0.0})
+        record['parent'] = {'lbfgs_iterations': int(res.nit), 'lbfgs_message': str(res.message),
+                            'selected': seen['best'][2], 'objective': seen['best'][0], 'seconds': time.time() - t0}
     parent = unpack(seen['best'][1])
 
     # ---- child: frozen parent + residual heads ------------------------------
@@ -159,27 +165,29 @@ def main():
         return 1.0 * jnp.sum(sig ** 2 * jnp.einsum('n,nir,nir->r', wo, err, err)) / tr_energy
 
     cg = jax.jit(jax.value_and_grad(child_vol)); og = jax.jit(jax.value_and_grad(child_obstacle))
-    t1 = time.time(); cbest = {'f': np.inf, 'p': phi0.copy(), 'evals': 0}
+    cbest = {'f': None, 'p': loaded['heads'].copy(), 'evals': 0} if loaded is not None else None
+    if loaded is None:
+        t1 = time.time(); cbest = {'f': np.inf, 'p': phi0.copy(), 'evals': 0}
 
-    class Deadline(Exception):
-        pass
+        class Deadline(Exception):
+            pass
 
-    def fun_child(p):
-        f, g = full(cg, p)
-        fo, go = og(jnp.asarray(p)); f += float(fo); g = g + np.asarray(go)
-        cbest['evals'] += 1
-        if f < cbest['f']:
-            cbest.update(f=f, p=p.copy())
-        if time.time() - t1 > steps['child_seconds']:
-            raise Deadline()
-        return f, g
-    try:
-        res = minimize(fun_child, phi0, jac=True, method='L-BFGS-B',
-                       options={'maxiter': steps['child'], 'maxcor': 10, 'maxls': 20, 'gtol': 1e-10, 'ftol': 0.0})
-        stop = {'iterations': int(res.nit), 'message': str(res.message)}
-    except Deadline:
-        stop = {'iterations': None, 'message': 'deadline stop (2700 s), not convergence'}
-    record['child'] = dict(stop, evaluations=cbest['evals'], objective=cbest['f'], seconds=time.time() - t1)
+        def fun_child(p):
+            f, g = full(cg, p)
+            fo, go = og(jnp.asarray(p)); f += float(fo); g = g + np.asarray(go)
+            cbest['evals'] += 1
+            if f < cbest['f']:
+                cbest.update(f=f, p=p.copy())
+            if time.time() - t1 > steps['child_seconds']:
+                raise Deadline()
+            return f, g
+        try:
+            res = minimize(fun_child, phi0, jac=True, method='L-BFGS-B',
+                           options={'maxiter': steps['child'], 'maxcor': 10, 'maxls': 20, 'gtol': 1e-10, 'ftol': 0.0})
+            stop = {'iterations': int(res.nit), 'message': str(res.message)}
+        except Deadline:
+            stop = {'iterations': None, 'message': 'deadline stop (2700 s), not convergence'}
+        record['child'] = dict(stop, evaluations=cbest['evals'], objective=cbest['f'], seconds=time.time() - t1)
     # ---- evaluate the selected composite on Q and on the boundary rule ---------
     def evaluate(pts):
         vs, gs = [], []
@@ -190,12 +198,14 @@ def main():
     bsave = {}
     for lab in ('inlet', 'outlet', 'obstacle'):
         bv, bg = evaluate(q[f'{lab}_points']); bsave[f'{lab}_V'] = bv; bsave[f'{lab}_G'] = bg
-    np.savez(out / 'trained_bank_eval.npz', V=V, G=G, **bsave)
-    np.savez(out / 'trained_bank_params.npz', parent=seen['best'][1], heads=cbest['p'], rank=r)
+    pdig = hashlib.sha256(np.ascontiguousarray(seen['best'][1]).tobytes() + np.ascontiguousarray(cbest['p']).tobytes()).hexdigest()
+    np.savez(out / 'trained_bank_eval.npz', V=V, G=G, params_digest=np.array(pdig), **bsave)
+    if loaded is None:
+        np.savez(out / 'trained_bank_params.npz', parent=seen['best'][1], heads=cbest['p'], rank=r)
     record['outputs'] = {p.name: sha(p) for p in out.glob('*.npz')}
     record['runtime'] = {'jax': jax.__version__, 'backend': jax.default_backend(), 'devices': [d.device_kind for d in jax.devices()]}
     (out / 'TRAINING.json').write_text(json.dumps(record, indent=2, default=float) + '\n')
-    print(json.dumps({k: record[k] for k in ('parent', 'child')}, default=float))
+    print(json.dumps({k: record.get(k) for k in ('parent', 'child')}, default=float))
 
 
 if __name__ == '__main__':

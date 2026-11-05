@@ -45,15 +45,21 @@ def main():
     ap.add_argument('--case', required=True); ap.add_argument('--dt', type=float, required=True)
     ap.add_argument('--arms', required=True); ap.add_argument('--out', required=True)
     ap.add_argument('--trained-bank'); ap.add_argument('--trained-proj')
+    ap.add_argument('--uncertainty', required=True, help='R1DE.json with passing R1b/R1c/R1d/R1e and bound inputs')
     a = ap.parse_args()
     out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
     man = json.loads(Path(a.manifest).read_text())
     (case,) = [c for c in man['cases'] if c['name'] == a.case]
     nu = 0.1 / case['Re']
     ex = rc.Export(a.export)
+    unc = json.loads(Path(a.uncertainty).read_text())
+    if not all(unc.get(k) == 'pass' for k in ('R1b', 'R1c', 'R1d_gate', 'R1e_gate')) or not unc.get('uncertainty_inputs_bound'):
+        raise PermissionError('reference not admitted or uncertainty inputs not bound; R4 refuses to run')
+    U = unc['uncertainty']
     if a.trained_bank:
         z = np.load(a.trained_bank)
-        ex.add_bank('trained', z['V'], z['G'], z['outlet_V'])
+        ex.add_bank('trained', z['V'], z['G'], z['outlet_V'],
+                    {lab: (z[f'{lab}_V'], z[f'{lab}_G']) for lab in ('inlet', 'outlet')})
     proj = dict(np.load(Path(a.export) / f"proj_{a.case}.npz"))
     if a.trained_bank:
         import hashlib
@@ -78,13 +84,17 @@ def main():
         name = spec['name']; rec = {'spec': spec}
         try:
             arm = rc.Arm(ex, spec['kind'], spec['r'], spec.get('key'))
-            rec.update(dimension=arm.d, pressure_dimension=arm.dp, retained=arm.retained, raw=arm.raw_count)
+            rec.update(velocity_dimension=arm.d, pressure_dimension=arm.dp, total_unknowns=arm.d + arm.dp,
+                       retained=arm.retained, raw=arm.raw_count, orthonormality_defect=arm.orth_defect)
             full, _ = arm.ref_coeffs(proj)
             a0 = full[0]
             w0 = time.perf_counter()
             A, C, F, probes, its = arm.rollout(nu, a.dt, a0, n_steps)
             rec['rollout_seconds'] = time.perf_counter() - w0
-            rec['initial'] = arm.initial
+            ini = dict(arm.initial)
+            ini['relative_continuity_defect'] = ini['continuity_defect'] / ini['continuity_scale']
+            ini['flag'] = 'qualified' if ini['relative_continuity_defect'] <= 1e-3 else 'large_initial_defect_reported'
+            rec['initial'] = ini
             rec['newton_iterations'] = {'median': float(np.median(its[2:])), 'max': int(its.max())}
             err = arm.errors(proj, A, C, idx)
             t_rom = t0 + np.arange(n_steps + 1) * a.dt
@@ -103,7 +113,17 @@ def main():
                                        / abs(ref_stats['dp_at_t0_plus_half_period'])}
             last = ts >= ts[-1] - period
             rec['e_u'] = {'rms': rms(err['e_u']), 'max': float(err['e_u'].max()), 'last_period_mean': float(err['e_u'][last].mean())}
-            rec['e_p'] = {'rms': rms(err['e_p']), 'max': float(err['e_p'].max()), 'last_period_mean': float(err['e_p'][last].mean())}
+            rec['e_p'] = {'rms': rms(err['e_p']), 'max': float(err['e_p'].max()), 'last_period_mean': float(err['e_p'][last].mean()),
+                          'rms_excluding_t0_supplemental': rms(err['e_p'][1:])}
+            # reduced energy balance every 4th save (G5-A5 rev.3)
+            eb = []
+            for i in range(0, len(idx), 4):
+                n = int(idx[i])
+                if n < 2:
+                    continue
+                adot = (3 * A[n] - 4 * A[n - 1] + A[n - 2]) / (2 * a.dt)
+                eb.append(arm.energy_balance(nu, A[n], adot, C[n])['residual'])
+            rec['energy_balance_residual'] = {'median': float(np.median(eb)), 'max': float(np.max(eb)), 'count': len(eb)}
             rec['divergence'] = {'median': float(np.median(err['divergence'])), 'max': float(err['divergence'].max())}
             rec['mass'] = {'max': float(err['mass'].max())}
             # Phase-aligned (supplemental, G5-A5): one fixed support for every lag, the saves with
@@ -122,7 +142,16 @@ def main():
                                     'e_u_rms': rms(err_al['e_u']), 'e_p_rms': rms(err_al['e_p'])}
             ce = rec.get('cycle_errors', {})
             got = {'e_u_rms': rec['e_u']['rms'], 'e_u_max': rec['e_u']['max'], 'e_p_rms': rec['e_p']['rms'], **ce}
-            rec['targets_met'] = {k2: (got.get(k2) is not None and got[k2] <= v) for k2, v in TARGETS.items()}
+            fh, cs = U['field_and_force_over_horizon'], U['cycle_statistics']
+            delta = {'e_u_rms': fh['e_u_max'], 'e_u_max': fh['e_u_max'], 'e_p_rms': fh['e_p_max'], 'St_rel': cs['St_rel'],
+                     'CD_max_rel': cs['CD_max_abs'] / ref_stats['CD_max'], 'CL_max_abs': cs['CL_max_abs']}
+            rec['targets'] = {}
+            for k2, v in TARGETS.items():
+                val = got.get(k2)
+                rec['targets'][k2] = {'value': val, 'target': v, 'met': val is not None and val <= v,
+                                      'reference_uncertainty': delta[k2], 'resolved': delta[k2] <= v / 5,
+                                      'classification': 'resolved under the linear-propagation estimate' if delta[k2] <= v / 5
+                                      else 'unresolved (reference uncertainty > target/5)'}
             rec['status'] = 'completed'
             np.savez(out / f'series_{a.case}_{name}.npz', t_save=ts, e_u=err['e_u'], e_p=err['e_p'], divergence=err['divergence'],
                      mass=err['mass'], t=t_rom, CD=F[:, 0], CL=F[:, 1], p_front=probes[:, 0], p_back=probes[:, 1],
@@ -131,6 +160,9 @@ def main():
             rec['status'] = 'failed'; rec['error'] = repr(exc)
         summary['arms'][name] = rec
         print(name, rec['status'], rec.get('e_u'), rec.get('error', ''), flush=True)
+    import resource
+    summary['peak_rss_bytes'] = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1024
+    summary['uncertainty_source'] = {'file': a.uncertainty, 'kind': U['kind']}
     (out / f'R4-{a.case}.json').write_text(json.dumps(summary, indent=2, default=float) + '\n')
 
 

@@ -29,8 +29,8 @@ def main():
     q = np.load(ex / 'quadrature.npz'); P = np.load(ex / 'basis.npz')['P']
     bank = np.load(a.bank_eval)
     with ng.TaskManager():
-        fe = rx.FE(ng, man['mesh_path'], man['mesh_sha256'], k=man.get('velocity_order', 3),
-                   qorder=man.get('quadrature_order', rx.QORDER_DEFAULT))
+        fe = rx.FE(ng, man['mesh_path'], man['mesh_sha256'], k=man['velocity_order'],
+                   qorder=man['quadrature_order'])
         pts, w = fe.rule()
         if pts.shape != q['points'].shape or np.max(np.abs(pts - q['points'])) > 1e-12:
             raise ValueError('quadrature differs from the export')

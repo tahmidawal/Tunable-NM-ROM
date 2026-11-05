@@ -235,7 +235,7 @@ def main():
     out = Path(args.out); out.mkdir(parents=True, exist_ok=False)
     log = {'started': time.time(), 'manifest_sha256': sha(args.manifest)}
     with ng.TaskManager():
-        fe = FE(ng, man['mesh_path'], man['mesh_sha256'], k=man.get('velocity_order', 3), qorder=man.get('quadrature_order', QORDER_DEFAULT))
+        fe = FE(ng, man['mesh_path'], man['mesh_sha256'], k=man['velocity_order'], qorder=man['quadrature_order'])
         pts, w = fe.rule()
         obs = fe.bnd['obstacle'][0] - np.asarray(man['center'])[None]
         np.savez(out / 'quadrature.npz', points=pts, weights=w,

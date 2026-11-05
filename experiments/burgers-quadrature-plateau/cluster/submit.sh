@@ -32,7 +32,7 @@ if echo "$Q" | awk '{print $2}' | grep -qx "bqp_$JOB"; then echo "bqp_$JOB alrea
 N_MINE=$(echo "$Q" | awk '{print $2}' | grep -c '^bqp_' || true)
 [ "$N_MINE" -lt 2 ] || { echo "already $N_MINE lane jobs queued/running (cap 2): refusing"; exit 5; }
 ssh tufts-login "df -h /cluster/tufts/paralab | tail -1; test ! -e $R && mkdir -p $R/logs"
-git archive --format=tar HEAD experiments/burgers-quadrature-plateau | ssh tufts-login "tar -x -C $R"
+git -C "$(git rev-parse --show-toplevel)" archive --format=tar HEAD experiments/burgers-quadrature-plateau | ssh tufts-login "tar -x -C $R"
 cat > /tmp/claude-1002/bqp_run_$JOB.sbatch <<EOF
 #!/bin/bash
 #SBATCH --job-name=bqp_$JOB

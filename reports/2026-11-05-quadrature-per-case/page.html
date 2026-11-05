@@ -73,12 +73,13 @@ code { font: 13px var(--mono); }
 <div class="wrap">
   <header class="lede">
     <h1>Mean error vs quadrature points</h1>
-    <p>The blue line is the ROM's mean error over all cases as the number of quadrature points grows. The dashed line is the mean error the rule is trying to reach, the green dotted line is the full solver's mean error, and the vertical dotted line marks where the rule family reaches its plateau (M*).</p>
+    <p>The blue line is the ROM's mean relative L2 error over all cases as the number of quadrature points grows. The dashed line is the mean error the rule is trying to reach, the green dotted line is the full solver's mean error, and the vertical dotted line marks where the rule family reaches its plateau (M*).</p>
   </header>
 
   <div class="controls">
     <div class="ctl"><span>Experiment</span><div class="seg" id="exp" role="group" aria-label="Experiment"></div></div>
     <div class="ctl"><span>Mesh</span><div class="seg" id="mesh" role="group" aria-label="Mesh"></div></div>
+    <div class="ctl"><span>Error over time</span><div class="seg" id="metric" role="group" aria-label="Error over time"></div></div>
   </div>
 
   <div class="facts" id="facts"></div>
@@ -101,8 +102,11 @@ const EXPS = [
   { key: 'b3', name: 'Burgers 3D', test: d => d.pde === 'burgers' && d.dim === '3D' },
   { key: 'ns', name: 'Navier–Stokes 3D', test: d => d.pde === 'ns3d' },
 ];
-const state = { exp: 'b2', mesh: null };
-try { const s = JSON.parse(localStorage.getItem('qpc') || '{}'); if (s.exp) state.exp = s.exp; if (s.mesh) state.mesh = s.mesh; } catch (e) {}
+const state = { exp: 'b2', mesh: null, metric: 'max' };
+const METRICS = [{ key: 'max', name: 'Worst output time' }, { key: 'rms', name: 'RMS over output times' }];
+const fv = (f, i, s = 'A') => state.metric === 'rms' ? f.rms[i][s] : (s === 'A' ? f.A[i] : f[s][i]);
+const rv = r => state.metric === 'rms' ? r.rms.A : r.mean;
+try { const s = JSON.parse(localStorage.getItem('qpc') || '{}'); if (s.exp) state.exp = s.exp; if (s.mesh) state.mesh = s.mesh; if (s.metric) state.metric = s.metric; } catch (e) {}
 
 const fmtPct = v => v >= 10 ? v.toFixed(1) + '%' : v >= 1 ? v.toFixed(2) + '%' : v >= 0.1 ? v.toFixed(3) + '%' : v.toPrecision(2) + '%';
 const fmtM = m => m.toLocaleString('en-US');
@@ -120,15 +124,18 @@ function renderControls() {
   const mesh = document.getElementById('mesh'); mesh.innerHTML = '';
   datasets().forEach(x => { const b = document.createElement('button'); b.textContent = x.label; b.setAttribute('aria-pressed', x.mesh === d.mesh);
     b.onclick = () => { state.mesh = x.mesh; save(); render(); }; mesh.appendChild(b); });
+  const met = document.getElementById('metric'); met.innerHTML = '';
+  METRICS.forEach(x => { const b = document.createElement('button'); b.textContent = x.name; b.setAttribute('aria-pressed', x.key === state.metric);
+    b.onclick = () => { state.metric = x.key; save(); render(); }; met.appendChild(b); });
 }
-function save() { try { localStorage.setItem('qpc', JSON.stringify({ exp: state.exp, mesh: state.mesh })); } catch (e) {} }
+function save() { try { localStorage.setItem('qpc', JSON.stringify({ exp: state.exp, mesh: state.mesh, metric: state.metric })); } catch (e) {} }
 
 function renderFacts(d) {
   const ns = d.pde === 'ns3d';
   const items = [
     `${d.n} cases${d.n_all !== d.n ? ` (of ${d.n_all}; ${d.n_all - d.n} fails the reference check)` : ''}`,
-    `${d.ref.name}: mean ${fmtPct(d.ref.mean)}`,
-    d.fom ? `${d.fom.name}: mean ${fmtPct(d.fom.mean)}` : null,
+    `${d.ref.name}: mean ${fmtPct(rv(d.ref))}`,
+    d.fom ? `${d.fom.name}: mean ${fmtPct(rv(d.fom))}` : null,
     ns ? 'development cases only' : 'held-out cases, refined references',
   ].filter(Boolean);
   document.getElementById('facts').innerHTML = items.map(t => `<span>${t}</span>`).join('');
@@ -150,8 +157,8 @@ let charts = [];
 function scales(d) {
   let mMin = Infinity, mMax = 0, eMin = Infinity, eMax = 0;
   d.families.forEach(f => { f.m.forEach(m => { mMin = Math.min(mMin, m); mMax = Math.max(mMax, m); });
-    f.A.forEach(v => { if (v > 0 && isFinite(v)) { eMin = Math.min(eMin, v); eMax = Math.max(eMax, v); } }); });
-  [d.ref.mean, d.fom && d.fom.mean].forEach(v => { if (v) { eMin = Math.min(eMin, v); eMax = Math.max(eMax, v); } });
+    f.m.forEach((_, i) => { const v = fv(f, i); if (v > 0 && isFinite(v)) { eMin = Math.min(eMin, v); eMax = Math.max(eMax, v); } }); });
+  [rv(d.ref), d.fom && rv(d.fom)].forEach(v => { if (v) { eMin = Math.min(eMin, v); eMax = Math.max(eMax, v); } });
   const lx0 = Math.log10(mMin) - 0.08, lx1 = Math.log10(mMax) + 0.08;
   const ly0 = Math.floor(Math.log10(eMin) * 2) / 2, ly1 = Math.ceil(Math.log10(eMax) * 2) / 2;
   const X = m => VB.l + (Math.log10(m) - lx0) / (lx1 - lx0) * (VB.w - VB.l - VB.r);
@@ -177,10 +184,11 @@ function drawChart(card, d, f, S) {
 
   const ms = f.mstar || f.endpoint;
   if (ms) { const x = S.X(ms); el('line', { class: 'mstar', x1: x, x2: x, y1: VB.t, y2: VB.h - VB.b }, g0); }
-  const yr = S.Y(d.ref.mean); el('line', { class: 'ref', x1: VB.l, x2: VB.w - VB.r, y1: yr, y2: yr }, svg);
-  if (d.fom) { const yf = S.Y(d.fom.mean); el('line', { class: 'fom', x1: VB.l, x2: VB.w - VB.r, y1: yf, y2: yf }, svg); }
-  el('path', { class: 'worst', d: path(f.m, f.A, S) }, svg);
-  f.m.forEach((m, i) => el('circle', { class: 'dot', r: 3, cx: S.X(m), cy: S.Y(f.A[i]), style: 'fill:var(--worst);stroke-width:1.5' }, svg));
+  const yr = S.Y(rv(d.ref)); el('line', { class: 'ref', x1: VB.l, x2: VB.w - VB.r, y1: yr, y2: yr }, svg);
+  if (d.fom) { const yf = S.Y(rv(d.fom)); el('line', { class: 'fom', x1: VB.l, x2: VB.w - VB.r, y1: yf, y2: yf }, svg); }
+  const A = f.m.map((_, i) => fv(f, i));
+  el('path', { class: 'worst', d: path(f.m, A, S) }, svg);
+  f.m.forEach((m, i) => el('circle', { class: 'dot', r: 3, cx: S.X(m), cy: S.Y(A[i]), style: 'fill:var(--worst);stroke-width:1.5' }, svg));
   const hl = el('circle', { r: 5, style: 'fill:var(--worst);stroke:var(--ink);stroke-width:2', visibility: 'hidden' }, svg);
   card.appendChild(svg);
   return { svg, f, S, hl };
@@ -198,9 +206,9 @@ function attachHover(card, ch, d) {
   ch.svg.addEventListener('pointermove', ev => {
     const r = ch.svg.getBoundingClientRect(); const mx = (ev.clientX - r.left) * VB.w / r.width;
     if (mx < VB.l || mx > VB.w - VB.r) return hide();
-    const k = nearestRung(ch, mx), m = ch.f.m[k], v = ch.f.A[k];
+    const k = nearestRung(ch, mx), m = ch.f.m[k], v = fv(ch.f, k);
     ch.hl.setAttribute('cx', ch.S.X(m)); ch.hl.setAttribute('cy', ch.S.Y(v)); ch.hl.setAttribute('visibility', 'visible');
-    tip.innerHTML = `${fmtM(m)} points<br>mean ${fmtPct(v)}<br><span style="opacity:.7">${d.ref.name.toLowerCase()} ${fmtPct(d.ref.mean)}</span>`;
+    tip.innerHTML = `${fmtM(m)} points<br>mean ${fmtPct(v)}<br><span style="opacity:.7">${d.ref.name.toLowerCase()} ${fmtPct(rv(d.ref))}</span>`;
     tip.hidden = false;
     const cr = card.getBoundingClientRect(); let left = ev.clientX - cr.left + 14, top = ev.clientY - cr.top - 10;
     if (left + tip.offsetWidth > cr.width - 6) left = ev.clientX - cr.left - tip.offsetWidth - 14;
@@ -229,7 +237,7 @@ function render() {
     const ch = drawChart(card, d, f, S); charts.push(ch); attachHover(card, ch, d);
     const det = document.createElement('details');
     det.innerHTML = `<summary>Numbers</summary><div class="tw"><table><thead><tr><th>points</th><th>mean</th><th>median</th><th>worst</th></tr></thead><tbody>${
-      f.m.map((m, i) => `<tr><td>${fmtM(m)}</td><td>${fmtPct(f.A[i])}</td><td>${fmtPct(f.T[i])}</td><td>${fmtPct(f.W[i])}</td></tr>`).join('')
+      f.m.map((m, i) => `<tr><td>${fmtM(m)}</td><td>${fmtPct(fv(f, i))}</td><td>${fmtPct(fv(f, i, 'T'))}</td><td>${fmtPct(fv(f, i, 'W'))}</td></tr>`).join('')
     }</tbody></table></div>`;
     card.appendChild(det);
     grid.appendChild(card);
@@ -240,14 +248,14 @@ function render() {
 function renderDefs(d) {
   const ns = d.pde === 'ns3d';
   const rows = ns ? [
-    ['Error', 'Relative velocity error ‖u − u<sub>ref</sub>‖ / ‖u<sub>0</sub>‖ against CNAB2 at Δt = 10⁻³ on the same mesh, taking the largest over the five output times. The ROM is the k = 8 head on the frozen R = 64 coordinate-network bank, with the network itself evaluated at the quadrature points.'],
+    ['Error', 'Relative L2 velocity error ‖u(t) − u<sub>ref</sub>(t)‖ / ‖u<sub>0</sub>‖ against CNAB2 at Δt = 10⁻³ on the same mesh, at each of the five output times after t = 0. Each case is then reduced to one number: the worst output time, or the RMS over the five times. The ROM is the k = 8 head on the frozen R = 64 coordinate-network bank, with the network itself evaluated at the quadrature points.'],
     ['Exact tensor ROM', 'The same ROM with the advection term computed by the exact precomputed tensor. Quadrature can at best match it.'],
     ['Mean error', 'The average of the per-case errors over all 16 cases.'],
     ['M*', 'The smallest point count from which every larger count keeps both the worst and the median case within 5% of the tensor ROM. It is defined on worst and median error, not the mean.'],
     ['CNAB2, 60 steps', 'The cheapest full-order step count at least as accurate as the ROM at 96³. At 64³ and 32³ a cheaper step count (50 or 40) already is.'],
     ['Cases', '16 development cases (seed 202609202). The test cases are still sealed.'],
   ] : [
-    ['Error', 'Error against the refined second-order (E0) space–time reference, taking the largest over the output times.'],
+    ['Error', 'Relative L2 error ‖u(t) − u<sub>ref</sub>(t)‖ / ‖u<sub>0</sub>‖ against the refined second-order (E0) space–time reference, on a fixed comparison grid (256² in 2D, 64³ in 3D), at t = 0.05, 0.10, …, 0.25. Each case is then reduced to one number: the worst output time, or the RMS over the five times.'],
     ['Plateau', 'The worst and median error of the largest rule in the run, checked against a second rule family. This is where adding points stops helping.'],
     ['Mean error', 'The average of the per-case errors over the plotted cases.'],
     ['M*', 'The smallest point count from which every larger count keeps the worst and the median case within 5% of the plateau, with the family’s top two rules within 1%. It is defined on worst and median error, not the mean. A family that only enters that band at its largest count has no confirmed plateau.'],

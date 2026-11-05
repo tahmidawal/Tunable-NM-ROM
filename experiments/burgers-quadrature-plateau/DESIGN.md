@@ -250,3 +250,38 @@ JCP-campaign object of study (CLAUDE.md "JCP paper campaign", plan `reports/2026
 weak projection, not strong-form collocation. Consequence, stated in the report: the off-mesh ROM converges in $m$ to the
 continuum-advection reduced solution, which differs from the upwind FOM's by the stencil's $O(h)$ consistency gap; that is why
 the comparison is made against the E0 continuum-consistent references.
+
+## Amendment A2 (2026-11-05, before any cluster job; answers `reviews/codex-design-02.md`, verdict NOT-READY)
+
+**A2.1 Tail stability (open blocker 1).** A mesh's plateau is *demonstrated* only if (a) G-anchor passes (A1.1) and (b) in
+at least two families the top two rungs are each within 1 % of the anchor in both $W$ and $T$ (ST, eligible cases).
+Otherwise every plateau-dependent number at that mesh ($M^*$, cheapest plateau rule, matched FOM, speed-up) is printed as
+"unresolved". A family's global $M^*$ is printed as a plateau point only if that family's own top two rungs are within 1 %
+of the anchor; otherwise it is printed as "within 5 % of the anchor from $m$ = …, tail not demonstrated".
+
+**A2.2 Solver exits (major 4).** Non-converged steps, both dimensions: LM reason 0 (budget / fixed-sweep not stationary),
+2 (tiny step) and 3 (damping limit); converged: 1 (tolerance), 4 (stationary). A rung is invalid if non-converged steps
+exceed 1 % of its steps or if any reason-3 exit occurs.
+
+**A2.3 Envelopes (major 5).** Independent adverse endpoints: for "$X\le Y$" the robust pass is $X^{+}\le Y^{-}$ and the robust
+fail is $X^{-}>Y^{+}$; for the band test $|X/Y-1|\le0.05$ the robust pass requires both $|X^{+}/Y^{-}-1|$ and
+$|X^{-}/Y^{+}-1|\le0.05$ and the robust fail requires the interval distance to exceed the band. $X^{\pm}$ is the statistic
+recomputed with every case's $e_c$ shifted by $\pm\epsilon_{{\rm ref},c}$ (max and median are monotone in each $e_c$).
+
+**A2.4 Speed-up estimate (major 7).** The printed same-job speed-up of the selected pair comes from the **confirmation panel**
+(5 repetitions × the timing cases). If the main-panel and confirmation medians of either member differ by more than 10 %,
+the speed-up is printed as provisional.
+
+**A2.5 Budget per job (major 8).** To fit the cap the ladders are trimmed (fixed now): 2D Gauss
+$n\in\{24,32,36,40,45,50,55,60,64,72,80,96,128,256\}$, Fibonacci as §4 (10 rungs), Sobol $\{1024,\dots,32768\}$ (6 rungs);
+3D CBC as §4 (14), Gauss as §4 (13), Sobol $\{1024,\dots,32768\}$ (6), Korobov $\{2039, 4093, 16381\}$. Timing: 6 cases
+(the first 6 of the cohort, as October) × 3 repetitions, lattice contract for every ROM arm; the full-field contract only
+in the confirmation panel (selected rule and conv arm). Estimated wall time per job (setup + compile/warm-up + accuracy +
+FOMs + timing + confirmation): 2D 256² 20 min, 512² 22, 1024² 25, 2048² 30, 4096² 38; 3D 65 20, 129 25, 257 40 — total
+≈ 3.7 GPU-h. Wall limits: 1.5 × estimate. The first job (2D 256²) is the pilot; if it exceeds 1.3 × its estimate, the
+remaining estimates are scaled by the measured ratio and the lowest-priority meshes (2D 512², 2048²) are dropped as needed.
+
+**A2.6 Operator wording (new major).** A1.9's "differs by the stencil's $O(h)$ consistency gap" is replaced by: the off-mesh
+advection operator and the upwind stencil differ by the stencil's consistency error; how that translates into the difference
+between the computed reduced and full-order trajectories (projection, test space, weighting, time stepping, termination) is
+not separately demonstrated here, and no solution-error rate or causal attribution is claimed.

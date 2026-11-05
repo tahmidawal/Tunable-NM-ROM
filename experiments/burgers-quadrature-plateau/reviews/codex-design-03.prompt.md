@@ -1,0 +1,3 @@
+You are an independent reviewer. STRICTLY READ-ONLY: do not create, modify or delete any file, do not run git commands that write, do not submit jobs, do not touch LAB-LOG.md. Only read files and reply.
+
+Re-review /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-05-burgers-quadrature-plateau/experiments/burgers-quadrature-plateau/DESIGN.md. Your previous reviews are reviews/codex-design-01.md and reviews/codex-design-02.md (both NOT-READY). Amendment A2 at the end answers review 02. For each PARTIALLY / open item of review 02 and the new major, say RESOLVED / NOT RESOLVED in one line, and list any NEW blocker/major. Under 400 words. End with a verdict line: READY, READY-WITH-FIXES, or NOT-READY.

@@ -310,13 +310,13 @@ def shifted_grid_tables(G, n, shift):
     off = jnp.asarray(-np.asarray(shift) * n)
 
     @jax.jit
-    def one(col):
+    def one(col, kvec, off):          # geometry and offset are explicit arguments (not captured)
         u = col.reshape(3, n, n, n)
-        om = F.ifft(1j * F.cross(geom[0], F.fft(u)))
+        om = F.ifft(1j * F.cross(kvec, F.fft(u)))
         return SR.shift_field(u, off), SR.shift_field(om, off)
     Us, Ws = [], []
     for r in range(R):
-        u, om = one(jnp.asarray(G[:, r]))
+        u, om = one(jnp.asarray(G[:, r]), geom[0], off)
         Us.append(u.reshape(3, -1).T)
         Ws.append(om.reshape(3, -1).T)
     U = jnp.stack(Us, axis=-1) * n ** 1.5

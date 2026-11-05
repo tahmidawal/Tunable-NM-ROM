@@ -272,7 +272,7 @@ def main():
             out_["jac_tensor"] = dict(worst=float(r.max()), median=float(np.median(r)))
         return out_, a
 
-    def rollouts(Qd):
+    def rollouts(Qd, keep0=None):
         res = {}
         for arm in ("head", "span64"):
             e_ref = np.full((ncase, 6), np.nan)
@@ -285,6 +285,8 @@ def main():
                     finite = False
                     break
                 e_ref[case], e_t[case] = np.asarray(a1), np.asarray(a2)
+                if keep0 is not None and case == int(cfg["timing_case"]):
+                    keep0[arm] = np.asarray(f)
             res[arm] = dict(finite=finite, errors=e_ref.tolist(),
                             stats=D.stats_from_cases(e_ref, target) if finite else None,
                             delta_tensor=float(np.max(e_t)) if finite else None)
@@ -379,6 +381,7 @@ def main():
     rz = np.load(ROOT / cfg["rules_file"])
     rmeta = json.loads((ROOT / cfg["rules_file"]).with_name("rules.json").read_text())["rules"]
     ladder = {}
+    case0_fields = {}
     names = [cfg["must_fail"]] + [nm for fam in cfg["families"] for nm in cfg["ladder"][fam]]
     for name in names:
         X, w = rz[f"{name}_X"], rz[f"{name}_w"]
@@ -394,7 +397,10 @@ def main():
             jax.block_until_ready(W)
             build = time.time() - t0
             r_, _ = rho(U, W, P, ref_a=a_cont if integ == "net" else None)
-            roll = rollouts(Q.pad_tables(U, W, P, next_pow2(Mq)))
+            k0 = {} if integ == "net" else None
+            roll = rollouts(Q.pad_tables(U, W, P, next_pow2(Mq)), keep0=k0)
+            if k0 is not None:
+                case0_fields[name] = k0
             entry[integ] = dict(build_seconds=build, rho=r_, rollouts=roll)
             log(f"{name} {integ}: rho_a {r_['adv_tensor']['worst']:.3e} head worst "
                 f"{roll['head']['stats']['evolved_worst'] if roll['head']['finite'] else float('nan'):.6e}")
@@ -449,7 +455,8 @@ def main():
                 m2 = mstar_delta(sizes, de, fin)
                 ms[f"{integ}/{fam}/{arm}"] = dict(
                     mstar=m1, mstar_rule=(nm[sizes.index(m1)] if m1 is not None else None),
-                    mstar_delta=m2, mstar_delta_rule=(nm[sizes.index(m2)] if m2 is not None else None))
+                    mstar_delta=m2, mstar_delta_rule=(nm[sizes.index(m2)] if m2 is not None else None),
+                    endpoint_only=bool(m1 is not None and m1 == max(sizes)))
     report["mstar"] = ms
     log(f"M*: {ms}")
     dump()
@@ -496,20 +503,32 @@ def main():
                     ratio=float(t_fast[s]["median_ms"] / t_s0[s]["median_ms"]),
                     end_ratio=float(t_s1[s]["median_ms"] / t_s0[s]["median_ms"])) for s in sentinels}
     passed = all(1 / gr <= g["ratio"] <= gr and 1 / gr <= g["end_ratio"] <= gr for g in gate.values())
+    # G5 (amendment A2): every timed output must be finite and reproduce the accuracy-pass FIELDS
     agree = 0.0
     for name, value in last.items():
+        got = np.asarray(value).reshape(dev.shape[1:])
+        if not np.all(np.isfinite(got)):
+            agree = np.inf
+            break
         if name.startswith("tensor_"):
-            src = trows[name[len("tensor_"):]]["errors"][case]
+            ref = np.asarray(tensor_fields[name[len("tensor_"):]][case])
         elif name.startswith("net_head_"):
-            src = ladder[name[len("net_head_"):]]["net"]["rollouts"]["head"]["errors"][case]
+            ref = case0_fields[name[len("net_head_"):]]["head"]
         elif name.startswith("net_span64_"):
-            src = ladder[name[len("net_span64_"):]]["net"]["rollouts"]["span64"]["errors"][case]
+            ref = case0_fields[name[len("net_span64_"):]]["span64"]
         else:
-            src = cnab[name[len("CNAB2_s"):]]["errors"][case]
-        if not np.all(np.isfinite(src)):
-            continue
-        e = rel_case(np.asarray(value).reshape(dev.shape[1:]), dev, case)
-        agree = max(agree, float(np.max(np.abs(e - np.asarray(src)))))
+            ref = None
+        if ref is None:   # CNAB2: compare errors against the accuracy pass
+            src = np.asarray(cnab[name[len("CNAB2_s"):]]["errors"][case])
+            if not np.all(np.isfinite(src)):
+                continue
+            d = float(np.max(np.abs(rel_case(got, dev, case) - src)))
+        else:
+            d = float(np.linalg.norm(got - ref) / max(np.linalg.norm(ref), 1e-300))
+        if not np.isfinite(d):
+            agree = np.inf
+            break
+        agree = max(agree, d)
     # kernel microbenchmark: 30 Jacobian contractions (one query's sweeps)
     pre0 = 1.0 + 0.5 * dtv * nu * lamj
 
@@ -518,7 +537,7 @@ def main():
         def kern(adv, mid0):
             def body(m, _):
                 J = Q.jac_adv(kind, adv, m)
-                return m + 1e-12 * J[0, :], None
+                return m + 1e-12 * jnp.sum(J, axis=0), None   # every entry feeds the dependency (A2)
             m, _ = jax.lax.scan(body, mid0, None, length=steps * iters)
             return m
         return kern

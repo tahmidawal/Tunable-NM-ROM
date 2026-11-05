@@ -158,7 +158,8 @@ def main():
         parts = []
         for fam in s["config"]["families"]:
             m, e = mrow(n, "net", fam, "head")
-            parts.append(f"{fam} {m if m is not None else 'not reached'}")
+            end = m is not None and m == int(max(rec[n][("net", fam, "head")]["sizes"]))
+            parts.append(f"{fam} {m if m is not None else 'not reached'}" + (" (endpoint only, plateau unconfirmed)" if end else ""))
         wt, dt_ = evolved(s["tensor"]["head"]["errors"])
         w(f"2. **{n}³, `net` integrand, head arm — $M^\\ast$ per family:** " + ", ".join(parts)
           + f". Tensor head: worst {pct(wt)}, median {pct(dt_)}.")
@@ -246,7 +247,9 @@ def main():
     w("")
     w("$M^\\ast$: smallest ladder size that, together with every larger size, has evolved worst ≤ 1.05× and evolved median "
       "≤ 1.05× the tensor ROM's in the same job. $M^\\ast_\\delta$: the same with $\\delta_T \\le 10^{-4}$ (the ROM stays within "
-      "$10^{-4}\\lVert u_0\\rVert$ of the tensor ROM). Recomputed here from the error arrays and checked against the in-job values.")
+      "$10^{-4}\\lVert u_0\\rVert$ of the tensor ROM). Recomputed here from the error arrays and checked against the in-job values. "
+      "† = reached only at the largest ladder size: endpoint reached, plateau unconfirmed (amendment §A2). $M^\\ast$ is specific to "
+      "this ladder and these rule seeds.")
     w("")
     w("| mesh | integrand | arm | " + " | ".join(f"{f} $M^\\ast$ (worst at $M^\\ast$)" for f in FAMS) + " | " + " | ".join(f"{f} $M^\\ast_\\delta$" for f in FAMS) + " |")
     w("|---|---|---|" + "---|" * (2 * len(FAMS)))
@@ -261,7 +264,7 @@ def main():
                         c1.append("not reached")
                     else:
                         i = list(r["sizes"]).index(r["m1"])
-                        c1.append(f"{r['m1']} ({pct(r['ev'][i][0])})")
+                        c1.append(f"{r['m1']} ({pct(r['ev'][i][0])})" + ("†" if r["m1"] == int(max(r["sizes"])) else ""))
                     c2.append(str(r["m2"]) if r["m2"] is not None else "not reached")
                 w(f"| {n}³ | `{integ}` | {arm} | " + " | ".join(c1) + " | " + " | ".join(c2) + " |")
     w("")

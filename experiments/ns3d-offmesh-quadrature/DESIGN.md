@@ -224,3 +224,29 @@ $2\pi\,|k\cdot x|$; $K$ grows from 4,630 (32³) to about 125,000 (96³), so the 
 without regard to $K$. **Change:** the NUDFT-vs-FFT sub-criterion of G2 becomes $\le 10^{-10}$
 (still far below every $\rho$ the study reads); its value is reported per mesh. Nothing else changes.
 The smoke is rerun with this change before submission.
+
+## A2. Amendment after the independent Codex review, before any cluster job (2026-11-05)
+
+Codex (`codex-cli 0.166.0`) reviewed DESIGN.md, `qrom.py` and `run_mesh.py`. Its first attempt read
+nothing (the `-s read-only` sandbox cannot start on this box, as in the cylinder lane); the second ran
+without the flag with read-only enforced by prompt (working tree verified unchanged afterwards). Verdict
+**READY WITH FIXES**; it confirmed Step 0, the contraction and scale factor, test values, curl indexing,
+the half-space interpolant, the shift sign and the solver copies (CPU synthetic checks to about
+$10^{-15}$). Review saved in `reviews/codex-design-review.md`. Dispositions, all accepted:
+
+1. *(major)* G5 could pass a non-finite timed output, and compared error magnitudes, not fields.
+   **Fixed:** every timed output must be finite; tensor and quadrature timed fields are compared directly
+   with the accuracy-pass fields of the timing case (relative $\le 10^{-9}$); CNAB2 keeps the error comparison.
+2. *(minor)* The kernel microbenchmark fed only one Jacobian row into its loop dependency.
+   **Fixed:** the column sums of the whole Jacobian feed the dependency.
+3. *(minor)* A pass at the largest ladder size alone counts as $M^\ast$ although "held" is then
+   undemonstrated. **Definition unchanged;** such an $M^\ast$ is labelled "endpoint only, plateau
+   unconfirmed" in the summary and the report. $M^\ast$ is specific to this ladder and these rule seeds.
+4. *(minor)* Continuum-relative Jacobians were not measured. **Scope narrowed explicitly:** the
+   continuum-relative measurement of §3 item 2 is the advection $\rho_a$ only.
+5. *(minor)* The positive-control FFT shift captured the mesh wave numbers as a compile-time constant.
+   **Fixed:** wave numbers and offset are explicit jit arguments.
+
+Codex also noted that the 96³ positive-control tables alone occupy about 8.9 GB; no blocker was found
+for an 80 GB A100, and the 160 GB host allocation is unchanged. The local smoke is rerun with these fixes
+before submission.

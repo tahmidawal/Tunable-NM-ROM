@@ -44,7 +44,7 @@ def cfg2d(L, cohort='test64', cases=None, local=False, arms=None, foms=None, tim
     c = dict(dim=2, mesh=L, cohort=cohort, gtol=1e-3, step_budget=600,
              checkpoint='vendor/tree/experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl',
              rotation='vendor/tree/experiments/quadrature-study/inputs/rotation_R512.npz',
-             rules_manifest='rules2d_manifest.json', expected_store_version=store_version(),
+             rules_manifest='rules2d_manifest.json', rules_arrays='rules2d.npz', expected_store_version=store_version(),
              arms=arms or arms2d(), conv_arm='gauss256', anchor_check_arm='fib46368', controls=['ctrl_smolyak8'],
              foms=foms or foms2d(L), audit_cases=[0, 2],
              timing=timing or dict(cases=6, reps=3, confirm_reps=5, burn=0.1, initial_burn=30.0, seed=20261105))
@@ -94,10 +94,13 @@ def manifest2d():
     sys.path.insert(0, str(HERE))
     import plateau2d as P2  # noqa: F401  (sets sys.path for the vendored modules)
     import qcore as Q
-    out = {}
+    import numpy as np
+    out, arr = {}, {}
     for a in arms2d():
         X, w = Q.offmesh_rule(a['rule'])
         out[a['rule']] = P2.rule_sha(X, w)
+        arr[f"{a['rule']}_X"], arr[f"{a['rule']}_w"] = X, w
+    np.savez(HERE / 'rules2d.npz', **arr)          # A3: in-job rules are compared to these arrays within round-off
     (HERE / 'rules2d_manifest.json').write_text(json.dumps(dict(
         note='sha256(X.tobytes() + w.tobytes()) of every 2D rule, from vendored qcore.offmesh_rule, computed locally',
         rules=out), indent=1) + '\n')

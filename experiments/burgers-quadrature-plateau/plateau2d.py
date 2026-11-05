@@ -163,9 +163,18 @@ def main():
                                   dcall=(lambda W, dec=dec, data=data: dec(W, data)),
                                   build_seconds=time.perf_counter() - t1)
     rep['setup']['rules'] = rule_rec
-    bad = [k for k, v in rule_rec.items() if v['manifest'] is not None and v['manifest'] != v['sha256']]
-    rep['gates']['G_R'] = dict(checked=sum(v['manifest'] is not None for v in rule_rec.values()), mismatched=bad,
-                               passed=not bad and all(v['manifest'] is not None for v in rule_rec.values()))
+    # G-R (amendment A3): in-job rule (generated as in October) vs the committed local arrays, within round-off
+    ra = np.load(cfg_path(cfg['rules_arrays']))
+    for k, v in rule_rec.items():
+        X, w = Q.offmesh_rule(v['rule'])
+        X0, w0 = ra[f"{v['rule']}_X"], ra[f"{v['rule']}_w"]
+        v['bitwise'] = v['manifest'] == v['sha256']
+        v['max_dX'] = float(np.abs(X - X0).max()) if X.shape == X0.shape else None
+        v['max_dw_rel'] = float(np.abs(w - w0).max() / np.abs(w0).max()) if w.shape == w0.shape else None
+    bad = [k for k, v in rule_rec.items() if v['max_dX'] is None or v['max_dX'] > 1e-14 or v['max_dw_rel'] > 1e-12]
+    rep['gates']['G_R'] = dict(checked=len(rule_rec), bitwise=sum(v['bitwise'] for v in rule_rec.values()),
+                               mismatched=bad, worst_dX=max(v['max_dX'] or 0 for v in rule_rec.values()),
+                               worst_dw_rel=max(v['max_dw_rel'] or 0 for v in rule_rec.values()), passed=not bad)
     assert not bad, bad
     log(f'arms built: {len(arms)}')
     save()

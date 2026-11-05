@@ -285,3 +285,12 @@ remaining estimates are scaled by the measured ratio and the lowest-priority mes
 advection operator and the upwind stencil differ by the stencil's consistency error; how that translates into the difference
 between the computed reduced and full-order trajectories (projection, test space, weighting, time stepping, termination) is
 not separately demonstrated here, and no solution-error rate or causal attribution is claimed.
+
+## Amendment A3 (2026-11-05, post-failure; job 6897098 `p2d256` stopped at gate G-R after 2.1 min, before any rollout)
+
+G-R as written (bitwise sha256 of every 2D rule against the locally computed manifest) fired for every Gauss rule: the
+cluster venv (NumPy 2.5.0) and the local venv (NumPy 2.4.4) return `leggauss` nodes/weights that differ in the last bits;
+Fibonacci and Sobol rules matched bitwise. The rules are generated in-job exactly as in October (parity with the October
+rollouts needs that). G-R is changed to: in-job rule vs the committed local arrays `rules2d.npz`, max |ΔX| ≤ 1e-14 and
+max |Δw| / max w ≤ 1e-12, with the bitwise count recorded. Nothing else changes; the failed job is charged to the budget.
+3D rules are loaded from the committed `rules3d.npz` (never regenerated), so their bitwise check stands.

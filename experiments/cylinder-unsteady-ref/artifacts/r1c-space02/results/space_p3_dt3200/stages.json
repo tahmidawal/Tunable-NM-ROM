@@ -1,0 +1,51 @@
+{
+  "status": "completed",
+  "stages": [
+    {
+      "name": "study",
+      "dt": 0.0003125,
+      "t_start": 9.500000000000247,
+      "planned_steps": 1120,
+      "until_periodic": false,
+      "status": "completed",
+      "steps": 1120,
+      "t_end": 9.849999999999929,
+      "periodic_reached": false,
+      "cycles": [],
+      "wall_seconds": 709.5965601187199,
+      "seconds_per_step": 0.6335683576712784
+    }
+  ],
+  "states": [],
+  "snapshots": [
+    {
+      "file": "snapshots_0000.npz",
+      "sha256": "9a6ebe32e006e1dc937fa2e072cda7a82af55a48919eda3bbd58044676cac2e0",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0001.npz",
+      "sha256": "5463cd4fedf8ae0297704d71687faf0217b56c51bc5ce4da4c87f2830c81b5f7",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0002.npz",
+      "sha256": "3f87ddf5dca1ec4ce6715888152e1bf6fa91be1b05055fd2f5398e0ac946f79c",
+      "count": 41
+    }
+  ],
+  "linear_checks_count": 35,
+  "linear_checks_max": 3.6101617430656824e-16,
+  "factorizations": 29,
+  "timers_seconds": {
+    "conv_apply": 5.023248217999935,
+    "factor": 94.65340937394649,
+    "solve": 574.5618599662557,
+    "observe": 22.691102248616517,
+    "diagnostics": 1.590440065599978
+  },
+  "interpolation": null,
+  "layout_sha256": "03d4f93c204e47fc603afc98ba044253f30fc0abf53dd4d919a52037440f2025",
+  "ndof": 235231,
+  "elapsed_seconds": 709.9474853333086
+}

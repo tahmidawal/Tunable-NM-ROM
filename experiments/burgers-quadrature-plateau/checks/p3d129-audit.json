@@ -1,0 +1,131 @@
+{
+ "job": "runs/p3d129",
+ "dim": 3,
+ "mesh": 129,
+ "job_id": "6899540",
+ "gpu": "NVIDIA A100 80GB PCIe",
+ "checks": {
+  "G_audit": {
+   "compared": 2432,
+   "max_rel": 3.3766483293528687e-15,
+   "passed": true
+  },
+  "G_par": {
+   "compared": 384,
+   "max_rel": 1.2684487724988246e-14,
+   "passed": true,
+   "arms": [
+    "ctrl_smol8",
+    "gl16",
+    "gl24",
+    "gl32",
+    "kor16381",
+    "lat16384",
+    "lat256",
+    "lat32768",
+    "lat4096",
+    "lat8192",
+    "sob16384",
+    "tensor"
+   ],
+   "worst_items": [
+    {
+     "arm": "ctrl_smol8",
+     "case": 12,
+     "rel": 1.2684487724988246e-14
+    },
+    {
+     "arm": "gl24",
+     "case": 16,
+     "rel": 1.0489873504318602e-14
+    },
+    {
+     "arm": "lat32768",
+     "case": 16,
+     "rel": 1.0275884334965773e-14
+    },
+    {
+     "arm": "sob16384",
+     "case": 16,
+     "rel": 1.0265249978546295e-14
+    },
+    {
+     "arm": "gl16",
+     "case": 16,
+     "rel": 1.0116358653852107e-14
+    }
+   ]
+  },
+  "fault_injections": {
+   "swapped_case": {
+    "e": 0.009589567644953332,
+    "e_swapped": 0.5806991419256947,
+    "fired": true
+   },
+   "perturbed_record": {
+    "record": [
+     "lat32768",
+     0,
+     "ST"
+    ],
+    "fired": true
+   },
+   "perturbed_reference_byte": {
+    "fired": true
+   },
+   "passed": true
+  }
+ },
+ "in_job_gates": {
+  "G_R": {
+   "checked": 37,
+   "mismatched": [],
+   "passed": true
+  },
+  "G_coh": {
+   "cohort": "test32",
+   "sha256": "85cef1e7e736c8203a4161d5e7dc575f1291befe744086955d0823c6cbf673ea",
+   "expected": "85cef1e7e736c8203a4161d5e7dc575f1291befe744086955d0823c6cbf673ea",
+   "passed": true
+  },
+  "G_ref": {
+   "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+   "loaded": 64,
+   "passed": true
+  },
+  "gram_condition": 1.002278026460992,
+  "tensor_vs_direct": 2.473903731695495e-16,
+  "G1_derivative_vs_fd": 1.0670765479049681e-07,
+  "G2_meshnodes_offmesh_vs_tensor": 7.182200368081708e-16,
+  "G3_jacobian_vs_jacfwd": 0.0,
+  "G3_adv_half_Jc": 7.839756597315806e-16,
+  "G4_solver_vs_vendor": {
+   "fields": 0.0,
+   "coefs": 0.0,
+   "its_equal": true
+  },
+  "G_lat": {
+   "compared": 228,
+   "max_rel": 0.0,
+   "passed": true
+  },
+  "G_time": {
+   "max_output_diff": 0.0,
+   "worst_block_drift": 1.0514167227399047,
+   "outputs_pass": true,
+   "drift_pass": true
+  },
+  "G_fin": {
+   "nonfinite": []
+  },
+  "G_fom": {
+   "nonconverged": []
+  },
+  "G_score_vs_refstore": {
+   "compared": 4,
+   "max_rel": 0.0,
+   "passed": true
+  }
+ },
+ "passed": true
+}

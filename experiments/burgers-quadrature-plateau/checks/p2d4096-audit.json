@@ -1,0 +1,123 @@
+{
+ "job": "runs/p2d4096",
+ "dim": 2,
+ "mesh": 4096,
+ "job_id": "6900351",
+ "gpu": "NVIDIA H200",
+ "checks": {
+  "G_audit": {
+   "compared": 150,
+   "max_rel": 0.0,
+   "passed": true
+  },
+  "G_par": {
+   "compared": 24,
+   "max_rel": 6.4111574455509415e-15,
+   "passed": true,
+   "arms": [
+    "ctrl_smolyak8",
+    "fib1597",
+    "fib17711",
+    "fib4181",
+    "fib46368",
+    "fib6765",
+    "gauss128",
+    "gauss256",
+    "gauss32",
+    "gauss64",
+    "gauss96",
+    "sobol4096"
+   ],
+   "worst_items": [
+    {
+     "arm": "gauss32",
+     "case": 2,
+     "rel": 6.4111574455509415e-15
+    },
+    {
+     "arm": "ctrl_smolyak8",
+     "case": 2,
+     "rel": 3.7012867726892036e-15
+    },
+    {
+     "arm": "fib1597",
+     "case": 2,
+     "rel": 1.2202044305568802e-15
+    },
+    {
+     "arm": "fib17711",
+     "case": 2,
+     "rel": 1.1388574685197548e-15
+    },
+    {
+     "arm": "ctrl_smolyak8",
+     "case": 0,
+     "rel": 1.0952770543083984e-15
+    }
+   ]
+  },
+  "fault_injections": {
+   "swapped_case": {
+    "e": 0.012920860716862723,
+    "e_swapped": 1.0317915708058498,
+    "fired": true
+   },
+   "perturbed_record": {
+    "record": [
+     "ctrl_smolyak8",
+     0,
+     "ST"
+    ],
+    "fired": true
+   },
+   "perturbed_reference_byte": {
+    "fired": true
+   },
+   "passed": true
+  }
+ },
+ "in_job_gates": {
+  "G_coh": {
+   "cohort": "test64",
+   "sha256": "cd058fd2a297c20296b897e54cb186033a44a8db9527d98dcb2c2dad6044527c",
+   "expected": "cd058fd2a297c20296b897e54cb186033a44a8db9527d98dcb2c2dad6044527c",
+   "passed": true
+  },
+  "G_ref": {
+   "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+   "loaded": 128,
+   "passed": true
+  },
+  "G_R": {
+   "checked": 31,
+   "bitwise": 17,
+   "mismatched": [],
+   "worst_dX": 1.1102230246251565e-16,
+   "worst_dw_rel": 1.530005128436401e-13,
+   "passed": true
+  },
+  "G_lat": {
+   "compared": 186,
+   "max_rel": 3.111913277676659e-15,
+   "passed": true
+  },
+  "G_time": {
+   "max_output_diff": 3.111913277676659e-15,
+   "worst_block_drift": 1.1702253800309321,
+   "outputs_pass": true,
+   "drift_pass": false
+  },
+  "G_fin": {
+   "nonfinite": []
+  },
+  "G_fom": {
+   "nonconverged": []
+  },
+  "G_score_vs_refstore": {
+   "compared": 62,
+   "max_rel": 0.0,
+   "passed": true
+  }
+ },
+ "passed": true
+}

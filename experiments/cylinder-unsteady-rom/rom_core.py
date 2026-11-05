@@ -91,6 +91,10 @@ class Arm:
         # Basis-only (no supremizer) transform for the gated projection floor.
         self.T0, self.retained0, _, self.orth_defect0 = orthonormal_transform(gram[:r, :r])
         self.raw_V, self.raw_G = raw_V, raw_G
+        if orthonormalize:
+            # Verify the EVALUATED basis (Codex ROM review 02): re-orthogonalize against wdot(Vb, Vb).
+            self.T, self.orth_defect = self._evaluated_orth(raw_V, self.T)
+            self.T0, self.orth_defect0 = self._evaluated_orth(raw_V[..., :r], self.T0)
         self.Vb = raw_V @ self.T; self.Gb = raw_G @ self.T
         self.lV, self.lG = ex.V[..., L], ex.G[..., L]
         self.Pb = ex.P[:, :r]
@@ -108,6 +112,20 @@ class Arm:
         self.chiV = ex.V[..., [ex.col('chi_x'), ex.col('chi_y')]]
         self.chiG = ex.G[..., [ex.col('chi_x'), ex.col('chi_y')]]
         self.build()
+
+    def _evaluated_orth(self, raw_V, T, passes=3):
+        w = self.ex.w
+        for _ in range(passes):
+            Mv = wdot(w, raw_V @ T, raw_V @ T)
+            defect = float(np.max(np.abs(Mv - np.eye(Mv.shape[0]))))
+            if defect <= 1e-13:
+                return T, defect
+            T = T @ np.linalg.inv(np.linalg.cholesky(Mv)).T
+        Mv = wdot(w, raw_V @ T, raw_V @ T)
+        defect = float(np.max(np.abs(Mv - np.eye(Mv.shape[0]))))
+        if defect > 1e-12:
+            raise ArithmeticError(f'evaluated basis not orthonormal: {defect:.2e}')
+        return T, defect
 
     def build(self):
         w, V, G, lV, lG, P = self.ex.w, self.Vb, self.Gb, self.lV, self.lG, self.Pb
@@ -188,8 +206,11 @@ class Arm:
         S = np.zeros((d + dp, d + dp)); S[:d, :d] = self.M; S[:d, d:] = -self.B.T; S[d:, :d] = self.B
         sol = np.linalg.solve(S, np.r_[-F0, np.zeros(dp)])
         c = sol[d:]; C[0] = c
-        self.initial = {'continuity_defect': float(np.linalg.norm(self.B @ a0 + self.BL)),
+        defect = float(np.linalg.norm(self.B @ a0 + self.BL))
+        self.initial = {'continuity_defect': defect,
                         'continuity_scale': float(max(np.linalg.norm(self.BL), 1e-300)),
+                        # characteristic scaling: tested divergence vs (U/D) sqrt|Omega|, U = 1, D = 0.1
+                        'characteristic_scaled_defect': defect * 0.1 / math.sqrt(self.ex.vol),
                         'initial_acceleration_norm': float(np.linalg.norm(sol[:d]))}
         hs = dt / substeps; a = a0.copy(); it_start = 0
         for _ in range(substeps):
@@ -253,8 +274,12 @@ class Arm:
         uu = proj['uu']; ul = proj['uv'][:, self.ex.col('lift')]
         fluct2 = uu - 2 * ul + self.L2l
         full, base = self.ref_coeffs(proj)
-        e_full = np.sqrt(self._nonneg(fluct2 - np.sum(full ** 2, 1), uu)) / np.sqrt(uu)
-        e_base = np.sqrt(self._nonneg(fluct2 - np.sum(base ** 2, 1), uu)) / np.sqrt(uu)
+        # Best-approximation norms with the actual evaluated Gram matrices (not assumed identity).
+        M0 = wdot(self.ex.w, self.raw_V[..., :self.r] @ self.T0, self.raw_V[..., :self.r] @ self.T0)
+        pf = np.einsum('tj,tj->t', full, np.linalg.solve(self.M, full.T).T)
+        pb = np.einsum('tj,tj->t', base, np.linalg.solve(M0, base.T).T)
+        e_full = np.sqrt(self._nonneg(fluct2 - pf, uu)) / np.sqrt(uu)
+        e_base = np.sqrt(self._nonneg(fluct2 - pb, uu)) / np.sqrt(uu)
         pv = proj['pv'][:, :self.dp]
         cp = np.linalg.solve(self.Gp, pv.T).T
         e_p = np.sqrt(self._nonneg(proj['pp'] - np.einsum('tk,tk->t', cp, pv), proj['pp'])) / math.sqrt(self.ex.vol)
@@ -267,7 +292,7 @@ class Arm:
         a = A[idx]
         # ||lift + Phi a - u_ref||^2 = ||u_ref - lift||^2 - 2 a.<u_ref - lift, phi> + |a|^2 (orthonormal)
         fluct2 = uu - 2 * ul + self.L2l
-        e_u = np.sqrt(self._nonneg(fluct2 - 2 * np.einsum('tj,tj->t', a, full) + np.einsum('tj,tj->t', a, a), uu)) / np.sqrt(uu)
+        e_u = np.sqrt(self._nonneg(fluct2 - 2 * np.einsum('tj,tj->t', a, full) + np.einsum('tj,jk,tk->t', a, self.M, a), uu)) / np.sqrt(uu)
         c = C[idx]; pv = proj['pv'][:, :self.dp]
         e_p = np.sqrt(self._nonneg(proj['pp'] - 2 * np.einsum('tk,tk->t', c, pv) + np.einsum('tk,kl,tl->t', c, self.Gp, c), proj['pp'])) / math.sqrt(self.ex.vol)
         div = np.sqrt(np.maximum(self.D0 + 2 * a @ self.D1 + np.einsum('tj,jk,tk->t', a, self.D2, a), 0)) * 0.1 / math.sqrt(self.ex.vol)

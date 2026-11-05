@@ -38,7 +38,17 @@ def main():
     if a.trained_low:
         if str(np.load(a.trained_low)['params_digest']) != str(np.load(a.trained_high)['params_digest']):
             raise ValueError('trained parameters differ between the two evaluations')
-        jl['uv_trained'] = np.load(a.trained_proj_low)['uv_trained']; jh['uv_trained'] = np.load(a.trained_proj_high)['uv_trained']
+        import hashlib
+        for tb, tp, j in ((a.trained_low, a.trained_proj_low, jl), (a.trained_high, a.trained_proj_high, jh)):
+            z = dict(np.load(tp))
+            if str(z['bank_eval_sha256']) != hashlib.sha256(Path(tb).read_bytes()).hexdigest() or not np.array_equal(z['t'], j['t']):
+                raise ValueError('trained-bank projections are not bound to their bank evaluation')
+            j['uv_trained'] = z['uv_trained']
+    import hashlib
+    for r4, exd in ((a.r4_low, a.low), (a.r4_high, a.high)):
+        meta = json.loads(Path(r4).read_text())
+        if meta.get('case') != a.case or meta.get('export_manifest_sha256') != hashlib.sha256((Path(exd) / 'EXPORT.json').read_bytes()).hexdigest():
+            raise ValueError(f'R4 result {r4} is not bound to export {exd} and case {a.case}')
     exl, exh = rc.Export(a.low), rc.Export(a.high)
     for ex, tb in ((exl, a.trained_low), (exh, a.trained_high)):
         if tb:
@@ -52,15 +62,15 @@ def main():
                for op in OPS}
         fl = rc.Arm(exl, spec['kind'], spec['r'], spec.get('key')).floors(jl)['velocity_basis_only']
         fh = rc.Arm(exh, spec['kind'], spec['r'], spec.get('key')).floors(jh)['velocity_basis_only']
-        floor_rel = abs(np.median(fl) - np.median(fh)) / np.median(fh)
+        floor_rel = max(abs(np.median(fl) - np.median(fh)) / np.median(fh), abs(fl.max() - fh.max()) / fh.max())
         r4l = json.loads(Path(a.r4_low).read_text())['arms'][spec['name']]
         r4h = json.loads(Path(a.r4_high).read_text())['arms'][spec['name']]
         metric_rel = {m: abs(r4l[m]['rms'] - r4h[m]['rms']) / r4h[m]['rms'] for m in ('e_u', 'e_p')} \
             if r4l.get('status') == r4h.get('status') == 'completed' else None
-        ok = max(rel.values()) <= TOL and floor_rel <= 1e-3 and metric_rel is not None and max(metric_rel.values()) <= 1e-2
+        ok = bool(max(rel.values()) <= TOL and floor_rel <= 1e-3 and metric_rel is not None and max(metric_rel.values()) <= 1e-2)
         res['arms'][spec['name']] = {'relative_change': rel, 'operator_max': max(rel.values()), 'floor_relative_change': float(floor_rel),
                                      'r4_metric_relative_change': metric_rel, 'pass': ok}
-    res['pass'] = all(v['pass'] for v in res['arms'].values())
+    res['pass'] = bool(all(v['pass'] for v in res['arms'].values()))
     res['consequence_if_fail'] = 'affected method ranking reported as unresolved (G5-A5 item 7)'
     Path(a.out).write_text(json.dumps(res, indent=2) + '\n')
     print(json.dumps({k: (v['operator_max'], v['floor_relative_change'], v['pass']) for k, v in res['arms'].items()}))

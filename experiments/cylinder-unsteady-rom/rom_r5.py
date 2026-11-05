@@ -106,6 +106,17 @@ def main():
         raise ValueError('projection saves differ from the record saves')
     arms = json.loads(a.arms)
     counter = [0]
+    hrec = np.load(run / 'history.npz')['rows']
+    hrec = hrec[(hrec[:, 8] == 1) & np.isfinite(hrec[:, 1])]
+
+    def force_witness(t, cd, cl, p1, p2):
+        """Max |difference| to the recorded reference (record stage) at common times in the window."""
+        ok = np.isfinite(cd)
+        rcd, rcl = np.interp(t[ok], hrec[:, 0], hrec[:, 1]), np.interp(t[ok], hrec[:, 0], hrec[:, 2])
+        rdp = np.interp(t[ok], hrec[:, 0], hrec[:, 5] - hrec[:, 6])
+        return {'accuracy_CD_maxabs_rel': float(np.max(np.abs(cd[ok] - rcd)) / np.max(np.abs(rcd))),
+                'accuracy_CL_maxabs': float(np.max(np.abs(cl[ok] - rcl))),
+                'accuracy_dp_maxabs': float(np.max(np.abs((p1 - p2)[ok] - rdp)))}
 
     def fe_once(steps, timed):
         counter[0] += 1
@@ -113,19 +124,22 @@ def main():
         t_cold = time.perf_counter()
         with ng.TaskManager():
             s = tr.Stepper(fe_cfg(steps * dt), d, ng)
+            construct = time.perf_counter() - t_cold
             s.run()
-        cold = time.perf_counter() - t_cold
         if not timed:
             return None
         sj = json.loads((d / 'stages.json').read_text())
+        # cold excludes persistence symmetrically with the ROM: construction + setup + stepping loop
+        cold = construct + sj['setup_seconds'] + sj['stages'][0]['wall_seconds']
         h = np.load(d / 'history.npz')['rows']
         xs = np.concatenate([np.load(d / f['file'])['x'] for f in sj['snapshots']])
         nv = s.V.ndof
         err = [np.sqrt(s.apply('M', xs[i] - ref_x[i]) @ (xs[i] - ref_x[i]) / (s.apply('M', ref_x[i]) @ ref_x[i]))
                for i in range(1, len(xs))]
+        fw = force_witness(h[:, 0], h[:, 1], h[:, 2], h[:, 5], h[:, 6])
         return {'cold': cold, 'warm': sj['stages'][0]['wall_seconds'], 'steps': sj['stages'][0]['steps'],
                 'lu_refreshes': sj['factorizations'], 'checksum': digest(h[:, [0, 1, 2, 5, 6]], xs[:, :nv]),
-                'accuracy_velocity_rel_L2_vs_record_max': float(max(err))}
+                'accuracy_velocity_rel_L2_vs_record_max': float(max(err)), **fw}
 
     def rom_once(spec, steps, timed):
         t_cold = time.perf_counter()
@@ -141,11 +155,13 @@ def main():
         fields = np.asarray([arm.lV + arm.Vb @ A[k] for k in range(0, steps + 1, save_every)])
         recon = time.perf_counter() - t_rec
         idx = np.arange(0, steps + 1, save_every)
-        err = arm.errors(proj, A, C, idx)['e_u']
+        ee = arm.errors(proj, A, C, idx); err = ee['e_u']
+        tt = t0 + np.arange(steps + 1) * dt
+        fw = force_witness(tt, F[:, 0], F[:, 1], P[:, 0], P[:, 1])
         return {'cold': cold, 'warm': warm, 'reconstruction': recon, 'steps': steps,
                 'newton_iterations_total': int(its.sum()), 'velocity_dimension': arm.d, 'pressure_dimension': arm.dp,
                 'checksum': digest(A[idx], C[idx], F, P), 'field_checksum': digest(fields),
-                'accuracy_e_u_max': float(err.max())}
+                'accuracy_e_u_max': float(err.max()), 'accuracy_e_p_max': float(ee['e_p'].max()), **fw}
 
     res = {'workload': {'window_s': WINDOW, 'dt': dt, 'steps': n_steps, 'save_every_steps': save_every,
                         'start_time': t0, 'case': a.case, 'warmup_steps': WARM_STEPS,

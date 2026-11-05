@@ -109,7 +109,9 @@ def main():
                 'uv_frozen': np.einsum('q,qc,qcj->j', ex.w, uref, ex.bank['frozen'][0])[None],
                 'uu': np.array([np.einsum('q,qc,qc->', ex.w, uref, uref)]), 'pp': np.array([1.0]), 'pv': np.ones((1, R))}
         err = arm.errors(proj, a[None], np.zeros((1, arm.dp)), [0])
-        print(f'near-dependent bank: retained {arm.retained}/{arm.raw_count}, orth defect {arm.orth_defect:.1e}, identical-field e_u {err["e_u"][0]:.1e}')
+        Mv = rc.wdot(ex.w, arm.Vb, arm.Vb)
+        assert np.max(np.abs(Mv - np.eye(arm.d))) <= 1e-12, 'evaluated basis must be orthonormal'
+        print(f'near-dependent bank: retained {arm.retained}/{arm.raw_count}, evaluated orth defect {np.max(np.abs(Mv - np.eye(arm.d))):.1e}, identical-field e_u {err["e_u"][0]:.1e}')
         assert err['e_u'][0] < 1e-6
         eb = arm.energy_balance(0.01, a, a * 0.1, np.ones(arm.dp))
         assert np.isfinite(eb['residual'])

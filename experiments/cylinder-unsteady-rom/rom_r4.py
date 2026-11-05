@@ -78,7 +78,10 @@ def main():
     tr = href[:, 0]
     ref_stats = stats(tr[1:], href[1:, 1], href[1:, 2], href[1:, 5] - href[1:, 6])
     period = ref_stats['period'] if ref_stats else 1 / 3.0
-    summary = {'case': a.case, 'Re': case['Re'], 'nu': nu, 'dt': a.dt, 'steps': n_steps, 'reference_cycles': ref_stats,
+    import hashlib
+    summary = {'export': str(a.export), 'export_manifest_sha256': hashlib.sha256((Path(a.export) / 'EXPORT.json').read_bytes()).hexdigest(),
+               'trained_bank_sha256': hashlib.sha256(Path(a.trained_bank).read_bytes()).hexdigest() if a.trained_bank else None,
+               'case': a.case, 'Re': case['Re'], 'nu': nu, 'dt': a.dt, 'steps': n_steps, 'reference_cycles': ref_stats,
                'targets': TARGETS, 'arms': {}}
     for spec in json.loads(a.arms):
         name = spec['name']; rec = {'spec': spec}

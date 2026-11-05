@@ -24,6 +24,22 @@
     "inputs/run09_bank.npz": {
       "from": "experiments/ns-obstacle-rom/checks/scanned-coordinate-composite-fixture-input/spatial-bank-raw.npz",
       "sha256": "645d030088ed7bc217b1afb59e3e13787b8f38c8ea5877599cc86d3b8b0a2a60"
+    },
+    "vendor/ref/transient.py": {
+      "from": "exp/2026-11-03-cylinder-unsteady-ref experiments/cylinder-unsteady-ref/transient.py",
+      "sha256": "d10e6a59ced88f7cddc5aa3f7d1c149826b188a46f2a3b7ecfb2ba9e80be0aa3"
+    },
+    "vendor/ref/cycles.py": {
+      "from": "exp/2026-11-03-cylinder-unsteady-ref experiments/cylinder-unsteady-ref/cycles.py",
+      "sha256": "f9e8677ad7fc2e2be0fe75dc30159a11b557224681032e29aa55b5fdb82de875"
+    },
+    "vendor/ref/vendor/scalars.py": {
+      "from": "exp/2026-11-03-cylinder-unsteady-ref experiments/cylinder-unsteady-ref/vendor/scalars.py",
+      "sha256": "140112d7fc7ce0baac31b7120a4b21df3daf15d6e754c9172cf6f01e6715f6de"
+    },
+    "vendor/ref/vendor/oriented_normals.py": {
+      "from": "exp/2026-11-03-cylinder-unsteady-ref experiments/cylinder-unsteady-ref/vendor/oriented_normals.py",
+      "sha256": "3a13ea7ca6c9110997b1c44fd04006bdf9d5f089121beb91b2988a3ca6d7779b"
     }
   },
   "run09_bank_note": "model of PDE09 job 6661438 (DIAGNOSTIC-RELEASE actual_model_sha256)",

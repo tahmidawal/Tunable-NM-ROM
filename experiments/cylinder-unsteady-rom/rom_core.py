@@ -46,7 +46,7 @@ def wdot(w, A, B):
 class Arm:
     """Reduced spaces and exact operators for one method/rank."""
 
-    def __init__(self, ex: Export, kind, r, bank_key=None):
+    def __init__(self, ex: Export, kind, r, bank_key=None, orthonormalize=True):
         self.kind, self.r, self.ex, self.bank_key = kind, r, ex, bank_key
         w = ex.w
         L = ex.col('lift')
@@ -69,6 +69,8 @@ class Arm:
         keep = lam > RANK_CUTOFF * lam.max()
         self.raw_count, self.retained = len(lam), int(keep.sum())
         self.T = U[:, keep] / np.sqrt(lam[keep])          # raw -> orthonormal
+        if not orthonormalize:   # quadrature check (G5-A5 rev.2): operators in the raw basis
+            self.T = np.eye(len(lam))
         # Basis-only (no supremizer) transform for the gated projection floor.
         g0 = gram[:r, :r]; l0, U0 = np.linalg.eigh(g0); k0 = l0 > RANK_CUTOFF * l0.max()
         self.T0 = U0[:, k0] / np.sqrt(l0[k0])

@@ -45,10 +45,13 @@ def main():
                 raise ValueError('trained-bank projections are not bound to their bank evaluation')
             j['uv_trained'] = z['uv_trained']
     import hashlib
-    for r4, exd in ((a.r4_low, a.low), (a.r4_high, a.high)):
+    for r4, exd, tb in ((a.r4_low, a.low, a.trained_low), (a.r4_high, a.high, a.trained_high)):
         meta = json.loads(Path(r4).read_text())
         if meta.get('case') != a.case or meta.get('export_manifest_sha256') != hashlib.sha256((Path(exd) / 'EXPORT.json').read_bytes()).hexdigest():
             raise ValueError(f'R4 result {r4} is not bound to export {exd} and case {a.case}')
+        want = hashlib.sha256(Path(tb).read_bytes()).hexdigest() if tb else None
+        if meta.get('trained_bank_sha256') != want:
+            raise ValueError(f'R4 result {r4} was produced with a different trained bank')
     exl, exh = rc.Export(a.low), rc.Export(a.high)
     for ex, tb in ((exl, a.trained_low), (exh, a.trained_high)):
         if tb:

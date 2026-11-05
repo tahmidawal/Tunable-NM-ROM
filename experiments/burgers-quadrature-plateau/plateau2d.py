@@ -40,8 +40,11 @@ import qstudy as QS  # noqa: E402   (Mesh, burn, sha, clean: unchanged helpers o
 import refstore as RS  # noqa: E402
 import verdict as VD  # noqa: E402
 import fomrun2 as F2  # noqa: E402
+import qlat  # noqa: E402
+import plateau as PL  # noqa: E402
 
 REASONS = QS.REASONS
+NONCONV = (0, 2, 3)          # DESIGN A2.2
 SETTING = 'acc'
 DT = 0.005
 COHORT_SHA = {'test64': 'cd058fd2a297c20296b897e54cb186033a44a8db9527d98dcb2c2dad6044527c'}
@@ -139,7 +142,8 @@ def main():
 
     # ------------------------------------------------------------------- arms ----
     o = mesh.ops[M]
-    man = cfg.get('rules_manifest', {})
+    man = json.loads(cfg_path(cfg['rules_manifest']).read_text())['rules'] if cfg.get('rules_manifest') else {}
+    Glat = qlat.lattice_bank(mdl, Rp)
     arms = {}
     rule_rec = {}
     for spec in cfg['arms']:
@@ -151,8 +155,11 @@ def main():
         d = Q.offmesh_data(mdl, Rp, X, w, L, o['kx'], o['ky'], 'point')
         data = dict(mesh.base(SETTING), **d)
         fq, dec = Q.make_linear_query('point', Rp, L, DT, trust, step_budget=cfg['step_budget'], gtol=cfg['gtol'])
+        fl, _ = qlat.make_linear_query_lat('point', Rp, L, DT, trust, step_budget=cfg['step_budget'], gtol=cfg['gtol'])
+        dlat = dict(data, Glat=Glat)
         arms[spec['name']] = dict(spec=spec, m=int(len(w)), data=data,
                                   call=(lambda u, nu, fq=fq, data=data: fq(u, nu, data, cold)),
+                                  call_lat=(lambda u, nu, fl=fl, d=dlat: fl(u, nu, d, cold)),
                                   dcall=(lambda W, dec=dec, data=data: dec(W, data)),
                                   build_seconds=time.perf_counter() - t1)
     rep['setup']['rules'] = rule_rec
@@ -188,7 +195,9 @@ def main():
             row = dict(arm=name, rule=arm['spec']['rule'], family=arm['spec']['family'], m=arm['m'], case=c,
                        finite=bool(np.isfinite(fr).all()), seconds_first=secs, iterations_total=int(it.sum()),
                        iterations_max=int(it.max()), exits={REASONS[k_]: int(np.sum(reason == k_)) for k_ in REASONS},
-                       rejected_total=int(rej.sum()), f257_sha256=QS.sha(fr))
+                       rejected_total=int(rej.sum()), f257_sha256=QS.sha(fr),
+                       steps=int(reason.size), nonconv_steps=int(np.isin(reason, NONCONV).sum()),
+                       hard_fail=bool((reason == 3).any()))
             for kind in ('ST', 'S'):
                 row[kind] = score(fr, c, kind)
             if name == conv:
@@ -242,14 +251,15 @@ def main():
     tc = cfg['timing']
     rng = np.random.default_rng(int(tc.get('seed', 20261105)))
     inputs = [(jnp.asarray(Q.e.initial(L, ph_all[c])), float(ph_all[c][4]), c) for c in tcases]
-    subjects = [('rom', n) for n in arms] + [('decode', conv)] + [('fom', fn) for fn, _ in fspecs]
     spd = dict(fspecs)
     Wd = [jnp.asarray(.1 * np.random.default_rng(x).normal(size=(6, Rp))) for x in range(len(tcases))]
 
     def fn_of(sj, x):
         kind, name = sj
         u0, nu, c = inputs[x]
-        if kind == 'rom':
+        if kind == 'rom_lat':
+            return lambda: arms[name]['call_lat'](u0, nu)
+        if kind == 'rom_full':
             return lambda: arms[name]['call'](u0, nu)
         if kind == 'decode':
             return lambda: arms[name]['dcall'](Wd[x])
@@ -258,51 +268,83 @@ def main():
     def check(sj, x, o):
         kind, name = sj
         c = inputs[x][2]
-        if kind == 'rom':
-            f = np.asarray(o['fields'][:, ::s256, ::s256])
-            ref = KEEP_T[(name, c)]
+        if kind == 'rom_full':
+            f, ref = np.asarray(o['fields'][:, ::s256, ::s256]), KEEP_T[(name, c)]
+        elif kind == 'rom_lat':
+            f, ref = np.asarray(o['fields']), KEEP_T[(name, c)]
         elif kind == 'fom':
             f, ref = np.asarray(o), FKEEP[(name, c)]
         else:
             return None
         return float(np.abs(f - ref).max() / max(np.abs(ref).max(), 1e-300))
 
-    for sj in subjects:                       # compile + warm every subject on every timing case
+    # G-lat (A1.2): the lattice-contract query equals the vendored query on every timing case
+    glat = []
+    for name in arms:
         for x in range(len(tcases)):
-            jax.block_until_ready(fn_of(sj, x)())
-    log('timing warm-up done')
-    QS.burn(tc.get('initial_burn', 30.0))
-    inv = []
-    for r_ in range(tc['reps']):
-        ordr = [(j, x) for j in range(len(subjects)) for x in range(len(tcases))]
-        rng.shuffle(ordr)
-        for j, x in ordr:
-            sj = subjects[j]
-            fn = fn_of(sj, x)
-            QS.burn(tc['burn'])
-            t1 = time.perf_counter()
-            o_ = fn()
-            jax.block_until_ready(o_)
-            secs = time.perf_counter() - t1
-            inv.append(dict(kind=sj[0], name=sj[1], case=inputs[x][2], rep=r_, seconds=secs, diff=check(sj, x, o_)))
-            del o_
-        log(f'timing rep {r_} done')
-    med, drift = {}, {}
-    for kind, name in subjects:
-        ts = [d['seconds'] for d in inv if d['kind'] == kind and d['name'] == name]
-        key = f'{kind}|{name}'
-        med[key] = 1e3 * float(np.median(ts))
-        r0 = [d['seconds'] for d in inv if d['kind'] == kind and d['name'] == name and d['rep'] == 0]
-        r2 = [d['seconds'] for d in inv if d['kind'] == kind and d['name'] == name and d['rep'] == tc['reps'] - 1]
-        drift[key] = float(np.median(r2) / np.median(r0))
-    diffs = [d['diff'] for d in inv if d['diff'] is not None]
-    worst_drift = max(max(drift.values()), 1 / min(drift.values()))
+            u0, nu, c = inputs[x]
+            o1, o2 = arms[name]['call'](u0, nu), arms[name]['call_lat'](u0, nu)
+            i1, i2 = np.asarray(o1['internal']), np.asarray(o2['internal'])
+            glat.append(max(float(np.abs(i1 - i2).max() / max(np.abs(i1).max(), 1e-300)),
+                            check(('rom_lat', name), x, o2)))
+            del o1, o2
+    rep['gates']['G_lat'] = dict(compared=len(glat), max_rel=max(glat), passed=bool(max(glat) <= 1e-12))
+    log(f"G_lat {rep['gates']['G_lat']}")
+
+    def panel(subjects, reps, label):
+        for sj in subjects:                   # compile + warm every subject on every timing case
+            for x in range(len(tcases)):
+                jax.block_until_ready(fn_of(sj, x)())
+        QS.burn(tc.get('initial_burn', 30.0))
+        inv = []
+        for r_ in range(reps):
+            ordr = [(j, x) for j in range(len(subjects)) for x in range(len(tcases))]
+            rng.shuffle(ordr)
+            for j, x in ordr:
+                sj = subjects[j]
+                fn = fn_of(sj, x)
+                QS.burn(tc['burn'])
+                t1 = time.perf_counter()
+                o_ = fn()
+                jax.block_until_ready(o_)
+                secs = time.perf_counter() - t1
+                inv.append(dict(panel=label, kind=sj[0], name=sj[1], case=inputs[x][2], rep=r_, seconds=secs,
+                                diff=check(sj, x, o_)))
+                del o_
+            log(f'timing {label} rep {r_} done')
+        summ = {}
+        for kind, name in subjects:
+            ts = np.array([d['seconds'] for d in inv if d['kind'] == kind and d['name'] == name])
+            q1, q3 = np.quantile(ts, [.25, .75])
+            blocks = [np.median([d['seconds'] for d in inv if d['kind'] == kind and d['name'] == name and d['rep'] == r_])
+                      for r_ in range(reps)]
+            med = float(np.median(ts))
+            summ[f'{kind}|{name}'] = dict(median_ms=1e3 * med, iqr_ms=1e3 * float(q3 - q1), min_ms=1e3 * float(ts.min()),
+                                          max_ms=1e3 * float(ts.max()), n=int(len(ts)),
+                                          outliers=int(np.sum((ts < q1 - 1.5 * (q3 - q1)) | (ts > q3 + 1.5 * (q3 - q1)))),
+                                          block_drift=float(max(max(blocks) / med, med / min(blocks))))
+        return inv, summ
+
+    main_subj = [('rom_lat', n) for n in arms] + [('fom', fn) for fn, _ in fspecs]
+    inv, summ = panel(main_subj, tc['reps'], 'main')
     rep['timing'] = dict(cases=tcases, reps=tc['reps'], burn=tc['burn'], initial_burn=tc.get('initial_burn', 30.0),
-                         invocations=inv, median_ms=med, drift_last_over_first=drift)
-    rep['gates']['G_time'] = dict(max_output_diff=max(diffs), worst_drift=worst_drift,
+                         invocations=inv, summary=summ, median_ms={k: v['median_ms'] for k, v in summ.items()})
+    save()
+    # in-job selection (A1.3 / A1.7), same code as the report; then the confirmation panel
+    sel = PL.cheapest_plateau_rule(rep)
+    rep['timing']['selected_in_job'] = sel
+    conf_arms = [conv] + ([sel['arm']] if sel and sel['arm'] != conv else [])
+    conf_subj = ([('rom_lat', n) for n in conf_arms] + [('rom_full', n) for n in conf_arms] + [('decode', conv)] +
+                 [('fom', fn) for fn, _ in fspecs])
+    inv2, summ2 = panel(conf_subj, tc['confirm_reps'], 'confirm')
+    rep['timing'].update(confirm_invocations=inv2, confirm_summary=summ2)
+    diffs = [d['diff'] for d in inv + inv2 if d['diff'] is not None]
+    worst_drift = max(v['block_drift'] for v in list(summ.values()) + list(summ2.values()))
+    rep['gates']['G_time'] = dict(max_output_diff=max(diffs), worst_block_drift=worst_drift,
                                   outputs_pass=bool(max(diffs) <= 1e-12), drift_pass=bool(worst_drift <= 1.10))
     rep['phases']['timing'] = el()
-    log(f"timing gates {rep['gates']['G_time']}")
+    log(f"timing gates {rep['gates']['G_time']}; selected {sel}")
+    save()
 
     # ------------------------------------------------------------ in-job gates ----
     rows = rep['rows']

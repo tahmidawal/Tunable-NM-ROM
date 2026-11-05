@@ -1,0 +1,297 @@
+{
+ "dim": 3,
+ "mesh": 257,
+ "cohort": "test32",
+ "Rp": 512,
+ "dt": 0.01,
+ "gtol": 0.001,
+ "trust_fraction": 0.05,
+ "model": "vendor/tree/experiments/quadrature-burgers3d/inputs/model_M2",
+ "expected_model_sha256": "6687f259947ec08a986732db157db69c66f1110ab28125a029de17b4aa389af9",
+ "rules_npz": "rules3d.npz",
+ "rules_manifest": "rules3d_manifest.json",
+ "expected_store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+ "arms": [
+  {
+   "name": "lat256",
+   "rule": "lat256",
+   "family": "lattice"
+  },
+  {
+   "name": "lat512",
+   "rule": "lat512",
+   "family": "lattice"
+  },
+  {
+   "name": "lat768",
+   "rule": "lat768",
+   "family": "lattice"
+  },
+  {
+   "name": "lat1024",
+   "rule": "lat1024",
+   "family": "lattice"
+  },
+  {
+   "name": "lat1536",
+   "rule": "lat1536",
+   "family": "lattice"
+  },
+  {
+   "name": "lat2048",
+   "rule": "lat2048",
+   "family": "lattice"
+  },
+  {
+   "name": "lat2560",
+   "rule": "lat2560",
+   "family": "lattice"
+  },
+  {
+   "name": "lat3072",
+   "rule": "lat3072",
+   "family": "lattice"
+  },
+  {
+   "name": "lat3584",
+   "rule": "lat3584",
+   "family": "lattice"
+  },
+  {
+   "name": "lat4096",
+   "rule": "lat4096",
+   "family": "lattice"
+  },
+  {
+   "name": "lat6144",
+   "rule": "lat6144",
+   "family": "lattice"
+  },
+  {
+   "name": "lat8192",
+   "rule": "lat8192",
+   "family": "lattice"
+  },
+  {
+   "name": "lat16384",
+   "rule": "lat16384",
+   "family": "lattice"
+  },
+  {
+   "name": "lat32768",
+   "rule": "lat32768",
+   "family": "lattice"
+  },
+  {
+   "name": "gl8",
+   "rule": "gl8",
+   "family": "gauss"
+  },
+  {
+   "name": "gl10",
+   "rule": "gl10",
+   "family": "gauss"
+  },
+  {
+   "name": "gl12",
+   "rule": "gl12",
+   "family": "gauss"
+  },
+  {
+   "name": "gl14",
+   "rule": "gl14",
+   "family": "gauss"
+  },
+  {
+   "name": "gl16",
+   "rule": "gl16",
+   "family": "gauss"
+  },
+  {
+   "name": "gl17",
+   "rule": "gl17",
+   "family": "gauss"
+  },
+  {
+   "name": "gl18",
+   "rule": "gl18",
+   "family": "gauss"
+  },
+  {
+   "name": "gl19",
+   "rule": "gl19",
+   "family": "gauss"
+  },
+  {
+   "name": "gl20",
+   "rule": "gl20",
+   "family": "gauss"
+  },
+  {
+   "name": "gl22",
+   "rule": "gl22",
+   "family": "gauss"
+  },
+  {
+   "name": "gl24",
+   "rule": "gl24",
+   "family": "gauss"
+  },
+  {
+   "name": "gl28",
+   "rule": "gl28",
+   "family": "gauss"
+  },
+  {
+   "name": "gl32",
+   "rule": "gl32",
+   "family": "gauss"
+  },
+  {
+   "name": "sob1024",
+   "rule": "sob1024",
+   "family": "sobol"
+  },
+  {
+   "name": "sob2048",
+   "rule": "sob2048",
+   "family": "sobol"
+  },
+  {
+   "name": "sob4096",
+   "rule": "sob4096",
+   "family": "sobol"
+  },
+  {
+   "name": "sob8192",
+   "rule": "sob8192",
+   "family": "sobol"
+  },
+  {
+   "name": "sob16384",
+   "rule": "sob16384",
+   "family": "sobol"
+  },
+  {
+   "name": "sob32768",
+   "rule": "sob32768",
+   "family": "sobol"
+  },
+  {
+   "name": "kor2039",
+   "rule": "kor2039",
+   "family": "korobov"
+  },
+  {
+   "name": "kor4093",
+   "rule": "kor4093",
+   "family": "korobov"
+  },
+  {
+   "name": "kor16381",
+   "rule": "kor16381",
+   "family": "korobov"
+  },
+  {
+   "name": "ctrl_smol8",
+   "rule": "smol8",
+   "family": "control"
+  }
+ ],
+ "conv_arm": "lat32768",
+ "anchor_check_arm": "gl32",
+ "controls": [
+  "ctrl_smol8"
+ ],
+ "foms": [
+  {
+   "name": "hist_dt0.005",
+   "kind": "hist",
+   "dt": 0.005,
+   "ntol": 0.001,
+   "ltol": 0.1
+  },
+  {
+   "name": "hist_dt0.01",
+   "kind": "hist",
+   "dt": 0.01,
+   "ntol": 0.001,
+   "ltol": 0.1
+  },
+  {
+   "name": "hist_dt0.025",
+   "kind": "hist",
+   "dt": 0.025,
+   "ntol": 0.001,
+   "ltol": 0.1
+  },
+  {
+   "name": "UB_L256",
+   "kind": "fd",
+   "fam": "UB",
+   "L": 256,
+   "dt": 0.01,
+   "lev": 1
+  },
+  {
+   "name": "CC_L256",
+   "kind": "fd",
+   "fam": "CC",
+   "L": 256,
+   "dt": 0.01,
+   "lev": 1
+  },
+  {
+   "name": "CC_L64",
+   "kind": "fd",
+   "fam": "CC",
+   "L": 64,
+   "dt": 0.01,
+   "lev": 1
+  },
+  {
+   "name": "PS_N8",
+   "kind": "ps",
+   "N": 8,
+   "dt": 0.0125
+  },
+  {
+   "name": "PS_N12",
+   "kind": "ps",
+   "N": 12,
+   "dt": 0.0125
+  },
+  {
+   "name": "PS_N16",
+   "kind": "ps",
+   "N": 16,
+   "dt": 0.0125
+  },
+  {
+   "name": "PS_N20",
+   "kind": "ps",
+   "N": 20,
+   "dt": 0.0125
+  },
+  {
+   "name": "PS_N24",
+   "kind": "ps",
+   "N": 24,
+   "dt": 0.0125
+  },
+  {
+   "name": "PS_N32",
+   "kind": "ps",
+   "N": 32,
+   "dt": 0.0125
+  }
+ ],
+ "timing": {
+  "cases": 6,
+  "reps": 3,
+  "confirm_reps": 5,
+  "burn": 0.1,
+  "initial_burn": 30.0,
+  "seed": 20261105
+ }
+}

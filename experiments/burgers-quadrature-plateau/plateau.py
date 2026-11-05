@@ -168,10 +168,16 @@ def plateau(rep, kind='ST'):
                                                     and abs(r['T'] / conv['T'] - 1) <= 0.01) else 'fail')
         dist = suffix_min(v, lambda r: 'pass' if (r['valid'] and r['dist_conv'] is not None and r['dist_conv'] <= 1e-3)
                           else ('pass' if r['arm'] == rep['config']['conv_arm'] else 'fail'))
-        out['families'][f] = dict(rungs=[dict(arm=r['arm'], m=r['m'], W=r['W'], T=r['T'], valid=r['valid'],
+        tail = v[-2:]
+        tail_ok = bool(len(tail) == 2 and all(r['valid'] and abs(r['W'] / conv['W'] - 1) <= 0.01
+                                              and abs(r['T'] / conv['T'] - 1) <= 0.01 for r in tail))
+        out['families'][f] = dict(tail_demonstrated=tail_ok, rungs=[dict(arm=r['arm'], m=r['m'], W=r['W'], T=r['T'], valid=r['valid'],
                                               dist_conv=r['dist_conv'], glob=t_glob(r), fam=t_fam(r)) for r in v],
                                   global_=g, family_relative=suffix_min(v, t_fam), band_1pct=tight, dist_1e3=dist,
                                   top_in_global_band=t_glob(top) == 'pass')
+    n_tail = sum(v['tail_demonstrated'] for v in out['families'].values())
+    out['demonstrated'] = bool(anchor['passed'] and n_tail >= 2)           # A2.1
+    out['families_with_tail'] = n_tail
     return out
 
 
@@ -206,9 +212,13 @@ def latency(rep, contract='rom_lat'):
 def cheapest_plateau_rule(rep, kind='ST', contract='rom_lat'):
     """A1.3: among families with a validated global M*, the rule at M* with the lowest median latency (ties: smaller m)."""
     p = plateau(rep, kind)
+    if not p['demonstrated']:
+        return None
     lat = latency(rep, contract)
     cands = []
     for f, v in p['families'].items():
+        if not v['tail_demonstrated']:
+            continue
         a = v['global_'].get('arm')
         if a is not None and a in lat:
             cands.append((lat[a], v['global_']['m_star'], a, f))

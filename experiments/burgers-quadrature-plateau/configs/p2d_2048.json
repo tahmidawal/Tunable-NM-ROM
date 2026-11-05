@@ -1,0 +1,277 @@
+{
+ "dim": 2,
+ "mesh": 2048,
+ "cohort": "test64",
+ "gtol": 0.001,
+ "step_budget": 600,
+ "checkpoint": "vendor/tree/experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+ "rotation": "vendor/tree/experiments/quadrature-study/inputs/rotation_R512.npz",
+ "rules_manifest": "rules2d_manifest.json",
+ "expected_store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+ "arms": [
+  {
+   "name": "gauss24",
+   "rule": "gauss24",
+   "family": "gauss"
+  },
+  {
+   "name": "gauss32",
+   "rule": "gauss32",
+   "family": "gauss"
+  },
+  {
+   "name": "gauss36",
+   "rule": "gauss36",
+   "family": "gauss"
+  },
+  {
+   "name": "gauss40",
+   "rule": "gauss40",
+   "family": "gauss"
+  },
+  {
+   "name": "gauss45",
+   "rule": "gauss45",
+   "family": "gauss"
+  },
+  {
+   "name": "gauss50",
+   "rule": "gauss50",
+   "family": "gauss"
+  },
+  {
+   "name": "gauss55",
+   "rule": "gauss55",
+   "family": "gauss"
+  },
+  {
+   "name": "gauss60",
+   "rule": "gauss60",
+   "family": "gauss"
+  },
+  {
+   "name": "gauss64",
+   "rule": "gauss64",
+   "family": "gauss"
+  },
+  {
+   "name": "gauss72",
+   "rule": "gauss72",
+   "family": "gauss"
+  },
+  {
+   "name": "gauss80",
+   "rule": "gauss80",
+   "family": "gauss"
+  },
+  {
+   "name": "gauss96",
+   "rule": "gauss96",
+   "family": "gauss"
+  },
+  {
+   "name": "gauss128",
+   "rule": "gauss128",
+   "family": "gauss"
+  },
+  {
+   "name": "gauss256",
+   "rule": "gauss256",
+   "family": "gauss"
+  },
+  {
+   "name": "fib610",
+   "rule": "fib610",
+   "family": "fibonacci"
+  },
+  {
+   "name": "fib987",
+   "rule": "fib987",
+   "family": "fibonacci"
+  },
+  {
+   "name": "fib1597",
+   "rule": "fib1597",
+   "family": "fibonacci"
+  },
+  {
+   "name": "fib2584",
+   "rule": "fib2584",
+   "family": "fibonacci"
+  },
+  {
+   "name": "fib4181",
+   "rule": "fib4181",
+   "family": "fibonacci"
+  },
+  {
+   "name": "fib6765",
+   "rule": "fib6765",
+   "family": "fibonacci"
+  },
+  {
+   "name": "fib10946",
+   "rule": "fib10946",
+   "family": "fibonacci"
+  },
+  {
+   "name": "fib17711",
+   "rule": "fib17711",
+   "family": "fibonacci"
+  },
+  {
+   "name": "fib28657",
+   "rule": "fib28657",
+   "family": "fibonacci"
+  },
+  {
+   "name": "fib46368",
+   "rule": "fib46368",
+   "family": "fibonacci"
+  },
+  {
+   "name": "sobol1024",
+   "rule": "sobol1024",
+   "family": "sobol"
+  },
+  {
+   "name": "sobol2048",
+   "rule": "sobol2048",
+   "family": "sobol"
+  },
+  {
+   "name": "sobol4096",
+   "rule": "sobol4096",
+   "family": "sobol"
+  },
+  {
+   "name": "sobol8192",
+   "rule": "sobol8192",
+   "family": "sobol"
+  },
+  {
+   "name": "sobol16384",
+   "rule": "sobol16384",
+   "family": "sobol"
+  },
+  {
+   "name": "sobol32768",
+   "rule": "sobol32768",
+   "family": "sobol"
+  },
+  {
+   "name": "ctrl_smolyak8",
+   "rule": "smolyak8",
+   "family": "control"
+  }
+ ],
+ "conv_arm": "gauss256",
+ "anchor_check_arm": "fib46368",
+ "controls": [
+  "ctrl_smolyak8"
+ ],
+ "foms": [
+  {
+   "name": "UB_L2048",
+   "kind": "fd",
+   "fam": "UB",
+   "L": 2048,
+   "dt": 0.005,
+   "lev": "2"
+  },
+  {
+   "name": "CC_L2048",
+   "kind": "fd",
+   "fam": "CC",
+   "L": 2048,
+   "dt": 0.005,
+   "lev": "2"
+  },
+  {
+   "name": "CC_L32",
+   "kind": "fd",
+   "fam": "CC",
+   "L": 32,
+   "dt": 0.005,
+   "lev": "2"
+  },
+  {
+   "name": "CC_L64",
+   "kind": "fd",
+   "fam": "CC",
+   "L": 64,
+   "dt": 0.005,
+   "lev": "2"
+  },
+  {
+   "name": "CC_L128",
+   "kind": "fd",
+   "fam": "CC",
+   "L": 128,
+   "dt": 0.005,
+   "lev": "2"
+  },
+  {
+   "name": "UB_L128",
+   "kind": "fd",
+   "fam": "UB",
+   "L": 128,
+   "dt": 0.005,
+   "lev": "2"
+  },
+  {
+   "name": "PS_N12",
+   "kind": "ps",
+   "N": 12,
+   "dt": 0.0125
+  },
+  {
+   "name": "PS_N16",
+   "kind": "ps",
+   "N": 16,
+   "dt": 0.0125
+  },
+  {
+   "name": "PS_N20",
+   "kind": "ps",
+   "N": 20,
+   "dt": 0.0125
+  },
+  {
+   "name": "PS_N24",
+   "kind": "ps",
+   "N": 24,
+   "dt": 0.0125
+  },
+  {
+   "name": "PS_N32",
+   "kind": "ps",
+   "N": 32,
+   "dt": 0.0125
+  },
+  {
+   "name": "PS_N48",
+   "kind": "ps",
+   "N": 48,
+   "dt": 0.0125
+  },
+  {
+   "name": "PS_N64",
+   "kind": "ps",
+   "N": 64,
+   "dt": 0.0125
+  }
+ ],
+ "audit_cases": [
+  0,
+  2
+ ],
+ "timing": {
+  "cases": 6,
+  "reps": 3,
+  "confirm_reps": 5,
+  "burn": 0.1,
+  "initial_burn": 30.0,
+  "seed": 20261105
+ }
+}

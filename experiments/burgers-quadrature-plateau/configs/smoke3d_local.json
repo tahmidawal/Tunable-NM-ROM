@@ -1,0 +1,92 @@
+{
+ "dim": 3,
+ "mesh": 65,
+ "cohort": "dev4",
+ "Rp": 512,
+ "dt": 0.01,
+ "gtol": 0.001,
+ "trust_fraction": 0.05,
+ "model": "vendor/tree/experiments/quadrature-burgers3d/inputs/model_M2",
+ "expected_model_sha256": "6687f259947ec08a986732db157db69c66f1110ab28125a029de17b4aa389af9",
+ "rules_npz": "rules3d.npz",
+ "rules_manifest": "rules3d_manifest.json",
+ "expected_store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+ "arms": [
+  {
+   "name": "lat256",
+   "rule": "lat256",
+   "family": "lattice"
+  },
+  {
+   "name": "lat4096",
+   "rule": "lat4096",
+   "family": "lattice"
+  },
+  {
+   "name": "lat32768",
+   "rule": "lat32768",
+   "family": "lattice"
+  },
+  {
+   "name": "gl16",
+   "rule": "gl16",
+   "family": "gauss"
+  },
+  {
+   "name": "gl32",
+   "rule": "gl32",
+   "family": "gauss"
+  },
+  {
+   "name": "sob4096",
+   "rule": "sob4096",
+   "family": "sobol"
+  },
+  {
+   "name": "ctrl_smol8",
+   "rule": "smol8",
+   "family": "control"
+  }
+ ],
+ "conv_arm": "lat32768",
+ "anchor_check_arm": "gl32",
+ "controls": [
+  "ctrl_smol8"
+ ],
+ "foms": [
+  {
+   "name": "hist_dt0.01",
+   "kind": "hist",
+   "dt": 0.01,
+   "ntol": 0.001,
+   "ltol": 0.1
+  },
+  {
+   "name": "CC_L64",
+   "kind": "fd",
+   "fam": "CC",
+   "L": 64,
+   "dt": 0.01,
+   "lev": 1
+  },
+  {
+   "name": "PS_N16",
+   "kind": "ps",
+   "N": 16,
+   "dt": 0.0125
+  }
+ ],
+ "timing": {
+  "cases": 2,
+  "reps": 1,
+  "confirm_reps": 1,
+  "burn": 0.05,
+  "initial_burn": 1.0,
+  "seed": 1
+ },
+ "cases": [
+  0,
+  1
+ ],
+ "local_smoke": true
+}

@@ -1,0 +1,94 @@
+{
+ "dim": 2,
+ "mesh": 256,
+ "cohort": "dev6",
+ "gtol": 0.001,
+ "step_budget": 600,
+ "checkpoint": "vendor/tree/experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+ "rotation": "vendor/tree/experiments/quadrature-study/inputs/rotation_R512.npz",
+ "rules_manifest": "rules2d_manifest.json",
+ "expected_store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+ "arms": [
+  {
+   "name": "gauss32",
+   "rule": "gauss32",
+   "family": "gauss"
+  },
+  {
+   "name": "gauss64",
+   "rule": "gauss64",
+   "family": "gauss"
+  },
+  {
+   "name": "gauss256",
+   "rule": "gauss256",
+   "family": "gauss"
+  },
+  {
+   "name": "fib1597",
+   "rule": "fib1597",
+   "family": "fibonacci"
+  },
+  {
+   "name": "fib46368",
+   "rule": "fib46368",
+   "family": "fibonacci"
+  },
+  {
+   "name": "sobol4096",
+   "rule": "sobol4096",
+   "family": "sobol"
+  },
+  {
+   "name": "ctrl_smolyak8",
+   "rule": "smolyak8",
+   "family": "control"
+  }
+ ],
+ "conv_arm": "gauss256",
+ "anchor_check_arm": "fib46368",
+ "controls": [
+  "ctrl_smolyak8"
+ ],
+ "foms": [
+  {
+   "name": "UB_L256",
+   "kind": "fd",
+   "fam": "UB",
+   "L": 256,
+   "dt": 0.005,
+   "lev": "2"
+  },
+  {
+   "name": "CC_L64",
+   "kind": "fd",
+   "fam": "CC",
+   "L": 64,
+   "dt": 0.005,
+   "lev": "2"
+  },
+  {
+   "name": "PS_N24",
+   "kind": "ps",
+   "N": 24,
+   "dt": 0.0125
+  }
+ ],
+ "audit_cases": [
+  0,
+  2
+ ],
+ "timing": {
+  "cases": 2,
+  "reps": 1,
+  "confirm_reps": 1,
+  "burn": 0.05,
+  "initial_burn": 1.0,
+  "seed": 1
+ },
+ "cases": [
+  0,
+  1
+ ],
+ "local_smoke": true
+}

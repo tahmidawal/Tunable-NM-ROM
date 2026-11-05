@@ -537,3 +537,9 @@ every design setting (0.7 s settle + 1.7 s record at $dt_0$). Records depend on 
 - Manifests must state `velocity_order` (4) and `quadrature_order` (12) explicitly; reported
   dimensions are velocity $d$, pressure $d_p$ and total $d+d_p$ with retained ranks; peak RSS
   recorded.
+- 2026-11-05: Codex ROM-code reviews 01–04 (`reviews/ROM-codex-0{1..4}.md`) completed: after the
+  rev.3 responses and two further fix rounds (evaluated-basis orthonormality with actual Gram
+  matrices in all norm expansions; full R1e provenance/configuration checks; quadrature-check
+  identity binding incl. the trained bank; symmetric R5 cold timing and force/probe/pressure
+  witnesses) the verdicts are **R1d/R1e evaluator, R2, R3, R4, R5: READY**. R1f (Codex audit of
+  the saved arrays) remains a separate gate after the population completes.

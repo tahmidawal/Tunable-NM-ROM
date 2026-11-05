@@ -114,6 +114,7 @@ def main():
                                       worst_items=sorted(par, key=lambda x: -x['rel'])[:5])
     else:
         res['checks']['G_par'] = dict(compared=0, passed=None, note='no October rollout at this mesh/cohort')
+    ok &= res['checks']['G_par']['passed'] is not False          # A1.6: an unexplained parity failure withholds the mesh
 
     # ---------------------------------------------------------------- A1.6 fault injections
     fi = {}

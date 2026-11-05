@@ -52,6 +52,14 @@ def load(job):
     return dict(name=job, rep=rep, audit=json.loads(au.read_text()) if au.exists() else None)
 
 
+def fmt_fam(v):
+    """A2.1: a global M* is a plateau point only if the family's own tail is demonstrated."""
+    g = v['global_']
+    if g['m_star'] is not None and not v['tail_demonstrated']:
+        return f"within 5 % of the anchor from $m$ = {g['m_star']:,}, tail not demonstrated"
+    return fmt_mstar(g)
+
+
 def fmt_mstar(g):
     if g.get('unresolved_anchor'):
         return 'unresolved (anchor)'
@@ -64,6 +72,30 @@ def fmt_mstar(g):
     return s
 
 
+def prov(rep, *keys):
+    """A2.4 for every member of a ratio: drift gate, and main vs confirmation median within 10 %."""
+    if not rep['gates']['G_time']['drift_pass']:
+        return ' prov.'
+    for k in keys:
+        m, c = rep['timing']['summary'].get(k, {}).get('median_ms'), summ_conf(rep, k)
+        if m is not None and c is not None and abs(m / c - 1) > 0.10:
+            return ' prov.'
+    return ''
+
+
+def paired(rep, kf, kr):
+    """Per-case ratio of median latencies (confirmation panel): (median, min, max) over the timing cases."""
+    inv = rep['timing']['confirm_invocations']
+    med = lambda k, c: np.median([d['seconds'] for d in inv if f"{d['kind']}|{d['name']}" == k and d['case'] == c])
+    r = [med(kf, c) / med(kr, c) for c in rep['timing']['cases']]
+    return float(np.median(r)), float(min(r)), float(max(r))
+
+
+def prep_s(rep, fom, c):
+    r = next(x for x in rep['fom_rows'] if x['fom'] == fom and x['case'] == c)
+    return r.get('prepare_seconds', (r.get('evidence') or {}).get('prepare_seconds'))
+
+
 def summ_conf(rep, key):
     c = rep['timing'].get('confirm_summary', {})
     return c.get(key, {}).get('median_ms')
@@ -72,7 +104,8 @@ def summ_conf(rep, key):
 def main():
     FIG.mkdir(exist_ok=True)
     D = {j: load(j) for j, _ in JOBS2 + JOBS3}
-    ran = {j: d for j, d in D.items() if d is not None}
+    ran = {j: d for j, d in D.items() if d is not None and d['audit'] and d['audit']['passed']}   # A1.6 withholding
+    withheld = [j for j, d in D.items() if d is not None and j not in ran]
     led = json.loads((LANE / 'cluster' / 'ledger.json').read_text())
     gpuh = sum(j.get('elapsed_s', 0) for j in led['jobs']) / 3600
     L = []
@@ -100,7 +133,9 @@ def main():
           f"{'pass' if au else ('FAIL' if au is False else '–')} |")
     w('')
     w(f'GPU time charged: **{gpuh:.2f} GPU-h** of the 4.0 GPU-h cap (allocated wall time, every job above).')
-    notrun = [j for j, _ in JOBS2 + JOBS3 if j not in ran]   # slots without an accepted attempt
+    notrun = [j for j, _ in JOBS2 + JOBS3 if j not in ran and j not in withheld]   # slots without an accepted attempt
+    if withheld:
+        w(f"Withheld (audit failed, A1.6): {', '.join(withheld)}.")
     if notrun:
         w(f"Not run: {', '.join('`' + j + '`' for j in notrun)} (budget priority, DESIGN A1.8/A2.5).")
     w('')
@@ -117,8 +152,7 @@ def main():
             ps = PL.plateau(rep, 'S')
             parts = []
             for f, v in p['families'].items():
-                tail = '' if v['tail_demonstrated'] else ' (tail not demonstrated)'
-                parts.append(f"{FAMNAME.get(f, f)} {fmt_mstar(v['global_'])}{tail}")
+                parts.append(f"{FAMNAME.get(f, f)} {fmt_fam(v)}")
             fs = PL.fom_stats(rep, 'ST')
             ub = next(k for k in fs if k.startswith('UB_L') and k == f"UB_L{n if dim == 2 else n - 1}")
             w(f"- **{dim}D {mesh_label(dim, n)}** — plateau {'demonstrated' if p['demonstrated'] else 'NOT demonstrated'}: "
@@ -149,13 +183,13 @@ def main():
             tr = summ_conf(rep, f"rom_lat|{sel['arm']}")
             tu = summ_conf(rep, f'fom|{lname}')
             mf = PL.matched_fom(rep, sel['arm'])
-            prov = ' prov.' if (not rep['gates']['G_time']['drift_pass'] or
-                               abs(rep['timing']['summary'][f"rom_lat|{sel['arm']}"]['median_ms'] / tr - 1) > 0.10) else ''
+            kr = f"rom_lat|{sel['arm']}"
             mcol = ' | | | ' if mf is None else (f" `{mf['fom']}` | {pct(fs[mf['fom']]['W'], 3)} / {pct(fs[mf['fom']]['T'], 4)} | "
-                                                  f"{summ_conf(rep, 'fom|' + mf['fom']):.1f} | {summ_conf(rep, 'fom|' + mf['fom']) / tr:.3f}×{prov}")
+                                                  f"{summ_conf(rep, 'fom|' + mf['fom']):.1f} | {summ_conf(rep, 'fom|' + mf['fom']) / tr:.3f}×"
+                                                  f"{prov(rep, kr, 'fom|' + mf['fom'])}")
             w(f"| {dim}D {mesh_label(dim, n)} | {pct(p['conv']['W'])} / {pct(p['conv']['T'], 3)} | `{sel['arm']}` ($m$={sel['m']:,}) | "
               f"{pct(st['W'])} / {pct(st['T'], 3)} | {tr:.1f} | {pct(ub['W'])} / {pct(ub['T'], 3)} | {tu:.1f} | "
-              f"{tu / tr:.2f}×{prov} | {PL._le(st, ub, 'W')}, {PL._le(st, ub, 'T')} |" + mcol + ' |')
+              f"{tu / tr:.2f}×{prov(rep, kr, 'fom|' + lname)} | {PL._le(st, ub, 'W')}, {PL._le(st, ub, 'T')} |" + mcol + ' |')
     w('')
     w('Tolerance caveat (AGENTS.md like-for-like rule): `UB_L*` is solved to Newton $10^{-6}$ / BiCGStab $10^{-7}$. In 3D the '
       'October Newton–BiCGStab upwind solver at relaxed tolerance (`hist_*`, Newton $10^{-3}$) ran in the same jobs; the '
@@ -178,7 +212,7 @@ def main():
             st = PL.arm_stats(rep, 'ST')[sel['arm']]
             tr = summ_conf(rep, f"rom_lat|{sel['arm']}")
             w(f"| {dim}D {mesh_label(dim, n)} | `{k}` | {pct(fs[k]['W'])} / {pct(fs[k]['T'], 3)} | {summ_conf(rep, 'fom|' + k):.1f} | "
-              f"{summ_conf(rep, 'fom|' + k) / tr:.2f}×{'' if rep['gates']['G_time']['drift_pass'] else ' prov.'} | "
+              f"{summ_conf(rep, 'fom|' + k) / tr:.2f}×{prov(rep, 'rom_lat|' + sel['arm'], 'fom|' + k)} | "
               f"{PL._le(st, fs[k], 'W')}, {PL._le(st, fs[k], 'T')} |")
     w('')
     w('In 2D no relaxed-tolerance upwind configuration was in the panel (DESIGN §7), so the 2D UB speed-ups are against '
@@ -201,13 +235,15 @@ def main():
                zip(got, got[1:], ubt, ubt[1:], ct, ct[1:]) if (u1 - c1) * (u2 - c2) < 0]
         cross = [f'{mesh_label(dim, a[0])}→{mesh_label(dim, b[0])}' for a, b, u1, u2, c1, c2 in
                  zip(got, got[1:], ubw, ubw[1:], cw, cw[1:]) if (u1 - c1) * (u2 - c2) < 0]
-        w(f"- **{dim}D plateau is mesh-independent**: conv-rollout worst error {pct(min(cw))}–{pct(max(cw))} and median "
+        w(f"- **{dim}D plateau is approximately unchanged over the tested meshes**: conv-rollout worst error {pct(min(cw))}–{pct(max(cw))} and median "
           f"{pct(min(ct), 3)}–{pct(max(ct), 3)} over {', '.join(mesh_label(dim, n) for n, _ in got)} (ST). Against the "
           f"space-only S reference the same rollouts give {pct(min(sw))}–{pct(max(sw))} worst and {pct(min(stt), 3)}–"
           f"{pct(max(stt), 3)} median (S/ST ratio {min(a / b for a, b in zip(sw, cw)):.2f}–{max(a / b for a, b in zip(sw, cw)):.2f} worst, "
           f"{min(a / b for a, b in zip(stt, ct)):.3f}–{max(a / b for a, b in zip(stt, ct)):.3f} median). " +
-          ("S is backward Euler at the ROM's own Δt = 0.005, so the ST–S gap is the ROM's backward-Euler time error: "
-           "it is about half of the worst-case plateau and nearly all of the median; quadrature is not what limits it."
+          ("S is backward Euler at the ROM's own Δt = 0.005. The much lower S errors are consistent with a large "
+           "time-discretisation contribution to the ST plateau, but differences of error norms do not decompose the "
+           "error (and the S statistics use 55 eligible cases, ST 63); quantifying it needs a controlled ROM time-step "
+           "study, not run here. What the ladder does show is that adding points beyond $M^*$ does not lower the error."
            if dim == 2 else
            "In 3D, S is backward Euler at Δt = 0.005 while the ROM steps at Δt = 0.01, so S is not time-matched and "
            "the ST–S gap is not a clean time-error measurement; no attribution is made from it."))
@@ -240,7 +276,7 @@ def main():
                     a = g.get('arm')
                     fr = v['family_relative']
                     w(f"| {dim}D | {mesh_label(dim, n)} | {an['dist']:.1e}, {an['W_ratio']:.4f} {'✓' if an['passed'] else '✗'} | "
-                      f"{pct(p['conv']['W'])} | {pct(p['conv']['T'], 3)} | {FAMNAME.get(f, f)} | {fmt_mstar(g)} | "
+                      f"{pct(p['conv']['W'])} | {pct(p['conv']['T'], 3)} | {FAMNAME.get(f, f)} | {fmt_fam(v)} | "
                       f"{'yes' if v['tail_demonstrated'] else 'no'} | {pct(st[a]['W']) if a else '–'} | "
                       f"{pct(st[a]['T'], 3) if a else '–'} | {fr['m_star'] if fr['m_star'] else '–'} |")
         w('')
@@ -346,10 +382,10 @@ def main():
                 st = PL.arm_stats(rep, 'ST')[sel['arm']]
                 tm = summ_conf(rep, f"fom|{mf['fom']}") if mf else None
                 main_r = rep['timing']['summary'][key]['median_ms']
-                prov = abs(main_r / tr - 1) > 0.10 or not rep['gates']['G_time']['drift_pass']
+                is_prov = bool(prov(rep, key, f'fom|{lname}', *([f"fom|{mf['fom']}"] if mf else [])))
                 w(f"Cheapest plateau rule: `{sel['arm']}` ($m$ = {sel['m']:,}), worst {pct(st['W'])} / median "
                   f"{pct(st['T'], 3)}, confirmation-panel latency {tr:.1f} ms (main panel {main_r:.1f} ms)"
-                  f"{' — PROVISIONAL (A2.4)' if prov else ''}. "
+                  f"{' — PROVISIONAL (A2.4)' if is_prov else ''}. "
                   f"Same-mesh upwind FOM `{lname}` {pct(fs[lname]['W'])} / {pct(fs[lname]['T'], 3)}, {tu:.1f} ms: "
                   f"speed-up **{tu / tr:.2f}×** (ROM {'more' if st['W'] <= fs[lname]['W'] else 'less'} accurate in worst error). "
                   + (f"Cheapest FOM at least as accurate as that rule: `{mf['fom']}` ({pct(fs[mf['fom']]['W'], 3)} / "
@@ -373,6 +409,48 @@ def main():
               f"{pct(p['conv']['T'], 3)} | {pct(ub['T'], 3)} |")
     w('')
     w(f'![time vs m]({FIG.name}/time.png)')
+    w('')
+    # ------------------------------------------------------------------ 7b. timing disclosures (A1.2, A1.7)
+    w('### Timing detail of the selected pairs (confirmation panel)')
+    w('')
+    w('Per subject: median [IQR] and min–max over its invocations (ms), outliers (> 1.5 IQR). "full" = vendored query with '
+      'six fields on the full mesh; "decode" = the six-field full-mesh decode alone; full − decode is an operational '
+      'estimate of the solve, not a measured time. Paired = per-case ratio FOM/ROM of medians: median (min–max) over the '
+      'timing cases. PS + prep adds the host-side sine-coefficient quadrature of the initial field (recorded per case).')
+    w('')
+    w('| mesh | subject | median [IQR] | min–max | outliers | paired FOM/ROM | PS + prep FOM/ROM |')
+    w('|---|---|---|---|---|---|---|')
+    for dim, jobs in ((2, JOBS2), (3, JOBS3)):
+        for job, n in jobs:
+            if job not in ran:
+                continue
+            rep = ran[job]['rep']
+            sel = PL.cheapest_plateau_rule(rep)
+            if sel is None:
+                continue
+            cs = rep['timing']['confirm_summary']
+            kr = f"rom_lat|{sel['arm']}"
+            lname = f"UB_L{n if dim == 2 else n - 1}"
+            mf = PL.matched_fom(rep, sel['arm'])
+            keys = [kr, f"rom_full|{sel['arm']}", f"decode|{rep['config']['conv_arm']}", f'fom|{lname}'] + \
+                   ([f"fom|{mf['fom']}"] if mf else [])
+            for k in keys:
+                v = cs[k]
+                pr = ''
+                if k.startswith('fom|'):
+                    m_, lo, hi = paired(rep, k, kr)
+                    pr = f'{m_:.3f} ({lo:.3f}–{hi:.3f})'
+                ps = ''
+                if k.startswith('fom|PS'):
+                    inv = rep['timing']['confirm_invocations']
+                    rr = []
+                    for c in rep['timing']['cases']:
+                        tf = np.median([d['seconds'] for d in inv if f"{d['kind']}|{d['name']}" == k and d['case'] == c])
+                        tr_ = np.median([d['seconds'] for d in inv if f"{d['kind']}|{d['name']}" == kr and d['case'] == c])
+                        rr.append((tf + prep_s(rep, k[4:], c)) / tr_)
+                    ps = f'{np.median(rr):.3f} ({min(rr):.3f}–{max(rr):.3f})'
+                w(f"| {dim}D {mesh_label(dim, n)} | `{k.replace('|', ' · ')}` | {v['median_ms']:.1f} [{v['iqr_ms']:.1f}] | {v['min_ms']:.1f}–{v['max_ms']:.1f} | "
+                  f"{v['outliers']} | {pr} | {ps} |")
     w('')
     # ------------------------------------------------------------------ 8. gates
     w('## 8. Gates and audits')
@@ -415,6 +493,14 @@ def main():
     w('- The ROM query includes the projection of the initial field on the mesh; the PS FOM latency excludes the host-side '
       'sine-coefficient quadrature of the initial field (recorded per case in the FOM rows).')
     w('- 3D S references are backward Euler at Δt = 0.005, half the 3D ROM step, so 3D S errors are not a space-only measure.')
+    w('- Operator (A1.9, A2.6): the off-mesh arms integrate the continuum advection in the weak form; it differs from the '
+      'upwind stencil of the FOM the model was trained on by that stencil\'s consistency error. How this carries into the '
+      'trajectory differences is not separately measured; no rate is claimed.')
+    w('- Retained evidence of the four failed jobs: their cluster directories were deleted before their logs were pulled '
+      '(an omission of this lane); the error lines read from the logs before deletion are transcribed in '
+      '`experiments/burgers-quadrature-plateau/results/FAILED-JOBS.md`, and slurm states/elapsed times are in the ledger.')
+    w('- The lattice ladder is not monotone at small $m$ (CBC 1024 is far worse than 768 and 1536 in 3D); $M^*$ is defined '
+      'by the suffix condition, so such dips below $M^*$ do not affect it.')
     w('')
     figures(ran)
     glossary(w)
@@ -440,7 +526,7 @@ def figures(ran):
                 es = [st[r['arm']][key] * 100 for r in v['rungs']]
                 ax.plot(ms, es, 'o-', color=col.get(f), label=FAMNAME.get(f, f), ms=4)
                 g = v['global_']
-                if g.get('arm'):
+                if g.get('arm') and v['tail_demonstrated']:
                     ax.plot([g['m_star']], [st[g['arm']][key] * 100], '*', color=col.get(f), ms=14, mec='k')
             ax.axhspan(p['conv'][key] * 95, p['conv'][key] * 105, color='#ffd54f', alpha=.35, label='conv ±5 %')
             Ls = f"L{n if dim == 2 else n - 1}"
@@ -493,7 +579,7 @@ def glossary(w):
         ('$m$', 'number of points of the classical quadrature rule used for the off-mesh advection term.'),
         ('rule families', 'Gauss tensor ($n^2$ or $p^3$ Gauss–Legendre points), Fibonacci lattice (2D rank-1 lattice with a Fibonacci number of points), CBC rank-1 lattice (3D lattice with a component-by-component generating vector), Korobov lattice, scrambled Sobol (quasi-random), Smolyak (sparse grid; the known-failing control).'),
         ('conv rollout / anchor', 'the largest rule (2D Gauss $256^2$, 3D CBC 32768) taken as the converged limit; it is validated against an independent family (2D Fibonacci 46368, 3D Gauss $32^3$).'),
-        ('E0 ST / S references', 'second-order full-order references from lane `jcp-references`: ST = central differences + Crank–Nicolson (space and time refined), S = central differences + backward Euler at the ROM\'s time step (isolates space error).'),
+        ('E0 ST / S references', 'second-order full-order references from lane `jcp-references`: ST = central differences + Crank–Nicolson (space and time refined), S = central differences + backward Euler at Δt = 0.005 (the 2D ROM\'s step; half the 3D ROM\'s step).'),
         ('worst / median', 'maximum / median over the eligible cases of each case\'s error $e_c=\\max_{k\\ge1}\\lVert f(t_k)-R(t_k)\\rVert/\\lVert R(t_0)\\rVert$ on the scoring lattice.'),
         ('eligible', 'cases whose E0 reference is accepted and rankable (2D test64: 63/64 ST, 55/64 S; 3D: 32/32).'),
         ('$M^*$ (global)', 'smallest rung from which the worst and median error of that rung and every larger valid rung stay within 5 % of the conv rollout. Bracket: the interval between the last failing rung and $M^*$.'),

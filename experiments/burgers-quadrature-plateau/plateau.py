@@ -189,6 +189,7 @@ def matching(rep, kind='ST'):
     lad = {f: [r for r in v if r['arm'] not in controls] for f, v in ladders(rep, st).items()}
     lad = {f: v for f, v in lad.items() if v and f not in ('control', 'tensor')}
     conv = st[rep['config']['conv_arm']]
+    demonstrated = plateau(rep, kind)['demonstrated']
     out = {}
     for fn, F in fs.items():
         ent = dict(W=F['W'], T=F['T'], eligible=F['converged_all'],
@@ -200,6 +201,9 @@ def matching(rep, kind='ST'):
                     return 'fail'
                 a, b = _le(r, F, 'W'), _le(r, F, 'T')
                 return 'pass' if a == b == 'pass' else ('fail' if 'fail' in (a, b) else 'unresolved')
+            if not (F['converged_all'] and demonstrated):          # fail closed (A1.4, A2.1)
+                ent['families'][f] = dict(m_star=None, withheld=True)
+                continue
             ent['families'][f] = suffix_min(v, t)
         out[fn] = ent
     return out

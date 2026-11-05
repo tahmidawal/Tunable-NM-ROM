@@ -28,9 +28,9 @@ GPU time charged: **2.98 GPU-h** of the 4.0 GPU-h cap (allocated wall time, ever
 - **2D 1024²** — plateau demonstrated: conv rollout worst 2.88 % / median 1.04 % (ST; S: 1.36 % / 0.045 %). Global $M^*$ (ST): Gauss tensor 2,025 (bracket 1,600–2,025]; Fibonacci lattice 987 (bracket 610–987]; Sobol 4,096 (bracket 2,048–4,096]. Same-mesh upwind FOM `UB_L1024`: 3.21 % / 1.13 %.
 - **2D 2048²** — plateau demonstrated: conv rollout worst 2.88 % / median 1.04 % (ST; S: 1.36 % / 0.045 %). Global $M^*$ (ST): Gauss tensor 2,025 (bracket 1,600–2,025]; Fibonacci lattice 987 (bracket 610–987]; Sobol 4,096 (bracket 2,048–4,096]. Same-mesh upwind FOM `UB_L2048`: 2.81 % / 1.09 %.
 - **2D 4096²** — plateau demonstrated: conv rollout worst 2.88 % / median 1.04 % (ST; S: 1.36 % / 0.045 %). Global $M^*$ (ST): Gauss tensor 2,025 (bracket 1,600–2,025]; Fibonacci lattice 987 (bracket 610–987]; Sobol 4,096 (bracket 2,048–4,096]. Same-mesh upwind FOM `UB_L4096`: 2.67 % / 1.07 %.
-- **3D 64³** — plateau demonstrated: conv rollout worst 4.45 % / median 1.55 % (ST; S: 2.63 % / 0.743 %). Global $M^*$ (ST): CBC rank-1 lattice 4,096 (bracket 3,584–4,096]; optimistic 2,560 (ε_ref-unresolved rungs); Gauss tensor 8,000 (bracket 6,859–8,000]; Sobol 32,768 (bracket 16,384–32,768] (tail not demonstrated); Korobov lattice 4,093 (bracket 2,039–4,093] (tail not demonstrated). Same-mesh upwind FOM `UB_L64`: 12.97 % / 4.22 %.
-- **3D 128³** — plateau demonstrated: conv rollout worst 4.47 % / median 1.55 % (ST; S: 2.65 % / 0.747 %). Global $M^*$ (ST): CBC rank-1 lattice 4,096 (bracket 3,584–4,096]; optimistic 2,560 (ε_ref-unresolved rungs); Gauss tensor 8,000 (bracket 6,859–8,000]; Sobol 32,768 (bracket 16,384–32,768] (tail not demonstrated); Korobov lattice 4,093 (bracket 2,039–4,093] (tail not demonstrated). Same-mesh upwind FOM `UB_L128`: 8.62 % / 2.63 %.
-- **3D 256³** — plateau demonstrated: conv rollout worst 4.48 % / median 1.55 % (ST; S: 2.65 % / 0.749 %). Global $M^*$ (ST): CBC rank-1 lattice 4,096 (bracket 3,584–4,096]; optimistic 2,560 (ε_ref-unresolved rungs); Gauss tensor 8,000 (bracket 6,859–8,000]; Sobol 32,768 (bracket 16,384–32,768] (tail not demonstrated); Korobov lattice 4,093 (bracket 2,039–4,093] (tail not demonstrated). Same-mesh upwind FOM `UB_L256`: 6.01 % / 1.84 %.
+- **3D 64³** — plateau demonstrated: conv rollout worst 4.45 % / median 1.55 % (ST; S: 2.63 % / 0.743 %). Global $M^*$ (ST): CBC rank-1 lattice 4,096 (bracket 3,584–4,096]; optimistic 2,560 (ε_ref-unresolved rungs); Gauss tensor 8,000 (bracket 6,859–8,000]; Sobol within 5 % of the anchor from $m$ = 32,768, tail not demonstrated; Korobov lattice within 5 % of the anchor from $m$ = 4,093, tail not demonstrated. Same-mesh upwind FOM `UB_L64`: 12.97 % / 4.22 %.
+- **3D 128³** — plateau demonstrated: conv rollout worst 4.47 % / median 1.55 % (ST; S: 2.65 % / 0.747 %). Global $M^*$ (ST): CBC rank-1 lattice 4,096 (bracket 3,584–4,096]; optimistic 2,560 (ε_ref-unresolved rungs); Gauss tensor 8,000 (bracket 6,859–8,000]; Sobol within 5 % of the anchor from $m$ = 32,768, tail not demonstrated; Korobov lattice within 5 % of the anchor from $m$ = 4,093, tail not demonstrated. Same-mesh upwind FOM `UB_L128`: 8.62 % / 2.63 %.
+- **3D 256³** — plateau demonstrated: conv rollout worst 4.48 % / median 1.55 % (ST; S: 2.65 % / 0.749 %). Global $M^*$ (ST): CBC rank-1 lattice 4,096 (bracket 3,584–4,096]; optimistic 2,560 (ε_ref-unresolved rungs); Gauss tensor 8,000 (bracket 6,859–8,000]; Sobol within 5 % of the anchor from $m$ = 32,768, tail not demonstrated; Korobov lattice within 5 % of the anchor from $m$ = 4,093, tail not demonstrated. Same-mesh upwind FOM `UB_L256`: 6.01 % / 1.84 %.
 
 **Per-mesh summary** (ST, eligible cases; latencies are same-job confirmation-panel medians, lattice contract; "prov." = timing drift gate failed in that job, A2.4):
 
@@ -60,9 +60,9 @@ Tolerance caveat (AGENTS.md like-for-like rule): `UB_L*` is solved to Newton $10
 
 In 2D no relaxed-tolerance upwind configuration was in the panel (DESIGN §7), so the 2D UB speed-ups are against a tightly solved baseline and overstate the speed-up over a tuned upwind solver; the 3D rows show the size of that effect (tight `UB_L*` vs relaxed `hist_*`). Neither is the fastest FOM: a spectral FOM at least as accurate is faster than the ROM at every mesh (last columns of the per-mesh summary).
 
-- **2D plateau is mesh-independent**: conv-rollout worst error 2.88 %–2.88 % and median 1.042 %–1.043 % over 256², 512², 1024², 2048², 4096² (ST). Against the space-only S reference the same rollouts give 1.34 %–1.36 % worst and 0.045 %–0.047 % median (S/ST ratio 0.47–0.47 worst, 0.043–0.045 median). S is backward Euler at the ROM's own Δt = 0.005, so the ST–S gap is the ROM's backward-Euler time error: it is about half of the worst-case plateau and nearly all of the median; quadrature is not what limits it.
+- **2D plateau is approximately unchanged over the tested meshes**: conv-rollout worst error 2.88 %–2.88 % and median 1.042 %–1.043 % over 256², 512², 1024², 2048², 4096² (ST). Against the space-only S reference the same rollouts give 1.34 %–1.36 % worst and 0.045 %–0.047 % median (S/ST ratio 0.47–0.47 worst, 0.043–0.045 median). S is backward Euler at the ROM's own Δt = 0.005. The much lower S errors are consistent with a large time-discretisation contribution to the ST plateau, but differences of error norms do not decompose the error (and the S statistics use 55 eligible cases, ST 63); quantifying it needs a controlled ROM time-step study, not run here. What the ladder does show is that adding points beyond $M^*$ does not lower the error.
 - **2D crossover with the same-mesh upwind FOM** (worst error): UB/ROM-plateau ratio 256² 2.00, 512² 1.41, 1024² 1.11, 2048² 0.97, 4096² 0.93; the sign changes between 1024²→2048². Median-error ratio 256² 1.35, 512² 1.17, 1024² 1.09, 2048² 1.04, 4096² 1.03; no sign change inside the meshes run.
-- **3D plateau is mesh-independent**: conv-rollout worst error 4.45 %–4.48 % and median 1.545 %–1.547 % over 64³, 128³, 256³ (ST). Against the space-only S reference the same rollouts give 2.63 %–2.65 % worst and 0.743 %–0.749 % median (S/ST ratio 0.59–0.59 worst, 0.481–0.485 median). In 3D, S is backward Euler at Δt = 0.005 while the ROM steps at Δt = 0.01, so S is not time-matched and the ST–S gap is not a clean time-error measurement; no attribution is made from it.
+- **3D plateau is approximately unchanged over the tested meshes**: conv-rollout worst error 4.45 %–4.48 % and median 1.545 %–1.547 % over 64³, 128³, 256³ (ST). Against the space-only S reference the same rollouts give 2.63 %–2.65 % worst and 0.743 %–0.749 % median (S/ST ratio 0.59–0.59 worst, 0.481–0.485 median). In 3D, S is backward Euler at Δt = 0.005 while the ROM steps at Δt = 0.01, so S is not time-matched and the ST–S gap is not a clean time-error measurement; no attribution is made from it.
 - **3D crossover with the same-mesh upwind FOM** (worst error): UB/ROM-plateau ratio 64³ 2.91, 128³ 1.93, 256³ 1.34; no sign change inside the meshes run. Median-error ratio 64³ 2.73, 128³ 1.70, 256³ 1.19; no sign change inside the meshes run.
 
 ## 3. Plateau point $M^*$ per family and mesh (ST references)
@@ -88,16 +88,16 @@ Global $M^*$: smallest rung from which every larger valid rung is within 5 % of 
 | 2D | 4096² | 2.2e-06, 1.0000 ✓ | 2.88 % | 1.042 % | Sobol | 4,096 (bracket 2,048–4,096] | yes | 3.03 % | 1.038 % | 4096 |
 | 3D | 64³ | 4.5e-05, 1.0000 ✓ | 4.45 % | 1.547 % | CBC rank-1 lattice | 4,096 (bracket 3,584–4,096]; optimistic 2,560 (ε_ref-unresolved rungs) | yes | 4.47 % | 1.547 % | 4096 |
 | 3D | 64³ | 4.5e-05, 1.0000 ✓ | 4.45 % | 1.547 % | Gauss tensor | 8,000 (bracket 6,859–8,000] | yes | 4.52 % | 1.547 % | 8000 |
-| 3D | 64³ | 4.5e-05, 1.0000 ✓ | 4.45 % | 1.547 % | Sobol | 32,768 (bracket 16,384–32,768] | no | 4.47 % | 1.549 % | 32768 |
-| 3D | 64³ | 4.5e-05, 1.0000 ✓ | 4.45 % | 1.547 % | Korobov lattice | 4,093 (bracket 2,039–4,093] | no | 4.57 % | 1.547 % | 4093 |
+| 3D | 64³ | 4.5e-05, 1.0000 ✓ | 4.45 % | 1.547 % | Sobol | within 5 % of the anchor from $m$ = 32,768, tail not demonstrated | no | 4.47 % | 1.549 % | 32768 |
+| 3D | 64³ | 4.5e-05, 1.0000 ✓ | 4.45 % | 1.547 % | Korobov lattice | within 5 % of the anchor from $m$ = 4,093, tail not demonstrated | no | 4.57 % | 1.547 % | 4093 |
 | 3D | 128³ | 4.4e-05, 1.0000 ✓ | 4.47 % | 1.545 % | CBC rank-1 lattice | 4,096 (bracket 3,584–4,096]; optimistic 2,560 (ε_ref-unresolved rungs) | yes | 4.49 % | 1.545 % | 4096 |
 | 3D | 128³ | 4.4e-05, 1.0000 ✓ | 4.47 % | 1.545 % | Gauss tensor | 8,000 (bracket 6,859–8,000] | yes | 4.54 % | 1.546 % | 8000 |
-| 3D | 128³ | 4.4e-05, 1.0000 ✓ | 4.47 % | 1.545 % | Sobol | 32,768 (bracket 16,384–32,768] | no | 4.49 % | 1.552 % | 32768 |
-| 3D | 128³ | 4.4e-05, 1.0000 ✓ | 4.47 % | 1.545 % | Korobov lattice | 4,093 (bracket 2,039–4,093] | no | 4.60 % | 1.545 % | 4093 |
+| 3D | 128³ | 4.4e-05, 1.0000 ✓ | 4.47 % | 1.545 % | Sobol | within 5 % of the anchor from $m$ = 32,768, tail not demonstrated | no | 4.49 % | 1.552 % | 32768 |
+| 3D | 128³ | 4.4e-05, 1.0000 ✓ | 4.47 % | 1.545 % | Korobov lattice | within 5 % of the anchor from $m$ = 4,093, tail not demonstrated | no | 4.60 % | 1.545 % | 4093 |
 | 3D | 256³ | 4.4e-05, 1.0000 ✓ | 4.48 % | 1.545 % | CBC rank-1 lattice | 4,096 (bracket 3,584–4,096]; optimistic 2,560 (ε_ref-unresolved rungs) | yes | 4.50 % | 1.545 % | 4096 |
 | 3D | 256³ | 4.4e-05, 1.0000 ✓ | 4.48 % | 1.545 % | Gauss tensor | 8,000 (bracket 6,859–8,000] | yes | 4.54 % | 1.545 % | 8000 |
-| 3D | 256³ | 4.4e-05, 1.0000 ✓ | 4.48 % | 1.545 % | Sobol | 32,768 (bracket 16,384–32,768] | no | 4.50 % | 1.554 % | 32768 |
-| 3D | 256³ | 4.4e-05, 1.0000 ✓ | 4.48 % | 1.545 % | Korobov lattice | 4,093 (bracket 2,039–4,093] | no | 4.61 % | 1.545 % | 4093 |
+| 3D | 256³ | 4.4e-05, 1.0000 ✓ | 4.48 % | 1.545 % | Sobol | within 5 % of the anchor from $m$ = 32,768, tail not demonstrated | no | 4.50 % | 1.554 % | 32768 |
+| 3D | 256³ | 4.4e-05, 1.0000 ✓ | 4.48 % | 1.545 % | Korobov lattice | within 5 % of the anchor from $m$ = 4,093, tail not demonstrated | no | 4.61 % | 1.545 % | 4093 |
 
 ## 4. Plateau point $M^*$ per family and mesh (S references)
 
@@ -107,31 +107,31 @@ Global $M^*$: smallest rung from which every larger valid rung is within 5 % of 
 |---|---|---|---|---|---|---|---|---|---|---|
 | 2D | 256² | 2.2e-06, 1.0000 ✓ | 1.34 % | 0.047 % | Gauss tensor | 3,025 (bracket 2,500–3,025] | yes | 1.35 % | 0.047 % | 3025 |
 | 2D | 256² | 2.2e-06, 1.0000 ✓ | 1.34 % | 0.047 % | Fibonacci lattice | 2,584 (bracket 1,597–2,584] | yes | 1.31 % | 0.047 % | 2584 |
-| 2D | 256² | 2.2e-06, 1.0000 ✓ | 1.34 % | 0.047 % | Sobol | 16,384 (bracket 8,192–16,384] | no | 1.34 % | 0.047 % | 16384 |
+| 2D | 256² | 2.2e-06, 1.0000 ✓ | 1.34 % | 0.047 % | Sobol | within 5 % of the anchor from $m$ = 16,384, tail not demonstrated | no | 1.34 % | 0.047 % | 16384 |
 | 2D | 512² | 2.2e-06, 1.0000 ✓ | 1.36 % | 0.045 % | Gauss tensor | 3,025 (bracket 2,500–3,025] | yes | 1.37 % | 0.045 % | 3025 |
 | 2D | 512² | 2.2e-06, 1.0000 ✓ | 1.36 % | 0.045 % | Fibonacci lattice | 2,584 (bracket 1,597–2,584] | yes | 1.33 % | 0.045 % | 2584 |
-| 2D | 512² | 2.2e-06, 1.0000 ✓ | 1.36 % | 0.045 % | Sobol | 16,384 (bracket 8,192–16,384] | no | 1.36 % | 0.045 % | 16384 |
+| 2D | 512² | 2.2e-06, 1.0000 ✓ | 1.36 % | 0.045 % | Sobol | within 5 % of the anchor from $m$ = 16,384, tail not demonstrated | no | 1.36 % | 0.045 % | 16384 |
 | 2D | 1024² | 2.2e-06, 1.0000 ✓ | 1.36 % | 0.045 % | Gauss tensor | 3,025 (bracket 2,500–3,025]; optimistic 2,500 (ε_ref-unresolved rungs) | yes | 1.37 % | 0.045 % | 3025 |
 | 2D | 1024² | 2.2e-06, 1.0000 ✓ | 1.36 % | 0.045 % | Fibonacci lattice | 2,584 (bracket 1,597–2,584] | yes | 1.32 % | 0.045 % | 2584 |
-| 2D | 1024² | 2.2e-06, 1.0000 ✓ | 1.36 % | 0.045 % | Sobol | 16,384 (bracket 8,192–16,384] | no | 1.36 % | 0.045 % | 16384 |
+| 2D | 1024² | 2.2e-06, 1.0000 ✓ | 1.36 % | 0.045 % | Sobol | within 5 % of the anchor from $m$ = 16,384, tail not demonstrated | no | 1.36 % | 0.045 % | 16384 |
 | 2D | 2048² | 2.2e-06, 1.0000 ✓ | 1.36 % | 0.045 % | Gauss tensor | 3,025 (bracket 2,500–3,025]; optimistic 2,500 (ε_ref-unresolved rungs) | yes | 1.37 % | 0.045 % | 3025 |
 | 2D | 2048² | 2.2e-06, 1.0000 ✓ | 1.36 % | 0.045 % | Fibonacci lattice | 2,584 (bracket 1,597–2,584] | yes | 1.32 % | 0.045 % | 2584 |
-| 2D | 2048² | 2.2e-06, 1.0000 ✓ | 1.36 % | 0.045 % | Sobol | 16,384 (bracket 8,192–16,384] | no | 1.36 % | 0.045 % | 16384 |
+| 2D | 2048² | 2.2e-06, 1.0000 ✓ | 1.36 % | 0.045 % | Sobol | within 5 % of the anchor from $m$ = 16,384, tail not demonstrated | no | 1.36 % | 0.045 % | 16384 |
 | 2D | 4096² | 2.2e-06, 1.0000 ✓ | 1.36 % | 0.045 % | Gauss tensor | 3,025 (bracket 2,500–3,025]; optimistic 2,500 (ε_ref-unresolved rungs) | yes | 1.37 % | 0.045 % | 3025 |
 | 2D | 4096² | 2.2e-06, 1.0000 ✓ | 1.36 % | 0.045 % | Fibonacci lattice | 2,584 (bracket 1,597–2,584] | yes | 1.32 % | 0.045 % | 2584 |
-| 2D | 4096² | 2.2e-06, 1.0000 ✓ | 1.36 % | 0.045 % | Sobol | 16,384 (bracket 8,192–16,384] | no | 1.36 % | 0.045 % | 16384 |
+| 2D | 4096² | 2.2e-06, 1.0000 ✓ | 1.36 % | 0.045 % | Sobol | within 5 % of the anchor from $m$ = 16,384, tail not demonstrated | no | 1.36 % | 0.045 % | 16384 |
 | 3D | 64³ | 4.5e-05, 1.0000 ✓ | 2.63 % | 0.743 % | CBC rank-1 lattice | 4,096 (bracket 3,584–4,096] | yes | 2.64 % | 0.743 % | 4096 |
 | 3D | 64³ | 4.5e-05, 1.0000 ✓ | 2.63 % | 0.743 % | Gauss tensor | 8,000 (bracket 6,859–8,000] | yes | 2.67 % | 0.744 % | 8000 |
 | 3D | 64³ | 4.5e-05, 1.0000 ✓ | 2.63 % | 0.743 % | Sobol | not reached | no | – | – | 32768 |
-| 3D | 64³ | 4.5e-05, 1.0000 ✓ | 2.63 % | 0.743 % | Korobov lattice | 4,093 (bracket 2,039–4,093] | no | 2.74 % | 0.748 % | 4093 |
+| 3D | 64³ | 4.5e-05, 1.0000 ✓ | 2.63 % | 0.743 % | Korobov lattice | within 5 % of the anchor from $m$ = 4,093, tail not demonstrated | no | 2.74 % | 0.748 % | 4093 |
 | 3D | 128³ | 4.4e-05, 1.0000 ✓ | 2.65 % | 0.747 % | CBC rank-1 lattice | 4,096 (bracket 3,584–4,096] | yes | 2.66 % | 0.746 % | 4096 |
 | 3D | 128³ | 4.4e-05, 1.0000 ✓ | 2.65 % | 0.747 % | Gauss tensor | 8,000 (bracket 6,859–8,000] | yes | 2.68 % | 0.750 % | 8000 |
 | 3D | 128³ | 4.4e-05, 1.0000 ✓ | 2.65 % | 0.747 % | Sobol | not reached | no | – | – | 32768 |
-| 3D | 128³ | 4.4e-05, 1.0000 ✓ | 2.65 % | 0.747 % | Korobov lattice | 4,093 (bracket 2,039–4,093] | no | 2.76 % | 0.756 % | 4093 |
+| 3D | 128³ | 4.4e-05, 1.0000 ✓ | 2.65 % | 0.747 % | Korobov lattice | within 5 % of the anchor from $m$ = 4,093, tail not demonstrated | no | 2.76 % | 0.756 % | 4093 |
 | 3D | 256³ | 4.4e-05, 1.0000 ✓ | 2.65 % | 0.749 % | CBC rank-1 lattice | 4,096 (bracket 3,584–4,096] | yes | 2.66 % | 0.748 % | 4096 |
 | 3D | 256³ | 4.4e-05, 1.0000 ✓ | 2.65 % | 0.749 % | Gauss tensor | 8,000 (bracket 6,859–8,000] | yes | 2.69 % | 0.752 % | 8000 |
 | 3D | 256³ | 4.4e-05, 1.0000 ✓ | 2.65 % | 0.749 % | Sobol | not reached | no | – | – | 32768 |
-| 3D | 256³ | 4.4e-05, 1.0000 ✓ | 2.65 % | 0.749 % | Korobov lattice | 4,093 (bracket 2,039–4,093] | no | 2.76 % | 0.758 % | 4093 |
+| 3D | 256³ | 4.4e-05, 1.0000 ✓ | 2.65 % | 0.749 % | Korobov lattice | within 5 % of the anchor from $m$ = 4,093, tail not demonstrated | no | 2.76 % | 0.758 % | 4093 |
 
 ## 5. Error against $m$ (worst / median over eligible cases, ST)
 
@@ -705,6 +705,53 @@ Cheapest plateau rule: `lat4096` ($m$ = 4,096), worst 4.50 % / median 1.545 %, c
 
 ![time vs m](2026-11-05-burgers-quadrature-plateau/time.png)
 
+### Timing detail of the selected pairs (confirmation panel)
+
+Per subject: median [IQR] and min–max over its invocations (ms), outliers (> 1.5 IQR). "full" = vendored query with six fields on the full mesh; "decode" = the six-field full-mesh decode alone; full − decode is an operational estimate of the solve, not a measured time. Paired = per-case ratio FOM/ROM of medians: median (min–max) over the timing cases. PS + prep adds the host-side sine-coefficient quadrature of the initial field (recorded per case).
+
+| mesh | subject | median [IQR] | min–max | outliers | paired FOM/ROM | PS + prep FOM/ROM |
+|---|---|---|---|---|---|---|
+| 2D 256² | `rom_lat · fib987` | 42.4 [0.6] | 41.4–44.4 | 5 |  |  |
+| 2D 256² | `rom_full · fib987` | 42.5 [0.9] | 41.3–44.7 | 1 |  |  |
+| 2D 256² | `decode · gauss256` | 0.2 [0.0] | 0.2–0.5 | 2 |  |  |
+| 2D 256² | `fom · UB_L256` | 90.7 [23.3] | 71.4–101.9 | 0 | 2.100 (1.695–2.408) |  |
+| 2D 256² | `fom · PS_N48` | 6.1 [0.6] | 5.9–7.7 | 2 | 0.145 (0.143–0.153) | 0.383 (0.374–0.784) |
+| 2D 512² | `rom_lat · fib987` | 42.3 [1.1] | 40.9–44.1 | 0 |  |  |
+| 2D 512² | `rom_full · fib987` | 42.7 [0.8] | 41.7–44.4 | 1 |  |  |
+| 2D 512² | `decode · gauss256` | 0.6 [0.0] | 0.6–1.0 | 6 |  |  |
+| 2D 512² | `fom · UB_L512` | 161.1 [43.7] | 123.6–182.9 | 0 | 3.733 (2.925–4.352) |  |
+| 2D 512² | `fom · PS_N48` | 6.5 [0.3] | 6.1–7.9 | 3 | 0.154 (0.150–0.162) | 0.409 (0.386–0.846) |
+| 2D 1024² | `rom_lat · fib987` | 43.0 [0.7] | 41.8–44.6 | 2 |  |  |
+| 2D 1024² | `rom_full · fib987` | 44.8 [1.1] | 43.9–46.7 | 0 |  |  |
+| 2D 1024² | `decode · gauss256` | 2.1 [0.0] | 2.1–2.1 | 1 |  |  |
+| 2D 1024² | `fom · UB_L1024` | 463.0 [131.6] | 355.3–534.5 | 0 | 10.605 (8.234–12.496) |  |
+| 2D 1024² | `fom · PS_N48` | 6.7 [0.2] | 6.4–7.2 | 2 | 0.156 (0.149–0.162) | 0.407 (0.399–0.847) |
+| 2D 2048² | `rom_lat · fib987` | 42.2 [0.7] | 41.2–43.8 | 3 |  |  |
+| 2D 2048² | `rom_full · fib987` | 50.3 [0.6] | 49.2–52.6 | 2 |  |  |
+| 2D 2048² | `decode · gauss256` | 8.4 [0.1] | 8.4–8.5 | 0 |  |  |
+| 2D 2048² | `fom · UB_L2048` | 1930.9 [558.3] | 1474.3–2249.6 | 0 | 44.987 (34.853–53.884) |  |
+| 2D 2048² | `fom · PS_N48` | 6.1 [0.3] | 5.8–7.0 | 5 | 0.144 (0.143–0.145) | 0.385 (0.379–0.857) |
+| 2D 4096² | `rom_lat · fib987` | 27.6 [0.6] | 26.9–28.8 | 0 |  |  |
+| 2D 4096² | `rom_full · fib987` | 40.3 [0.7] | 39.6–41.6 | 0 |  |  |
+| 2D 4096² | `decode · gauss256` | 13.9 [0.1] | 13.8–15.2 | 2 |  |  |
+| 2D 4096² | `fom · UB_L4096` | 3424.6 [996.6] | 2607.6–3987.8 | 0 | 122.270 (93.796–145.707) |  |
+| 2D 4096² | `fom · PS_N48` | 4.6 [0.6] | 4.3–5.6 | 0 | 0.165 (0.162–0.171) | 0.477 (0.471–1.401) |
+| 3D 64³ | `rom_lat · lat4096` | 40.4 [1.3] | 38.4–43.5 | 5 |  |  |
+| 3D 64³ | `rom_full · lat4096` | 40.3 [1.3] | 38.4–43.4 | 5 |  |  |
+| 3D 64³ | `decode · lat32768` | 0.8 [0.0] | 0.8–0.9 | 3 |  |  |
+| 3D 64³ | `fom · UB_L64` | 91.8 [20.3] | 65.3–106.6 | 0 | 2.346 (1.607–2.443) |  |
+| 3D 64³ | `fom · PS_N12` | 7.7 [0.1] | 7.6–8.0 | 4 | 0.192 (0.179–0.200) | 0.459 (0.302–0.920) |
+| 3D 128³ | `rom_lat · lat4096` | 49.8 [3.0] | 47.7–54.8 | 0 |  |  |
+| 3D 128³ | `rom_full · lat4096` | 55.1 [2.6] | 52.3–60.2 | 0 |  |  |
+| 3D 128³ | `decode · lat32768` | 5.9 [0.0] | 5.8–5.9 | 1 |  |  |
+| 3D 128³ | `fom · UB_L128` | 605.9 [169.1] | 411.0–701.6 | 0 | 12.448 (7.914–13.404) |  |
+| 3D 128³ | `fom · PS_N12` | 7.6 [0.1] | 7.5–8.2 | 1 | 0.153 (0.145–0.159) | 0.372 (0.237–0.738) |
+| 3D 256³ | `rom_lat · lat4096` | 42.5 [2.4] | 41.3–46.2 | 0 |  |  |
+| 3D 256³ | `rom_full · lat4096` | 62.4 [1.2] | 61.0–64.1 | 0 |  |  |
+| 3D 256³ | `decode · lat32768` | 20.7 [0.1] | 20.6–20.9 | 0 |  |  |
+| 3D 256³ | `fom · UB_L256` | 1946.3 [605.3] | 1290.4–2292.8 | 0 | 46.604 (29.815–50.132) |  |
+| 3D 256³ | `fom · PS_N12` | 4.7 [0.6] | 4.5–5.6 | 0 | 0.112 (0.108–0.117) | 0.320 (0.197–1.089) |
+
 ## 8. Gates and audits
 
 | job | G-coh | G-ref | G-R | G-lat (max rel) | G-time outputs / drift | G-score vs refstore | G-fin | G-fom non-converged | G-audit (NumPy, max rel) | G-par (October parity, max rel) | fault injections |
@@ -731,13 +778,16 @@ Cheapest plateau rule: `lat4096` ($m$ = 4,096), worst 4.50 % / median 1.545 %, c
 - Cross-mesh latencies come from different jobs and GPU types (A100 vs H200) and must not be compared; only within-mesh ratios are claims.
 - The ROM query includes the projection of the initial field on the mesh; the PS FOM latency excludes the host-side sine-coefficient quadrature of the initial field (recorded per case in the FOM rows).
 - 3D S references are backward Euler at Δt = 0.005, half the 3D ROM step, so 3D S errors are not a space-only measure.
+- Operator (A1.9, A2.6): the off-mesh arms integrate the continuum advection in the weak form; it differs from the upwind stencil of the FOM the model was trained on by that stencil's consistency error. How this carries into the trajectory differences is not separately measured; no rate is claimed.
+- Retained evidence of the four failed jobs: their cluster directories were deleted before their logs were pulled (an omission of this lane); the error lines read from the logs before deletion are transcribed in `experiments/burgers-quadrature-plateau/results/FAILED-JOBS.md`, and slurm states/elapsed times are in the ledger.
+- The lattice ladder is not monotone at small $m$ (CBC 1024 is far worse than 768 and 1536 in 3D); $M^*$ is defined by the suffix condition, so such dips below $M^*$ do not affect it.
 
 ## Glossary
 
 - **$m$** — number of points of the classical quadrature rule used for the off-mesh advection term.
 - **rule families** — Gauss tensor ($n^2$ or $p^3$ Gauss–Legendre points), Fibonacci lattice (2D rank-1 lattice with a Fibonacci number of points), CBC rank-1 lattice (3D lattice with a component-by-component generating vector), Korobov lattice, scrambled Sobol (quasi-random), Smolyak (sparse grid; the known-failing control).
 - **conv rollout / anchor** — the largest rule (2D Gauss $256^2$, 3D CBC 32768) taken as the converged limit; it is validated against an independent family (2D Fibonacci 46368, 3D Gauss $32^3$).
-- **E0 ST / S references** — second-order full-order references from lane `jcp-references`: ST = central differences + Crank–Nicolson (space and time refined), S = central differences + backward Euler at the ROM's time step (isolates space error).
+- **E0 ST / S references** — second-order full-order references from lane `jcp-references`: ST = central differences + Crank–Nicolson (space and time refined), S = central differences + backward Euler at Δt = 0.005 (the 2D ROM's step; half the 3D ROM's step).
 - **worst / median** — maximum / median over the eligible cases of each case's error $e_c=\max_{k\ge1}\lVert f(t_k)-R(t_k)\rVert/\lVert R(t_0)\rVert$ on the scoring lattice.
 - **eligible** — cases whose E0 reference is accepted and rankable (2D test64: 63/64 ST, 55/64 S; 3D: 32/32).
 - **$M^*$ (global)** — smallest rung from which the worst and median error of that rung and every larger valid rung stay within 5 % of the conv rollout. Bracket: the interval between the last failing rung and $M^*$.

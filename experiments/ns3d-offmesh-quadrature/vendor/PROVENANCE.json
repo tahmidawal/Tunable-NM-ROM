@@ -1,0 +1,19 @@
+{
+ "source_branch": "exp/2026-10-01-quadrature-burgers3d",
+ "source_commit": "aab6b69275aa501ad70e710786ba0a656618d5d7",
+ "files": {
+  "vendor/quadrature-burgers3d/rules.py": {
+   "source": "experiments/quadrature-burgers3d/rules.py",
+   "sha256": "1aaa4e5d5da2040d4b1e6704fd45af1ea224d4d8593ac68f3ecca67dce536934"
+  },
+  "vendor/quadrature-burgers3d/offmesh.py": {
+   "source": "experiments/quadrature-burgers3d/offmesh.py",
+   "sha256": "c46656e48cec27c4d78d1a00f3d93e19b7911b6d34bae6bdf9e264d10d45cbb4"
+  },
+  "vendor/quadrature-burgers3d/qpanel.py": {
+   "source": "experiments/quadrature-burgers3d/qpanel.py",
+   "sha256": "3dcff5d90522d61bc558e1f067a224091061873969f86c0896d07cbaa2f9b934"
+  }
+ },
+ "note": "byte-identical copies. Only rules.py is imported (its NumPy/SciPy rule generators: gauss_tensor3, sobol3, rank1_lattice3, cbc_lattice_vector3, korobov_search3, p2_merit3). offmesh.py and qpanel.py are kept for provenance of the Burgers 3D contraction form (contract_offmesh) that this lane re-implements for the rotational NS term; they import Burgers-only modules and are not executed here."
+}

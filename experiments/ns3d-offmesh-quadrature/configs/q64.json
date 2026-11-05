@@ -1,0 +1,159 @@
+{
+ "name": "q64",
+ "n": 64,
+ "dt_truth": 0.001,
+ "horizon": 0.2,
+ "modes": 292,
+ "check_modes": 8,
+ "k": 8,
+ "ic_iters": 12,
+ "ladder_dt": 0.02,
+ "ladder_iters": 3,
+ "damping": 1e-06,
+ "cnab2_steps": [
+  200,
+  100,
+  80,
+  70,
+  60,
+  50,
+  40,
+  20,
+  10
+ ],
+ "timing_case": 0,
+ "timing_repetitions": 7,
+ "neighbour_gate_ratio": 1.1,
+ "target_relative": 0.05,
+ "eval_seed": 202609202,
+ "eval_cases": 16,
+ "closed_seeds": [
+  202609203,
+  202609211,
+  202609221
+ ],
+ "sample_chunk_eval": 32768,
+ "orthonormality_abort": 0.05,
+ "bank_file": "experiments/ns3d-pod-match/banks/a2_mu001/bank_selected.npz",
+ "bank_sha256": "a1af98e2297c41339a037cb427f757fc1f23bb8791132985f29cbda826431bd5",
+ "head_file": "experiments/ns3d-pod-match/runs/dev64/output/mesh/coordnet_head_k8_n64.npz",
+ "head_sha256": "4d9d86ce7aa3f7d139c581dfc5ed20b5afd9bcdbab15893eb7b582b5753adbd8",
+ "reference_summary": "experiments/ns3d-pod-match/runs/dev64/output/mesh/summary.json",
+ "reference_summary_sha256": "f8791ddf3bc78f7514ab27d3363e776846e305482f77e7423e6f33917ff0b02f",
+ "rules_file": "experiments/ns3d-offmesh-quadrature/rules/rules.npz",
+ "rules_sha256": "a4047369f7bf14392380fa9fd36f79de53155a1f620ff0f0bef26066136152fe",
+ "families": [
+  "lat",
+  "kor",
+  "sob",
+  "gl",
+  "trap"
+ ],
+ "ladder": {
+  "lat": [
+   "lat512",
+   "lat1024",
+   "lat2048",
+   "lat4096",
+   "lat8192",
+   "lat16384",
+   "lat32768",
+   "lat65536"
+  ],
+  "kor": [
+   "kor509",
+   "kor1021",
+   "kor2039",
+   "kor4093",
+   "kor8191",
+   "kor16381",
+   "kor32749",
+   "kor65521"
+  ],
+  "sob": [
+   "sob512",
+   "sob1024",
+   "sob2048",
+   "sob4096",
+   "sob8192",
+   "sob16384",
+   "sob32768",
+   "sob65536"
+  ],
+  "gl": [
+   "gl8",
+   "gl10",
+   "gl13",
+   "gl16",
+   "gl20",
+   "gl25",
+   "gl32",
+   "gl40"
+  ],
+  "trap": [
+   "trap8",
+   "trap10",
+   "trap13",
+   "trap16",
+   "trap20",
+   "trap25",
+   "trap32",
+   "trap40"
+  ]
+ },
+ "must_fail": "lat64",
+ "integrands": [
+  "net",
+  "interp"
+ ],
+ "continuum_p": [
+  128,
+  96
+ ],
+ "continuum_seeds": [
+  1,
+  2
+ ],
+ "control_shift_seed": 3,
+ "derivative_points": 4096,
+ "sentinel_rule": "lat4096",
+ "wall": "01:00:00",
+ "smoke": {
+  "eval_cases": 2,
+  "families": [
+   "lat",
+   "kor",
+   "sob",
+   "gl",
+   "trap"
+  ],
+  "ladder": {
+   "lat": [
+    "lat512",
+    "lat4096"
+   ],
+   "kor": [
+    "kor509"
+   ],
+   "sob": [
+    "sob512"
+   ],
+   "gl": [
+    "gl8"
+   ],
+   "trap": [
+    "trap8"
+   ]
+  },
+  "continuum_p": [
+   48,
+   40
+  ],
+  "cnab2_steps": [
+   200,
+   20
+  ],
+  "timing_repetitions": 2,
+  "derivative_points": 512
+ }
+}

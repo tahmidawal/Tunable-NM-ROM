@@ -82,7 +82,8 @@ code { font: 13px var(--mono); }
 
   <section class="sec">
     <div class="sec-head"><h2 class="sec-title">As the mesh gets finer</h2>
-    <p>Mean relative L2 error over cases at each mesh: the ROM at its plateau (blue) against the same-mesh full solver (green). For Burgers that is the upwind solver the ROM was trained on; for Navier–Stokes, CNAB2 at 60 steps.</p></div>
+    <p>Mean relative L2 error over cases at each mesh: the ROM at its plateau (blue) against the same-mesh full solver (green). For Burgers that is the upwind solver the ROM was trained on; for Navier–Stokes, CNAB2 at 60 steps. Each case’s error over its five output times is taken either at the worst time or as the RMS over the five times.</p></div>
+    <div class="ctl"><span>Error over time</span><div class="seg" id="resmetric" role="group" aria-label="Error over time"></div></div>
     <div class="grid" id="res"></div>
   </section>
 
@@ -231,7 +232,16 @@ function pillText(d, f) {
   return { cls: 'no', t: `never reaches ${target}` };
 }
 
+let resMetric = 'max';
+try { const s = JSON.parse(localStorage.getItem('qpc') || '{}'); if (s.resMetric) resMetric = s.resMetric; } catch (e) {}
 function renderRes() {
+  const seg = document.getElementById('resmetric'); seg.innerHTML = '';
+  [['max', 'Worst output time'], ['rms', 'RMS over output times']].forEach(([k, name]) => {
+    const btn = document.createElement('button'); btn.textContent = name; btn.setAttribute('aria-pressed', k === resMetric);
+    btn.onclick = () => { resMetric = k; try { const s = JSON.parse(localStorage.getItem('qpc') || '{}'); s.resMetric = k; localStorage.setItem('qpc', JSON.stringify(s)); } catch (e) {} renderRes(); };
+    seg.appendChild(btn);
+  });
+  const mv = o => resMetric === 'rms' ? o.rms.A : o.mean;
   const box = document.getElementById('res'); box.innerHTML = '';
   const W = 360, H = 220, l = 46, r = 70, t = 12, b = 30;
   EXPS.forEach(ex => {
@@ -239,7 +249,7 @@ function renderRes() {
     const card = document.createElement('article'); card.className = 'card';
     card.innerHTML = `<header><h2>${ex.name}</h2><span class="pill">${ds[0].fom.name.replace(', same mesh', '')}</span></header>`;
     const svg = el('svg', { class: 'chart', viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': `${ex.name}: mean error of ROM and full solver against mesh` });
-    const vmax = Math.max(...ds.flatMap(d => [d.ref.mean, d.fom.mean])) * 1.12;
+    const vmax = Math.max(...ds.flatMap(d => [mv(d.ref), mv(d.fom)])) * 1.12;
     const step = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2].find(s => vmax / s <= 6);
     const top = Math.ceil(vmax / step) * step;
     const n = ds.length;
@@ -252,10 +262,10 @@ function renderRes() {
     el('line', { class: 'axis', x1: l, x2: W - r, y1: Y(0), y2: Y(0) }, svg);
     ds.forEach((d, i) => { const tx = el('text', { x: X(i), y: H - b + 14, 'text-anchor': 'middle' }, svg); tx.textContent = d.label; });
     const line = (key, cls, color) => {
-      el('path', { class: cls, d: ds.map((d, i) => (i ? 'L' : 'M') + X(i).toFixed(1) + ',' + Y(d[key].mean).toFixed(1)).join('') }, svg);
-      ds.forEach((d, i) => el('circle', { class: 'dot', r: 3.5, cx: X(i), cy: Y(d[key].mean), style: `fill:var(--${color});stroke-width:1.5` }, svg));
-      const lt = el('text', { x: X(n - 1) + 8, y: Y(ds[n - 1][key].mean) + 3.5, class: 'lbl', style: 'fill:var(--ink-2)' }, svg);
-      lt.textContent = (key === 'ref' ? 'ROM ' : 'Full ') + fmtPct(ds[n - 1][key].mean);
+      el('path', { class: cls, d: ds.map((d, i) => (i ? 'L' : 'M') + X(i).toFixed(1) + ',' + Y(mv(d[key])).toFixed(1)).join('') }, svg);
+      ds.forEach((d, i) => el('circle', { class: 'dot', r: 3.5, cx: X(i), cy: Y(mv(d[key])), style: `fill:var(--${color});stroke-width:1.5` }, svg));
+      const lt = el('text', { x: X(n - 1) + 8, y: Y(mv(ds[n - 1][key])) + 3.5, class: 'lbl', style: 'fill:var(--ink-2)' }, svg);
+      lt.textContent = (key === 'ref' ? 'ROM ' : 'Full ') + fmtPct(mv(ds[n - 1][key]));
     };
     line('fom', 'fom', 'fom'); line('ref', 'worst', 'worst');
     card.appendChild(svg);
@@ -264,7 +274,7 @@ function renderRes() {
       const rc = svg.getBoundingClientRect(); const mx = (ev.clientX - rc.left) * W / rc.width;
       let k = 0; ds.forEach((_, i) => { if (Math.abs(X(i) - mx) < Math.abs(X(k) - mx)) k = i; });
       const d = ds[k];
-      tip.innerHTML = `${d.label}<br>ROM ${fmtPct(d.ref.mean)}<br>${d.fom.name.replace(', same mesh', '')} ${fmtPct(d.fom.mean)}<br><span style="opacity:.7">full ÷ ROM ${(d.fom.mean / d.ref.mean).toFixed(2)}×</span>`;
+      tip.innerHTML = `${d.label}<br>ROM ${fmtPct(mv(d.ref))}<br>${d.fom.name.replace(', same mesh', '')} ${fmtPct(mv(d.fom))}<br><span style="opacity:.7">full ÷ ROM ${(mv(d.fom) / mv(d.ref)).toFixed(2)}×</span>`;
       tip.hidden = false;
       const cr = card.getBoundingClientRect(); let left = ev.clientX - cr.left + 14;
       if (left + tip.offsetWidth > cr.width - 6) left = ev.clientX - cr.left - tip.offsetWidth - 14;
@@ -273,7 +283,7 @@ function renderRes() {
     svg.addEventListener('pointerleave', () => { tip.hidden = true; });
     const det = document.createElement('details');
     det.innerHTML = `<summary>Numbers</summary><div class="tw"><table><thead><tr><th>mesh</th><th>ROM</th><th>full solver</th><th>full ÷ ROM</th></tr></thead><tbody>${
-      ds.map(d => `<tr><td>${d.label}</td><td>${fmtPct(d.ref.mean)}</td><td>${fmtPct(d.fom.mean)}</td><td>${(d.fom.mean / d.ref.mean).toFixed(2)}×</td></tr>`).join('')}</tbody></table></div>`;
+      ds.map(d => `<tr><td>${d.label}</td><td>${fmtPct(mv(d.ref))}</td><td>${fmtPct(mv(d.fom))}</td><td>${(mv(d.fom) / mv(d.ref)).toFixed(2)}×</td></tr>`).join('')}</tbody></table></div>`;
     card.appendChild(det);
     box.appendChild(card);
   });

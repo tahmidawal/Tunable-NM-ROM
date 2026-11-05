@@ -462,12 +462,14 @@ class Stepper:
                                             'snapshots': snap_files, 'linear_checks_count': len(self.lin_checks),
                                             'linear_checks_max': max([z['relative_linear_residual'] for z in self.lin_checks], default=None),
                                             'factorizations': self.factorizations, 'timers_seconds': self.timers,
+                                            'setup_seconds': getattr(self, 'setup_seconds', None),
                                             'interpolation': getattr(self, 'interpolation', None),
                                             'layout_sha256': self.layout_sha256, 'ndof': self.X.ndof,
                                             'elapsed_seconds': time.perf_counter() - t_wall0})
         if c['scheme'] not in ('sbdf2', 'oseen_bdf2', 'frozen_oseen'):
             raise ValueError('unknown scheme')
         sbdf = c['scheme']
+        self.setup_seconds = time.perf_counter() - t_wall0   # construction-free setup (state load / Newton)
         try:
             self._stages(c, x, t, sbdf, steady_start, rows, walls, diag_rows, stage_records, states, buf, flush, persist, t_wall0)
         except BaseException as exc:

@@ -19,13 +19,15 @@ for run,L,dim in runs:
         ms=[r['m'] for r in v['rungs']]
         per={c:[round(ba[a][c]['ST']['e']*100,5) for a in arms] for c in cases}
         g=v['global_']
-        fams.append(dict(key=f,name=FAM[f],m=ms,W=[r['W']*100 for r in v['rungs']],T=[r['T']*100 for r in v['rungs']],
+        fams.append(dict(key=f,name=FAM[f],m=ms,W=[r['W']*100 for r in v['rungs']],T=[r['T']*100 for r in v['rungs']],A=[sum(ba[a][c]['ST']['e'] for c in cases)/len(cases)*100 for a in arms],
             cases=per,mstar=g['m_star'] if v['tail_demonstrated'] else None,
             endpoint=None if v['tail_demonstrated'] else g['m_star'],bracket=g['bracket']))
     ub=fs.get(f'UB_L{L}')
     out.append(dict(pde='burgers',dim=dim,mesh=L,label=f'{L}{"²" if dim=="2D" else "³"}',n=len(cases),n_all=len(rep['cases']),
-        ref=dict(name='Plateau (largest rule)',W=pl['conv']['W']*100,T=pl['conv']['T']*100),
-        fom=None if ub is None else dict(name='Upwind full solver, same mesh',W=ub['W']*100,T=ub['T']*100),
+        ref=dict(name='Plateau (largest rule)',W=pl['conv']['W']*100,T=pl['conv']['T']*100,
+                 mean=sum(ba[pl['conv']['arm']][c]['ST']['e'] for c in cases)/len(cases)*100),
+        fom=None if ub is None else dict(name='Upwind full solver, same mesh',W=ub['W']*100,T=ub['T']*100,
+                 mean=sum(r['ST']['e'] for r in rep['fom_rows'] if r['fom']==f'UB_L{L}' and r['case'] in cases)/len(cases)*100),
         families=fams))
 for q,L in [('q32',32),('q64',64),('q96',96)]:
     s=json.load(open(f'{NQ}/{q}/output/summary.json'))
@@ -40,12 +42,13 @@ for q,L in [('q32',32),('q64',64),('q96',96)]:
         per={c:[round(E[i][c],5) for i in range(len(rs))] for c in range(n)}
         import numpy as np
         ms_=s['mstar'][f'net/{f}/head']
-        fams.append(dict(key=f,name=FAM[f],m=ms,W=[max(e) for e in E],T=[float(np.median(e)) for e in E],cases=per,
+        fams.append(dict(key=f,name=FAM[f],m=ms,A=[float(np.mean(e)) for e in E],W=[max(e) for e in E],T=[float(np.median(e)) for e in E],cases=per,
             mstar=None if ms_['endpoint_only'] else ms_['mstar'],endpoint=ms_['mstar'] if ms_['endpoint_only'] else None))
     c60=s['cnab2']['60']['stats']; c50=s['cnab2']['50']['stats']
     out.append(dict(pde='ns3d',dim='3D',mesh=L,label=f'{L}³',n=n,n_all=n,
-        ref=dict(name='Exact tensor ROM',W=max(ten),T=float(np.median(ten)),cases=[round(x,5) for x in ten]),
-        fom=dict(name='CNAB2, 60 steps',W=c60['evolved_worst']*100,T=c60['evolved_median']*100),
+        ref=dict(name='Exact tensor ROM',W=max(ten),T=float(np.median(ten)),mean=float(np.mean(ten))),
+        fom=dict(name='CNAB2, 60 steps',W=c60['evolved_worst']*100,T=c60['evolved_median']*100,
+                 mean=float(np.mean(ev(s['cnab2']['60']['errors'])))),
         families=fams))
 json.dump(out,open(sys.argv[1],'w'),separators=(',',':'))
-for o in out: print(o['pde'],o['label'],o['n'],[ (f['key'],f['mstar'],f['endpoint']) for f in o['families']], round(o['ref']['W'],3), o['fom'] and round(o['fom']['W'],3))
+for o in out: print(o['pde'],o['label'],o['n'],[ (f['key'],f['mstar'],f['endpoint']) for f in o['families']], round(o['ref']['mean'],3), o['fom'] and round(o['fom']['mean'],3), [round(x,3) for x in o['families'][0]['A']][-3:])

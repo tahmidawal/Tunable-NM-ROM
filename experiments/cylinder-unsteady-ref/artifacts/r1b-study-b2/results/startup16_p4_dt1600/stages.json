@@ -1,0 +1,57 @@
+{
+  "status": "completed",
+  "stages": [
+    {
+      "name": "study",
+      "dt": 0.000625,
+      "t_start": 9.500000000000247,
+      "planned_steps": 560,
+      "until_periodic": false,
+      "status": "completed",
+      "steps": 560,
+      "t_end": 9.849999999999929,
+      "periodic_reached": false,
+      "cycles": [],
+      "wall_seconds": 1075.505043311976,
+      "seconds_per_step": 1.920544720984929
+    }
+  ],
+  "states": [],
+  "snapshots": [
+    {
+      "file": "snapshots_0000.npz",
+      "sha256": "6ca2a5b30a2728e25889ffd234a0a4e985e1cf24917995e08b57b561d4921372",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0001.npz",
+      "sha256": "a36d468a0381d84fd66d957c55e14c14e899079de18304ba646816d40c5fced7",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0002.npz",
+      "sha256": "69102b98dadbc1713c319419fb24383f28caedd14dac6113fe0877bb00633cc6",
+      "count": 41
+    }
+  ],
+  "linear_checks_count": 32,
+  "linear_checks_max": 4.540031080685265e-16,
+  "factorizations": 29,
+  "timers_seconds": {
+    "conv_apply": 5.369378608651459,
+    "factor": 247.05644369218498,
+    "solve": 773.94276374951,
+    "observe": 21.75137650128454,
+    "diagnostics": 3.2510355738922954
+  },
+  "interpolation": {
+    "from_order": 3,
+    "to_order": 4,
+    "velocity_relative_L2_change": 0.0,
+    "pressure_relative_L2_change": 0.0,
+    "bound": 1e-10
+  },
+  "layout_sha256": "e9a4475331ea3029ba0c50d5cb245cb02bd069c5962b701dd64e41bc18d4d8fa",
+  "ndof": 437140,
+  "elapsed_seconds": 1078.7159458938986
+}

@@ -1,0 +1,41 @@
+transient.py: OK
+cycles.py: OK
+compare.py: OK
+r1_gates.py: OK
+install_deps.py: OK
+vendor/scalars.py: OK
+vendor/oriented_normals.py: OK
+vendor/dependencies.py: OK
+vendor/DEPENDENCIES.json: OK
+inputs/admitted_mesh.vol.bin: OK
+cluster/run.sh: OK
+tasks/r1b_compare.sh: OK
+0e9062e9b238bfc7e13005a8fb3c97d03202fbdd
+jax_backend=gpu
+jax_x64=True
+cpu_model=Intel(R) Xeon(R) Gold 6448Y
+name, uuid, memory.total [MiB]
+NVIDIA L40S, GPU-4464fdc5-84c5-c683-cde7-a3869b488c2f, 46068 MiB
+pax026
+{"wheel": "ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl", "sha256": "4e02591fe98a1068b4f7ca094aec36844da1f6ddf826088b060e5a8e7780efff"}
+{"wheel": "netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", "sha256": "d8118835e2aec5739ee5755d61e866505313d92e3d4c6b947be7835f9fbf5122"}
+{"wheel": "netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", "sha256": "db71d77f56f79c0768489e76dde8febdeb25b95777986587a5d09575fa112f94"}
+{"wheel": "ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl", "sha256": "8d3266615c7b099e78c5891a41971c6bffe5d6014d13d736cef0cc119d1ca141"}
+Processing ./wheels/ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+Processing ./wheels/ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl
+Installing collected packages: ngsolve-openblas, ngsolve, netgen-occt, netgen-mesher
+
+Successfully installed netgen-mesher-6.2.2608 netgen-occt-7.8.1 ngsolve-6.2.2608 ngsolve-openblas-0.3.33
+{"prefix_layout_verified": true, "occt_libraries": 47, "site_packages": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1b-compare01/deps/lib/python3.13/site-packages"}
+{"ngsolve": "6.2.2608", "jax_backend": "gpu", "precision": "highest"}
+{"e_u_max": 0.0007996849935555486, "e_p_max": 0.00036837555121923995, "e_D": 0.00010713612118012152, "e_L": 0.0008506924739055677, "common_save_times": 141}
+{"e_u_max": 0.00020102066009034596, "e_p_max": 9.296911590778001e-05, "e_D": 2.697100983245362e-05, "e_L": 0.0002141850788889288, "common_save_times": 141}
+{"e_u_max": 5.033423062806933e-05, "e_p_max": 2.3336196937574977e-05, "e_D": 6.917273451879553e-06, "e_L": 5.373716958856356e-05, "common_save_times": 141}
+{"e_u_max": 4.4231964571627145e-05, "e_p_max": 3.109045363643907e-05, "e_D": 6.870396010550481e-06, "e_L": 0.00018509927736626297, "common_save_times": 141}
+{"e_u_max": 1.1056511362001375e-05, "e_p_max": 7.096782888598907e-06, "e_D": 1.702504306917065e-06, "e_L": 4.6082045571382846e-05, "common_save_times": 141}
+{"e_u_max": 2.7839650377905444e-06, "e_p_max": 1.7513992228316854e-06, "e_D": 4.3020737887302474e-07, "e_L": 1.1499702517347998e-05, "common_save_times": 141}
+{"e_u_max": 4.7311916888780985e-15, "e_p_max": 1.4380793615745359e-12, "e_D": 6.382773371345309e-14, "e_L": 1.624256285026604e-13, "common_save_times": 141}
+{"dt0_denominator": 3200, "R1b_time_gate": "pass", "R1c_space_gate": "pending_or_missing"}
+all_configs_attempted failed=0

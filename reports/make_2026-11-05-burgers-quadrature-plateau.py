@@ -127,6 +127,63 @@ def main():
               f". Same-mesh upwind FOM `{ub}`: {pct(fs[ub]['W'])} / {pct(fs[ub]['T'])}.")
     w('')
 
+    w('**Per-mesh summary** (ST, eligible cases; latencies are same-job confirmation-panel medians, lattice contract; '
+      '"prov." = timing drift gate failed in that job, A2.4):')
+    w('')
+    w('| mesh | plateau worst / median | cheapest plateau rule | its worst / median | ROM ms | same-mesh UB worst / median | UB ms | UB/ROM speed-up | cheapest FOM ≥ as accurate | its worst / median | FOM ms | FOM/ROM speed-up |')
+    w('|---|---|---|---|---|---|---|---|---|---|---|---|')
+    for dim, jobs in ((2, JOBS2), (3, JOBS3)):
+        for job, n in jobs:
+            if job not in ran:
+                continue
+            rep = ran[job]['rep']
+            p = PL.plateau(rep, 'ST')
+            fs = PL.fom_stats(rep, 'ST')
+            sel = PL.cheapest_plateau_rule(rep)
+            lname = f"UB_L{n if dim == 2 else n - 1}"
+            ub = fs[lname]
+            if sel is None:
+                w(f"| {dim}D {mesh_label(dim, n)} | {pct(p['conv']['W'])} / {pct(p['conv']['T'], 3)} | unresolved | | | | | | | | | |")
+                continue
+            st = PL.arm_stats(rep, 'ST')[sel['arm']]
+            tr = summ_conf(rep, f"rom_lat|{sel['arm']}")
+            tu = summ_conf(rep, f'fom|{lname}')
+            mf = PL.matched_fom(rep, sel['arm'])
+            prov = ' prov.' if (not rep['gates']['G_time']['drift_pass'] or
+                               abs(rep['timing']['summary'][f"rom_lat|{sel['arm']}"]['median_ms'] / tr - 1) > 0.10) else ''
+            mcol = ' | | | ' if mf is None else (f" `{mf['fom']}` | {pct(fs[mf['fom']]['W'], 3)} / {pct(fs[mf['fom']]['T'], 4)} | "
+                                                  f"{summ_conf(rep, 'fom|' + mf['fom']):.1f} | {summ_conf(rep, 'fom|' + mf['fom']) / tr:.3f}×{prov}")
+            w(f"| {dim}D {mesh_label(dim, n)} | {pct(p['conv']['W'])} / {pct(p['conv']['T'], 3)} | `{sel['arm']}` ($m$={sel['m']:,}) | "
+              f"{pct(st['W'])} / {pct(st['T'], 3)} | {tr:.1f} | {pct(ub['W'])} / {pct(ub['T'], 3)} | {tu:.1f} | "
+              f"{tu / tr:.2f}×{prov} |" + mcol + ' |')
+    w('')
+    # interpretation sentences, generated
+    for dim, jobs in ((2, JOBS2), (3, JOBS3)):
+        got = [(n, ran[j]['rep']) for j, n in jobs if j in ran]
+        if not got:
+            continue
+        cw = [PL.plateau(r, 'ST')['conv']['W'] for _, r in got]
+        sw = [PL.plateau(r, 'S')['conv']['W'] for _, r in got]
+        ct = [PL.plateau(r, 'ST')['conv']['T'] for _, r in got]
+        stt = [PL.plateau(r, 'S')['conv']['T'] for _, r in got]
+        ubw = [PL.fom_stats(r, 'ST')[f"UB_L{n if dim == 2 else n - 1}"]['W'] for n, r in got]
+        cross = [f'{mesh_label(dim, a[0])}→{mesh_label(dim, b[0])}' for a, b, u1, u2, c1, c2 in
+                 zip(got, got[1:], ubw, ubw[1:], cw, cw[1:]) if (u1 - c1) * (u2 - c2) < 0]
+        w(f"- **{dim}D plateau is mesh-independent**: conv-rollout worst error {pct(min(cw))}–{pct(max(cw))} and median "
+          f"{pct(min(ct), 3)}–{pct(max(ct), 3)} over {', '.join(mesh_label(dim, n) for n, _ in got)} (ST). Against the "
+          f"space-only S reference the same rollouts give {pct(min(sw))}–{pct(max(sw))} worst and {pct(min(stt), 3)}–"
+          f"{pct(max(stt), 3)} median (S/ST ratio {min(a / b for a, b in zip(sw, cw)):.2f}–{max(a / b for a, b in zip(sw, cw)):.2f} worst, "
+          f"{min(a / b for a, b in zip(stt, ct)):.3f}–{max(a / b for a, b in zip(stt, ct)):.3f} median). " +
+          ("S is backward Euler at the ROM's own Δt = 0.005, so the ST–S gap is the ROM's backward-Euler time error: "
+           "it is about half of the worst-case plateau and nearly all of the median; quadrature is not what limits it."
+           if dim == 2 else
+           "In 3D, S is backward Euler at Δt = 0.005 while the ROM steps at Δt = 0.01, so S is not time-matched and "
+           "the ST–S gap is not a clean time-error measurement; no attribution is made from it."))
+        w(f"- **{dim}D crossover with the same-mesh upwind FOM** (worst error): UB/ROM-plateau ratio "
+          + ', '.join(f"{mesh_label(dim, n)} {u / c:.2f}" for (n, _), u, c in zip(got, ubw, cw)) +
+          (f"; the sign changes between {', '.join(cross)}." if cross else
+           '; no sign change inside the meshes run.'))
+    w('')
     # ------------------------------------------------------------------ 3. M* tables
     for kind in ('ST', 'S'):
         w(f'## {3 if kind == "ST" else 4}. Plateau point $M^*$ per family and mesh ({kind} references)')

@@ -19,8 +19,8 @@
    "gpu": "a100-80G",
    "config": "configs/p2d_256.json",
    "commit": "93cdf06b5aeb1c21d05e9e03d541bc6cc6803822",
-   "state": "RUNNING",
-   "elapsed_s": 972,
+   "state": "COMPLETED",
+   "elapsed_s": 1030,
    "node": "pax050"
   },
   {
@@ -41,6 +41,17 @@
    "gpu": "a100-80G",
    "config": "configs/p3d_65.json",
    "commit": "9473796d10422d6939d4e331bd613a3451c08e40",
+   "state": "RUNNING",
+   "elapsed_s": 99,
+   "node": "pax050"
+  },
+  {
+   "job": "p2d1024",
+   "jobid": "6898582",
+   "limit_min": 35.0,
+   "gpu": "a100-80G",
+   "config": "configs/p2d_1024.json",
+   "commit": "72e3285d5f6b3b909deaa9eef73d483cb9816e45",
    "state": "PENDING"
   }
  ]

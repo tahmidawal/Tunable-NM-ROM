@@ -85,9 +85,9 @@
    "gpu": "h200",
    "config": "configs/p3d_257.json",
    "commit": "e592b94b01370978e5d3a0260ef79447d15c21f7",
-   "state": "PENDING",
-   "elapsed_s": 0,
-   "node": "None assigned"
+   "state": "FAILED",
+   "elapsed_s": 26,
+   "node": "pax011"
   },
   {
    "job": "p2d2048",
@@ -96,6 +96,28 @@
    "gpu": "a100-80G",
    "config": "configs/p2d_2048.json",
    "commit": "66d589e8ec0ad8a89ea009bb59ba1b8440671701",
+   "state": "COMPLETED",
+   "elapsed_s": 1495,
+   "node": "pax105"
+  },
+  {
+   "job": "p3d257b",
+   "jobid": "6902975",
+   "limit_min": 60.0,
+   "gpu": "h200",
+   "config": "configs/p3d_257.json",
+   "commit": "14470952d3f481945e80d47d643fa7d7626dbf51",
+   "state": "RUNNING",
+   "elapsed_s": 0,
+   "node": "pax010"
+  },
+  {
+   "job": "p2d512",
+   "jobid": "6902978",
+   "limit_min": 25.0,
+   "gpu": "a100-80G",
+   "config": "configs/p2d_512.json",
+   "commit": "14470952d3f481945e80d47d643fa7d7626dbf51",
    "state": "PENDING"
   }
  ]

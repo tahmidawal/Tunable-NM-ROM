@@ -122,7 +122,10 @@ def main():
                                                            dict(cases=2, reps=1, confirm_reps=1, burn=0.05,
                                                                 initial_burn=1.0, seed=1)), indent=1) + '\n')
     for n in (65, 129, 257):
-        (d / f'p3d_{n}.json').write_text(json.dumps(cfg3d(n), indent=1) + '\n')
+        c3 = cfg3d(n)
+        if n == 257:
+            c3['table_ladder_extra'] = [256]     # bank rows built in two 256-column blocks (October layout); OOM otherwise
+        (d / f'p3d_{n}.json').write_text(json.dumps(c3, indent=1) + '\n')
     sm3 = [a for a in arms3d() if a['name'] in ('lat256', 'lat4096', 'lat32768', 'gl16', 'gl32', 'sob4096', 'ctrl_smol8')]
     fs3 = [f for f in foms3d(65) if f['name'] in ('hist_dt0.01', 'CC_L64', 'PS_N16')]
     (d / 'smoke3d_local.json').write_text(json.dumps(cfg3d(65, 'dev4', [0, 1], True, sm3, fs3,

@@ -149,7 +149,7 @@ def main():
     # ================================================================ 1. tables (qpanel phase 1, unchanged calls)
     R = int(model['T'].shape[1])
     Rp = int(cfg['Rp'])
-    ladder = sorted({Rp, R})
+    ladder = sorted({Rp, R} | set(cfg.get('table_ladder_extra', [])))   # 257: [256] splits the 68 GB bank build as in October
     order_, lam_all = C.mode_order(n)
     M_of = lambda r: C.complete_M(n, 4 * r, order_, lam_all)
     t0 = time.perf_counter()

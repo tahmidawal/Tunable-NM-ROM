@@ -38,7 +38,11 @@ def check_record(Re, attempt, settle_chain):
     d, ret = run_paths(attempt, name)
     cfg = json.loads((d / 'config.json').read_text()); st = json.loads((d / 'stages.json').read_text())
     p = {}
-    p['config'] = (cfg['velocity_order'] == K0 and abs(cfg['nu'] - 0.1 / float(Re)) < 1e-15 and cfg['kick'] is None
+    p['config'] = (cfg['velocity_order'] == K0 and cfg['pressure_order'] == K0 - 1 and cfg['geometry_order'] == 4
+                   and cfg['mesh_sha256'] == '528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092'
+                   and cfg['scheme'] == 'frozen_oseen' and cfg['refactor_every'] == 40 and cfg['startup_substeps'] == 4
+                   and cfg['assembly_bonus_order'] == 6 and cfg['threads'] == 16 and cfg['linear_relative_tolerance'] == 1e-10
+                   and abs(cfg['nu'] - 0.1 / float(Re)) < 1e-15 and cfg['kick'] is None
                    and [s['name'] for s in cfg['stages']] == ['settle_dt0', 'record']
                    and all(abs(s['dt'] - DT0) < 1e-15 for s in cfg['stages'])
                    and abs(cfg['stages'][0]['duration'] - 0.7) < 1e-12 and abs(cfg['stages'][1]['duration'] - 1.7) < 1e-12)
@@ -49,10 +53,17 @@ def check_record(Re, attempt, settle_chain):
     sst = json.loads((sd / 'stages.json').read_text())
     state = sret / 'settle.npz'
     p['settle_state_linked'] = (cfg['initial'].get('sha256') == sha(state) == sst['states'][-1]['sha256'])
-    total = 0.0
+    total = 0.0; prev_state = None; links_ok = True
     for link in settle_chain:
-        la, ln = link.split('/'); ls = json.loads((run_paths(la, ln)[0] / 'stages.json').read_text())
+        la, ln = link.split('/'); ld, lret = run_paths(la, ln)
+        ls = json.loads((ld / 'stages.json').read_text()); lc = json.loads((ld / 'config.json').read_text())
         total += ls['stages'][0]['t_end'] - ls['stages'][0]['t_start']
+        if prev_state is not None and lc['initial'].get('sha256') != prev_state:
+            links_ok = False
+        prev_state = sha(lret / 'settle.npz')
+        if prev_state != ls['states'][-1]['sha256']:
+            links_ok = False
+    p['settle_chain_linked'] = links_ok
     p['settle_developed'] = sst['status'] == 'completed' and sst['stages'][0]['periodic_reached'] is True
     p['settle_within_cap'] = total <= SETTLE_CAP + 1e-9
     # snapshots: retained bytes match, exact 681 saves on the 1/400 grid in the record window
@@ -69,7 +80,8 @@ def check_record(Re, attempt, settle_chain):
     p['record_coverage'] = len(tr) == 681 and np.max(np.abs(tr - grid)) < 1e-9
     diag = json.loads((d / 'diagnostics.json').read_text())
     drec = [z for z in diag if z.get('stage') == 1]
-    p['diagnostic_cadence'] = len(drec) == 171
+    dts = np.array([z['t'] for z in drec]); dgrid = rec['t_start'] + np.arange(171) * 4 / 400
+    p['diagnostic_cadence'] = len(drec) == 171 and np.max(np.abs(dts - dgrid)) < 1e-9
     p['divergence'] = max(z['divergence'] for z in diag) <= DIV_MAX
     p['mass'] = max(z['mass'] for z in diag) <= MASS_MAX
     lin = np.load(d / 'linear_checks.npz')['rel']
@@ -99,7 +111,10 @@ def main():
     gates = json.loads(Path(pop['gates']).read_text())
     sp = json.loads(Path(pop['space']).read_text()); tm = json.loads(Path(pop['time']).read_text())
     res['R1b'], res['R1c'], res['dt0_denominator'] = gates['R1b_time_gate'], gates['R1c_space_gate'], gates['dt0_denominator']
-    bound = (sp.get('valid') and tm.get('valid') and sp['initial_state_sha256'] == tm['initial_state_sha256']
+    keys = ('e_u_max', 'e_p_max', 'e_D', 'e_L')
+    same_as_gates = (gates.get('space', {}).get('metrics') == {k: sp[k] for k in keys}
+                     and gates['candidates']['3200']['pair']['metrics'] == {k: tm[k] for k in keys})
+    bound = (same_as_gates and sp.get('valid') and tm.get('valid') and sp['initial_state_sha256'] == tm['initial_state_sha256']
              and abs(sp['window'][0] - tm['window'][0]) < 1e-9 and res['R1b'] == 'pass' and res['R1c'] == 'pass'
              and res['dt0_denominator'] == 3200)
     res['uncertainty_inputs_bound'] = bool(bound)

@@ -1,0 +1,123 @@
+{
+ "job": "runs/p2d1024",
+ "dim": 2,
+ "mesh": 1024,
+ "job_id": "6898582",
+ "gpu": "NVIDIA A100 80GB PCIe",
+ "checks": {
+  "G_audit": {
+   "compared": 150,
+   "max_rel": 0.0,
+   "passed": true
+  },
+  "G_par": {
+   "compared": 24,
+   "max_rel": 7.350568028840088e-15,
+   "passed": true,
+   "arms": [
+    "ctrl_smolyak8",
+    "fib1597",
+    "fib17711",
+    "fib4181",
+    "fib46368",
+    "fib6765",
+    "gauss128",
+    "gauss256",
+    "gauss32",
+    "gauss64",
+    "gauss96",
+    "sobol4096"
+   ],
+   "worst_items": [
+    {
+     "arm": "gauss32",
+     "case": 2,
+     "rel": 7.350568028840088e-15
+    },
+    {
+     "arm": "ctrl_smolyak8",
+     "case": 2,
+     "rel": 4.9825742128744846e-15
+    },
+    {
+     "arm": "ctrl_smolyak8",
+     "case": 0,
+     "rel": 4.501035188793979e-15
+    },
+    {
+     "arm": "gauss32",
+     "case": 0,
+     "rel": 1.5568032038102475e-15
+    },
+    {
+     "arm": "gauss64",
+     "case": 2,
+     "rel": 1.0575259553856049e-15
+    }
+   ]
+  },
+  "fault_injections": {
+   "swapped_case": {
+    "e": 0.012920443729472701,
+    "e_swapped": 1.0317880824778323,
+    "fired": true
+   },
+   "perturbed_record": {
+    "record": [
+     "ctrl_smolyak8",
+     0,
+     "ST"
+    ],
+    "fired": true
+   },
+   "perturbed_reference_byte": {
+    "fired": true
+   },
+   "passed": true
+  }
+ },
+ "in_job_gates": {
+  "G_coh": {
+   "cohort": "test64",
+   "sha256": "cd058fd2a297c20296b897e54cb186033a44a8db9527d98dcb2c2dad6044527c",
+   "expected": "cd058fd2a297c20296b897e54cb186033a44a8db9527d98dcb2c2dad6044527c",
+   "passed": true
+  },
+  "G_ref": {
+   "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+   "loaded": 128,
+   "passed": true
+  },
+  "G_R": {
+   "checked": 31,
+   "bitwise": 17,
+   "mismatched": [],
+   "worst_dX": 1.1102230246251565e-16,
+   "worst_dw_rel": 1.530005128436401e-13,
+   "passed": true
+  },
+  "G_lat": {
+   "compared": 186,
+   "max_rel": 5.59350805844311e-15,
+   "passed": true
+  },
+  "G_time": {
+   "max_output_diff": 5.59350805844311e-15,
+   "worst_block_drift": 1.0601931632059134,
+   "outputs_pass": true,
+   "drift_pass": true
+  },
+  "G_fin": {
+   "nonfinite": []
+  },
+  "G_fom": {
+   "nonconverged": []
+  },
+  "G_score_vs_refstore": {
+   "compared": 62,
+   "max_rel": 0.0,
+   "passed": true
+  }
+ },
+ "passed": true
+}

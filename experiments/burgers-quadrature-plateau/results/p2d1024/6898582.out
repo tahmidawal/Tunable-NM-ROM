@@ -1,0 +1,97 @@
+host=pax049 source_commit=72e3285d5f6b3b909deaa9eef73d483cb9816e45
+NVIDIA A100 80GB PCIe, GPU-95775fab-6b7d-1937-324d-130dfd74fcdb, 81920 MiB
+10.235.106.27:/projects/paralab  4.6T  1.4T  3.2T  31% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[6.3s] references loaded: 128
+[23.2s] bank + operators + cold start built
+[120.9s] arms built: 31
+[203.7s] CASE 0 (test640) done
+[208.5s] CASE 1 (test641) done
+[216.1s] CASE 2 (test642) done
+[220.8s] CASE 3 (test643) done
+[225.5s] CASE 4 (test644) done
+[230.1s] CASE 5 (test645) done
+[234.5s] CASE 6 (test646) done
+[239.1s] CASE 7 (test647) done
+[243.7s] CASE 8 (test648) done
+[248.5s] CASE 9 (test649) done
+[253.3s] CASE 10 (test6410) done
+[257.8s] CASE 11 (test6411) done
+[262.6s] CASE 12 (test6412) done
+[267.4s] CASE 13 (test6413) done
+[271.9s] CASE 14 (test6414) done
+[276.8s] CASE 15 (test6415) done
+[281.5s] CASE 16 (test6416) done
+[286.4s] CASE 17 (test6417) done
+[291.1s] CASE 18 (test6418) done
+[296.3s] CASE 19 (test6419) done
+[301.0s] CASE 20 (test6420) done
+[305.6s] CASE 21 (test6421) done
+[310.4s] CASE 22 (test6422) done
+[315.0s] CASE 23 (test6423) done
+[319.8s] CASE 24 (test6424) done
+[324.5s] CASE 25 (test6425) done
+[329.1s] CASE 26 (test6426) done
+[334.0s] CASE 27 (test6427) done
+[338.7s] CASE 28 (test6428) done
+[343.2s] CASE 29 (test6429) done
+[347.7s] CASE 30 (test6430) done
+[352.5s] CASE 31 (test6431) done
+[357.3s] CASE 32 (test6432) done
+[362.0s] CASE 33 (test6433) done
+[366.5s] CASE 34 (test6434) done
+[371.2s] CASE 35 (test6435) done
+[376.3s] CASE 36 (test6436) done
+[381.2s] CASE 37 (test6437) done
+[386.1s] CASE 38 (test6438) done
+[390.6s] CASE 39 (test6439) done
+[395.3s] CASE 40 (test6440) done
+[400.0s] CASE 41 (test6441) done
+[404.5s] CASE 42 (test6442) done
+[409.2s] CASE 43 (test6443) done
+[413.9s] CASE 44 (test6444) done
+[418.4s] CASE 45 (test6445) done
+[423.0s] CASE 46 (test6446) done
+[427.8s] CASE 47 (test6447) done
+[432.9s] CASE 48 (test6448) done
+[437.6s] CASE 49 (test6449) done
+[442.2s] CASE 50 (test6450) done
+[446.9s] CASE 51 (test6451) done
+[451.4s] CASE 52 (test6452) done
+[456.1s] CASE 53 (test6453) done
+[460.8s] CASE 54 (test6454) done
+[465.3s] CASE 55 (test6455) done
+[470.1s] CASE 56 (test6456) done
+[475.0s] CASE 57 (test6457) done
+[479.6s] CASE 58 (test6458) done
+[484.4s] CASE 59 (test6459) done
+[489.4s] CASE 60 (test6460) done
+[494.2s] CASE 61 (test6461) done
+[499.0s] CASE 62 (test6462) done
+[503.9s] CASE 63 (test6463) done
+[537.5s] FOM UB_L1024 done (31.9s)
+[563.4s] FOM CC_L1024 done (25.7s)
+[569.2s] FOM CC_L32 done (5.6s)
+[575.2s] FOM CC_L64 done (5.8s)
+[582.0s] FOM CC_L128 done (6.6s)
+[588.5s] FOM UB_L128 done (6.3s)
+[594.4s] FOM PS_N12 done (5.6s)
+[609.2s] FOM PS_N16 done (14.6s)
+[615.2s] FOM PS_N20 done (5.8s)
+[621.2s] FOM PS_N24 done (5.7s)
+[627.0s] FOM PS_N32 done (5.6s)
+[633.6s] FOM PS_N48 done (6.4s)
+[640.7s] FOM PS_N64 done (6.9s)
+[722.3s] G_lat {'compared': 186, 'max_rel': 5.59350805844311e-15, 'passed': True}
+[845.3s] timing main rep 0 done
+[905.3s] timing main rep 1 done
+[965.4s] timing main rep 2 done
+[1038.7s] timing confirm rep 0 done
+[1065.6s] timing confirm rep 1 done
+[1092.5s] timing confirm rep 2 done
+[1119.4s] timing confirm rep 3 done
+[1146.3s] timing confirm rep 4 done
+[1146.3s] timing gates {'max_output_diff': 5.59350805844311e-15, 'worst_block_drift': 1.0601931632059134, 'outputs_pass': True, 'drift_pass': True}; selected {'arm': 'fib987', 'family': 'fibonacci', 'm': 987, 'median_ms': 43.041819939389825, 'candidates': [{'arm': 'fib987', 'family': 'fibonacci', 'm': 987, 'median_ms': 43.041819939389825}, {'arm': 'gauss45', 'family': 'gauss', 'm': 2025, 'median_ms': 53.68539202027023}, {'arm': 'sobol4096', 'family': 'sobol', 'm': 4096, 'median_ms': 75.75543457642198}]}
+PLATEAU2D COMPLETE
+ALL-DONE

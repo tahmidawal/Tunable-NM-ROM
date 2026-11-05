@@ -303,3 +303,12 @@ computed with JAX on a 257³ grid) on today's cluster stack is `85cef1e7…`, no
 on the JAX/NumPy build. The E0 references for test32 were generated from the table with fingerprint `85cef1e7…` (their
 metadata `cohort_sha256`), so G-coh (3D) now requires `85cef1e7…` — the table the references belong to. Any difference
 from the October rollouts that this causes is measured by G-par (coefficients vs October), not assumed away.
+
+## Amendment A5 (2026-11-05, post-failure; job 6901029 `p3d257` stopped at gate G-coh after 26 s on an H200, before any rollout)
+
+The 3D table fingerprint depends on the GPU type: on the H200 it is October's `f20a1aac…`, on the A100 E0's `85cef1e7…`
+(A4); and even the drawn parameters are not bitwise portable (`nu = exp(uniform)` differs by 1 ulp for test32 case 26
+between the local and cluster stacks). G-coh (3D) is therefore a tolerance check against the E0 reference metadata, case by
+case: equal blob counts, every drawn parameter within 1e-14 relative and `s_star` within 1e-12 relative of the descriptor
+stored with that case's E0 reference. Rollouts are compared with October's by G-par as before. The p3d65b/p3d129 jobs ran
+under A4 (bitwise `85cef1e7…`, a strictly stronger condition) and are unaffected.

@@ -112,8 +112,7 @@ def main():
     coh = cfg['cohort']
     seed, count, want = COHORT[coh]
     tab = C.table(seed, count)
-    rep['gates']['G_coh'] = dict(cohort=coh, sha256=tab['sha256'], expected=want, passed=want in (None, tab['sha256']))
-    assert rep['gates']['G_coh']['passed'], tab['sha256']
+    rep['gates']['G_coh'] = dict(cohort=coh, sha256=tab['sha256'], expected=want, bitwise=want in (None, tab['sha256']))
     cases = list(cfg.get('cases', range(count)))
     rep['cases'] = cases
     rep['store_version'] = RS.store_version()
@@ -129,6 +128,19 @@ def main():
     rep['references'] = {f'{c}|{k}': dict(META[(c, k)], eligible=STAT[(c, k)]['eligible']) for (c, k) in META}
     rep['gates']['G_ref'] = dict(store_version=rep['store_version'], loaded=len(REF), passed=True)
     log(f'references loaded: {len(REF)}')
+    # G-coh (amendment A5): the drawn parameters equal the E0 reference descriptors exactly, s_star within 1e-12 rel.
+    worst_d, worst_s, nb = 0.0, 0.0, True
+    rl = lambda a, b: float(np.max(np.abs(np.asarray(a, float) - np.asarray(b, float)) / np.maximum(np.abs(np.asarray(b, float)), 1e-300)))
+    for c in cases:
+        dsc = RS.load(3, coh, c, 'ST')[1]['desc']
+        B = int(tab['B'][c])
+        nb &= B == int(dsc['B'])
+        worst_d = max(worst_d, rl(tab['A'][c], dsc['A']), rl(tab['nu'][c], dsc['nu']),
+                      *(rl(np.asarray(tab[k][c])[:B], np.asarray(dsc[k])[:B]) for k in ('c', 'w', 'rho')))
+        worst_s = max(worst_s, rl(tab['s_star'][c], dsc['s_star']))
+    rep['gates']['G_coh'].update(blob_counts_equal=bool(nb), draws_max_rel_vs_E0=worst_d, s_star_max_rel_vs_E0=worst_s,
+                                 passed=bool(nb and worst_d <= 1e-14 and worst_s <= 1e-12))
+    assert rep['gates']['G_coh']['passed'], rep['gates']['G_coh']
 
     def score(F, c, kind):
         e, et = VD.rel_err(F, REF[(c, kind)], META[(c, kind)]['n0'])

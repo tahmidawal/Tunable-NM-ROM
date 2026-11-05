@@ -1,0 +1,13 @@
+You are an independent reviewer. READ-ONLY TASK: do not modify, create, or delete any file; do not run GPU jobs; do not submit cluster jobs; do not commit or push. Report findings only.
+
+Repository worktree: /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-05-ns3d-offmesh-quadrature
+Lane directory: experiments/ns3d-offmesh-quadrature/
+
+Context: a reduced-order model (ROM) of 3D periodic Navier-Stokes computes its advection term (rotational form u x omega, tested against 292 solenoidal Fourier test fields) with an exact precomputed tensor T (292 x 64 x 64). This lane pre-registers replacing that tensor by off-mesh quadrature rules (lattice, Korobov, Sobol, Gauss-Legendre tensor, shifted trapezoid) evaluated either on the coordinate-network bank (integrand "net") or on the exact trigonometric interpolant of the mesh bank (integrand "interp"), and measures ROM accuracy, the plateau point count M*, and timing.
+
+Please review:
+1. experiments/ns3d-offmesh-quadrature/DESIGN.md (the pre-registration) — is the Step 0 description of the existing code correct? Is the plateau / M* definition sound? Are the gates adequate? Anything that would make results misleading?
+2. experiments/ns3d-offmesh-quadrature/qrom.py and run_mesh.py — correctness of: the quadrature contraction jac_adv (J(c) = sum_q P_q^T [U_q x (W_q c) + (U_q c) x W_q], a = J c / 2); the scale factor n^{-3/2} w_q psi_m(x_q); the test-function values psi (compare ns3d_rom.build_tensor and shift_rom.test_mode_ids / dense_test_modes); the curl from velocity_gradient (g[e,:,c] = d_e u_c); interp_spectrum (half-space trig interpolant, continuum scale n^{3/2}, curl); shifted_grid_tables sign of the shift (shift_rom.shift_field); that make_frozen_step / make_head_run / make_span_run are faithful copies of experiments/ns3d-shift/shift_rom.py make_frozen_step / make_frozen_run and experiments/ns3d-shift-head/head_rom.py make_head_run with only the contraction swapped; the M* functions; the timing protocol and comparator logic; memory/batching hazards on an 80 GB A100 at n=96.
+Reference code: experiments/ns3d/ns3d_fom.py, experiments/ns3d/ns3d_rom.py, experiments/ns3d-shift/shift_rom.py, experiments/ns3d-shift-head/head_rom.py, experiments/ns3d-coordnet/coordnet.py, experiments/ns3d-coordnet/bankio.py, experiments/ns3d-coordnet/rom_mesh.py (the original driver).
+
+Report: a list of findings, each labelled BLOCKER / MAJOR / MINOR with file:line and a concrete fix, then an overall verdict (READY / READY WITH FIXES / NOT READY). Be concise.

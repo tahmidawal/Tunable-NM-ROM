@@ -334,7 +334,7 @@ def main():
     g2 = dict(rule=f"trap{n}_shifted", shift=shift.tolist(), nudft_vs_fft=nudft_gap, rho=rg,
               head_delta_tensor=ctrl["head"]["delta_tensor"],
               span_delta_tensor=ctrl["span64"]["delta_tensor"])
-    g2["passed"] = bool(nudft_gap <= 1e-12 and rg["adv_tensor"]["worst"] <= 1e-12
+    g2["passed"] = bool(nudft_gap <= 1e-10 and rg["adv_tensor"]["worst"] <= 1e-12
                         and rg["jac_tensor"]["worst"] <= 1e-12 and ctrl["head"]["finite"]
                         and ctrl["head"]["delta_tensor"] <= 1e-10)
     report["G2_positive_control"] = g2

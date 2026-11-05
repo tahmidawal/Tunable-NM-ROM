@@ -1,0 +1,28 @@
+bank {'n': 32, 'leray_removed_worst': 1.0906077418299811e-06, 'leray_removed_median': 3.155035936978422e-08, 'orthonormality_before_lowdin': 0.6069599696017272, 'orthonormality_before_lowdin_spectral': 0.8042739144408059, 'lowdin_relative_change': 0.09825556696692932, 'lowdin_worst_column_change': 0.7561502217794581, 'orthonormality_after': 3.885780586188048e-15}; operators {'modes': 292, 'rank': 64, 'bank_orthonormality': 3.885780586188048e-15, 'check_modes': 8, 'A_condition': 98.39940328996359, 'A_smallest_singular': 0.010157305905180944, 'subset_test_orthogonality': 1.2382991555996636e-14, 'A_relative': 1.6438358128726684e-15, 'derivative_relative': 1.3512946876499882e-15, 'diffusion_relative': 2.2175673394035824e-15, 'tensor_relative': 4.970260275567054e-13, 'shift_sign_relative': 3.203953882684556e-11}
+generated 1/2 dt=0.001
+generated 2/2 dt=0.001
+tensor head: worst 1.093956e-03 median 9.536864e-04
+tensor span64: worst 4.842814e-03 median 4.569152e-03
+G1 parity {'head': 0.0, 'span64': 0.0}; reproduction {'head': 5.371137562493189e-16, 'span64': 3.316791286067655e-15}
+G4 {'curl_vs_fd': 6.376614140765718e-08, 'divergence_over_gradient': 1.8120091512358173e-13, 'net_vs_interp_u': 0.3518229693818121, 'net_vs_interp_curl': 0.8352476184041444, 'spectrum': {'modes_half': 4630, 'energy_outside_mask': 0.0}, 'points': 512, 'passed': True}
+G2 {'rule': 'trap32_shifted', 'shift': [0.0026765364732382613, 0.007400328331128116, 0.025039827037699903], 'nudft_vs_fft': 1.7787084166471662e-12, 'rho': {'adv_tensor': {'worst': 1.3424305944936869e-15, 'median': 1.2123086940019064e-15, 'head_worst': 1.3424305944936869e-15, 'span_worst': 1.3138909483005482e-15}, 'jac_tensor': {'worst': 9.670892857642396e-15, 'median': 9.127742308919212e-15}}, 'head_delta_tensor': 1.616700076086152e-15, 'span_delta_tensor': 3.0614034475952737e-15, 'passed': True}
+net continuum {'p': 48, 'check_p': 40, 'convergence': 0.00031723851802902074, 'converged': False, 'seconds': 78.44896793365479, 'gap_vs_tensor': {'worst': 0.00010685715067675095, 'median': 1.0103929616772495e-05, 'head_worst': 1.4740125073072773e-05, 'span_worst': 0.00010685715067675095}}
+lat64 net: rho_a 3.557e+00 head worst 4.820410e-01
+lat64 interp: rho_a 3.594e+00 head worst 5.218016e-01
+lat512 net: rho_a 4.935e-01 head worst 6.149771e-02
+lat512 interp: rho_a 4.982e-01 head worst 6.089253e-02
+lat4096 net: rho_a 2.546e-02 head worst 1.743816e-03
+lat4096 interp: rho_a 1.891e-02 head worst 1.746460e-03
+kor509 net: rho_a 1.142e+00 head worst 3.026188e-01
+kor509 interp: rho_a 1.143e+00 head worst 3.051661e-01
+sob512 net: rho_a 2.227e+00 head worst 5.822543e-01
+sob512 interp: rho_a 2.225e+00 head worst 5.790701e-01
+gl8 net: rho_a 6.514e-01 head worst 9.541294e-02
+gl8 interp: rho_a 5.969e-01 head worst 9.368172e-02
+trap8 net: rho_a 4.170e-01 head worst 6.855739e-02
+trap8 interp: rho_a 4.168e-01 head worst 6.890672e-02
+CNAB2 200: 2.920772327986003e-16
+CNAB2 20: 0.006236728991789767
+M*: {'net/lat/head': {'mstar': None, 'mstar_rule': None, 'mstar_delta': None, 'mstar_delta_rule': None}, 'net/lat/span64': {'mstar': None, 'mstar_rule': None, 'mstar_delta': None, 'mstar_delta_rule': None}, 'net/kor/head': {'mstar': None, 'mstar_rule': None, 'mstar_delta': None, 'mstar_delta_rule': None}, 'net/kor/span64': {'mstar': None, 'mstar_rule': None, 'mstar_delta': None, 'mstar_delta_rule': None}, 'net/sob/head': {'mstar': None, 'mstar_rule': None, 'mstar_delta': None, 'mstar_delta_rule': None}, 'net/sob/span64': {'mstar': None, 'mstar_rule': None, 'mstar_delta': None, 'mstar_delta_rule': None}, 'net/gl/head': {'mstar': None, 'mstar_rule': None, 'mstar_delta': None, 'mstar_delta_rule': None}, 'net/gl/span64': {'mstar': None, 'mstar_rule': None, 'mstar_delta': None, 'mstar_delta_rule': None}, 'net/trap/head': {'mstar': None, 'mstar_rule': None, 'mstar_delta': None, 'mstar_delta_rule': None}, 'net/trap/span64': {'mstar': None, 'mstar_rule': None, 'mstar_delta': None, 'mstar_delta_rule': None}, 'interp/lat/head': {'mstar': None, 'mstar_rule': None, 'mstar_delta': None, 'mstar_delta_rule': None}, 'interp/lat/span64': {'mstar': None, 'mstar_rule': None, 'mstar_delta': None, 'mstar_delta_rule': None}, 'interp/kor/head': {'mstar': None, 'mstar_rule': None, 'mstar_delta': None, 'mstar_delta_rule': None}, 'interp/kor/span64': {'mstar': None, 'mstar_rule': None, 'mstar_delta': None, 'mstar_delta_rule': None}, 'interp/sob/head': {'mstar': None, 'mstar_rule': None, 'mstar_delta': None, 'mstar_delta_rule': None}, 'interp/sob/span64': {'mstar': None, 'mstar_rule': None, 'mstar_delta': None, 'mstar_delta_rule': None}, 'interp/gl/head': {'mstar': None, 'mstar_rule': None, 'mstar_delta': None, 'mstar_delta_rule': None}, 'interp/gl/span64': {'mstar': None, 'mstar_rule': None, 'mstar_delta': None, 'mstar_delta_rule': None}, 'interp/trap/head': {'mstar': None, 'mstar_rule': None, 'mstar_delta': None, 'mstar_delta_rule': None}, 'interp/trap/span64': {'mstar': None, 'mstar_rule': None, 'mstar_delta': None, 'mstar_delta_rule': None}}
+timing gate False; agreement 2.776e-17
+done; failures: ['flag: net continuum target not converged (3.17e-04)', 'G5 timing gate failed']

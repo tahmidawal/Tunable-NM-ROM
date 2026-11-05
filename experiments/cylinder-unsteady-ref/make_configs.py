@@ -103,7 +103,7 @@ def settle(Re, state, state_sha, k=4, duration=6.0, tag=''):
     # G5-A3 settle at dt 1/800 (K=10) until the developed-flow rule; G5-A4: cap 6 s total
     # (continuations of a capped settle get the remaining time, tag 'cont').
     return {f'settle{tag}_re{Re:g}_p{k}': cfg(nu=0.1 / Re, velocity_order=k, pressure_order=k - 1, scheme='frozen_oseen',
-                                       refactor_every=10, kick=None, wall_limit_seconds=10200,
+                                       refactor_every=10, kick=None, wall_limit_seconds=21000,
                                        initial={'kind': 'state', 'path': state, 'sha256': state_sha},
                                        stages=[{'name': 'settle', 'dt': 1 / 800, 'duration': duration, 'until_periodic': True,
                                                 'require_periodic': True, 'save_every_steps': 80,

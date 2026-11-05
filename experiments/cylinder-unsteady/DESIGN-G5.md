@@ -492,3 +492,13 @@ before those stages execute.
   (> 1e-10; local-projection roundoff). The bound is unchanged. One ordinary repair: exact
   node-by-node coefficient injection exploiting NGSolve's hierarchical H1 bases, still verified
   by the same witness. Attempt 1 is retained.
+
+## Amendment G5-A6 — budget ceiling 42 GPU-h (user decision), 2026-11-05
+
+R1b (jobs 6867873/6867877 + comparison 6868804) **passed with $dt_0=1/3200$**: 1/800 and
+1/1600 fail only the lift tolerance (8.5e-4, 2.14e-4 > 2e-4); 1/3200 vs 1/6400 passes all
+four (e_u 5.0e-5, e_p 2.3e-5, e_D 6.9e-6, e_L 5.4e-5); empirical orders ≈ 2; startup and
+roundoff controls pass. At 1.66 s/step (P4/P3, K = 40) the five recorded trajectories cost
+≈ 3.5 GPU-h each; with 12.15 GPU-h used, the projected total is ≈ 40 GPU-h > the 25 GPU-h
+ceiling, so the user was asked and chose to **extend the hard ceiling to 42 GPU-h** keeping
+every design setting (0.7 s settle + 1.7 s record at $dt_0$). Records depend on R1c.

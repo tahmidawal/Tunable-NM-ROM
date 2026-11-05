@@ -1,0 +1,109 @@
+host=pax105 source_commit=7a0efa618cf3b8b4272a678446a7a01dac114048 job=6897410 config=experiments/ns3d-offmesh-quadrature/configs/q32.json
+NVIDIA A100 80GB PCIe, GPU-23d3e7ad-ac8a-e90e-6fe4-8862db75d1e4, 81920 MiB
+10.235.106.32:/projects/paralab  4.6T  1.4T  3.2T  31% /cluster/tufts/paralab
+jax_backend=gpu
+JAX_DEFAULT_MATMUL_PRECISION=highest
+bank {'n': 32, 'leray_removed_worst': 1.0906077418299811e-06, 'leray_removed_median': 3.155035936978422e-08, 'orthonormality_before_lowdin': 0.6069599696017276, 'orthonormality_before_lowdin_spectral': 0.8042739144408063, 'lowdin_relative_change': 0.09825556696692957, 'lowdin_worst_column_change': 0.7561502217794599, 'orthonormality_after': 2.220446049250313e-15}; operators {'modes': 292, 'rank': 64, 'bank_orthonormality': 2.220446049250313e-15, 'check_modes': 8, 'A_condition': 98.39940328996309, 'A_smallest_singular': 0.010157305905181, 'subset_test_orthogonality': 2.7757384509864985e-15, 'A_relative': 1.4057660701110847e-15, 'derivative_relative': 1.0875229586748433e-15, 'diffusion_relative': 3.270001154284622e-15, 'tensor_relative': 4.96404080741964e-13, 'shift_sign_relative': 2.8561022192919878e-11}
+generated 1/16 dt=0.001
+generated 16/16 dt=0.001
+tensor head: worst 1.811668e-03 median 1.085995e-03
+tensor span64: worst 7.584423e-03 median 4.319834e-03
+G1 parity {'head': 0.0, 'span64': 0.0}; reproduction {'head': 2.3950025990204793e-16, 'span64': 5.507747036226363e-16}
+G4 {'curl_vs_fd': 6.098092898096963e-08, 'divergence_over_gradient': 2.0378505489961867e-13, 'net_vs_interp_u': 0.3466118098297693, 'net_vs_interp_curl': 0.8094451103069801, 'spectrum': {'modes_half': 4630, 'energy_outside_mask': 0.0}, 'points': 4096, 'passed': True}
+G2 {'rule': 'trap32_shifted', 'shift': [0.0026765364732382613, 0.007400328331128116, 0.025039827037699903], 'nudft_vs_fft': 1.7786562354028856e-12, 'rho': {'adv_tensor': {'worst': 1.687962676482573e-15, 'median': 1.4119190166843705e-15, 'head_worst': 1.5816753861409218e-15, 'span_worst': 1.687962676482573e-15}, 'jac_tensor': {'worst': 5.0278639906766025e-15, 'median': 4.834817879908246e-15}}, 'head_delta_tensor': 1.272779134139429e-15, 'span_delta_tensor': 3.4191996010170706e-15, 'passed': True}
+net continuum {'p': 128, 'check_p': 96, 'convergence': 1.4415028499181491e-09, 'converged': False, 'seconds': 12.711428165435791, 'gap_vs_tensor': {'worst': 0.0002814109282868056, 'median': 7.078687250679379e-06, 'head_worst': 2.1231401626905514e-05, 'span_worst': 0.0002814109282868056}}
+lat64 net: rho_a 3.860e+00 head worst 5.152717e-01
+lat64 interp: rho_a 3.813e+00 head worst 5.543601e-01
+lat512 net: rho_a 6.015e-01 head worst 7.497573e-02
+lat512 interp: rho_a 5.664e-01 head worst 7.492818e-02
+lat1024 net: rho_a 4.157e-01 head worst 7.425162e-02
+lat1024 interp: rho_a 4.078e-01 head worst 7.245478e-02
+lat2048 net: rho_a 1.083e-01 head worst 8.559000e-03
+lat2048 interp: rho_a 1.083e-01 head worst 8.125573e-03
+lat4096 net: rho_a 3.999e-02 head worst 2.316825e-03
+lat4096 interp: rho_a 2.511e-02 head worst 2.329039e-03
+lat8192 net: rho_a 1.530e-02 head worst 1.816936e-03
+lat8192 interp: rho_a 4.110e-03 head worst 1.813951e-03
+lat16384 net: rho_a 1.029e-02 head worst 1.805579e-03
+lat16384 interp: rho_a 1.630e-03 head worst 1.811414e-03
+lat32768 net: rho_a 3.221e-04 head worst 1.811109e-03
+lat32768 interp: rho_a 1.113e-06 head worst 1.811667e-03
+lat65536 net: rho_a 2.801e-04 head worst 1.812007e-03
+lat65536 interp: rho_a 1.733e-15 head worst 1.811668e-03
+kor509 net: rho_a 1.157e+00 head worst 3.914205e-01
+kor509 interp: rho_a 1.158e+00 head worst 4.002472e-01
+kor1021 net: rho_a 3.970e-01 head worst 5.814594e-02
+kor1021 interp: rho_a 3.966e-01 head worst 5.787674e-02
+kor2039 net: rho_a 1.404e-01 head worst 1.979947e-02
+kor2039 interp: rho_a 1.415e-01 head worst 1.985688e-02
+kor4093 net: rho_a 2.746e-02 head worst 2.178688e-03
+kor4093 interp: rho_a 2.581e-02 head worst 2.151061e-03
+kor8191 net: rho_a 7.053e-03 head worst 1.795314e-03
+kor8191 interp: rho_a 1.763e-03 head worst 1.809090e-03
+kor16381 net: rho_a 7.805e-04 head worst 1.808673e-03
+kor16381 interp: rho_a 1.718e-04 head worst 1.810821e-03
+kor32749 net: rho_a 3.368e-04 head worst 1.810340e-03
+kor32749 interp: rho_a 3.946e-07 head worst 1.811668e-03
+kor65521 net: rho_a 2.674e-04 head worst 1.811893e-03
+kor65521 interp: rho_a 3.508e-13 head worst 1.811668e-03
+sob512 net: rho_a 2.287e+00 head worst 6.412164e-01
+sob512 interp: rho_a 2.283e+00 head worst 6.361724e-01
+sob1024 net: rho_a 1.097e+00 head worst 3.309839e-01
+sob1024 interp: rho_a 1.090e+00 head worst 3.224435e-01
+sob2048 net: rho_a 3.392e-01 head worst 8.288067e-02
+sob2048 interp: rho_a 3.392e-01 head worst 8.302098e-02
+sob4096 net: rho_a 1.831e-01 head worst 4.932524e-02
+sob4096 interp: rho_a 1.814e-01 head worst 4.943581e-02
+sob8192 net: rho_a 8.890e-02 head worst 1.880203e-02
+sob8192 interp: rho_a 8.924e-02 head worst 1.846680e-02
+sob16384 net: rho_a 6.608e-02 head worst 1.638565e-02
+sob16384 interp: rho_a 6.040e-02 head worst 1.646479e-02
+sob32768 net: rho_a 2.360e-02 head worst 7.120397e-03
+sob32768 interp: rho_a 2.348e-02 head worst 7.120699e-03
+sob65536 net: rho_a 1.133e-02 head worst 2.522429e-03
+sob65536 interp: rho_a 1.058e-02 head worst 2.524735e-03
+gl8 net: rho_a 6.673e-01 head worst 1.211811e-01
+gl8 interp: rho_a 6.315e-01 head worst 1.210711e-01
+gl10 net: rho_a 3.342e-01 head worst 6.325583e-02
+gl10 interp: rho_a 3.120e-01 head worst 6.129460e-02
+gl13 net: rho_a 1.516e-01 head worst 1.138594e-02
+gl13 interp: rho_a 1.260e-01 head worst 1.181797e-02
+gl16 net: rho_a 4.851e-02 head worst 2.194543e-03
+gl16 interp: rho_a 3.150e-02 head worst 2.140401e-03
+gl20 net: rho_a 2.824e-02 head worst 1.856873e-03
+gl20 interp: rho_a 5.837e-03 head worst 1.880032e-03
+gl25 net: rho_a 3.591e-03 head worst 1.793349e-03
+gl25 interp: rho_a 5.235e-04 head worst 1.809884e-03
+gl32 net: rho_a 2.620e-03 head worst 1.810346e-03
+gl32 interp: rho_a 4.386e-05 head worst 1.811609e-03
+gl40 net: rho_a 7.485e-04 head worst 1.811956e-03
+gl40 interp: rho_a 3.527e-07 head worst 1.811669e-03
+trap8 net: rho_a 4.345e-01 head worst 7.667633e-02
+trap8 interp: rho_a 4.370e-01 head worst 7.698191e-02
+trap10 net: rho_a 1.765e-01 head worst 1.950828e-02
+trap10 interp: rho_a 1.586e-01 head worst 1.941619e-02
+trap13 net: rho_a 1.494e-01 head worst 3.177501e-03
+trap13 interp: rho_a 6.120e-02 head worst 2.868705e-03
+trap16 net: rho_a 4.099e-02 head worst 1.841735e-03
+trap16 interp: rho_a 9.165e-03 head worst 1.788449e-03
+trap20 net: rho_a 4.927e-03 head worst 1.816638e-03
+trap20 interp: rho_a 7.522e-04 head worst 1.813790e-03
+trap25 net: rho_a 2.357e-03 head worst 1.805080e-03
+trap25 interp: rho_a 1.903e-15 head worst 1.811668e-03
+trap32 net: rho_a 1.187e-03 head worst 1.814725e-03
+trap32 interp: rho_a 1.816e-15 head worst 1.811668e-03
+trap40 net: rho_a 3.700e-04 head worst 1.812096e-03
+trap40 interp: rho_a 2.075e-15 head worst 1.811668e-03
+CNAB2 200: 3.021139686250225e-16
+CNAB2 100: 0.00018770526030129867
+CNAB2 80: 0.00032875285302061847
+CNAB2 70: 0.00044888960603660616
+CNAB2 60: 0.0006343740545357255
+CNAB2 50: 0.0009431144407061323
+CNAB2 40: 0.0015156068778369163
+CNAB2 20: 0.007881776999714823
+CNAB2 10: 0.766935797038513
+M*: {'net/lat/head': {'mstar': 8192, 'mstar_rule': 'lat8192', 'mstar_delta': 16384, 'mstar_delta_rule': 'lat16384', 'endpoint_only': False}, 'net/lat/span64': {'mstar': 8192, 'mstar_rule': 'lat8192', 'mstar_delta': None, 'mstar_delta_rule': None, 'endpoint_only': False}, 'net/kor/head': {'mstar': 8191, 'mstar_rule': 'kor8191', 'mstar_delta': 8191, 'mstar_delta_rule': 'kor8191', 'endpoint_only': False}, 'net/kor/span64': {'mstar': 8191, 'mstar_rule': 'kor8191', 'mstar_delta': None, 'mstar_delta_rule': None, 'endpoint_only': False}, 'net/sob/head': {'mstar': None, 'mstar_rule': None, 'mstar_delta': None, 'mstar_delta_rule': None, 'endpoint_only': False}, 'net/sob/span64': {'mstar': None, 'mstar_rule': None, 'mstar_delta': None, 'mstar_delta_rule': None, 'endpoint_only': False}, 'net/gl/head': {'mstar': 8000, 'mstar_rule': 'gl20', 'mstar_delta': 32768, 'mstar_delta_rule': 'gl32', 'endpoint_only': False}, 'net/gl/span64': {'mstar': 64000, 'mstar_rule': 'gl40', 'mstar_delta': None, 'mstar_delta_rule': None, 'endpoint_only': True}, 'net/trap/head': {'mstar': 4096, 'mstar_rule': 'trap16', 'mstar_delta': 8000, 'mstar_delta_rule': 'trap20', 'endpoint_only': False}, 'net/trap/span64': {'mstar': 8000, 'mstar_rule': 'trap20', 'mstar_delta': None, 'mstar_delta_rule': None, 'endpoint_only': False}, 'interp/lat/head': {'mstar': 8192, 'mstar_rule': 'lat8192', 'mstar_delta': 32768, 'mstar_delta_rule': 'lat32768', 'endpoint_only': False}, 'interp/lat/span64': {'mstar': 8192, 'mstar_rule': 'lat8192', 'mstar_delta': 32768, 'mstar_delta_rule': 'lat32768', 'endpoint_only': False}, 'interp/kor/head': {'mstar': 8191, 'mstar_rule': 'kor8191', 'mstar_delta': 8191, 'mstar_delta_rule': 'kor8191', 'endpoint_only': False}, 'interp/kor/span64': {'mstar': 8191, 'mstar_rule': 'kor8191', 'mstar_delta': 32749, 'mstar_delta_rule': 'kor32749', 'endpoint_only': False}, 'interp/sob/head': {'mstar': None, 'mstar_rule': None, 'mstar_delta': None, 'mstar_delta_rule': None, 'endpoint_only': False}, 'interp/sob/span64': {'mstar': None, 'mstar_rule': None, 'mstar_delta': None, 'mstar_delta_rule': None, 'endpoint_only': False}, 'interp/gl/head': {'mstar': 8000, 'mstar_rule': 'gl20', 'mstar_delta': 15625, 'mstar_delta_rule': 'gl25', 'endpoint_only': False}, 'interp/gl/span64': {'mstar': 15625, 'mstar_rule': 'gl25', 'mstar_delta': 32768, 'mstar_delta_rule': 'gl32', 'endpoint_only': False}, 'interp/trap/head': {'mstar': 4096, 'mstar_rule': 'trap16', 'mstar_delta': 8000, 'mstar_delta_rule': 'trap20', 'endpoint_only': False}, 'interp/trap/span64': {'mstar': 8000, 'mstar_rule': 'trap20', 'mstar_delta': 15625, 'mstar_delta_rule': 'trap25', 'endpoint_only': False}}
+timing gate True; agreement 4.244e-16
+done; failures: ['flag: net continuum target not converged (1.44e-09)']
+RUN_EXIT=0

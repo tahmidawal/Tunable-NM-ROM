@@ -163,8 +163,50 @@ def main():
         wt, dt_ = evolved(s["tensor"]["head"]["errors"])
         w(f"2. **{n}³, `net` integrand, head arm — $M^\\ast$ per family:** " + ", ".join(parts)
           + f". Tensor head: worst {pct(wt)}, median {pct(dt_)}.")
-    w("3. **Cost.** See §5: same-job median query time of the quadrature head at each family's $M^\\ast$ against the "
-      "tensor head and the CNAB2 ladder, and the kernel microbenchmark.")
+    w("3. **Cost: quadrature at $M^\\ast$ is not cheaper than the tensor at $R=64$, at any mesh.** Same-job median query "
+      "times (head arm, `net` integrand) and the advection-kernel time alone (30 Jacobian contractions):")
+    w("")
+    w("| mesh | tensor head ms | lattice $M^\\ast$ | its ms (× tensor) | cheapest family at $M^\\ast$ | its ms (× tensor) | tensor kernel ms | lattice $M^\\ast$ kernel ms (× tensor) | smallest lattice kernel ms ($M$=512) | tensor head speedup vs CNAB2 | quadrature head at cheapest $M^\\ast$ speedup vs CNAB2 |")
+    w("|---|---|---|---|---|---|---|---|---|---|---|")
+    for n in meshes:
+        s = data[n]
+        t, kk = s["timing"]["fast"], s["timing"]["kernel"]
+        tt = t["tensor_head"]["median_ms"]
+        ml, _ = mrow(n, "net", "lat", "head")
+        lname = rec[n][("net", "lat", "head")]["names"][list(rec[n][("net", "lat", "head")]["sizes"]).index(ml)] if ml else None
+        best = None
+        for f in s["config"]["families"]:
+            r = rec[n][("net", f, "head")]
+            if r["m1"] is None:
+                continue
+            nm = r["names"][list(r["sizes"]).index(r["m1"])]
+            if f"net_head_{nm}" in t and (best is None or t[f"net_head_{nm}"]["median_ms"] < best[1]):
+                best = (nm, t[f"net_head_{nm}"]["median_ms"], r["ev"][list(r["sizes"]).index(r["m1"])][0])
+        ct = comparator(s["cnab2"], evolved(s["tensor"]["head"]["errors"])[0], t)
+        cb = comparator(s["cnab2"], best[2], t) if best else None
+        tl = t[f"net_head_{lname}"]["median_ms"] if lname else None
+        w(f"| {n}³ | {tt:.2f} | `{lname}` | {tl:.2f} ({tl / tt:.2f}×) | `{best[0]}` | {best[1]:.2f} ({best[1] / tt:.2f}×) "
+          f"| {kk['kernel_tensor']['median_ms']:.3f} | {kk[f'kernel_{lname}']['median_ms']:.3f} ({kk[f'kernel_{lname}']['median_ms'] / kk['kernel_tensor']['median_ms']:.1f}×) "
+          f"| {kk['kernel_lat512']['median_ms']:.3f} | {ct[1] / tt:.2f}× (CNAB2 {ct[0]} steps) | {cb[1] / best[1]:.2f}× (CNAB2 {cb[0]} steps) |")
+    w("")
+    w("The flop model of DESIGN §5 predicted this: one quadrature Jacobian costs about $6M\\,M_tR$ flop against $2M_tR^2$ for the tensor, "
+      "so quadrature can only win below $M\\approx R/3$ points. Even the smallest rule on the ladder is slower than the tensor in the kernel. "
+      "The query-level gap is smaller than the kernel gap because the grid-bound parts of a query (initial projection and centring, "
+      "decoding the five output fields) dominate at 96³.")
+    w("")
+    w("4. **Accuracy against CNAB2.** At $M^\\ast$ the quadrature ROM carries the tensor ROM's accuracy, which §2 places between CNAB2 "
+      "settings on each mesh; the speedup column above uses the parent lane's rule (fastest stable CNAB2 setting at least as accurate).")
+    w("5. **The plateau is set by the test functions, not by the mesh.** For the head arm, $M^\\ast$ is the same at 32³, 64³ and 96³ for every family, and "
+      "the `net` and `interp` integrands give the same $M^\\ast$ (§4): the 292 tests see only $|k_i|\\le 3$, so the "
+      "network/interpolant difference (large pointwise at 32³) barely reaches the tested advection (see the `net` continuum vs tensor column of §1).")
+    w("")
+    w("**Caveats.** (i) The span64 arm amplifies advection error (its $\\delta_T$ is of the order of $\\rho_a$ or larger, while the head "
+      "damps it), so span64 errors below the tensor's at some $M$ are trajectory perturbations, not gains from quadrature; its "
+      "$M^\\ast_\\delta$ is never reached. (ii) The `net` continuum target agrees between $p=128$ and $p=96$ to "
+      + ", ".join(f"{data[n]['net_continuum']['convergence']:.1e} ({n}³)" for n in meshes)
+      + ", above the registered $10^{-10}$ (flag); the continuum column of §3 is therefore resolved only to that level, far below every "
+      "$\\rho_a$ it is compared with. (iii) $M^\\ast$ is specific to this ladder and these rule seeds (one shift/scramble per rule). "
+      "(iv) Development cohort only; the k=8 heads are the frozen ns3d-pod-match development heads (trained there on training seed 202609201), unchanged here.")
     w("")
 
     # ---------------------------------------------------------------- gates

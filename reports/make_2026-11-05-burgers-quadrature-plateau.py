@@ -356,6 +356,32 @@ def main():
           f"{('%.1e (%d)' % (par['max_rel'], par['compared'])) if par.get('compared') else 'n/a'} | "
           f"{a.get('fault_injections', {}).get('passed')} |")
     w('')
+    # ------------------------------------------------------------------ 9. failures and caveats
+    w('## 9. Failures, deviations and caveats')
+    w('')
+    why = {'p2d256': 'stopped at gate G-R: Gauss rules differ from the local manifest in the last bits (cluster NumPy 2.5.0 vs local 2.4.4); amendment A3 (round-off tolerance)',
+           'p3d65': 'stopped at gate G-coh: 3D table fingerprint differs from October\'s (s_star bits depend on the JAX/NumPy build); amendment A4',
+           'p3d257': 'stopped at gate G-coh on an H200 (fingerprint = October\'s, not E0\'s; nu differs by 1 ulp); amendment A5 (tolerance vs E0 descriptors)',
+           'p3d257b': 'out of GPU memory building the 257-node bank rows as one 512-column block (68 GB); rerun with the October two-block layout (code change only)'}
+    for j in led['jobs']:
+        if j.get('state') != 'COMPLETED':
+            w(f"- `{j['job']}` (job {j['jobid']}, {j.get('elapsed_s', 0) / 60:.1f} min charged): {why.get(j['job'], j.get('state'))}.")
+    for job, d in ran.items():
+        g = d['rep']['gates']['G_time']
+        if not g['drift_pass']:
+            summ = {**{f'{k} (main)': v for k, v in d['rep']['timing']['summary'].items()},
+                    **{f'{k} (confirm)': v for k, v in d['rep']['timing'].get('confirm_summary', {}).items()}}
+            bad = sorted((k for k, v in summ.items() if v['block_drift'] > 1.10), key=lambda k: -summ[k]['block_drift'])
+            w(f"- `{d['name']}`: timing drift gate failed (worst block drift {g['worst_block_drift']:.3f} > 1.10) on "
+              f"{', '.join('`' + k + '`' for k in bad)}; every speed-up at that mesh is printed provisional (A2.4).")
+    w('- The cohorts are the October held-out cohorts, reused; $M^*$ and the crossover are measured on them (descriptive, not '
+      'a confirmation). No sealed or OOD cohort was read.')
+    w('- Cross-mesh latencies come from different jobs and GPU types (A100 vs H200) and must not be compared; only '
+      'within-mesh ratios are claims.')
+    w('- The ROM query includes the projection of the initial field on the mesh; the PS FOM latency excludes the host-side '
+      'sine-coefficient quadrature of the initial field (recorded per case in the FOM rows).')
+    w('- 3D S references are backward Euler at Δt = 0.005, half the 3D ROM step, so 3D S errors are not a space-only measure.')
+    w('')
     figures(ran)
     glossary(w)
     OUT.write_text('\n'.join(L) + '\n')

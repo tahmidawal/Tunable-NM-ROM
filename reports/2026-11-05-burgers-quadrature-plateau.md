@@ -13,16 +13,20 @@ This report re-scores the frozen Burgers 2D (`acc`, $R'=384$) and 3D ($R'=512$) 
 | `p2d1024` | 1024 | NVIDIA A100 80GB PCIe | 6898582 | 19.3 | 35 | COMPLETED | pass |
 | `p3d129` | 129 | NVIDIA A100 80GB PCIe | 6899540 | 21.0 | 30 | COMPLETED | pass |
 | `p2d4096` | 4096 | NVIDIA H200 | 6900351 | 26.9 | 50 | COMPLETED | pass |
-| `p3d257` | 257 | h200 | 6901029 | 0.0 | 60 | PENDING | – |
-| `p2d2048` | 2048 | a100-80G | 6902104 | 0.0 | 35 | PENDING | – |
+| `p3d257` | 257 | h200 | 6901029 | 0.4 | 60 | FAILED | – |
+| `p2d2048` | 2048 | NVIDIA A100 80GB PCIe | 6902104 | 24.9 | 35 | COMPLETED | pass |
+| `p3d257b` | 257 | h200 | 6902975 | 0.8 | 60 | FAILED | – |
+| `p2d512` | 512 | a100-80G | 6902978 | 2.7 | 25 | RUNNING | – |
+| `p3d257c` | 257 | h200 | 6903053 | 0.0 | 60 | PENDING | – |
 
-GPU time charged: **1.69 GPU-h** of the 4.0 GPU-h cap (allocated wall time, every job above).
-Not run: `p2d512`, `p2d2048`, `p3d257` (budget priority, DESIGN A1.8/A2.5).
+GPU time charged: **2.17 GPU-h** of the 4.0 GPU-h cap (allocated wall time, every job above).
+Not run: `p2d512`, `p3d257` (budget priority, DESIGN A1.8/A2.5).
 
 ## 2. Answers in brief
 
 - **2D 256²** — plateau demonstrated: conv rollout worst 2.88 % / median 1.04 % (ST; S: 1.34 % / 0.047 %). Global $M^*$ (ST): Gauss tensor 2,025 (bracket 1,600–2,025]; Fibonacci lattice 987 (bracket 610–987]; Sobol 8,192 (bracket 4,096–8,192]. Same-mesh upwind FOM `UB_L256`: 5.76 % / 1.40 %.
 - **2D 1024²** — plateau demonstrated: conv rollout worst 2.88 % / median 1.04 % (ST; S: 1.36 % / 0.045 %). Global $M^*$ (ST): Gauss tensor 2,025 (bracket 1,600–2,025]; Fibonacci lattice 987 (bracket 610–987]; Sobol 4,096 (bracket 2,048–4,096]. Same-mesh upwind FOM `UB_L1024`: 3.21 % / 1.13 %.
+- **2D 2048²** — plateau demonstrated: conv rollout worst 2.88 % / median 1.04 % (ST; S: 1.36 % / 0.045 %). Global $M^*$ (ST): Gauss tensor 2,025 (bracket 1,600–2,025]; Fibonacci lattice 987 (bracket 610–987]; Sobol 4,096 (bracket 2,048–4,096]. Same-mesh upwind FOM `UB_L2048`: 2.81 % / 1.09 %.
 - **2D 4096²** — plateau demonstrated: conv rollout worst 2.88 % / median 1.04 % (ST; S: 1.36 % / 0.045 %). Global $M^*$ (ST): Gauss tensor 2,025 (bracket 1,600–2,025]; Fibonacci lattice 987 (bracket 610–987]; Sobol 4,096 (bracket 2,048–4,096]. Same-mesh upwind FOM `UB_L4096`: 2.67 % / 1.07 %.
 - **3D 64³** — plateau demonstrated: conv rollout worst 4.45 % / median 1.55 % (ST; S: 2.63 % / 0.743 %). Global $M^*$ (ST): CBC rank-1 lattice 4,096 (bracket 3,584–4,096]; optimistic 2,560 (ε_ref-unresolved rungs); Gauss tensor 8,000 (bracket 6,859–8,000]; Sobol 32,768 (bracket 16,384–32,768] (tail not demonstrated); Korobov lattice 4,093 (bracket 2,039–4,093] (tail not demonstrated). Same-mesh upwind FOM `UB_L64`: 12.97 % / 4.22 %.
 - **3D 128³** — plateau demonstrated: conv rollout worst 4.47 % / median 1.55 % (ST; S: 2.65 % / 0.747 %). Global $M^*$ (ST): CBC rank-1 lattice 4,096 (bracket 3,584–4,096]; optimistic 2,560 (ε_ref-unresolved rungs); Gauss tensor 8,000 (bracket 6,859–8,000]; Sobol 32,768 (bracket 16,384–32,768] (tail not demonstrated); Korobov lattice 4,093 (bracket 2,039–4,093] (tail not demonstrated). Same-mesh upwind FOM `UB_L128`: 8.62 % / 2.63 %.
@@ -33,12 +37,13 @@ Not run: `p2d512`, `p2d2048`, `p3d257` (budget priority, DESIGN A1.8/A2.5).
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 2D 256² | 2.88 % / 1.043 % | `fib987` ($m$=987) | 2.92 % / 1.046 % | 42.4 | 5.76 % / 1.404 % | 90.7 | 2.14× prov. | `PS_N48` | 0.583 % / 0.0025 % | 6.1 | 0.144× prov. |
 | 2D 1024² | 2.88 % / 1.042 % | `fib987` ($m$=987) | 2.92 % / 1.044 % | 43.0 | 3.21 % / 1.132 % | 463.0 | 10.76× | `PS_N48` | 0.583 % / 0.0025 % | 6.7 | 0.155× |
+| 2D 2048² | 2.88 % / 1.042 % | `fib987` ($m$=987) | 2.92 % / 1.044 % | 42.2 | 2.81 % / 1.088 % | 1930.9 | 45.72× | `PS_N48` | 0.583 % / 0.0025 % | 6.1 | 0.144× |
 | 2D 4096² | 2.88 % / 1.042 % | `fib987` ($m$=987) | 2.92 % / 1.044 % | 27.6 | 2.67 % / 1.070 % | 3424.6 | 123.93× prov. | `PS_N48` | 0.583 % / 0.0025 % | 4.6 | 0.166× prov. |
 | 3D 64³ | 4.45 % / 1.547 % | `lat4096` ($m$=4,096) | 4.47 % / 1.547 % | 40.4 | 12.97 % / 4.216 % | 91.8 | 2.27× | `PS_N12` | 4.285 % / 0.1224 % | 7.7 | 0.191× |
 | 3D 128³ | 4.47 % / 1.545 % | `lat4096` ($m$=4,096) | 4.49 % / 1.545 % | 49.8 | 8.62 % / 2.629 % | 605.9 | 12.16× | `PS_N12` | 4.285 % / 0.1224 % | 7.6 | 0.153× |
 
-- **2D plateau is mesh-independent**: conv-rollout worst error 2.88 %–2.88 % and median 1.042 %–1.043 % over 256², 1024², 4096² (ST). Against the space-only S reference the same rollouts give 1.34 %–1.36 % worst and 0.045 %–0.047 % median (S/ST ratio 0.47–0.47 worst, 0.043–0.045 median). S is backward Euler at the ROM's own Δt = 0.005, so the ST–S gap is the ROM's backward-Euler time error: it is about half of the worst-case plateau and nearly all of the median; quadrature is not what limits it.
-- **2D crossover with the same-mesh upwind FOM** (worst error): UB/ROM-plateau ratio 256² 2.00, 1024² 1.11, 4096² 0.93; the sign changes between 1024²→4096².
+- **2D plateau is mesh-independent**: conv-rollout worst error 2.88 %–2.88 % and median 1.042 %–1.043 % over 256², 1024², 2048², 4096² (ST). Against the space-only S reference the same rollouts give 1.34 %–1.36 % worst and 0.045 %–0.047 % median (S/ST ratio 0.47–0.47 worst, 0.043–0.045 median). S is backward Euler at the ROM's own Δt = 0.005, so the ST–S gap is the ROM's backward-Euler time error: it is about half of the worst-case plateau and nearly all of the median; quadrature is not what limits it.
+- **2D crossover with the same-mesh upwind FOM** (worst error): UB/ROM-plateau ratio 256² 2.00, 1024² 1.11, 2048² 0.97, 4096² 0.93; the sign changes between 1024²→2048².
 - **3D plateau is mesh-independent**: conv-rollout worst error 4.45 %–4.47 % and median 1.545 %–1.547 % over 64³, 128³ (ST). Against the space-only S reference the same rollouts give 2.63 %–2.65 % worst and 0.743 %–0.747 % median (S/ST ratio 0.59–0.59 worst, 0.481–0.483 median). In 3D, S is backward Euler at Δt = 0.005 while the ROM steps at Δt = 0.01, so S is not time-matched and the ST–S gap is not a clean time-error measurement; no attribution is made from it.
 - **3D crossover with the same-mesh upwind FOM** (worst error): UB/ROM-plateau ratio 64³ 2.91, 128³ 1.93; no sign change inside the meshes run.
 
@@ -54,6 +59,9 @@ Global $M^*$: smallest rung from which every larger valid rung is within 5 % of 
 | 2D | 1024² | 2.2e-06, 1.0000 ✓ | 2.88 % | 1.042 % | Gauss tensor | 2,025 (bracket 1,600–2,025] | yes | 2.86 % | 1.049 % | 2025 |
 | 2D | 1024² | 2.2e-06, 1.0000 ✓ | 2.88 % | 1.042 % | Fibonacci lattice | 987 (bracket 610–987] | yes | 2.92 % | 1.044 % | 987 |
 | 2D | 1024² | 2.2e-06, 1.0000 ✓ | 2.88 % | 1.042 % | Sobol | 4,096 (bracket 2,048–4,096] | yes | 3.03 % | 1.038 % | 4096 |
+| 2D | 2048² | 2.2e-06, 1.0000 ✓ | 2.88 % | 1.042 % | Gauss tensor | 2,025 (bracket 1,600–2,025] | yes | 2.86 % | 1.049 % | 2025 |
+| 2D | 2048² | 2.2e-06, 1.0000 ✓ | 2.88 % | 1.042 % | Fibonacci lattice | 987 (bracket 610–987] | yes | 2.92 % | 1.044 % | 987 |
+| 2D | 2048² | 2.2e-06, 1.0000 ✓ | 2.88 % | 1.042 % | Sobol | 4,096 (bracket 2,048–4,096] | yes | 3.03 % | 1.038 % | 4096 |
 | 2D | 4096² | 2.2e-06, 1.0000 ✓ | 2.88 % | 1.042 % | Gauss tensor | 2,025 (bracket 1,600–2,025] | yes | 2.86 % | 1.049 % | 2025 |
 | 2D | 4096² | 2.2e-06, 1.0000 ✓ | 2.88 % | 1.042 % | Fibonacci lattice | 987 (bracket 610–987] | yes | 2.92 % | 1.044 % | 987 |
 | 2D | 4096² | 2.2e-06, 1.0000 ✓ | 2.88 % | 1.042 % | Sobol | 4,096 (bracket 2,048–4,096] | yes | 3.03 % | 1.038 % | 4096 |
@@ -78,6 +86,9 @@ Global $M^*$: smallest rung from which every larger valid rung is within 5 % of 
 | 2D | 1024² | 2.2e-06, 1.0000 ✓ | 1.36 % | 0.045 % | Gauss tensor | 3,025 (bracket 2,500–3,025]; optimistic 2,500 (ε_ref-unresolved rungs) | yes | 1.37 % | 0.045 % | 3025 |
 | 2D | 1024² | 2.2e-06, 1.0000 ✓ | 1.36 % | 0.045 % | Fibonacci lattice | 2,584 (bracket 1,597–2,584] | yes | 1.32 % | 0.045 % | 2584 |
 | 2D | 1024² | 2.2e-06, 1.0000 ✓ | 1.36 % | 0.045 % | Sobol | 16,384 (bracket 8,192–16,384] | no | 1.36 % | 0.045 % | 16384 |
+| 2D | 2048² | 2.2e-06, 1.0000 ✓ | 1.36 % | 0.045 % | Gauss tensor | 3,025 (bracket 2,500–3,025]; optimistic 2,500 (ε_ref-unresolved rungs) | yes | 1.37 % | 0.045 % | 3025 |
+| 2D | 2048² | 2.2e-06, 1.0000 ✓ | 1.36 % | 0.045 % | Fibonacci lattice | 2,584 (bracket 1,597–2,584] | yes | 1.32 % | 0.045 % | 2584 |
+| 2D | 2048² | 2.2e-06, 1.0000 ✓ | 1.36 % | 0.045 % | Sobol | 16,384 (bracket 8,192–16,384] | no | 1.36 % | 0.045 % | 16384 |
 | 2D | 4096² | 2.2e-06, 1.0000 ✓ | 1.36 % | 0.045 % | Gauss tensor | 3,025 (bracket 2,500–3,025]; optimistic 2,500 (ε_ref-unresolved rungs) | yes | 1.37 % | 0.045 % | 3025 |
 | 2D | 4096² | 2.2e-06, 1.0000 ✓ | 1.36 % | 0.045 % | Fibonacci lattice | 2,584 (bracket 1,597–2,584] | yes | 1.32 % | 0.045 % | 2584 |
 | 2D | 4096² | 2.2e-06, 1.0000 ✓ | 1.36 % | 0.045 % | Sobol | 16,384 (bracket 8,192–16,384] | no | 1.36 % | 0.045 % | 16384 |
@@ -167,6 +178,44 @@ Global $M^*$: smallest rung from which every larger valid rung is within 5 % of 
 | sobol | `sobol32768` | 32768 | 2.88 % | 1.042 % | 1.37 % | 0.044 % | 7.1e-04 | yes | 368.0 |
 
 ![error vs m](2026-11-05-burgers-quadrature-plateau/err_p2d1024.png)
+
+**2D 2048²** (job 6902104, NVIDIA A100 80GB PCIe; 63 eligible ST cases)
+
+| family | rule | $m$ | worst ST | median ST | worst S | median S | max dist to conv | valid | lattice-contract ms |
+|---|---|---|---|---|---|---|---|---|---|
+| control | `ctrl_smolyak8` | 1025 | 45.02 % | 6.231 % | 43.49 % | 6.681 % | 4.3e-01 | yes | 33.2 |
+| fibonacci | `fib610` | 610 | 4.66 % | 1.077 % | 4.22 % | 0.139 % | 4.2e-02 | yes | 35.7 |
+| fibonacci | `fib987` | 987 | 2.92 % | 1.044 % | 1.36 % | 0.052 % | 1.3e-02 | yes | 42.3 |
+| fibonacci | `fib1597` | 1597 | 2.85 % | 1.042 % | 1.26 % | 0.046 % | 4.0e-03 | yes | 48.8 |
+| fibonacci | `fib2584` | 2584 | 2.87 % | 1.042 % | 1.32 % | 0.045 % | 2.2e-03 | yes | 59.9 |
+| fibonacci | `fib4181` | 4181 | 2.87 % | 1.042 % | 1.34 % | 0.045 % | 1.0e-03 | yes | 87.7 |
+| fibonacci | `fib6765` | 6765 | 2.88 % | 1.042 % | 1.35 % | 0.045 % | 4.4e-04 | yes | 117.0 |
+| fibonacci | `fib10946` | 10946 | 2.88 % | 1.042 % | 1.35 % | 0.045 % | 1.2e-04 | yes | 174.5 |
+| fibonacci | `fib17711` | 17711 | 2.88 % | 1.042 % | 1.36 % | 0.045 % | 1.7e-05 | yes | 246.5 |
+| fibonacci | `fib28657` | 28657 | 2.88 % | 1.042 % | 1.36 % | 0.045 % | 4.9e-06 | yes | 398.8 |
+| fibonacci | `fib46368` | 46368 | 2.88 % | 1.042 % | 1.36 % | 0.045 % | 2.2e-06 | yes | 514.9 |
+| gauss | `gauss24` | 576 | 23.64 % | 1.614 % | 21.70 % | 1.161 % | 2.2e-01 | yes | 26.0 |
+| gauss | `gauss32` | 1024 | 9.07 % | 1.248 % | 7.14 % | 0.666 % | 7.1e-02 | yes | 32.7 |
+| gauss | `gauss36` | 1296 | 6.31 % | 1.109 % | 5.03 % | 0.284 % | 4.6e-02 | yes | 44.5 |
+| gauss | `gauss40` | 1600 | 3.37 % | 1.076 % | 1.82 % | 0.138 % | 1.5e-02 | yes | 47.6 |
+| gauss | `gauss45` | 2025 | 2.86 % | 1.049 % | 1.22 % | 0.052 % | 6.1e-03 | yes | 53.3 |
+| gauss | `gauss50` | 2500 | 2.84 % | 1.041 % | 1.29 % | 0.047 % | 1.7e-03 | yes | 60.6 |
+| gauss | `gauss55` | 3025 | 2.88 % | 1.042 % | 1.37 % | 0.045 % | 7.0e-04 | yes | 66.1 |
+| gauss | `gauss60` | 3600 | 2.88 % | 1.042 % | 1.34 % | 0.045 % | 7.6e-04 | yes | 70.3 |
+| gauss | `gauss64` | 4096 | 2.89 % | 1.042 % | 1.36 % | 0.045 % | 5.4e-04 | yes | 77.3 |
+| gauss | `gauss72` | 5184 | 2.88 % | 1.042 % | 1.35 % | 0.045 % | 2.0e-04 | yes | 85.4 |
+| gauss | `gauss80` | 6400 | 2.88 % | 1.042 % | 1.36 % | 0.045 % | 1.9e-04 | yes | 97.5 |
+| gauss | `gauss96` | 9216 | 2.88 % | 1.042 % | 1.36 % | 0.045 % | 1.7e-04 | yes | 123.4 |
+| gauss | `gauss128` | 16384 | 2.88 % | 1.042 % | 1.36 % | 0.045 % | 4.2e-05 | yes | 197.3 |
+| gauss | `gauss256` | 65536 | 2.88 % | 1.042 % | 1.36 % | 0.045 % | – | yes | 700.1 |
+| sobol | `sobol1024` | 1024 | 7.49 % | 1.317 % | 5.74 % | 0.786 % | 5.6e-02 | yes | 33.7 |
+| sobol | `sobol2048` | 2048 | 3.61 % | 1.124 % | 1.91 % | 0.466 % | 1.6e-02 | yes | 50.6 |
+| sobol | `sobol4096` | 4096 | 3.03 % | 1.038 % | 1.41 % | 0.133 % | 9.0e-03 | yes | 74.8 |
+| sobol | `sobol8192` | 8192 | 2.87 % | 1.042 % | 1.32 % | 0.060 % | 3.5e-03 | yes | 113.4 |
+| sobol | `sobol16384` | 16384 | 2.88 % | 1.043 % | 1.36 % | 0.045 % | 1.6e-03 | yes | 197.3 |
+| sobol | `sobol32768` | 32768 | 2.88 % | 1.042 % | 1.37 % | 0.044 % | 7.1e-04 | yes | 365.2 |
+
+![error vs m](2026-11-05-burgers-quadrature-plateau/err_p2d2048.png)
 
 **2D 4096²** (job 6900351, NVIDIA H200; 63 eligible ST cases)
 
@@ -399,6 +448,26 @@ Cheapest plateau rule: `fib987` ($m$ = 987), worst 2.92 % / median 1.046 %, conf
 
 Cheapest plateau rule: `fib987` ($m$ = 987), worst 2.92 % / median 1.044 %, confirmation-panel latency 43.0 ms (main panel 43.0 ms). Same-mesh upwind FOM `UB_L1024` 3.21 % / 1.132 %, 463.0 ms: speed-up **10.76×** (ROM more accurate in worst error). Cheapest FOM at least as accurate as that rule: `PS_N48` (0.583 % / 0.0025 %), 6.7 ms: speed-up **0.155×**.
 
+**2D 2048²**
+
+| FOM | worst ST | median ST | converged all | ms | conv/FOM worst | conv ≤ FOM (W, T) | $m_\times$ Gauss tensor | $m_\times$ Fibonacci lattice | $m_\times$ Sobol |
+|---|---|---|---|---|---|---|---|---|---|
+| `PS_N12` | 17.908 % | 0.4949 % | yes | 5.1 | 0.16 | pass, fail | none | none | none |
+| `PS_N20` | 7.422 % | 0.0212 % | yes | 5.7 | 0.39 | pass, fail | none | none | none |
+| `PS_N16` | 11.347 % | 0.0903 % | yes | 5.8 | 0.25 | pass, fail | none | none | none |
+| `PS_N48` | 0.583 % | 0.0025 % | yes | 6.1 | 4.94 | fail, fail | none | none | none |
+| `PS_N24` | 4.978 % | 0.0064 % | yes | 6.4 | 0.58 | pass, fail | none | none | none |
+| `PS_N32` | 2.354 % | 0.0027 % | yes | 6.4 | 1.22 | fail, fail | none | none | none |
+| `PS_N64` | 0.157 % | 0.0030 % | yes | 6.8 | 18.39 | fail, fail | none | none | none |
+| `CC_L32` | 18.456 % | 0.7296 % | yes | 55.1 | 0.16 | pass, fail | none | none | none |
+| `CC_L64` | 3.683 % | 0.2393 % | yes | 59.1 | 0.78 | pass, fail | none | none | none |
+| `CC_L128` | 0.693 % | 0.1270 % | yes | 70.7 | 4.16 | fail, fail | none | none | none |
+| `UB_L128` | 8.778 % | 1.9655 % | yes | 79.7 | 0.33 | pass, pass | 1,296 | 610 | 1,024 |
+| `CC_L2048` | 0.276 % | 0.0879 % | yes | 1564.8 | 10.44 | fail, fail | none | none | none |
+| `UB_L2048` | 2.806 % | 1.0881 % | yes | 1931.2 | 1.03 | fail, pass | none | none | none |
+
+Cheapest plateau rule: `fib987` ($m$ = 987), worst 2.92 % / median 1.044 %, confirmation-panel latency 42.2 ms (main panel 42.3 ms). Same-mesh upwind FOM `UB_L2048` 2.81 % / 1.088 %, 1930.9 ms: speed-up **45.72×** (ROM less accurate in worst error). Cheapest FOM at least as accurate as that rule: `PS_N48` (0.583 % / 0.0025 %), 6.1 ms: speed-up **0.144×**.
+
 **2D 4096²**
 
 | FOM | worst ST | median ST | converged all | ms | conv/FOM worst | conv ≤ FOM (W, T) | $m_\times$ Gauss tensor | $m_\times$ Fibonacci lattice | $m_\times$ Sobol |
@@ -462,6 +531,7 @@ Cheapest plateau rule: `lat4096` ($m$ = 4,096), worst 4.49 % / median 1.545 %, c
 |---|---|---|---|---|---|---|
 | 2D | 256² | 2.88 % | 5.76 % | 2.00 | 1.043 % | 1.404 % |
 | 2D | 1024² | 2.88 % | 3.21 % | 1.11 | 1.042 % | 1.132 % |
+| 2D | 2048² | 2.88 % | 2.81 % | 0.97 | 1.042 % | 1.088 % |
 | 2D | 4096² | 2.88 % | 2.67 % | 0.93 | 1.042 % | 1.070 % |
 | 3D | 64³ | 4.45 % | 12.97 % | 2.91 | 1.547 % | 4.216 % |
 | 3D | 128³ | 4.47 % | 8.62 % | 1.93 | 1.545 % | 2.629 % |
@@ -474,9 +544,25 @@ Cheapest plateau rule: `lat4096` ($m$ = 4,096), worst 4.49 % / median 1.545 %, c
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | `p2d256b` | True | True | True | 3.4e-15 | True / 1.102 | 0.0e+00 | 0 non-finite | none | 0.0e+00 | 7.2e-14 (24) | True |
 | `p2d1024` | True | True | True | 5.6e-15 | True / 1.060 | 0.0e+00 | 0 non-finite | none | 0.0e+00 | 7.4e-15 (24) | True |
+| `p2d2048` | True | True | True | 3.4e-15 | True / 1.056 | 0.0e+00 | 0 non-finite | none | 0.0e+00 | n/a | True |
 | `p2d4096` | True | True | True | 3.1e-15 | True / 1.170 | 0.0e+00 | 0 non-finite | none | 0.0e+00 | 6.4e-15 (24) | True |
 | `p3d65b` | True | True | True | 0.0e+00 | True / 1.027 | 0.0e+00 | 0 non-finite | none | 4.5e-15 | 3.9e-15 (384) | True |
 | `p3d129` | True | True | True | 0.0e+00 | True / 1.051 | 0.0e+00 | 0 non-finite | none | 3.4e-15 | 1.3e-14 (384) | True |
+
+## 9. Failures, deviations and caveats
+
+- `p2d256` (job 6897098, 2.1 min charged): stopped at gate G-R: Gauss rules differ from the local manifest in the last bits (cluster NumPy 2.5.0 vs local 2.4.4); amendment A3 (round-off tolerance).
+- `p3d65` (job 6897571, 0.2 min charged): stopped at gate G-coh: 3D table fingerprint differs from October's (s_star bits depend on the JAX/NumPy build); amendment A4.
+- `p3d257` (job 6901029, 0.4 min charged): stopped at gate G-coh on an H200 (fingerprint = October's, not E0's; nu differs by 1 ulp); amendment A5 (tolerance vs E0 descriptors).
+- `p3d257b` (job 6902975, 0.8 min charged): out of GPU memory building the 257-node bank rows as one 512-column block (68 GB); rerun with the October two-block layout (code change only).
+- `p2d512` (job 6902978, 2.7 min charged): RUNNING.
+- `p3d257c` (job 6903053, 0.0 min charged): PENDING.
+- `p2d256b`: timing drift gate failed (worst block drift 1.102 > 1.10) on `fom|PS_N48`; every speed-up at that mesh is printed provisional (A2.4).
+- `p2d4096`: timing drift gate failed (worst block drift 1.170 > 1.10) on ; every speed-up at that mesh is printed provisional (A2.4).
+- The cohorts are the October held-out cohorts, reused; $M^*$ and the crossover are measured on them (descriptive, not a confirmation). No sealed or OOD cohort was read.
+- Cross-mesh latencies come from different jobs and GPU types (A100 vs H200) and must not be compared; only within-mesh ratios are claims.
+- The ROM query includes the projection of the initial field on the mesh; the PS FOM latency excludes the host-side sine-coefficient quadrature of the initial field (recorded per case in the FOM rows).
+- 3D S references are backward Euler at Δt = 0.005, half the 3D ROM step, so 3D S errors are not a space-only measure.
 
 ## Glossary
 

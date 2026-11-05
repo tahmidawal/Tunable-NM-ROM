@@ -1,0 +1,163 @@
+{
+ "rules": {
+  "lat256": {
+   "family": "cbc_lattice",
+   "m": 256,
+   "role": "must-fail control (far too few points)",
+   "weight_sum": 1.0,
+   "w_min": 0.00390625,
+   "sha256": "43196cf038d2325906461d3a1f8598c5daf67b8b3a0a9a7c0772ad8b4c8f2a3e",
+   "z": [
+    1,
+    75,
+    23
+   ],
+   "p2": 0.06145448919903984,
+   "p2_check": 0.06145448919903984,
+   "shift_seed": 0
+  },
+  "lat4096": {
+   "family": "cbc_lattice",
+   "m": 4096,
+   "role": "arm",
+   "weight_sum": 1.0,
+   "w_min": 0.000244140625,
+   "sha256": "7e40cf2c8a3a350eb1d9267ba8efc1f9b717bcd0c9afc46db8a4e7c0462afbeb",
+   "z": [
+    1,
+    1557,
+    1741
+   ],
+   "p2": 0.0006468435677555728,
+   "p2_check": 0.0006468435677555728,
+   "shift_seed": 0
+  },
+  "lat8192": {
+   "family": "cbc_lattice",
+   "m": 8192,
+   "role": "ladder",
+   "weight_sum": 1.0,
+   "w_min": 0.0001220703125,
+   "sha256": "9edff76b2f3e85aa010e868c9c30792c4e59727211ca9c611758fab74d8084bf",
+   "z": [
+    1,
+    2431,
+    563
+   ],
+   "p2": 0.00018761323054738988,
+   "p2_check": 0.00018761323054738988,
+   "shift_seed": 0
+  },
+  "lat16384": {
+   "family": "cbc_lattice",
+   "m": 16384,
+   "role": "arm",
+   "weight_sum": 1.0,
+   "w_min": 6.103515625e-05,
+   "sha256": "5e94a0a1f7c28f2d05f45eba8cddd93893e89da2ec8430b3ba696fefdde925e7",
+   "z": [
+    1,
+    6915,
+    3959
+   ],
+   "p2": 4.7532333126376614e-05,
+   "p2_check": 4.7532333126376614e-05,
+   "shift_seed": 0
+  },
+  "lat32768": {
+   "family": "cbc_lattice",
+   "m": 32768,
+   "role": "arm",
+   "weight_sum": 1.0,
+   "w_min": 3.0517578125e-05,
+   "sha256": "2e9cf7e22d2e1fab3e95a14613d4754d2e5dfcbef8e2e03425416f3b71738df8",
+   "z": [
+    1,
+    12031,
+    7247
+   ],
+   "p2": 1.5720849695366468e-05,
+   "p2_check": 1.5720849695366468e-05,
+   "shift_seed": 0
+  },
+  "kor16381": {
+   "family": "korobov",
+   "m": 16381,
+   "role": "arm",
+   "weight_sum": 1.0000000000000002,
+   "w_min": 6.104633416763323e-05,
+   "sha256": "2c308cb4a748f72ea6ecbfd7eac99e4f2b130cbb939449878426e34401163c19",
+   "z": [
+    1,
+    3657,
+    6753
+   ],
+   "p2": 5.154694848941155e-05,
+   "shift_seed": 0
+  },
+  "gl16": {
+   "family": "gauss_tensor",
+   "m": 4096,
+   "role": "arm",
+   "weight_sum": 1.0000000000000002,
+   "w_min": 2.5022893788630037e-06,
+   "sha256": "baf07f1976ccb8698c1191e5241d5476984638d6a72349ba80e94b29b12e1ce8",
+   "p": 16
+  },
+  "gl24": {
+   "family": "gauss_tensor",
+   "m": 13824,
+   "role": "arm",
+   "weight_sum": 1.0,
+   "w_min": 2.3495534569797586e-07,
+   "sha256": "55a859247f11123ca118dda652a9e5cd2fe09aed5a8a9d2a6cc8a623ab319df0",
+   "p": 24
+  },
+  "gl32": {
+   "family": "gauss_tensor",
+   "m": 32768,
+   "role": "arm",
+   "weight_sum": 1.0,
+   "w_min": 4.321786885236195e-08,
+   "sha256": "e48f7ce5ec26011f9632b07bae76638cecdaac6b454c4a12cb22690452bec973",
+   "p": 32
+  },
+  "sob16384": {
+   "family": "sobol",
+   "m": 16384,
+   "role": "arm (1/m reference)",
+   "weight_sum": 1.0,
+   "w_min": 6.103515625e-05,
+   "sha256": "9c70d0770538ecde26a8d271dc3ae38e6ada4bdca6e388f821f7f138fde4e8ac",
+   "scramble_seed": 0
+  },
+  "smol8": {
+   "family": "smolyak_cc",
+   "m": 2559,
+   "role": "must-fail control",
+   "weight_sum": 0.997526143099771,
+   "w_min": -0.023514013838779116,
+   "sha256": "aec850a654f3e0fed0429d8c4cb6fde74cb9d18f96cf8bfcfdf8696919a5fd79",
+   "level": 8
+  },
+  "gl64": {
+   "family": "gauss_tensor",
+   "m": 262144,
+   "role": "continuum check",
+   "weight_sum": 1.0000000000000002,
+   "w_min": 7.088741782879149e-10,
+   "sha256": "437607f465aad35a4dbd746b0d0206be9224fe6e8cb09721c5426cba8a825670",
+   "p": 64
+  },
+  "gl80": {
+   "family": "gauss_tensor",
+   "m": 512000,
+   "role": "continuum target",
+   "weight_sum": 1.0,
+   "w_min": 1.8761587404600794e-10,
+   "sha256": "a8cb7056ea43baeb25e0495f4f7426039da9b585df1cf451c0e723654815d241",
+   "p": 80
+  }
+ },
+ "npz_sha256": "099a79976d03e993dc3fbdcc153a57dae0a2dbc5f917d7ca3674bef28daf859b"
+}

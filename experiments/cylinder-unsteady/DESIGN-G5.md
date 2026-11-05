@@ -502,3 +502,38 @@ roundoff controls pass. At 1.66 s/step (P4/P3, K = 40) the five recorded traject
 ≈ 3.5 GPU-h each; with 12.15 GPU-h used, the projected total is ≈ 40 GPU-h > the 25 GPU-h
 ceiling, so the user was asked and chose to **extend the hard ceiling to 42 GPU-h** keeping
 every design setting (0.7 s settle + 1.7 s record at $dt_0$). Records depend on R1c.
+
+### G5-A5 revision 3 — Codex ROM-code review 01 (`reviews/ROM-codex-01.md`), 2026-11-05, before any R1d–R5 data
+
+- Bases are eigen-truncated (1e-12) then re-orthogonalized once (Cholesky) and **verified**
+  (max |ΦᵀWΦ − I| ≤ 1e-12, else the arm stops); squared errors from norm expansions below
+  −1e-12 × scale stop the computation (smaller negatives are roundoff, set to 0 and counted).
+- R1e validates the exact population {90, 95, 100, 105, 110}, production configuration,
+  settle→record state linkage (record initial SHA = last settle state), cumulative settle
+  ≤ 6 s, retained snapshot bytes, exactly 681 saves on the 1/400 grid and 171 diagnostics in
+  the recorded window. **Held-out Re 105 is sealed in R1e**: only quality checks are computed
+  and exported; no cycle statistics or histories before R5. R1f (independent audit of the
+  saved arrays) remains a separate Codex gate.
+- R4 refuses to run unless R1b–R1e pass and the uncertainty inputs are bound (same initial
+  state and window, R1b/R1c pass, $dt_0$ = 1/3200). Every target is reported with its reference
+  uncertainty and classification ("resolved under the linear-propagation estimate" iff δ ≤
+  target/5, otherwise "unresolved"). The **reduced energy balance** (kinetic rate, dissipation,
+  inlet/outlet convective flux and traction work, finite-divergence terms; walls/cylinder carry
+  u = 0) is reported every 4th save.
+- **Initial continuity defect**: reported as $\|Ba_0+B_L\|/\|B_L\|$; ≤ 1e-3 is "qualified",
+  above it the arm is flagged "large initial defect" (the initialization is never changed after
+  results); the primary pressure metric keeps the t₀ sample, and the time-RMS excluding t₀ is
+  reported as a supplement.
+- Quadrature check: both exports must carry identical FE coefficient modes and the identical
+  frozen-bank SHA; the trained bank is re-evaluated on the order-14 rule from the saved
+  parameters (evaluation-only replay, identical parameter digest); criteria: operators ≤ 1e-6,
+  development floors ≤ 1e-3, R4 time-RMS e_u/e_p ≤ 1e-2 relative change; failure → ranking
+  unresolved.
+- R5: identical output contract (reaction forces and probes every step, state at every save;
+  the FE runs in an opt-in `timing_mode` without the per-step surface integral and kinetic
+  energy, persistence after the timed loop; ROM reconstruction timed separately); an untimed
+  20-step warm-up of the same method immediately before every timed invocation; input identity
+  binding; per-repetition accuracy witnesses; all Newton iterations counted.
+- Manifests must state `velocity_order` (4) and `quadrature_order` (12) explicitly; reported
+  dimensions are velocity $d$, pressure $d_p$ and total $d+d_p$ with retained ranks; peak RSS
+  recorded.

@@ -43,7 +43,7 @@ import qlat3d  # noqa: E402
 import plateau as PL  # noqa: E402
 
 block = jax.block_until_ready
-COHORT = {'test32': (923901, 32, 'f20a1aac4d506891595da155380399a0796191b374a2355f9395f389b9417b37'),
+COHORT = {'test32': (923901, 32, '85cef1e7e736c8203a4161d5e7dc575f1291befe744086955d0823c6cbf673ea'),
           'dev4': (923651, 4, None)}
 NONCONV = (0, 2, 3)                   # DESIGN A2.2
 

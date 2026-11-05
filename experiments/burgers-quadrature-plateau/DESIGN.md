@@ -294,3 +294,12 @@ Fibonacci and Sobol rules matched bitwise. The rules are generated in-job exactl
 rollouts needs that). G-R is changed to: in-job rule vs the committed local arrays `rules2d.npz`, max |ΔX| ≤ 1e-14 and
 max |Δw| / max w ≤ 1e-12, with the bitwise count recorded. Nothing else changes; the failed job is charged to the budget.
 3D rules are loaded from the committed `rules3d.npz` (never regenerated), so their bitwise check stands.
+
+## Amendment A4 (2026-11-05, post-failure; job 6897571 `p3d65` stopped at gate G-coh after 11 s, before any rollout)
+
+The 3D cohort table fingerprint (`b3d_common.build_param_table`: sha256 over the drawn parameters *and* `s_star`, a peak
+computed with JAX on a 257³ grid) on today's cluster stack is `85cef1e7…`, not October's `f20a1aac…`; locally it is
+`6b81a59f…`. The drawn parameters are integer-seeded NumPy draws; `s_star` is a floating-point maximum whose last bits depend
+on the JAX/NumPy build. The E0 references for test32 were generated from the table with fingerprint `85cef1e7…` (their
+metadata `cohort_sha256`), so G-coh (3D) now requires `85cef1e7…` — the table the references belong to. Any difference
+from the October rollouts that this causes is measured by G-par (coefficients vs October), not assumed away.

@@ -1,0 +1,135 @@
+{
+ "job": "runs/p3d257c",
+ "dim": 3,
+ "mesh": 257,
+ "job_id": "6903053",
+ "gpu": "NVIDIA H200",
+ "checks": {
+  "G_audit": {
+   "compared": 2432,
+   "max_rel": 3.76584108705138e-15,
+   "passed": true
+  },
+  "G_par": {
+   "compared": 384,
+   "max_rel": 2.8262859975142e-15,
+   "passed": true,
+   "arms": [
+    "ctrl_smol8",
+    "gl16",
+    "gl24",
+    "gl32",
+    "kor16381",
+    "lat16384",
+    "lat256",
+    "lat32768",
+    "lat4096",
+    "lat8192",
+    "sob16384",
+    "tensor"
+   ],
+   "worst_items": [
+    {
+     "arm": "gl16",
+     "case": 10,
+     "rel": 2.8262859975142e-15
+    },
+    {
+     "arm": "tensor",
+     "case": 20,
+     "rel": 2.594765122272012e-15
+    },
+    {
+     "arm": "gl32",
+     "case": 20,
+     "rel": 2.4846438293459177e-15
+    },
+    {
+     "arm": "gl32",
+     "case": 1,
+     "rel": 2.4741564794127706e-15
+    },
+    {
+     "arm": "lat32768",
+     "case": 10,
+     "rel": 2.473000247824925e-15
+    }
+   ]
+  },
+  "fault_injections": {
+   "swapped_case": {
+    "e": 0.00956852253451509,
+    "e_swapped": 0.5806951556241383,
+    "fired": true
+   },
+   "perturbed_record": {
+    "record": [
+     "lat32768",
+     0,
+     "ST"
+    ],
+    "fired": true
+   },
+   "perturbed_reference_byte": {
+    "fired": true
+   },
+   "passed": true
+  }
+ },
+ "in_job_gates": {
+  "G_R": {
+   "checked": 37,
+   "mismatched": [],
+   "passed": true
+  },
+  "G_coh": {
+   "cohort": "test32",
+   "sha256": "f20a1aac4d506891595da155380399a0796191b374a2355f9395f389b9417b37",
+   "expected": "85cef1e7e736c8203a4161d5e7dc575f1291befe744086955d0823c6cbf673ea",
+   "bitwise": false,
+   "blob_counts_equal": true,
+   "draws_max_rel_vs_E0": 0.0,
+   "s_star_max_rel_vs_E0": 1.7192720269339472e-16,
+   "passed": true
+  },
+  "G_ref": {
+   "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+   "loaded": 64,
+   "passed": true
+  },
+  "gram_condition": 1.0024185231549791,
+  "tensor_vs_direct": 2.681936207010259e-16,
+  "G1_derivative_vs_fd": 1.0670982689033615e-07,
+  "G2_meshnodes_offmesh_vs_tensor": 5.633364742136932e-16,
+  "G3_jacobian_vs_jacfwd": 5.157856640630352e-16,
+  "G3_adv_half_Jc": 7.7127583343498185e-16,
+  "G4_solver_vs_vendor": {
+   "fields": 0.0,
+   "coefs": 0.0,
+   "its_equal": true
+  },
+  "G_lat": {
+   "compared": 228,
+   "max_rel": 0.0,
+   "passed": true
+  },
+  "G_time": {
+   "max_output_diff": 0.0,
+   "worst_block_drift": 1.085407081560255,
+   "outputs_pass": true,
+   "drift_pass": true
+  },
+  "G_fin": {
+   "nonfinite": []
+  },
+  "G_fom": {
+   "nonconverged": []
+  },
+  "G_score_vs_refstore": {
+   "compared": 4,
+   "max_rel": 0.0,
+   "passed": true
+  }
+ },
+ "passed": true
+}

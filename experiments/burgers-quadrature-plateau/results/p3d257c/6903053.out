@@ -1,0 +1,74 @@
+host=pax010 source_commit=686bae50f133802e7b311504c6f445f16ba97346
+NVIDIA H200, GPU-ed0de067-982f-cc10-30d0-87166d249ed8, 143771 MiB
+10.235.106.27:/projects/paralab  4.6T  1.4T  3.2T  31% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[7.7s] references loaded: 64
+[18.6s] [mesh 257] bank rows [(256, 16581375), (256, 16581375)] 8.5s
+[25.3s] [mesh 257] Gram cond 1.0012, A (2052, 512) 15.2s
+[277.7s] [mesh 257] tensor (2052, 512, 512) 267.6s
+[353.9s] off-mesh tables built
+[364.3s] evaluator gates {'G_R': {'checked': 37, 'mismatched': [], 'passed': True}, 'G_coh': {'cohort': 'test32', 'sha256': 'f20a1aac4d506891595da155380399a0796191b374a2355f9395f389b9417b37', 'expected': '85cef1e7e736c8203a4161d5e7dc575f1291befe744086955d0823c6cbf673ea', 'bitwise': False, 'blob_counts_equal': True, 'draws_max_rel_vs_E0': 0.0, 's_star_max_rel_vs_E0': 1.7192720269339472e-16, 'passed': True}, 'G_ref': {'store_version': '3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0', 'loaded': 64, 'passed': True}, 'gram_condition': 1.0024185231549791, 'tensor_vs_direct': 2.681936207010259e-16, 'G1_derivative_vs_fd': 1.0670982689033615e-07, 'G2_meshnodes_offmesh_vs_tensor': 5.633364742136932e-16, 'G3_jacobian_vs_jacfwd': 5.157856640630352e-16, 'G3_adv_half_Jc': 7.7127583343498185e-16}
+[388.7s] arms built; G4 passed
+[418.1s] ARM lat32768 done (18.1s)
+[430.9s] ARM tensor done (12.8s)
+[446.7s] ARM lat256 done (15.8s)
+[462.6s] ARM lat512 done (15.9s)
+[478.6s] ARM lat768 done (15.9s)
+[494.8s] ARM lat1024 done (16.2s)
+[510.8s] ARM lat1536 done (16.0s)
+[529.3s] ARM lat2048 done (18.5s)
+[545.4s] ARM lat2560 done (16.1s)
+[561.8s] ARM lat3072 done (16.4s)
+[578.1s] ARM lat3584 done (16.2s)
+[594.4s] ARM lat4096 done (16.3s)
+[610.6s] ARM lat6144 done (16.2s)
+[626.9s] ARM lat8192 done (16.3s)
+[643.7s] ARM lat16384 done (16.8s)
+[658.9s] ARM gl8 done (15.2s)
+[675.0s] ARM gl10 done (16.0s)
+[691.0s] ARM gl12 done (16.0s)
+[707.3s] ARM gl14 done (16.3s)
+[723.0s] ARM gl16 done (15.7s)
+[739.7s] ARM gl17 done (16.6s)
+[756.2s] ARM gl18 done (16.5s)
+[773.0s] ARM gl19 done (16.7s)
+[789.6s] ARM gl20 done (16.5s)
+[806.4s] ARM gl22 done (16.8s)
+[823.3s] ARM gl24 done (16.8s)
+[840.6s] ARM gl28 done (17.2s)
+[857.5s] ARM gl32 done (16.9s)
+[872.9s] ARM sob1024 done (15.4s)
+[888.3s] ARM sob2048 done (15.4s)
+[904.4s] ARM sob4096 done (16.0s)
+[920.3s] ARM sob8192 done (15.8s)
+[937.1s] ARM sob16384 done (16.8s)
+[954.2s] ARM sob32768 done (17.1s)
+[970.6s] ARM kor2039 done (16.3s)
+[986.7s] ARM kor4093 done (15.9s)
+[1003.3s] ARM kor16381 done (16.6s)
+[1020.3s] ARM ctrl_smol8 done (16.9s)
+[1042.0s] FOM hist_dt0.005 done (21.3s)
+[1056.8s] FOM hist_dt0.01 done (14.7s)
+[1066.8s] FOM hist_dt0.025 done (9.9s)
+[1153.4s] FOM UB_L256 done (86.6s)
+[1229.6s] FOM CC_L256 done (76.1s)
+[1234.7s] FOM CC_L64 done (5.0s)
+[1240.5s] FOM PS_N8 done (5.8s)
+[1246.5s] FOM PS_N12 done (5.8s)
+[1252.4s] FOM PS_N16 done (5.9s)
+[1258.5s] FOM PS_N20 done (6.0s)
+[1264.4s] FOM PS_N24 done (5.9s)
+[1270.7s] FOM PS_N32 done (6.2s)
+[1425.1s] G_lat {'compared': 228, 'max_rel': 0.0, 'passed': True}
+[1563.8s] timing main rep 0 done
+[1634.0s] timing main rep 1 done
+[1704.1s] timing main rep 2 done
+[1803.3s] timing confirm rep 0 done
+[1843.1s] timing confirm rep 1 done
+[1882.8s] timing confirm rep 2 done
+[1922.6s] timing confirm rep 3 done
+[1962.3s] timing confirm rep 4 done
+[1962.3s] timing gates {'max_output_diff': 0.0, 'worst_block_drift': 1.085407081560255, 'outputs_pass': True, 'drift_pass': True}; selected {'arm': 'lat4096', 'family': 'lattice', 'm': 4096, 'median_ms': 42.52764210104942, 'candidates': [{'arm': 'lat4096', 'family': 'lattice', 'm': 4096, 'median_ms': 42.52764210104942}, {'arm': 'gl20', 'family': 'gauss', 'm': 8000, 'median_ms': 47.85209288820624}]}
+PLATEAU3D COMPLETE
+ALL-DONE

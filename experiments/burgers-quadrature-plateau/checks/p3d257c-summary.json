@@ -1,0 +1,3152 @@
+{
+ "plateau_ST": {
+  "kind": "ST",
+  "anchor": {
+   "conv": "lat32768",
+   "check": "gl32",
+   "dist": 4.3925832434976944e-05,
+   "W_ratio": 1.0000098329116842,
+   "T_ratio": 1.000001877322883,
+   "passed": true
+  },
+  "conv": {
+   "arm": "lat32768",
+   "W": 0.0447829034915603,
+   "T": 0.015450790606750524
+  },
+  "families": {
+   "lattice": {
+    "tail_demonstrated": true,
+    "rungs": [
+     {
+      "arm": "lat256",
+      "m": 256,
+      "W": 0.3887127820848367,
+      "T": 0.13296227724288728,
+      "valid": true,
+      "dist_conv": 0.36775860465670973,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "lat512",
+      "m": 512,
+      "W": 0.3064597729023874,
+      "T": 0.08426868184949407,
+      "valid": true,
+      "dist_conv": 0.2834307882897592,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "lat768",
+      "m": 768,
+      "W": 0.16480257761943687,
+      "T": 0.03425356308077399,
+      "valid": true,
+      "dist_conv": 0.14038065403318367,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "lat1024",
+      "m": 1024,
+      "W": 0.8768810499949382,
+      "T": 0.20400774588688556,
+      "valid": true,
+      "dist_conv": 0.869941422720312,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "lat1536",
+      "m": 1536,
+      "W": 0.17531967486526964,
+      "T": 0.05398307927025378,
+      "valid": true,
+      "dist_conv": 0.16325375581414428,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "lat2048",
+      "m": 2048,
+      "W": 0.05611378185905787,
+      "T": 0.015500438041357284,
+      "valid": true,
+      "dist_conv": 0.030910518539386506,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "lat2560",
+      "m": 2560,
+      "W": 0.04521479651231354,
+      "T": 0.015454956703300687,
+      "valid": true,
+      "dist_conv": 0.009431725325905084,
+      "glob": "pass",
+      "fam": "pass"
+     },
+     {
+      "arm": "lat3072",
+      "m": 3072,
+      "W": 0.04504780591555085,
+      "T": 0.01544481403661755,
+      "valid": true,
+      "dist_conv": 0.01138346120973854,
+      "glob": "pass",
+      "fam": "pass"
+     },
+     {
+      "arm": "lat3584",
+      "m": 3584,
+      "W": 0.0471739947685749,
+      "T": 0.015467331421503938,
+      "valid": true,
+      "dist_conv": 0.010849411599695708,
+      "glob": "unresolved",
+      "fam": "unresolved"
+     },
+     {
+      "arm": "lat4096",
+      "m": 4096,
+      "W": 0.04496925198686194,
+      "T": 0.015450930299768673,
+      "valid": true,
+      "dist_conv": 0.0023428191573566614,
+      "glob": "pass",
+      "fam": "pass"
+     },
+     {
+      "arm": "lat6144",
+      "m": 6144,
+      "W": 0.044884573642415104,
+      "T": 0.015446739030739317,
+      "valid": true,
+      "dist_conv": 0.002987841871219797,
+      "glob": "pass",
+      "fam": "pass"
+     },
+     {
+      "arm": "lat8192",
+      "m": 8192,
+      "W": 0.044777450923541726,
+      "T": 0.015450553486398526,
+      "valid": true,
+      "dist_conv": 0.0003876140063796064,
+      "glob": "pass",
+      "fam": "pass"
+     },
+     {
+      "arm": "lat16384",
+      "m": 16384,
+      "W": 0.04478281818464906,
+      "T": 0.015450797261377538,
+      "valid": true,
+      "dist_conv": 1.7195983417407993e-05,
+      "glob": "pass",
+      "fam": "pass"
+     },
+     {
+      "arm": "lat32768",
+      "m": 32768,
+      "W": 0.0447829034915603,
+      "T": 0.015450790606750524,
+      "valid": true,
+      "dist_conv": null,
+      "glob": "pass",
+      "fam": "pass"
+     }
+    ],
+    "global_": {
+     "m_star": 4096,
+     "m_star_optimistic": 2560,
+     "bracket": [
+      3584,
+      4096
+     ],
+     "arm": "lat4096"
+    },
+    "family_relative": {
+     "m_star": 4096,
+     "m_star_optimistic": 2560,
+     "bracket": [
+      3584,
+      4096
+     ],
+     "arm": "lat4096"
+    },
+    "band_1pct": {
+     "m_star": 4096,
+     "m_star_optimistic": 4096,
+     "bracket": [
+      3584,
+      4096
+     ],
+     "arm": "lat4096"
+    },
+    "dist_1e3": {
+     "m_star": 8192,
+     "m_star_optimistic": 8192,
+     "bracket": [
+      6144,
+      8192
+     ],
+     "arm": "lat8192"
+    },
+    "top_in_global_band": true
+   },
+   "gauss": {
+    "tail_demonstrated": true,
+    "rungs": [
+     {
+      "arm": "gl8",
+      "m": 512,
+      "W": 0.44443203095277056,
+      "T": 0.17843033980934994,
+      "valid": true,
+      "dist_conv": 0.42374530581977454,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "gl10",
+      "m": 1000,
+      "W": 0.30637573274131985,
+      "T": 0.10067491925911827,
+      "valid": true,
+      "dist_conv": 0.28079311763034204,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "gl12",
+      "m": 1728,
+      "W": 0.17389022899470283,
+      "T": 0.04725185366490191,
+      "valid": true,
+      "dist_conv": 0.1488218785692425,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "gl14",
+      "m": 2744,
+      "W": 0.09001733005256533,
+      "T": 0.02241231465432756,
+      "valid": true,
+      "dist_conv": 0.07099972711905678,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "gl16",
+      "m": 4096,
+      "W": 0.05934091658006968,
+      "T": 0.01633201326590497,
+      "valid": true,
+      "dist_conv": 0.03185364951525635,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "gl17",
+      "m": 4913,
+      "W": 0.05440792566182304,
+      "T": 0.015633102677184953,
+      "valid": true,
+      "dist_conv": 0.018766784926440783,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "gl18",
+      "m": 5832,
+      "W": 0.04847192468728915,
+      "T": 0.015501707837641508,
+      "valid": true,
+      "dist_conv": 0.013142536567534864,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "gl19",
+      "m": 6859,
+      "W": 0.047258872971562345,
+      "T": 0.015471587257662366,
+      "valid": true,
+      "dist_conv": 0.007906705781993846,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "gl20",
+      "m": 8000,
+      "W": 0.045409098852376845,
+      "T": 0.015452601912707907,
+      "valid": true,
+      "dist_conv": 0.0058416846558632125,
+      "glob": "pass",
+      "fam": "pass"
+     },
+     {
+      "arm": "gl22",
+      "m": 10648,
+      "W": 0.04484842073937719,
+      "T": 0.015451120255069156,
+      "valid": true,
+      "dist_conv": 0.0023975707957889876,
+      "glob": "pass",
+      "fam": "pass"
+     },
+     {
+      "arm": "gl24",
+      "m": 13824,
+      "W": 0.044794979612312096,
+      "T": 0.015450221038083438,
+      "valid": true,
+      "dist_conv": 0.0008884248852423104,
+      "glob": "pass",
+      "fam": "pass"
+     },
+     {
+      "arm": "gl28",
+      "m": 21952,
+      "W": 0.04478280068806335,
+      "T": 0.01545061485189033,
+      "valid": true,
+      "dist_conv": 0.0001968378357961603,
+      "glob": "pass",
+      "fam": "pass"
+     },
+     {
+      "arm": "gl32",
+      "m": 32768,
+      "W": 0.04478246314955515,
+      "T": 0.015450761600682213,
+      "valid": true,
+      "dist_conv": 4.3925832434976944e-05,
+      "glob": "pass",
+      "fam": "pass"
+     }
+    ],
+    "global_": {
+     "m_star": 8000,
+     "m_star_optimistic": 8000,
+     "bracket": [
+      6859,
+      8000
+     ],
+     "arm": "gl20"
+    },
+    "family_relative": {
+     "m_star": 8000,
+     "m_star_optimistic": 8000,
+     "bracket": [
+      6859,
+      8000
+     ],
+     "arm": "gl20"
+    },
+    "band_1pct": {
+     "m_star": 10648,
+     "m_star_optimistic": 10648,
+     "bracket": [
+      8000,
+      10648
+     ],
+     "arm": "gl22"
+    },
+    "dist_1e3": {
+     "m_star": 13824,
+     "m_star_optimistic": 13824,
+     "bracket": [
+      10648,
+      13824
+     ],
+     "arm": "gl24"
+    },
+    "top_in_global_band": true
+   },
+   "sobol": {
+    "tail_demonstrated": false,
+    "rungs": [
+     {
+      "arm": "sob1024",
+      "m": 1024,
+      "W": 0.22383410599122422,
+      "T": 0.05876308005967857,
+      "valid": true,
+      "dist_conv": 0.20589429596477868,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "sob2048",
+      "m": 2048,
+      "W": 0.12128915935545377,
+      "T": 0.03479704016383799,
+      "valid": true,
+      "dist_conv": 0.10086788527550963,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "sob4096",
+      "m": 4096,
+      "W": 0.07019774216010702,
+      "T": 0.02140375615913044,
+      "valid": true,
+      "dist_conv": 0.055927554177619236,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "sob8192",
+      "m": 8192,
+      "W": 0.05416513707106359,
+      "T": 0.017580191505260793,
+      "valid": true,
+      "dist_conv": 0.02671635876845249,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "sob16384",
+      "m": 16384,
+      "W": 0.04962255997857616,
+      "T": 0.0161010153523673,
+      "valid": true,
+      "dist_conv": 0.014885030698976807,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "sob32768",
+      "m": 32768,
+      "W": 0.04498011304921945,
+      "T": 0.015540226952723168,
+      "valid": true,
+      "dist_conv": 0.006065520446650727,
+      "glob": "pass",
+      "fam": "pass"
+     }
+    ],
+    "global_": {
+     "m_star": 32768,
+     "m_star_optimistic": 32768,
+     "bracket": [
+      16384,
+      32768
+     ],
+     "arm": "sob32768"
+    },
+    "family_relative": {
+     "m_star": 32768,
+     "m_star_optimistic": 32768,
+     "bracket": [
+      16384,
+      32768
+     ],
+     "arm": "sob32768"
+    },
+    "band_1pct": {
+     "m_star": 32768,
+     "m_star_optimistic": 32768,
+     "bracket": [
+      16384,
+      32768
+     ],
+     "arm": "sob32768"
+    },
+    "dist_1e3": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    },
+    "top_in_global_band": true
+   },
+   "korobov": {
+    "tail_demonstrated": false,
+    "rungs": [
+     {
+      "arm": "kor2039",
+      "m": 2039,
+      "W": 0.13364170722042978,
+      "T": 0.020382009480030147,
+      "valid": true,
+      "dist_conv": 0.11846586436107398,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "kor4093",
+      "m": 4093,
+      "W": 0.04605494133325343,
+      "T": 0.015451813296923647,
+      "valid": true,
+      "dist_conv": 0.009126949286438573,
+      "glob": "pass",
+      "fam": "pass"
+     },
+     {
+      "arm": "kor16381",
+      "m": 16381,
+      "W": 0.0447867730241498,
+      "T": 0.015450974610810717,
+      "valid": true,
+      "dist_conv": 0.00014144595375589327,
+      "glob": "pass",
+      "fam": "pass"
+     }
+    ],
+    "global_": {
+     "m_star": 4093,
+     "m_star_optimistic": 4093,
+     "bracket": [
+      2039,
+      4093
+     ],
+     "arm": "kor4093"
+    },
+    "family_relative": {
+     "m_star": 4093,
+     "m_star_optimistic": 4093,
+     "bracket": [
+      2039,
+      4093
+     ],
+     "arm": "kor4093"
+    },
+    "band_1pct": {
+     "m_star": 16381,
+     "m_star_optimistic": 16381,
+     "bracket": [
+      4093,
+      16381
+     ],
+     "arm": "kor16381"
+    },
+    "dist_1e3": {
+     "m_star": 16381,
+     "m_star_optimistic": 16381,
+     "bracket": [
+      4093,
+      16381
+     ],
+     "arm": "kor16381"
+    },
+    "top_in_global_band": true
+   }
+  },
+  "demonstrated": true,
+  "families_with_tail": 2
+ },
+ "plateau_S": {
+  "kind": "S",
+  "anchor": {
+   "conv": "lat32768",
+   "check": "gl32",
+   "dist": 4.3925832434976944e-05,
+   "W_ratio": 1.0000151382451565,
+   "T_ratio": 0.9999764100009714,
+   "passed": true
+  },
+  "conv": {
+   "arm": "lat32768",
+   "W": 0.02649338533987975,
+   "T": 0.007487260281513576
+  },
+  "families": {
+   "lattice": {
+    "tail_demonstrated": true,
+    "rungs": [
+     {
+      "arm": "lat256",
+      "m": 256,
+      "W": 0.37778177446050254,
+      "T": 0.12861799358589682,
+      "valid": true,
+      "dist_conv": 0.36775860465670973,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "lat512",
+      "m": 512,
+      "W": 0.29462709988068364,
+      "T": 0.07890288484830375,
+      "valid": true,
+      "dist_conv": 0.2834307882897592,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "lat768",
+      "m": 768,
+      "W": 0.1519605627142729,
+      "T": 0.030268244016395753,
+      "valid": true,
+      "dist_conv": 0.14038065403318367,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "lat1024",
+      "m": 1024,
+      "W": 0.8731303946923195,
+      "T": 0.20214181104701096,
+      "valid": true,
+      "dist_conv": 0.869941422720312,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "lat1536",
+      "m": 1536,
+      "W": 0.16847218369886868,
+      "T": 0.05072411252692876,
+      "valid": true,
+      "dist_conv": 0.16325375581414428,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "lat2048",
+      "m": 2048,
+      "W": 0.04056475364882085,
+      "T": 0.007955268418835612,
+      "valid": true,
+      "dist_conv": 0.030910518539386506,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "lat2560",
+      "m": 2560,
+      "W": 0.026827463162933288,
+      "T": 0.007518825433627037,
+      "valid": true,
+      "dist_conv": 0.009431725325905084,
+      "glob": "pass",
+      "fam": "pass"
+     },
+     {
+      "arm": "lat3072",
+      "m": 3072,
+      "W": 0.027830869563296848,
+      "T": 0.007498228806545637,
+      "valid": true,
+      "dist_conv": 0.01138346120973854,
+      "glob": "unresolved",
+      "fam": "unresolved"
+     },
+     {
+      "arm": "lat3584",
+      "m": 3584,
+      "W": 0.02896529623865835,
+      "T": 0.007784267104275098,
+      "valid": true,
+      "dist_conv": 0.010849411599695708,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "lat4096",
+      "m": 4096,
+      "W": 0.02661221863386419,
+      "T": 0.007478174360846952,
+      "valid": true,
+      "dist_conv": 0.0023428191573566614,
+      "glob": "pass",
+      "fam": "pass"
+     },
+     {
+      "arm": "lat6144",
+      "m": 6144,
+      "W": 0.02652891936615067,
+      "T": 0.007484340468619658,
+      "valid": true,
+      "dist_conv": 0.002987841871219797,
+      "glob": "pass",
+      "fam": "pass"
+     },
+     {
+      "arm": "lat8192",
+      "m": 8192,
+      "W": 0.026490422062305074,
+      "T": 0.007478081131703394,
+      "valid": true,
+      "dist_conv": 0.0003876140063796064,
+      "glob": "pass",
+      "fam": "pass"
+     },
+     {
+      "arm": "lat16384",
+      "m": 16384,
+      "W": 0.026493331705922902,
+      "T": 0.00748732001402704,
+      "valid": true,
+      "dist_conv": 1.7195983417407993e-05,
+      "glob": "pass",
+      "fam": "pass"
+     },
+     {
+      "arm": "lat32768",
+      "m": 32768,
+      "W": 0.02649338533987975,
+      "T": 0.007487260281513576,
+      "valid": true,
+      "dist_conv": null,
+      "glob": "pass",
+      "fam": "pass"
+     }
+    ],
+    "global_": {
+     "m_star": 4096,
+     "m_star_optimistic": 4096,
+     "bracket": [
+      3584,
+      4096
+     ],
+     "arm": "lat4096"
+    },
+    "family_relative": {
+     "m_star": 4096,
+     "m_star_optimistic": 4096,
+     "bracket": [
+      3584,
+      4096
+     ],
+     "arm": "lat4096"
+    },
+    "band_1pct": {
+     "m_star": 4096,
+     "m_star_optimistic": 4096,
+     "bracket": [
+      3584,
+      4096
+     ],
+     "arm": "lat4096"
+    },
+    "dist_1e3": {
+     "m_star": 8192,
+     "m_star_optimistic": 8192,
+     "bracket": [
+      6144,
+      8192
+     ],
+     "arm": "lat8192"
+    },
+    "top_in_global_band": true
+   },
+   "gauss": {
+    "tail_demonstrated": true,
+    "rungs": [
+     {
+      "arm": "gl8",
+      "m": 512,
+      "W": 0.43395368811414853,
+      "T": 0.17383012054661173,
+      "valid": true,
+      "dist_conv": 0.42374530581977454,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "gl10",
+      "m": 1000,
+      "W": 0.2923995682114645,
+      "T": 0.09678828012716274,
+      "valid": true,
+      "dist_conv": 0.28079311763034204,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "gl12",
+      "m": 1728,
+      "W": 0.16068977775826704,
+      "T": 0.042058019405930194,
+      "valid": true,
+      "dist_conv": 0.1488218785692425,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "gl14",
+      "m": 2744,
+      "W": 0.07860407318781937,
+      "T": 0.01734567972065842,
+      "valid": true,
+      "dist_conv": 0.07099972711905678,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "gl16",
+      "m": 4096,
+      "W": 0.042626347252348804,
+      "T": 0.008801724191284326,
+      "valid": true,
+      "dist_conv": 0.03185364951525635,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "gl17",
+      "m": 4913,
+      "W": 0.03561366806959831,
+      "T": 0.008091239776453329,
+      "valid": true,
+      "dist_conv": 0.018766784926440783,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "gl18",
+      "m": 5832,
+      "W": 0.02990082818198601,
+      "T": 0.007762970565784298,
+      "valid": true,
+      "dist_conv": 0.013142536567534864,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "gl19",
+      "m": 6859,
+      "W": 0.028502893069038016,
+      "T": 0.007533110969329617,
+      "valid": true,
+      "dist_conv": 0.007906705781993846,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "gl20",
+      "m": 8000,
+      "W": 0.026873521299578974,
+      "T": 0.007520306851451632,
+      "valid": true,
+      "dist_conv": 0.0058416846558632125,
+      "glob": "pass",
+      "fam": "pass"
+     },
+     {
+      "arm": "gl22",
+      "m": 10648,
+      "W": 0.02648186763805234,
+      "T": 0.007488813654240449,
+      "valid": true,
+      "dist_conv": 0.0023975707957889876,
+      "glob": "pass",
+      "fam": "pass"
+     },
+     {
+      "arm": "gl24",
+      "m": 13824,
+      "W": 0.02649144704204164,
+      "T": 0.007486260114220547,
+      "valid": true,
+      "dist_conv": 0.0008884248852423104,
+      "glob": "pass",
+      "fam": "pass"
+     },
+     {
+      "arm": "gl28",
+      "m": 21952,
+      "W": 0.02649213973333013,
+      "T": 0.007488248541015116,
+      "valid": true,
+      "dist_conv": 0.0001968378357961603,
+      "glob": "pass",
+      "fam": "pass"
+     },
+     {
+      "arm": "gl32",
+      "m": 32768,
+      "W": 0.026492984282588755,
+      "T": 0.007487436910143013,
+      "valid": true,
+      "dist_conv": 4.3925832434976944e-05,
+      "glob": "pass",
+      "fam": "pass"
+     }
+    ],
+    "global_": {
+     "m_star": 8000,
+     "m_star_optimistic": 8000,
+     "bracket": [
+      6859,
+      8000
+     ],
+     "arm": "gl20"
+    },
+    "family_relative": {
+     "m_star": 8000,
+     "m_star_optimistic": 8000,
+     "bracket": [
+      6859,
+      8000
+     ],
+     "arm": "gl20"
+    },
+    "band_1pct": {
+     "m_star": 10648,
+     "m_star_optimistic": 10648,
+     "bracket": [
+      8000,
+      10648
+     ],
+     "arm": "gl22"
+    },
+    "dist_1e3": {
+     "m_star": 13824,
+     "m_star_optimistic": 13824,
+     "bracket": [
+      10648,
+      13824
+     ],
+     "arm": "gl24"
+    },
+    "top_in_global_band": true
+   },
+   "sobol": {
+    "tail_demonstrated": false,
+    "rungs": [
+     {
+      "arm": "sob1024",
+      "m": 1024,
+      "W": 0.21424508902434178,
+      "T": 0.05663070137485221,
+      "valid": true,
+      "dist_conv": 0.20589429596477868,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "sob2048",
+      "m": 2048,
+      "W": 0.10961192487918399,
+      "T": 0.03216720168197773,
+      "valid": true,
+      "dist_conv": 0.10086788527550963,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "sob4096",
+      "m": 4096,
+      "W": 0.06145997077747427,
+      "T": 0.01663704842825158,
+      "valid": true,
+      "dist_conv": 0.055927554177619236,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "sob8192",
+      "m": 8192,
+      "W": 0.0392053937330423,
+      "T": 0.010107269459401408,
+      "valid": true,
+      "dist_conv": 0.02671635876845249,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "sob16384",
+      "m": 16384,
+      "W": 0.03186425819316878,
+      "T": 0.008461137577141332,
+      "valid": true,
+      "dist_conv": 0.014885030698976807,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "sob32768",
+      "m": 32768,
+      "W": 0.026950002923553866,
+      "T": 0.007845191985409124,
+      "valid": true,
+      "dist_conv": 0.006065520446650727,
+      "glob": "unresolved",
+      "fam": "pass"
+     }
+    ],
+    "global_": {
+     "m_star": null,
+     "m_star_optimistic": 32768,
+     "bracket": null,
+     "arm": null
+    },
+    "family_relative": {
+     "m_star": 32768,
+     "m_star_optimistic": 32768,
+     "bracket": [
+      16384,
+      32768
+     ],
+     "arm": "sob32768"
+    },
+    "band_1pct": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    },
+    "dist_1e3": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    },
+    "top_in_global_band": false
+   },
+   "korobov": {
+    "tail_demonstrated": false,
+    "rungs": [
+     {
+      "arm": "kor2039",
+      "m": 2039,
+      "W": 0.12493106793741907,
+      "T": 0.015644513372804706,
+      "valid": true,
+      "dist_conv": 0.11846586436107398,
+      "glob": "fail",
+      "fam": "fail"
+     },
+     {
+      "arm": "kor4093",
+      "m": 4093,
+      "W": 0.027610776639889544,
+      "T": 0.007583625652329291,
+      "valid": true,
+      "dist_conv": 0.009126949286438573,
+      "glob": "pass",
+      "fam": "pass"
+     },
+     {
+      "arm": "kor16381",
+      "m": 16381,
+      "W": 0.02649574076354482,
+      "T": 0.007487140197993734,
+      "valid": true,
+      "dist_conv": 0.00014144595375589327,
+      "glob": "pass",
+      "fam": "pass"
+     }
+    ],
+    "global_": {
+     "m_star": 4093,
+     "m_star_optimistic": 4093,
+     "bracket": [
+      2039,
+      4093
+     ],
+     "arm": "kor4093"
+    },
+    "family_relative": {
+     "m_star": 4093,
+     "m_star_optimistic": 4093,
+     "bracket": [
+      2039,
+      4093
+     ],
+     "arm": "kor4093"
+    },
+    "band_1pct": {
+     "m_star": 16381,
+     "m_star_optimistic": 16381,
+     "bracket": [
+      4093,
+      16381
+     ],
+     "arm": "kor16381"
+    },
+    "dist_1e3": {
+     "m_star": 16381,
+     "m_star_optimistic": 16381,
+     "bracket": [
+      4093,
+      16381
+     ],
+     "arm": "kor16381"
+    },
+    "top_in_global_band": true
+   }
+  },
+  "demonstrated": true,
+  "families_with_tail": 2
+ },
+ "matching_ST": {
+  "hist_dt0.005": {
+   "W": 0.0493413549162081,
+   "T": 0.009714022890456881,
+   "eligible": true,
+   "conv_vs_fom": {
+    "W": "pass",
+    "T": "fail",
+    "W_ratio": 0.9076139795433465,
+    "T_ratio": 1.590565595838721
+   },
+   "families": {
+    "lattice": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    },
+    "gauss": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    },
+    "sobol": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    },
+    "korobov": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    }
+   }
+  },
+  "hist_dt0.01": {
+   "W": 0.05996052270980036,
+   "T": 0.018082480712744337,
+   "eligible": true,
+   "conv_vs_fom": {
+    "W": "pass",
+    "T": "pass",
+    "W_ratio": 0.7468731336499952,
+    "T_ratio": 0.8544618878460063
+   },
+   "families": {
+    "lattice": {
+     "m_star": 2048,
+     "m_star_optimistic": 2048,
+     "bracket": [
+      1536,
+      2048
+     ],
+     "arm": "lat2048"
+    },
+    "gauss": {
+     "m_star": 4096,
+     "m_star_optimistic": 4096,
+     "bracket": [
+      2744,
+      4096
+     ],
+     "arm": "gl16"
+    },
+    "sobol": {
+     "m_star": 8192,
+     "m_star_optimistic": 8192,
+     "bracket": [
+      4096,
+      8192
+     ],
+     "arm": "sob8192"
+    },
+    "korobov": {
+     "m_star": 4093,
+     "m_star_optimistic": 4093,
+     "bracket": [
+      2039,
+      4093
+     ],
+     "arm": "kor4093"
+    }
+   }
+  },
+  "hist_dt0.025": {
+   "W": 0.09100164374776375,
+   "T": 0.03767045324125717,
+   "eligible": true,
+   "conv_vs_fom": {
+    "W": "pass",
+    "T": "pass",
+    "W_ratio": 0.4921109295090154,
+    "T_ratio": 0.4101567482556493
+   },
+   "families": {
+    "lattice": {
+     "m_star": 2048,
+     "m_star_optimistic": 2048,
+     "bracket": [
+      1536,
+      2048
+     ],
+     "arm": "lat2048"
+    },
+    "gauss": {
+     "m_star": 2744,
+     "m_star_optimistic": 2744,
+     "bracket": [
+      1728,
+      2744
+     ],
+     "arm": "gl14"
+    },
+    "sobol": {
+     "m_star": 4096,
+     "m_star_optimistic": 4096,
+     "bracket": [
+      2048,
+      4096
+     ],
+     "arm": "sob4096"
+    },
+    "korobov": {
+     "m_star": 4093,
+     "m_star_optimistic": 4093,
+     "bracket": [
+      2039,
+      4093
+     ],
+     "arm": "kor4093"
+    }
+   }
+  },
+  "UB_L256": {
+   "W": 0.0600587709995952,
+   "T": 0.018367444483949405,
+   "eligible": true,
+   "conv_vs_fom": {
+    "W": "pass",
+    "T": "pass",
+    "W_ratio": 0.7456513469425163,
+    "T_ratio": 0.8412052433452225
+   },
+   "families": {
+    "lattice": {
+     "m_star": 2048,
+     "m_star_optimistic": 2048,
+     "bracket": [
+      1536,
+      2048
+     ],
+     "arm": "lat2048"
+    },
+    "gauss": {
+     "m_star": 4096,
+     "m_star_optimistic": 4096,
+     "bracket": [
+      2744,
+      4096
+     ],
+     "arm": "gl16"
+    },
+    "sobol": {
+     "m_star": 8192,
+     "m_star_optimistic": 8192,
+     "bracket": [
+      4096,
+      8192
+     ],
+     "arm": "sob8192"
+    },
+    "korobov": {
+     "m_star": 4093,
+     "m_star_optimistic": 4093,
+     "bracket": [
+      2039,
+      4093
+     ],
+     "arm": "kor4093"
+    }
+   }
+  },
+  "CC_L256": {
+   "W": 0.00705607091856786,
+   "T": 0.0028462263108083603,
+   "eligible": true,
+   "conv_vs_fom": {
+    "W": "fail",
+    "T": "fail",
+    "W_ratio": 6.346719584934343,
+    "T_ratio": 5.42851794605269
+   },
+   "families": {
+    "lattice": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    },
+    "gauss": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    },
+    "sobol": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    },
+    "korobov": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    }
+   }
+  },
+  "CC_L64": {
+   "W": 0.008832477151810196,
+   "T": 0.0032470025747273106,
+   "eligible": true,
+   "conv_vs_fom": {
+    "W": "fail",
+    "T": "fail",
+    "W_ratio": 5.070254099936408,
+    "T_ratio": 4.758478088995082
+   },
+   "families": {
+    "lattice": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    },
+    "gauss": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    },
+    "sobol": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    },
+    "korobov": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    }
+   }
+  },
+  "PS_N8": {
+   "W": 0.10345776939211623,
+   "T": 0.011608132369252207,
+   "eligible": true,
+   "conv_vs_fom": {
+    "W": "pass",
+    "T": "fail",
+    "W_ratio": 0.4328616763602181,
+    "T_ratio": 1.3310315660835164
+   },
+   "families": {
+    "lattice": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    },
+    "gauss": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    },
+    "sobol": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    },
+    "korobov": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    }
+   }
+  },
+  "PS_N12": {
+   "W": 0.04284640956400381,
+   "T": 0.001224465118374062,
+   "eligible": true,
+   "conv_vs_fom": {
+    "W": "fail",
+    "T": "fail",
+    "W_ratio": 1.045196177398803,
+    "T_ratio": 12.618399964931022
+   },
+   "families": {
+    "lattice": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    },
+    "gauss": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    },
+    "sobol": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    },
+    "korobov": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    }
+   }
+  },
+  "PS_N16": {
+   "W": 0.01820584386851327,
+   "T": 0.000146245681207408,
+   "eligible": true,
+   "conv_vs_fom": {
+    "W": "fail",
+    "T": "fail",
+    "W_ratio": 2.459809268660798,
+    "T_ratio": 105.64955135213847
+   },
+   "families": {
+    "lattice": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    },
+    "gauss": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    },
+    "sobol": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    },
+    "korobov": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    }
+   }
+  },
+  "PS_N20": {
+   "W": 0.008380699828359619,
+   "T": 3.2314679635612094e-05,
+   "eligible": true,
+   "conv_vs_fom": {
+    "W": "fail",
+    "T": "fail",
+    "W_ratio": 5.343575645081397,
+    "T_ratio": 478.1353484229849
+   },
+   "families": {
+    "lattice": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    },
+    "gauss": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    },
+    "sobol": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    },
+    "korobov": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    }
+   }
+  },
+  "PS_N24": {
+   "W": 0.003970164564640139,
+   "T": 2.7510660193667688e-05,
+   "eligible": true,
+   "conv_vs_fom": {
+    "W": "fail",
+    "T": "fail",
+    "W_ratio": 11.279860762048658,
+    "T_ratio": 561.6292192910345
+   },
+   "families": {
+    "lattice": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    },
+    "gauss": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    },
+    "sobol": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    },
+    "korobov": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    }
+   }
+  },
+  "PS_N32": {
+   "W": 0.0010261126773404299,
+   "T": 2.2200320364078088e-05,
+   "eligible": true,
+   "conv_vs_fom": {
+    "W": "fail",
+    "T": "fail",
+    "W_ratio": 43.643261096464194,
+    "T_ratio": 695.9715154269193
+   },
+   "families": {
+    "lattice": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    },
+    "gauss": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    },
+    "sobol": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    },
+    "korobov": {
+     "m_star": null,
+     "m_star_optimistic": null,
+     "bracket": null,
+     "arm": null
+    }
+   }
+  }
+ },
+ "arm_stats_ST": {
+  "lat32768": {
+   "family": "lattice",
+   "m": 32768,
+   "W": 0.0447829034915603,
+   "T": 0.015450790606750524,
+   "W_lo": 0.044680264469084095,
+   "T_lo": 0.01543074556671185,
+   "W_hi": 0.0448855425140365,
+   "T_hi": 0.015470835646789199,
+   "W_all": 0.0447829034915603,
+   "T_all": 0.015450790606750524,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": null,
+   "argmax": 20
+  },
+  "tensor": {
+   "family": "tensor",
+   "m": null,
+   "W": 0.06213533033535634,
+   "T": 0.018384822895557193,
+   "W_lo": 0.06203269131288014,
+   "T_lo": 0.01836446892143064,
+   "W_hi": 0.062237969357832545,
+   "T_hi": 0.018405176869683747,
+   "W_all": 0.06213533033535634,
+   "T_all": 0.018384822895557193,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.03251529755900659,
+   "argmax": 20
+  },
+  "lat256": {
+   "family": "lattice",
+   "m": 256,
+   "W": 0.3887127820848367,
+   "T": 0.13296227724288728,
+   "W_lo": 0.3886101430623605,
+   "T_lo": 0.13294377414806957,
+   "W_hi": 0.38881542110731293,
+   "T_hi": 0.132980780337705,
+   "W_all": 0.3887127820848367,
+   "T_all": 0.13296227724288728,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.36775860465670973,
+   "argmax": 20
+  },
+  "lat512": {
+   "family": "lattice",
+   "m": 512,
+   "W": 0.3064597729023874,
+   "T": 0.08426868184949407,
+   "W_lo": 0.3063571338799112,
+   "T_lo": 0.08424654938889065,
+   "W_hi": 0.3065624119248636,
+   "T_hi": 0.08429081431009752,
+   "W_all": 0.3064597729023874,
+   "T_all": 0.08426868184949407,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.2834307882897592,
+   "argmax": 20
+  },
+  "lat768": {
+   "family": "lattice",
+   "m": 768,
+   "W": 0.16480257761943687,
+   "T": 0.03425356308077399,
+   "W_lo": 0.16469993859696067,
+   "T_lo": 0.034231483953457105,
+   "W_hi": 0.16490521664191307,
+   "T_hi": 0.03427564220809088,
+   "W_all": 0.16480257761943687,
+   "T_all": 0.03425356308077399,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.14038065403318367,
+   "argmax": 20
+  },
+  "lat1024": {
+   "family": "lattice",
+   "m": 1024,
+   "W": 0.8768810499949382,
+   "T": 0.20400774588688556,
+   "W_lo": 0.876852587425889,
+   "T_lo": 0.20398781798666282,
+   "W_hi": 0.8769095125639874,
+   "T_hi": 0.2040276737871083,
+   "W_all": 0.8768810499949382,
+   "T_all": 0.20400774588688556,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.869941422720312,
+   "argmax": 11
+  },
+  "lat1536": {
+   "family": "lattice",
+   "m": 1536,
+   "W": 0.17531967486526964,
+   "T": 0.05398307927025378,
+   "W_lo": 0.17524906158961606,
+   "T_lo": 0.053962384437539146,
+   "W_hi": 0.17539028814092322,
+   "T_hi": 0.05400377410296842,
+   "W_all": 0.17531967486526964,
+   "T_all": 0.05398307927025378,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.16325375581414428,
+   "argmax": 16
+  },
+  "lat2048": {
+   "family": "lattice",
+   "m": 2048,
+   "W": 0.05611378185905787,
+   "T": 0.015500438041357284,
+   "W_lo": 0.056011142836581665,
+   "T_lo": 0.015479684929865914,
+   "W_hi": 0.05621642088153407,
+   "T_hi": 0.015521191152848657,
+   "W_all": 0.05611378185905787,
+   "T_all": 0.015500438041357284,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.030910518539386506,
+   "argmax": 20
+  },
+  "lat2560": {
+   "family": "lattice",
+   "m": 2560,
+   "W": 0.04521479651231354,
+   "T": 0.015454956703300687,
+   "W_lo": 0.04511215748983734,
+   "T_lo": 0.015434203591809317,
+   "W_hi": 0.04531743553478974,
+   "T_hi": 0.015475709814792057,
+   "W_all": 0.04521479651231354,
+   "T_all": 0.015454956703300687,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.009431725325905084,
+   "argmax": 20
+  },
+  "lat3072": {
+   "family": "lattice",
+   "m": 3072,
+   "W": 0.04504780591555085,
+   "T": 0.01544481403661755,
+   "W_lo": 0.044945166893074644,
+   "T_lo": 0.015424768996578877,
+   "W_hi": 0.04515044493802705,
+   "T_hi": 0.015464859076656226,
+   "W_all": 0.04504780591555085,
+   "T_all": 0.01544481403661755,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.01138346120973854,
+   "argmax": 20
+  },
+  "lat3584": {
+   "family": "lattice",
+   "m": 3584,
+   "W": 0.0471739947685749,
+   "T": 0.015467331421503938,
+   "W_lo": 0.0470713557460987,
+   "T_lo": 0.015446578310012567,
+   "W_hi": 0.047276633791051105,
+   "T_hi": 0.01548808453299531,
+   "W_all": 0.0471739947685749,
+   "T_all": 0.015467331421503938,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.010849411599695708,
+   "argmax": 20
+  },
+  "lat4096": {
+   "family": "lattice",
+   "m": 4096,
+   "W": 0.04496925198686194,
+   "T": 0.015450930299768673,
+   "W_lo": 0.04486661296438574,
+   "T_lo": 0.01543088525973,
+   "W_hi": 0.045071891009338144,
+   "T_hi": 0.015470975339807347,
+   "W_all": 0.04496925198686194,
+   "T_all": 0.015450930299768673,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.0023428191573566614,
+   "argmax": 20
+  },
+  "lat6144": {
+   "family": "lattice",
+   "m": 6144,
+   "W": 0.044884573642415104,
+   "T": 0.015446739030739317,
+   "W_lo": 0.0447819346199389,
+   "T_lo": 0.015426693990700641,
+   "W_hi": 0.04498721266489131,
+   "T_hi": 0.015466784070777992,
+   "W_all": 0.044884573642415104,
+   "T_all": 0.015446739030739317,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.002987841871219797,
+   "argmax": 20
+  },
+  "lat8192": {
+   "family": "lattice",
+   "m": 8192,
+   "W": 0.044777450923541726,
+   "T": 0.015450553486398526,
+   "W_lo": 0.04467481190106552,
+   "T_lo": 0.015430508446359851,
+   "W_hi": 0.04488008994601793,
+   "T_hi": 0.015470598526437201,
+   "W_all": 0.044777450923541726,
+   "T_all": 0.015450553486398526,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.0003876140063796064,
+   "argmax": 20
+  },
+  "lat16384": {
+   "family": "lattice",
+   "m": 16384,
+   "W": 0.04478281818464906,
+   "T": 0.015450797261377538,
+   "W_lo": 0.04468017916217286,
+   "T_lo": 0.015430752221338863,
+   "W_hi": 0.044885457207125265,
+   "T_hi": 0.015470842301416213,
+   "W_all": 0.04478281818464906,
+   "T_all": 0.015450797261377538,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 1.7195983417407993e-05,
+   "argmax": 20
+  },
+  "gl8": {
+   "family": "gauss",
+   "m": 512,
+   "W": 0.44443203095277056,
+   "T": 0.17843033980934994,
+   "W_lo": 0.44432939193029436,
+   "T_lo": 0.17841297863839317,
+   "W_hi": 0.44453466997524677,
+   "T_hi": 0.1784477009803067,
+   "W_all": 0.44443203095277056,
+   "T_all": 0.17843033980934994,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.42374530581977454,
+   "argmax": 20
+  },
+  "gl10": {
+   "family": "gauss",
+   "m": 1000,
+   "W": 0.30637573274131985,
+   "T": 0.10067491925911827,
+   "W_lo": 0.30627309371884365,
+   "T_lo": 0.10065725411077617,
+   "W_hi": 0.30647837176379605,
+   "T_hi": 0.10069258440746037,
+   "W_all": 0.30637573274131985,
+   "T_all": 0.10067491925911827,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.28079311763034204,
+   "argmax": 20
+  },
+  "gl12": {
+   "family": "gauss",
+   "m": 1728,
+   "W": 0.17389022899470283,
+   "T": 0.04725185366490191,
+   "W_lo": 0.17378758997222662,
+   "T_lo": 0.04722972120429846,
+   "W_hi": 0.17399286801717903,
+   "T_hi": 0.04727398612550535,
+   "W_all": 0.17389022899470283,
+   "T_all": 0.04725185366490191,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.1488218785692425,
+   "argmax": 20
+  },
+  "gl14": {
+   "family": "gauss",
+   "m": 2744,
+   "W": 0.09001733005256533,
+   "T": 0.02241231465432756,
+   "W_lo": 0.08991469103008913,
+   "T_lo": 0.022391566488326367,
+   "W_hi": 0.09011996907504154,
+   "T_hi": 0.022433062820328753,
+   "W_all": 0.09001733005256533,
+   "T_all": 0.02241231465432756,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.07099972711905678,
+   "argmax": 20
+  },
+  "gl16": {
+   "family": "gauss",
+   "m": 4096,
+   "W": 0.05934091658006968,
+   "T": 0.01633201326590497,
+   "W_lo": 0.05923827755759348,
+   "T_lo": 0.016306227073662284,
+   "W_hi": 0.05944355560254588,
+   "T_hi": 0.016357799458147658,
+   "W_all": 0.05934091658006968,
+   "T_all": 0.01633201326590497,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.03185364951525635,
+   "argmax": 20
+  },
+  "gl17": {
+   "family": "gauss",
+   "m": 4913,
+   "W": 0.05440792566182304,
+   "T": 0.015633102677184953,
+   "W_lo": 0.054305286639346834,
+   "T_lo": 0.01561234956569358,
+   "W_hi": 0.05451056468429924,
+   "T_hi": 0.015653855788676323,
+   "W_all": 0.05440792566182304,
+   "T_all": 0.015633102677184953,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.018766784926440783,
+   "argmax": 20
+  },
+  "gl18": {
+   "family": "gauss",
+   "m": 5832,
+   "W": 0.04847192468728915,
+   "T": 0.015501707837641508,
+   "W_lo": 0.048369285664812946,
+   "T_lo": 0.015480954726150138,
+   "W_hi": 0.04857456370976535,
+   "T_hi": 0.015522460949132882,
+   "W_all": 0.04847192468728915,
+   "T_all": 0.015501707837641508,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.013142536567534864,
+   "argmax": 20
+  },
+  "gl19": {
+   "family": "gauss",
+   "m": 6859,
+   "W": 0.047258872971562345,
+   "T": 0.015471587257662366,
+   "W_lo": 0.04715623394908614,
+   "T_lo": 0.015450834146170996,
+   "W_hi": 0.04736151199403855,
+   "T_hi": 0.015492340369153739,
+   "W_all": 0.047258872971562345,
+   "T_all": 0.015471587257662366,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.007906705781993846,
+   "argmax": 20
+  },
+  "gl20": {
+   "family": "gauss",
+   "m": 8000,
+   "W": 0.045409098852376845,
+   "T": 0.015452601912707907,
+   "W_lo": 0.04530645982990064,
+   "T_lo": 0.015432556872669232,
+   "W_hi": 0.04551173787485305,
+   "T_hi": 0.015472646952746583,
+   "W_all": 0.045409098852376845,
+   "T_all": 0.015452601912707907,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.0058416846558632125,
+   "argmax": 20
+  },
+  "gl22": {
+   "family": "gauss",
+   "m": 10648,
+   "W": 0.04484842073937719,
+   "T": 0.015451120255069156,
+   "W_lo": 0.04474578171690099,
+   "T_lo": 0.015431075215030482,
+   "W_hi": 0.044951059761853394,
+   "T_hi": 0.015471165295107829,
+   "W_all": 0.04484842073937719,
+   "T_all": 0.015451120255069156,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.0023975707957889876,
+   "argmax": 20
+  },
+  "gl24": {
+   "family": "gauss",
+   "m": 13824,
+   "W": 0.044794979612312096,
+   "T": 0.015450221038083438,
+   "W_lo": 0.04469234058983589,
+   "T_lo": 0.015430175998044762,
+   "W_hi": 0.0448976186347883,
+   "T_hi": 0.015470266078122113,
+   "W_all": 0.044794979612312096,
+   "T_all": 0.015450221038083438,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.0008884248852423104,
+   "argmax": 20
+  },
+  "gl28": {
+   "family": "gauss",
+   "m": 21952,
+   "W": 0.04478280068806335,
+   "T": 0.01545061485189033,
+   "W_lo": 0.044680161665587144,
+   "T_lo": 0.015430569811851657,
+   "W_hi": 0.04488543971053955,
+   "T_hi": 0.015470659891929006,
+   "W_all": 0.04478280068806335,
+   "T_all": 0.01545061485189033,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.0001968378357961603,
+   "argmax": 20
+  },
+  "gl32": {
+   "family": "gauss",
+   "m": 32768,
+   "W": 0.04478246314955515,
+   "T": 0.015450761600682213,
+   "W_lo": 0.044679824127078945,
+   "T_lo": 0.015430716560643537,
+   "W_hi": 0.04488510217203135,
+   "T_hi": 0.015470806640720886,
+   "W_all": 0.04478246314955515,
+   "T_all": 0.015450761600682213,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 4.3925832434976944e-05,
+   "argmax": 20
+  },
+  "sob1024": {
+   "family": "sobol",
+   "m": 1024,
+   "W": 0.22383410599122422,
+   "T": 0.05876308005967857,
+   "W_lo": 0.22376349271557064,
+   "T_lo": 0.058745772222008344,
+   "W_hi": 0.2239047192668778,
+   "T_hi": 0.058780387897348796,
+   "W_all": 0.22383410599122422,
+   "T_all": 0.05876308005967857,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.20589429596477868,
+   "argmax": 16
+  },
+  "sob2048": {
+   "family": "sobol",
+   "m": 2048,
+   "W": 0.12128915935545377,
+   "T": 0.03479704016383799,
+   "W_lo": 0.12118652033297757,
+   "T_lo": 0.03477709234834295,
+   "W_hi": 0.12139179837792997,
+   "T_hi": 0.03481698797933304,
+   "W_all": 0.12128915935545377,
+   "T_all": 0.03479704016383799,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.10086788527550963,
+   "argmax": 20
+  },
+  "sob4096": {
+   "family": "sobol",
+   "m": 4096,
+   "W": 0.07019774216010702,
+   "T": 0.02140375615913044,
+   "W_lo": 0.07009510313763082,
+   "T_lo": 0.021383043645718657,
+   "W_hi": 0.07030038118258322,
+   "T_hi": 0.02142446867254222,
+   "W_all": 0.07019774216010702,
+   "T_all": 0.02140375615913044,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.055927554177619236,
+   "argmax": 20
+  },
+  "sob8192": {
+   "family": "sobol",
+   "m": 8192,
+   "W": 0.05416513707106359,
+   "T": 0.017580191505260793,
+   "W_lo": 0.054062498048587385,
+   "T_lo": 0.017558662346937884,
+   "W_hi": 0.05426777609353979,
+   "T_hi": 0.017601720663583703,
+   "W_all": 0.05416513707106359,
+   "T_all": 0.017580191505260793,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.02671635876845249,
+   "argmax": 20
+  },
+  "sob16384": {
+   "family": "sobol",
+   "m": 16384,
+   "W": 0.04962255997857616,
+   "T": 0.0161010153523673,
+   "W_lo": 0.04951992095609996,
+   "T_lo": 0.01607376375664001,
+   "W_hi": 0.049725199001052364,
+   "T_hi": 0.01612826694809459,
+   "W_all": 0.04962255997857616,
+   "T_all": 0.0161010153523673,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.014885030698976807,
+   "argmax": 20
+  },
+  "sob32768": {
+   "family": "sobol",
+   "m": 32768,
+   "W": 0.04498011304921945,
+   "T": 0.015540226952723168,
+   "W_lo": 0.04487747402674325,
+   "T_lo": 0.015519473841231798,
+   "W_hi": 0.04508275207169565,
+   "T_hi": 0.01556098006421454,
+   "W_all": 0.04498011304921945,
+   "T_all": 0.015540226952723168,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.006065520446650727,
+   "argmax": 20
+  },
+  "kor2039": {
+   "family": "korobov",
+   "m": 2039,
+   "W": 0.13364170722042978,
+   "T": 0.020382009480030147,
+   "W_lo": 0.13353906819795358,
+   "T_lo": 0.020364365014495317,
+   "W_hi": 0.133744346242906,
+   "T_hi": 0.020399653945564977,
+   "W_all": 0.13364170722042978,
+   "T_all": 0.020382009480030147,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.11846586436107398,
+   "argmax": 20
+  },
+  "kor4093": {
+   "family": "korobov",
+   "m": 4093,
+   "W": 0.04605494133325343,
+   "T": 0.015451813296923647,
+   "W_lo": 0.045952302310777224,
+   "T_lo": 0.015431060185432275,
+   "W_hi": 0.04615758035572963,
+   "T_hi": 0.015472566408415017,
+   "W_all": 0.04605494133325343,
+   "T_all": 0.015451813296923647,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.009126949286438573,
+   "argmax": 20
+  },
+  "kor16381": {
+   "family": "korobov",
+   "m": 16381,
+   "W": 0.0447867730241498,
+   "T": 0.015450974610810717,
+   "W_lo": 0.0446841340016736,
+   "T_lo": 0.015430929570772044,
+   "W_hi": 0.044889412046626005,
+   "T_hi": 0.015471019650849393,
+   "W_all": 0.0447867730241498,
+   "T_all": 0.015450974610810717,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.00014144595375589327,
+   "argmax": 20
+  },
+  "ctrl_smol8": {
+   "family": "control",
+   "m": 2559,
+   "W": 0.43049837891420956,
+   "T": 0.23307818524183133,
+   "W_lo": 0.43039573989173335,
+   "T_lo": 0.2330626109869158,
+   "W_hi": 0.43060101793668576,
+   "T_hi": 0.23309375949674688,
+   "W_all": 0.43049837891420956,
+   "T_all": 0.23307818524183133,
+   "n": 32,
+   "n_all": 32,
+   "valid": false,
+   "dist_conv": 0.4150496480869913,
+   "argmax": 20
+  }
+ },
+ "arm_stats_S": {
+  "lat32768": {
+   "family": "lattice",
+   "m": 32768,
+   "W": 0.02649338533987975,
+   "T": 0.007487260281513576,
+   "W_lo": 0.026419106099262343,
+   "T_lo": 0.007467107493830439,
+   "W_hi": 0.02656766458049716,
+   "T_hi": 0.007507413069196714,
+   "W_all": 0.02649338533987975,
+   "T_all": 0.007487260281513576,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": null,
+   "argmax": 20
+  },
+  "tensor": {
+   "family": "tensor",
+   "m": null,
+   "W": 0.04677197726118699,
+   "T": 0.013277380408427505,
+   "W_lo": 0.046697698020569584,
+   "T_lo": 0.013262717974511867,
+   "W_hi": 0.04684625650180439,
+   "T_hi": 0.01329204284234314,
+   "W_all": 0.04677197726118699,
+   "T_all": 0.013277380408427505,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.03251529755900659,
+   "argmax": 20
+  },
+  "lat256": {
+   "family": "lattice",
+   "m": 256,
+   "W": 0.37778177446050254,
+   "T": 0.12861799358589682,
+   "W_lo": 0.3777074952198851,
+   "T_lo": 0.12860253052604603,
+   "W_hi": 0.37785605370111996,
+   "T_hi": 0.1286334566457476,
+   "W_all": 0.37778177446050254,
+   "T_all": 0.12861799358589682,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.36775860465670973,
+   "argmax": 20
+  },
+  "lat512": {
+   "family": "lattice",
+   "m": 512,
+   "W": 0.29462709988068364,
+   "T": 0.07890288484830375,
+   "W_lo": 0.2945528206400662,
+   "T_lo": 0.07888475120407293,
+   "W_hi": 0.29470137912130107,
+   "T_hi": 0.07892101849253458,
+   "W_all": 0.29462709988068364,
+   "T_all": 0.07890288484830375,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.2834307882897592,
+   "argmax": 20
+  },
+  "lat768": {
+   "family": "lattice",
+   "m": 768,
+   "W": 0.1519605627142729,
+   "T": 0.030268244016395753,
+   "W_lo": 0.15188628347365551,
+   "T_lo": 0.030249762409990263,
+   "W_hi": 0.1520348419548903,
+   "T_hi": 0.03028672562280124,
+   "W_all": 0.1519605627142729,
+   "T_all": 0.030268244016395753,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.14038065403318367,
+   "argmax": 20
+  },
+  "lat1024": {
+   "family": "lattice",
+   "m": 1024,
+   "W": 0.8731303946923195,
+   "T": 0.20214181104701096,
+   "W_lo": 0.8731096377015953,
+   "T_lo": 0.20212436527352995,
+   "W_hi": 0.8731511516830436,
+   "T_hi": 0.20215925682049202,
+   "W_all": 0.8731303946923195,
+   "T_all": 0.20214181104701096,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.869941422720312,
+   "argmax": 11
+  },
+  "lat1536": {
+   "family": "lattice",
+   "m": 1536,
+   "W": 0.16847218369886868,
+   "T": 0.05072411252692876,
+   "W_lo": 0.16841495515107904,
+   "T_lo": 0.05070624272826383,
+   "W_hi": 0.16852941224665832,
+   "T_hi": 0.05074198232559369,
+   "W_all": 0.16847218369886868,
+   "T_all": 0.05072411252692876,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.16325375581414428,
+   "argmax": 16
+  },
+  "lat2048": {
+   "family": "lattice",
+   "m": 2048,
+   "W": 0.04056475364882085,
+   "T": 0.007955268418835612,
+   "W_lo": 0.04049047440820345,
+   "T_lo": 0.00793734645445569,
+   "W_hi": 0.04063903288943826,
+   "T_hi": 0.007973190383215534,
+   "W_all": 0.04056475364882085,
+   "T_all": 0.007955268418835612,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.030910518539386506,
+   "argmax": 20
+  },
+  "lat2560": {
+   "family": "lattice",
+   "m": 2560,
+   "W": 0.026827463162933288,
+   "T": 0.007518825433627037,
+   "W_lo": 0.02675318392231588,
+   "T_lo": 0.007498672645943899,
+   "W_hi": 0.026901742403550696,
+   "T_hi": 0.007538978221310175,
+   "W_all": 0.026827463162933288,
+   "T_all": 0.007518825433627037,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.009431725325905084,
+   "argmax": 20
+  },
+  "lat3072": {
+   "family": "lattice",
+   "m": 3072,
+   "W": 0.027830869563296848,
+   "T": 0.007498228806545637,
+   "W_lo": 0.02775659032267944,
+   "T_lo": 0.0074780760188624985,
+   "W_hi": 0.027905148803914256,
+   "T_hi": 0.007518381594228775,
+   "W_all": 0.027830869563296848,
+   "T_all": 0.007498228806545637,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.01138346120973854,
+   "argmax": 20
+  },
+  "lat3584": {
+   "family": "lattice",
+   "m": 3584,
+   "W": 0.02896529623865835,
+   "T": 0.007784267104275098,
+   "W_lo": 0.028891016998040944,
+   "T_lo": 0.007767989945354019,
+   "W_hi": 0.02903957547927576,
+   "T_hi": 0.007797379651952042,
+   "W_all": 0.02896529623865835,
+   "T_all": 0.007784267104275098,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.010849411599695708,
+   "argmax": 20
+  },
+  "lat4096": {
+   "family": "lattice",
+   "m": 4096,
+   "W": 0.02661221863386419,
+   "T": 0.007478174360846952,
+   "W_lo": 0.026537939393246782,
+   "T_lo": 0.007458021573163814,
+   "W_hi": 0.026686497874481598,
+   "T_hi": 0.007498327148530089,
+   "W_all": 0.02661221863386419,
+   "T_all": 0.007478174360846952,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.0023428191573566614,
+   "argmax": 20
+  },
+  "lat6144": {
+   "family": "lattice",
+   "m": 6144,
+   "W": 0.02652891936615067,
+   "T": 0.007484340468619658,
+   "W_lo": 0.026454640125533262,
+   "T_lo": 0.00746418768093652,
+   "W_hi": 0.02660319860676808,
+   "T_hi": 0.007504493256302795,
+   "W_all": 0.02652891936615067,
+   "T_all": 0.007484340468619658,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.002987841871219797,
+   "argmax": 20
+  },
+  "lat8192": {
+   "family": "lattice",
+   "m": 8192,
+   "W": 0.026490422062305074,
+   "T": 0.007478081131703394,
+   "W_lo": 0.026416142821687666,
+   "T_lo": 0.007457928344020256,
+   "W_hi": 0.026564701302922482,
+   "T_hi": 0.007498233919386532,
+   "W_all": 0.026490422062305074,
+   "T_all": 0.007478081131703394,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.0003876140063796064,
+   "argmax": 20
+  },
+  "lat16384": {
+   "family": "lattice",
+   "m": 16384,
+   "W": 0.026493331705922902,
+   "T": 0.00748732001402704,
+   "W_lo": 0.026419052465305494,
+   "T_lo": 0.007467167226343903,
+   "W_hi": 0.02656761094654031,
+   "T_hi": 0.0075074728017101786,
+   "W_all": 0.026493331705922902,
+   "T_all": 0.00748732001402704,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 1.7195983417407993e-05,
+   "argmax": 20
+  },
+  "gl8": {
+   "family": "gauss",
+   "m": 512,
+   "W": 0.43395368811414853,
+   "T": 0.17383012054661173,
+   "W_lo": 0.4338794088735311,
+   "T_lo": 0.17381500544893563,
+   "W_hi": 0.43402796735476595,
+   "T_hi": 0.17384523564428783,
+   "W_all": 0.43395368811414853,
+   "T_all": 0.17383012054661173,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.42374530581977454,
+   "argmax": 20
+  },
+  "gl10": {
+   "family": "gauss",
+   "m": 1000,
+   "W": 0.2923995682114645,
+   "T": 0.09678828012716274,
+   "W_lo": 0.2923252889708471,
+   "T_lo": 0.09677281706731197,
+   "W_hi": 0.29247384745208194,
+   "T_hi": 0.09680374318701351,
+   "W_all": 0.2923995682114645,
+   "T_all": 0.09678828012716274,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.28079311763034204,
+   "argmax": 20
+  },
+  "gl12": {
+   "family": "gauss",
+   "m": 1728,
+   "W": 0.16068977775826704,
+   "T": 0.042058019405930194,
+   "W_lo": 0.16061549851764964,
+   "T_lo": 0.042040209548337856,
+   "W_hi": 0.16076405699888444,
+   "T_hi": 0.04207582926352253,
+   "W_all": 0.16068977775826704,
+   "T_all": 0.042058019405930194,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.1488218785692425,
+   "argmax": 20
+  },
+  "gl14": {
+   "family": "gauss",
+   "m": 2744,
+   "W": 0.07860407318781937,
+   "T": 0.01734567972065842,
+   "W_lo": 0.07854684464002974,
+   "T_lo": 0.01733067037621875,
+   "W_hi": 0.078661301735609,
+   "T_hi": 0.017360689065098092,
+   "W_all": 0.07860407318781937,
+   "T_all": 0.01734567972065842,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.07099972711905678,
+   "argmax": 16
+  },
+  "gl16": {
+   "family": "gauss",
+   "m": 4096,
+   "W": 0.042626347252348804,
+   "T": 0.008801724191284326,
+   "W_lo": 0.0425520680117314,
+   "T_lo": 0.008787415123046302,
+   "W_hi": 0.04270062649296621,
+   "T_hi": 0.008816033259522352,
+   "W_all": 0.042626347252348804,
+   "T_all": 0.008801724191284326,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.03185364951525635,
+   "argmax": 20
+  },
+  "gl17": {
+   "family": "gauss",
+   "m": 4913,
+   "W": 0.03561366806959831,
+   "T": 0.008091239776453329,
+   "W_lo": 0.0355393888289809,
+   "T_lo": 0.008069642855767925,
+   "W_hi": 0.03568794731021571,
+   "T_hi": 0.00811283669713873,
+   "W_all": 0.03561366806959831,
+   "T_all": 0.008091239776453329,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.018766784926440783,
+   "argmax": 20
+  },
+  "gl18": {
+   "family": "gauss",
+   "m": 5832,
+   "W": 0.02990082818198601,
+   "T": 0.007762970565784298,
+   "W_lo": 0.029826548941368602,
+   "T_lo": 0.007742817778101161,
+   "W_hi": 0.02997510742260342,
+   "T_hi": 0.007783123353467435,
+   "W_all": 0.02990082818198601,
+   "T_all": 0.007762970565784298,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.013142536567534864,
+   "argmax": 20
+  },
+  "gl19": {
+   "family": "gauss",
+   "m": 6859,
+   "W": 0.028502893069038016,
+   "T": 0.007533110969329617,
+   "W_lo": 0.02842861382842061,
+   "T_lo": 0.00751295818164648,
+   "W_hi": 0.028577172309655424,
+   "T_hi": 0.007553263757012756,
+   "W_all": 0.028502893069038016,
+   "T_all": 0.007533110969329617,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.007906705781993846,
+   "argmax": 20
+  },
+  "gl20": {
+   "family": "gauss",
+   "m": 8000,
+   "W": 0.026873521299578974,
+   "T": 0.007520306851451632,
+   "W_lo": 0.026799242058961566,
+   "T_lo": 0.007500154063768494,
+   "W_hi": 0.02694780054019638,
+   "T_hi": 0.00754045963913477,
+   "W_all": 0.026873521299578974,
+   "T_all": 0.007520306851451632,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.0058416846558632125,
+   "argmax": 20
+  },
+  "gl22": {
+   "family": "gauss",
+   "m": 10648,
+   "W": 0.02648186763805234,
+   "T": 0.007488813654240449,
+   "W_lo": 0.02640758839743493,
+   "T_lo": 0.007468660866557311,
+   "W_hi": 0.026556146878669747,
+   "T_hi": 0.007508966441923587,
+   "W_all": 0.02648186763805234,
+   "T_all": 0.007488813654240449,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.0023975707957889876,
+   "argmax": 20
+  },
+  "gl24": {
+   "family": "gauss",
+   "m": 13824,
+   "W": 0.02649144704204164,
+   "T": 0.007486260114220547,
+   "W_lo": 0.02641716780142423,
+   "T_lo": 0.0074661073265374096,
+   "W_hi": 0.026565726282659047,
+   "T_hi": 0.007506412901903684,
+   "W_all": 0.02649144704204164,
+   "T_all": 0.007486260114220547,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.0008884248852423104,
+   "argmax": 20
+  },
+  "gl28": {
+   "family": "gauss",
+   "m": 21952,
+   "W": 0.02649213973333013,
+   "T": 0.007488248541015116,
+   "W_lo": 0.026417860492712723,
+   "T_lo": 0.007468095753331978,
+   "W_hi": 0.02656641897394754,
+   "T_hi": 0.007508401328698254,
+   "W_all": 0.02649213973333013,
+   "T_all": 0.007488248541015116,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.0001968378357961603,
+   "argmax": 20
+  },
+  "gl32": {
+   "family": "gauss",
+   "m": 32768,
+   "W": 0.026492984282588755,
+   "T": 0.007487436910143013,
+   "W_lo": 0.026418705041971347,
+   "T_lo": 0.007467284122459875,
+   "W_hi": 0.026567263523206163,
+   "T_hi": 0.0075075896978261504,
+   "W_all": 0.026492984282588755,
+   "T_all": 0.007487436910143013,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 4.3925832434976944e-05,
+   "argmax": 20
+  },
+  "sob1024": {
+   "family": "sobol",
+   "m": 1024,
+   "W": 0.21424508902434178,
+   "T": 0.05663070137485221,
+   "W_lo": 0.21418786047655214,
+   "T_lo": 0.05661491452836295,
+   "W_hi": 0.21430231757213142,
+   "T_hi": 0.05664648822134147,
+   "W_all": 0.21424508902434178,
+   "T_all": 0.05663070137485221,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.20589429596477868,
+   "argmax": 16
+  },
+  "sob2048": {
+   "family": "sobol",
+   "m": 2048,
+   "W": 0.10961192487918399,
+   "T": 0.03216720168197773,
+   "W_lo": 0.10953764563856658,
+   "T_lo": 0.03215355026867958,
+   "W_hi": 0.1096862041198014,
+   "T_hi": 0.03218085309527587,
+   "W_all": 0.10961192487918399,
+   "T_all": 0.03216720168197773,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.10086788527550963,
+   "argmax": 20
+  },
+  "sob4096": {
+   "family": "sobol",
+   "m": 4096,
+   "W": 0.06145997077747427,
+   "T": 0.01663704842825158,
+   "W_lo": 0.061385691536856864,
+   "T_lo": 0.016621225030802333,
+   "W_hi": 0.06153425001809167,
+   "T_hi": 0.016652871825700827,
+   "W_all": 0.06145997077747427,
+   "T_all": 0.01663704842825158,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.055927554177619236,
+   "argmax": 20
+  },
+  "sob8192": {
+   "family": "sobol",
+   "m": 8192,
+   "W": 0.0392053937330423,
+   "T": 0.010107269459401408,
+   "W_lo": 0.039131114492424894,
+   "T_lo": 0.010092712778722198,
+   "W_hi": 0.0392796729736597,
+   "T_hi": 0.010121826140080614,
+   "W_all": 0.0392053937330423,
+   "T_all": 0.010107269459401408,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.02671635876845249,
+   "argmax": 20
+  },
+  "sob16384": {
+   "family": "sobol",
+   "m": 16384,
+   "W": 0.03186425819316878,
+   "T": 0.008461137577141332,
+   "W_lo": 0.031789978952551375,
+   "T_lo": 0.008450170668718459,
+   "W_hi": 0.031938537433786184,
+   "T_hi": 0.008472104485564201,
+   "W_all": 0.03186425819316878,
+   "T_all": 0.008461137577141332,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.014885030698976807,
+   "argmax": 20
+  },
+  "sob32768": {
+   "family": "sobol",
+   "m": 32768,
+   "W": 0.026950002923553866,
+   "T": 0.007845191985409124,
+   "W_lo": 0.026875723682936458,
+   "T_lo": 0.007830635304729914,
+   "W_hi": 0.027024282164171274,
+   "T_hi": 0.00785974866608833,
+   "W_all": 0.026950002923553866,
+   "T_all": 0.007845191985409124,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.006065520446650727,
+   "argmax": 20
+  },
+  "kor2039": {
+   "family": "korobov",
+   "m": 2039,
+   "W": 0.12493106793741907,
+   "T": 0.015644513372804706,
+   "W_lo": 0.12485678869680165,
+   "T_lo": 0.015626359299550526,
+   "W_hi": 0.12500534717803646,
+   "T_hi": 0.015662667446058886,
+   "W_all": 0.12493106793741907,
+   "T_all": 0.015644513372804706,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.11846586436107398,
+   "argmax": 20
+  },
+  "kor4093": {
+   "family": "korobov",
+   "m": 4093,
+   "W": 0.027610776639889544,
+   "T": 0.007583625652329291,
+   "W_lo": 0.027536497399272136,
+   "T_lo": 0.007563472864646153,
+   "W_hi": 0.027685055880506952,
+   "T_hi": 0.007603778440012429,
+   "W_all": 0.027610776639889544,
+   "T_all": 0.007583625652329291,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.009126949286438573,
+   "argmax": 20
+  },
+  "kor16381": {
+   "family": "korobov",
+   "m": 16381,
+   "W": 0.02649574076354482,
+   "T": 0.007487140197993734,
+   "W_lo": 0.026421461522927413,
+   "T_lo": 0.007466987410310597,
+   "W_hi": 0.02657002000416223,
+   "T_hi": 0.007507292985676872,
+   "W_all": 0.02649574076354482,
+   "T_all": 0.007487140197993734,
+   "n": 32,
+   "n_all": 32,
+   "valid": true,
+   "dist_conv": 0.00014144595375589327,
+   "argmax": 20
+  },
+  "ctrl_smol8": {
+   "family": "control",
+   "m": 2559,
+   "W": 0.42249978873016725,
+   "T": 0.23412934391301465,
+   "W_lo": 0.4224255094895498,
+   "T_lo": 0.23411919755642446,
+   "W_hi": 0.4225740679707847,
+   "T_hi": 0.23413949026960484,
+   "W_all": 0.42249978873016725,
+   "T_all": 0.23412934391301465,
+   "n": 32,
+   "n_all": 32,
+   "valid": false,
+   "dist_conv": 0.4150496480869913,
+   "argmax": 20
+  }
+ },
+ "fom_stats_ST": {
+  "hist_dt0.005": {
+   "W": 0.0493413549162081,
+   "T": 0.009714022890456881,
+   "W_lo": 0.049238715893731896,
+   "T_lo": 0.009691418899656669,
+   "W_hi": 0.0494439939386843,
+   "T_hi": 0.009736626881257097,
+   "n": 32,
+   "converged_all": true,
+   "n_cases": 32
+  },
+  "hist_dt0.01": {
+   "W": 0.05996052270980036,
+   "T": 0.018082480712744337,
+   "W_lo": 0.05985788368732416,
+   "T_lo": 0.01806478291392295,
+   "W_hi": 0.06006316173227656,
+   "T_hi": 0.018100178511565725,
+   "n": 32,
+   "converged_all": true,
+   "n_cases": 32
+  },
+  "hist_dt0.025": {
+   "W": 0.09100164374776375,
+   "T": 0.03767045324125717,
+   "W_lo": 0.09089900472528754,
+   "T_lo": 0.03764466704901448,
+   "W_hi": 0.09110428277023995,
+   "T_hi": 0.037696239433499854,
+   "n": 32,
+   "converged_all": true,
+   "n_cases": 32
+  },
+  "UB_L256": {
+   "W": 0.0600587709995952,
+   "T": 0.018367444483949405,
+   "W_lo": 0.059956131977119,
+   "T_lo": 0.018347090509822847,
+   "W_hi": 0.060161410022071406,
+   "T_hi": 0.018387798458075956,
+   "n": 32,
+   "converged_all": true,
+   "n_cases": 32
+  },
+  "CC_L256": {
+   "W": 0.00705607091856786,
+   "T": 0.0028462263108083603,
+   "W_lo": 0.006979475997783676,
+   "T_lo": 0.0028276466742542896,
+   "W_hi": 0.007132665839352044,
+   "T_hi": 0.0028648059473624313,
+   "n": 32,
+   "converged_all": true,
+   "n_cases": 32
+  },
+  "CC_L64": {
+   "W": 0.008832477151810196,
+   "T": 0.0032470025747273106,
+   "W_lo": 0.008729838129333992,
+   "T_lo": 0.003216882054059424,
+   "W_hi": 0.008935116174286401,
+   "T_hi": 0.003277123095395197,
+   "n": 32,
+   "converged_all": true,
+   "n_cases": 32
+  },
+  "PS_N8": {
+   "W": 0.10345776939211623,
+   "T": 0.011608132369252207,
+   "W_lo": 0.10335513036964003,
+   "T_lo": 0.011578686601962677,
+   "W_hi": 0.10356040841459244,
+   "T_hi": 0.011637578136541737,
+   "n": 32,
+   "converged_all": true,
+   "n_cases": 32
+  },
+  "PS_N12": {
+   "W": 0.04284640956400381,
+   "T": 0.001224465118374062,
+   "W_lo": 0.04274377054152761,
+   "T_lo": 0.0012071246302245474,
+   "W_hi": 0.042949048586480014,
+   "T_hi": 0.0012418056065235763,
+   "n": 32,
+   "converged_all": true,
+   "n_cases": 32
+  },
+  "PS_N16": {
+   "W": 0.01820584386851327,
+   "T": 0.000146245681207408,
+   "W_lo": 0.018103204846037065,
+   "T_lo": 0.00012854606642081687,
+   "W_hi": 0.018308482890989478,
+   "T_hi": 0.0001661934967024554,
+   "n": 32,
+   "converged_all": true,
+   "n_cases": 32
+  },
+  "PS_N20": {
+   "W": 0.008380699828359619,
+   "T": 3.2314679635612094e-05,
+   "W_lo": 0.008278060805883414,
+   "T_lo": 9.414368426653275e-06,
+   "W_hi": 0.008483338850835824,
+   "T_hi": 5.836551348011573e-05,
+   "n": 32,
+   "converged_all": true,
+   "n_cases": 32
+  },
+  "PS_N24": {
+   "W": 0.003970164564640139,
+   "T": 2.7510660193667688e-05,
+   "W_lo": 0.003867525542163934,
+   "T_lo": 1.8413167747925642e-06,
+   "W_hi": 0.004072803587116345,
+   "T_hi": 4.990511172804937e-05,
+   "n": 32,
+   "converged_all": true,
+   "n_cases": 32
+  },
+  "PS_N32": {
+   "W": 0.0010261126773404299,
+   "T": 2.2200320364078088e-05,
+   "W_lo": 0.0009234736548642244,
+   "T_lo": -1.738993119360831e-07,
+   "W_hi": 0.0011287516998166353,
+   "T_hi": 4.476371308470225e-05,
+   "n": 32,
+   "converged_all": true,
+   "n_cases": 32
+  }
+ },
+ "fom_stats_S": {
+  "hist_dt0.005": {
+   "W": 0.03543707270245307,
+   "T": 0.008223133645148397,
+   "W_lo": 0.03536279346183566,
+   "T_lo": 0.00820767058529762,
+   "W_hi": 0.03551135194307047,
+   "T_hi": 0.008238596704999174,
+   "n": 32,
+   "converged_all": true,
+   "n_cases": 32
+  },
+  "hist_dt0.01": {
+   "W": 0.044764801523620945,
+   "T": 0.012746698062271305,
+   "W_lo": 0.04469052228300354,
+   "T_lo": 0.012728776097891383,
+   "W_hi": 0.04483908076423835,
+   "T_hi": 0.012764620026651227,
+   "n": 32,
+   "converged_all": true,
+   "n_cases": 32
+  },
+  "hist_dt0.025": {
+   "W": 0.07306705876191565,
+   "T": 0.030087859255530133,
+   "W_lo": 0.07299277952129823,
+   "T_lo": 0.030076381414151167,
+   "W_hi": 0.07314133800253306,
+   "T_hi": 0.030099337096909103,
+   "n": 32,
+   "converged_all": true,
+   "n_cases": 32
+  },
+  "UB_L256": {
+   "W": 0.044846180583697146,
+   "T": 0.0132661157704295,
+   "W_lo": 0.04477190134307974,
+   "T_lo": 0.013251453336513865,
+   "W_hi": 0.04492045982431455,
+   "T_hi": 0.013280778204345138,
+   "n": 32,
+   "converged_all": true,
+   "n_cases": 32
+  },
+  "CC_L256": {
+   "W": 0.018478158502403634,
+   "T": 0.006393804503631077,
+   "W_lo": 0.018403879261786226,
+   "T_lo": 0.006383770795254375,
+   "W_hi": 0.018552437743021042,
+   "T_hi": 0.00640383821200778,
+   "n": 32,
+   "converged_all": true,
+   "n_cases": 32
+  },
+  "CC_L64": {
+   "W": 0.020702303812285997,
+   "T": 0.006202261885582795,
+   "W_lo": 0.02062802457166859,
+   "T_lo": 0.006182109097899657,
+   "W_hi": 0.020776583052903405,
+   "T_hi": 0.006222414673265933,
+   "n": 32,
+   "converged_all": true,
+   "n_cases": 32
+  },
+  "PS_N8": {
+   "W": 0.1005161936386941,
+   "T": 0.014738623099938359,
+   "W_lo": 0.10044191439807669,
+   "T_lo": 0.014723229242364015,
+   "W_hi": 0.10059047287931151,
+   "T_hi": 0.0147540169575127,
+   "n": 32,
+   "converged_all": true,
+   "n_cases": 32
+  },
+  "PS_N12": {
+   "W": 0.04378600502449536,
+   "T": 0.008458728719978797,
+   "W_lo": 0.043711725783877955,
+   "T_lo": 0.008445616172301856,
+   "W_hi": 0.043860284265112764,
+   "T_hi": 0.008471841267655742,
+   "n": 32,
+   "converged_all": true,
+   "n_cases": 32
+  },
+  "PS_N16": {
+   "W": 0.025969215308209476,
+   "T": 0.008061136594348308,
+   "W_lo": 0.025894936067592068,
+   "T_lo": 0.008052310738934872,
+   "W_hi": 0.026043494548826884,
+   "T_hi": 0.008069962449761745,
+   "n": 32,
+   "converged_all": true,
+   "n_cases": 32
+  },
+  "PS_N20": {
+   "W": 0.02185725936796256,
+   "T": 0.0080610392522239,
+   "W_lo": 0.021782980127345152,
+   "T_lo": 0.008052213396810464,
+   "W_hi": 0.021931538608579968,
+   "T_hi": 0.008069865107637337,
+   "n": 32,
+   "converged_all": true,
+   "n_cases": 32
+  },
+  "PS_N24": {
+   "W": 0.021098629747774947,
+   "T": 0.008061021190729408,
+   "W_lo": 0.02102435050715754,
+   "T_lo": 0.008052195335315971,
+   "W_hi": 0.021172908988392355,
+   "T_hi": 0.008069847046142845,
+   "n": 32,
+   "converged_all": true,
+   "n_cases": 32
+  },
+  "PS_N32": {
+   "W": 0.021017353175056312,
+   "T": 0.008061009939607545,
+   "W_lo": 0.020943073934438904,
+   "T_lo": 0.008052184084194109,
+   "W_hi": 0.02109163241567372,
+   "T_hi": 0.008069835795020982,
+   "n": 32,
+   "converged_all": true,
+   "n_cases": 32
+  }
+ },
+ "cheapest": {
+  "arm": "lat4096",
+  "family": "lattice",
+  "m": 4096,
+  "median_ms": 42.52764210104942,
+  "candidates": [
+   {
+    "arm": "lat4096",
+    "family": "lattice",
+    "m": 4096,
+    "median_ms": 42.52764210104942
+   },
+   {
+    "arm": "gl20",
+    "family": "gauss",
+    "m": 8000,
+    "median_ms": 47.85209288820624
+   }
+  ]
+ }
+}

@@ -10,8 +10,7 @@ ARMS_ALL='[{"name":"pod_r8","kind":"pod","r":8},{"name":"pod_r16","kind":"pod","
 "$PY" rom_export.py --manifest tasks/manifest_production.json --bank inputs/run09_bank.npz \
   --bank-sha256 645d030088ed7bc217b1afb59e3e13787b8f38c8ea5877599cc86d3b8b0a2a60 --out results/export_r5 \
   --pod-from $EX/pod.npz --pod-sha256 56c74a805618fe5c13d6ff795aa4125d15fce791401a9e891da7abde0485bf80 --allow-heldout
-cmp <("$PY" -c "import numpy as np;print(np.load('$EX/quadrature.npz')['points'].tobytes().hex()[:64])") \
-    <("$PY" -c "import numpy as np;print(np.load('results/export_r5/quadrature.npz')['points'].tobytes().hex()[:64])")
+"$PY" -c "import numpy as np,sys;a=np.load('$EX/quadrature.npz');b=np.load('results/export_r5/quadrature.npz');sys.exit(0 if all(np.array_equal(a[k],b[k]) for k in a.files) else 'quadrature differs from the order-12 export')"
 # 2) trained-bank projections of the held-out trajectory (bank evaluated on the same Q)
 "$PY" rom_project.py --manifest tasks/manifest_production.json --export results/export_r5 \
   --bank-eval $TR/train/trained_bank_eval.npz --tag trained --case re105 --out-dir results/proj --allow-heldout

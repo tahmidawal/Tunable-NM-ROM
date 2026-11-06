@@ -549,3 +549,19 @@ every design setting (0.7 s settle + 1.7 s record at $dt_0$). Records depend on 
   and 1/1600 the candidates failed the lift pair tolerance **and** the startup lift check
   (1.85e-4 and 4.61e-5 > 4e-5); the saved gate JSON recorded both. The reference is admitted
   for R2–R5.
+
+## Results record — R2–R4 (2026-11-06), reported against the predeclared rules
+
+- **R2**: frozen bank fails the floor (median 2.55e-1); POD r16 first passing (4.83e-3 /
+  5.74e-3) → R3 at r_b = 16. **R3** (job 6924961, 37 min): parent and child both stopped at
+  their predeclared iteration limits (not convergence). **R4** development Re 95: POD r16 and r24
+  meet all six targets; retrained bank r16 misses the e_u-RMS target (1.45e-2) and has
+  divergence 4.6e-2 (POD ≈ 3e-4); frozen bank fails all; POD r8 misses three.
+- **Quadrature check (G5-A5 item 7)**: attempt 1 refused at its identity guard (independently
+  recomputed FE modes differ at roundoff, 1e-10 > 1e-12); attempt 2 reused the order-12 modes
+  by hash. Result: development floors change ≤ 3.8e-9 and R4 primary metrics ≤ 1.6e-7 (pass),
+  but the operator criterion (≤ 1e-6) **fails for every arm, solely through `BL`**
+  (∫ψ_k ∇·ū, a vector that vanishes in exact arithmetic for Taylor–Hood lifts; relative changes
+  3.3e-4–6.3e-4); every other operator changes ≤ 1.2e-7. **By the predeclared consequence the R4
+  method ranking is reported as "unresolved under the quadrature check"**, with this evidence
+  shown beside it. The rule is not changed.

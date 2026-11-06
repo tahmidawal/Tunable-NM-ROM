@@ -1,0 +1,199 @@
+{
+  "status": "completed",
+  "stages": [
+    {
+      "name": "settle_dt0",
+      "dt": 0.0003125,
+      "t_start": 16.75000000000289,
+      "planned_steps": 2240,
+      "until_periodic": false,
+      "status": "completed",
+      "steps": 2240,
+      "t_end": 17.45000000000225,
+      "periodic_reached": false,
+      "cycles": [
+        {
+          "t0": 16.947004103489853,
+          "t1": 17.28007758844727,
+          "period": 0.33307348495741707,
+          "St": 0.30023404598773407,
+          "CD_max": 3.2435126399621272,
+          "CD_min": 3.189903975577634,
+          "CL_max": 0.9170584921309591,
+          "CL_min": -0.9512023978188247,
+          "CD_max_sample": 3.2435124185811426,
+          "CL_max_sample": 0.9170560229184688,
+          "dp_at_t0_plus_half_period": 2.4735149035402944,
+          "dp_1996_t0_at_CLmax_plus_half_period": 2.4752608294439495
+        }
+      ],
+      "wall_seconds": 3582.399926344864,
+      "seconds_per_step": 1.5992856815923004
+    },
+    {
+      "name": "record",
+      "dt": 0.0003125,
+      "t_start": 17.45000000000225,
+      "planned_steps": 5440,
+      "until_periodic": false,
+      "status": "completed",
+      "steps": 5440,
+      "t_end": 19.150000000000706,
+      "periodic_reached": false,
+      "cycles": [
+        {
+          "t0": 17.613157451384957,
+          "t1": 17.946227918026505,
+          "period": 0.3330704666415478,
+          "St": 0.3002367667368735,
+          "CD_max": 3.2431079756448353,
+          "CD_min": 3.1896826373006557,
+          "CL_max": 0.916429593478676,
+          "CL_min": -0.9503203101561238,
+          "CD_max_sample": 3.243107919784628,
+          "CL_max_sample": 0.9164280071538241,
+          "dp_at_t0_plus_half_period": 2.4733678228744354,
+          "dp_1996_t0_at_CLmax_plus_half_period": 2.4751770865066285
+        },
+        {
+          "t0": 17.946227918026505,
+          "t1": 18.279297162421127,
+          "period": 0.33306924439462193,
+          "St": 0.30023786850015954,
+          "CD_max": 3.2430604576709494,
+          "CD_min": 3.189655914983351,
+          "CL_max": 0.9162898100441901,
+          "CL_min": -0.9501316330716383,
+          "CD_max_sample": 3.2430604574614645,
+          "CL_max_sample": 0.9162895082360335,
+          "dp_at_t0_plus_half_period": 2.4733430078413448,
+          "dp_1996_t0_at_CLmax_plus_half_period": 2.4751579061675644
+        },
+        {
+          "t0": 18.279297162421127,
+          "t1": 18.61236566705936,
+          "period": 0.33306850463823423,
+          "St": 0.30023853533859657,
+          "CD_max": 3.243029840839339,
+          "CD_min": 3.1896384808199376,
+          "CL_max": 0.9162150703818732,
+          "CL_min": -0.9500288898439354,
+          "CD_max_sample": 3.243029792804222,
+          "CL_max_sample": 0.9162150393036361,
+          "dp_at_t0_plus_half_period": 2.4733284944364446,
+          "dp_1996_t0_at_CLmax_plus_half_period": 2.475147319675753
+        },
+        {
+          "t0": 18.61236566705936,
+          "t1": 18.945433563859698,
+          "period": 0.3330678968003369,
+          "St": 0.3002390832639949,
+          "CD_max": 3.2430131017244808,
+          "CD_min": 3.1896291134654513,
+          "CL_max": 0.9161741075702552,
+          "CL_min": -0.9499730866548174,
+          "CD_max_sample": 3.2430128901645205,
+          "CL_max_sample": 0.916173278593046,
+          "dp_at_t0_plus_half_period": 2.473320692656956,
+          "dp_1996_t0_at_CLmax_plus_half_period": 2.475141212590333
+        }
+      ],
+      "wall_seconds": 8725.920302036218,
+      "seconds_per_step": 1.604029467353522
+    }
+  ],
+  "states": [
+    {
+      "file": "record.npz",
+      "sha256": "411b4748935a4d2bbe6083f962865b7c972217997ad0f4226dec2b5eb8b18123",
+      "t": 19.150000000000706
+    }
+  ],
+  "snapshots": [
+    {
+      "file": "snapshots_0000.npz",
+      "sha256": "f62eba92b1cc1fefb9fa467d3872fbafdeb4559b8e44d74cc58124759d1e26c5",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0001.npz",
+      "sha256": "21fbb92543908abf8a7ceb00ad973971ed5ed84531912b2cb4889a27f1f9c6cf",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0002.npz",
+      "sha256": "9df2cde9c41e9413cca8e8449a4981405d8022eae7d89672b986d4adef2e5f9d",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0003.npz",
+      "sha256": "bad5b8edc382098841686c5d6433aad4b8a97adf719df5c8ac6cb80c789ca766",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0004.npz",
+      "sha256": "d3ee8e6925c6e43daa8ff55578b341ec6ad11bc8098087c8209668c90ec2e999",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0005.npz",
+      "sha256": "a61303d86c1b5498cf01beb8110892561644a5f6718f0c528357cae10a6657d3",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0006.npz",
+      "sha256": "fd36042c74035f42e898a18c7cf72f46bd3324ebc0bc876f3a6c99143b5e3336",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0007.npz",
+      "sha256": "1526388191ffc41445a285a71433f613f3c7ed43dafd9494de8606a9d5258256",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0008.npz",
+      "sha256": "2c7e2990134bd1f027cca43641c6249ad6c8aa27afe3a2a03d4aa877898eec00",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0009.npz",
+      "sha256": "9950812cad886acd3ab3e09176edf6846511ac239e7b0c38ac422b3578c5a3ef",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0010.npz",
+      "sha256": "c2adbd8e0ed5175368b9e166a003412c78b8711091ccc81aff220c0d2ceeaa4c",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0011.npz",
+      "sha256": "646fc2c3f72e6ebbe4186b8b1038d5cffd532351c557ebf6d66d68d290da060b",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0012.npz",
+      "sha256": "0f605dcf65698f2747fb0f5640b74873120ec3ccd741afe7f0e0d9ae859ec41b",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0013.npz",
+      "sha256": "c787ccbd799fd984cbb88a6932baaff623610295678cc3764038b7c244050ddf",
+      "count": 31
+    }
+  ],
+  "linear_checks_count": 234,
+  "linear_checks_max": 4.580318849365243e-16,
+  "factorizations": 194,
+  "timers_seconds": {
+    "conv_apply": 54.030503150075674,
+    "factor": 1650.8333345334977,
+    "solve": 10099.691942018457,
+    "observe": 262.5035797711462,
+    "diagnostics": 9.336936284787953
+  },
+  "setup_seconds": 0.05229535140097141,
+  "interpolation": null,
+  "layout_sha256": "e9a4475331ea3029ba0c50d5cb245cb02bd069c5962b701dd64e41bc18d4d8fa",
+  "ndof": 437140,
+  "elapsed_seconds": 12308.89434793219
+}

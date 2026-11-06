@@ -1,4 +1,4 @@
-"""R4 animation frames (DESIGN-G5 5.4 products): reference vs ROM velocity magnitude on Q.
+"""R4 animation frames (DESIGN-G5 5.4 products): reference and ROM velocity vectors on Q.
 
 Evaluates, at one quadrature point per element (every `stride`-th point of the export rule),
 the reference velocity of a DEVELOPMENT trajectory at every 4th save over the last two periods,
@@ -44,7 +44,7 @@ def main():
         arm = rc.Arm(ex, spec['kind'], spec['r'], spec.get('key'))
         s = np.load(Path(a.series_dir) / f"series_{a.case}_{spec['name']}.npz")
         U = arm.lV[sel][None] + np.einsum('qcj,tj->tqc', arm.Vb[sel], s['A'][frames])
-        out[f"rom_{spec['name']}"] = np.linalg.norm(U, axis=2)
+        out[f"rom_{spec['name']}"] = U          # velocity vectors (t, q, 2)
     with ng.TaskManager():
         fe = rx.FE(ng, man['mesh_path'], man['mesh_sha256'], k=man['velocity_order'], qorder=man['quadrature_order'])
         fe.rule()
@@ -52,7 +52,7 @@ def main():
         want = set(np.round(out['t'], 9))
         for t, x in rx.recorded(case['run_dir'], case['stage']):
             if round(t, 9) in want:
-                u, _ = fe.eval_v(x[:fe.nv]); ref.append(np.linalg.norm(u[sel], axis=1))
+                u, _ = fe.eval_v(x[:fe.nv]); ref.append(u[sel])
     out['reference'] = np.array(ref)
     np.savez_compressed(a.out, **out)
     print('frames', len(out['t']), 'points', len(pts))

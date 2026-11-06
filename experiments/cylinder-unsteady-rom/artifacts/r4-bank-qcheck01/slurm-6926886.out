@@ -1,0 +1,69 @@
+inputs/EXPORT-SHA256SUMS: OK
+inputs/R3-SHA256SUMS: OK
+inputs/R1DE.json: OK
+rom_frames.py: OK
+rom_export.py: OK
+rom_project.py: OK
+rom_qcheck.py: OK
+rom_r5.py: OK
+vendor/ref/transient.py: OK
+vendor/ref/cycles.py: OK
+vendor/ref/vendor/scalars.py: OK
+vendor/ref/vendor/oriented_normals.py: OK
+rom_core.py: OK
+rom_r2.py: OK
+rom_r4.py: OK
+bank_train.py: OK
+cycles.py: OK
+install_deps.py: OK
+vendor/geometry.py: OK
+vendor/accuracy_v2/__init__.py: OK
+vendor/accuracy_v2/spatial_bank.py: OK
+vendor/accuracy_v2/fast_spatial_bank.py: OK
+vendor/accuracy_v2/residual_head_bank.py: OK
+vendor/dependencies.py: OK
+vendor/DEPENDENCIES.json: OK
+inputs/run09_bank.npz: OK
+inputs/admitted_mesh.vol.bin: OK
+cluster/run.sh: OK
+tasks/r4_bank_qcheck.sh: OK
+tasks/manifest_production.json: OK
+tasks/manifest_production_q14.json: OK
+69db7c6fdcfdaed7424b2da9a06854f76052b91e
+jax_backend=gpu
+jax_x64=True
+cpu_model=Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz
+name, uuid
+NVIDIA A100 80GB PCIe, GPU-61e51c62-3b2d-491a-b5a7-38377f765df9
+pax106
+{"wheel": "ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl", "sha256": "4e02591fe98a1068b4f7ca094aec36844da1f6ddf826088b060e5a8e7780efff"}
+{"wheel": "netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", "sha256": "d8118835e2aec5739ee5755d61e866505313d92e3d4c6b947be7835f9fbf5122"}
+{"wheel": "netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", "sha256": "db71d77f56f79c0768489e76dde8febdeb25b95777986587a5d09575fa112f94"}
+{"wheel": "ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl", "sha256": "8d3266615c7b099e78c5891a41971c6bffe5d6014d13d736cef0cc119d1ca141"}
+Processing ./wheels/ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+Processing ./wheels/ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl
+Installing collected packages: ngsolve-openblas, ngsolve, netgen-occt, netgen-mesher
+
+Successfully installed netgen-mesher-6.2.2608 netgen-occt-7.8.1 ngsolve-6.2.2608 ngsolve-openblas-0.3.33
+{"prefix_layout_verified": true, "occt_libraries": 47, "site_packages": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r4-bank-qcheck01/deps/lib/python3.13/site-packages"}
+ngsolve 6.2.2608 jax gpu
+/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r2-export01/results/export/basis.npz: OK
+/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r2-export01/results/export/pod.npz: OK
+/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r2-export01/results/export/quadrature.npz: OK
+/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r3-train01/results/proj/proj_re95_trained.npz: OK
+/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r3-train01/results/train/trained_bank_eval.npz: OK
+/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r3-train01/results/train/trained_bank_params.npz: OK
+pod_r8 completed {'rms': 0.03250373492096049, 'max': 0.044616013730939805, 'last_period_mean': 0.041323280211449424} 
+pod_r16 completed {'rms': 0.009487389729523654, 'max': 0.011885670536855302, 'last_period_mean': 0.01132788896283749} 
+pod_r24 completed {'rms': 0.0057338816212112835, 'max': 0.009637403694945436, 'last_period_mean': 0.008541188654096645} 
+frozen_bank_r4 completed {'rms': 0.2805959557003002, 'max': 0.29204806115401855, 'last_period_mean': 0.2841066984638677} 
+bank_r16 completed {'rms': 0.014491282137444404, 'max': 0.021213610735649688, 'last_period_mean': 0.019359258087611592} 
+frames 67 points 21153
+{"parent": null, "child": null}
+pod_r8 completed {'rms': 0.03250373492100253, 'max': 0.04461601373054654, 'last_period_mean': 0.04132328021149575} 
+pod_r16 completed {'rms': 0.009487389729630633, 'max': 0.011885670535245503, 'last_period_mean': 0.011327888962909507} 
+pod_r24 completed {'rms': 0.00573388162149474, 'max': 0.009637403693217588, 'last_period_mean': 0.008541188654418648} 
+frozen_bank_r4 completed {'rms': 0.280595955705916, 'max': 0.2920480612360683, 'last_period_mean': 0.28410669845526865} 
+bank_r16 completed {'rms': 0.01449128300732413, 'max': 0.021213611409130816, 'last_period_mean': 0.01935925901195684} 

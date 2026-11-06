@@ -227,6 +227,8 @@ def main():
     ap.add_argument('--bank-sha256', required=True)
     ap.add_argument('--out', required=True)
     ap.add_argument('--allow-heldout', action='store_true')
+    ap.add_argument('--pod-from', help='reuse FE modes of another export (quadrature check): pod.npz path')
+    ap.add_argument('--pod-sha256')
     ap.add_argument('--threads', type=int, default=16)
     args = ap.parse_args()
     import ngsolve as ng
@@ -243,21 +245,32 @@ def main():
                  outlet_points=fe.bnd['outlet'][0], outlet_weights=fe.bnd['outlet'][1],
                  obstacle_points=fe.bnd['obstacle'][0], obstacle_weights=fe.bnd['obstacle'][1],
                  obstacle_normal_out_of_body=obs / np.linalg.norm(obs, axis=1)[:, None])
-        train = [c for c in man['cases'] if c['split'] == 'train']
-        sv, sp, nu_train = [], [], []
-        for c in train:
-            for t, x in recorded(c['run_dir'], c['stage']):
-                sv.append(x[:fe.nv]); sp.append(x[fe.nv:])
-        sv, sp = np.array(sv), np.array(sp)
-        lift = sv.mean(axis=0)
-        modes, sig, orth = pod(fe, sv, lift)
-        pmodes, psig = pressure_basis(fe, sp, max(RANKS))
-        sups = supremizers(fe, pmodes)
-        chis = chi(fe)
+        if args.pod_from:
+            # Quadrature check (G5-A5 item 7): FE coefficient modes are taken byte-identically from
+            # the order-12 export, so only the quadrature differs between the two exports.
+            if sha(args.pod_from) != args.pod_sha256:
+                raise ValueError('pod source hash mismatch')
+            z = np.load(args.pod_from)
+            lift, modes, sig, orth = z['lift'], z['modes'], z['singular_values'], z['orthogonality_error']
+            pmodes, psig, sups, chis = z['pressure_modes'], z['pressure_singular_values'], z['supremizers'], z['chi']
+            sv = np.zeros((int(z['n_train_snapshots']), 0))
+            log['pod_from'] = {'path': args.pod_from, 'sha256': args.pod_sha256}
+        else:
+            train = [c for c in man['cases'] if c['split'] == 'train']
+            sv, sp = [], []
+            for c in train:
+                for t, x in recorded(c['run_dir'], c['stage']):
+                    sv.append(x[:fe.nv]); sp.append(x[fe.nv:])
+            sv, sp = np.array(sv), np.array(sp)
+            lift = sv.mean(axis=0)
+            modes, sig, orth = pod(fe, sv, lift)
+            pmodes, psig = pressure_basis(fe, sp, max(RANKS))
+            sups = supremizers(fe, pmodes)
+            chis = chi(fe)
         np.savez(out / 'pod.npz', lift=lift, modes=modes, singular_values=sig, orthogonality_error=orth,
                  pressure_modes=pmodes, pressure_singular_values=psig, supremizers=sups, chi=chis,
-                 n_train_snapshots=len(sv))
-        del sv, sp
+                 n_train_snapshots=len(sv) if sv is not None else 0)
+        sv = sp = None
         # Velocity functions on Q: lift, POD, supremizers, chi.
         vfun = [lift] + list(modes) + list(sups) + list(chis)
         names = ['lift'] + [f'pod{i}' for i in range(len(modes))] + [f'sup{i}' for i in range(len(sups))] + ['chi_x', 'chi_y']

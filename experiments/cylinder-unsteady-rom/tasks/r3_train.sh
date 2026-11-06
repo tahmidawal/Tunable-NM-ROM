@@ -4,5 +4,5 @@ set -euo pipefail
 EX=/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r2-export01/results/export
 sha256sum -c <(grep -E 'quadrature.npz|basis.npz|pod.npz' inputs/EXPORT-SHA256SUMS | sed "s#  ./results/export/#  $EX/#")
 "$PY" bank_train.py --export "$EX" --rank 16 --out results/train
-"$PY" rom_project.py --manifest tasks/manifest_production.json --export-copy-to results --export "$EX" \
+"$PY" rom_project.py --manifest tasks/manifest_production.json --out-dir results/proj --export "$EX" \
   --bank-eval results/train/trained_bank_eval.npz --tag trained --case re95

@@ -543,3 +543,9 @@ every design setting (0.7 s settle + 1.7 s record at $dt_0$). Records depend on 
   identity binding incl. the trained bank; symmetric R5 cold timing and force/probe/pressure
   witnesses) the verdicts are **R1d/R1e evaluator, R2, R3, R4, R5: READY**. R1f (Codex audit of
   the saved arrays) remains a separate gate after the population completes.
+- 2026-11-06 **R1f PASS** (Codex audit, `reviews/R1F-codex-audit.md`): 107 snapshot chunks and 13
+  states (17.15 GB) match both copies' hashes; R1b–R1e numbers independently recomputed;
+  held-out arrays not opened. Correction to the G5-A6 narrative (decision unchanged): at 1/800
+  and 1/1600 the candidates failed the lift pair tolerance **and** the startup lift check
+  (1.85e-4 and 4.61e-5 > 4e-5); the saved gate JSON recorded both. The reference is admitted
+  for R2–R5.

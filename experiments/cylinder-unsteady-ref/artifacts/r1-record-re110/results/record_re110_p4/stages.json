@@ -1,0 +1,199 @@
+{
+  "status": "completed",
+  "stages": [
+    {
+      "name": "settle_dt0",
+      "dt": 0.0003125,
+      "t_start": 21.249999999998796,
+      "planned_steps": 2240,
+      "until_periodic": false,
+      "status": "completed",
+      "steps": 2240,
+      "t_end": 21.94999999999816,
+      "periodic_reached": false,
+      "cycles": [
+        {
+          "t0": 21.480070980390316,
+          "t1": 21.808386226645045,
+          "period": 0.3283152462547285,
+          "St": 0.3045853067768088,
+          "CD_max": 3.209342319529305,
+          "CD_min": 3.1241444056599326,
+          "CL_max": 1.1316373136100728,
+          "CL_min": -1.1684290729046867,
+          "CD_max_sample": 3.2093421126411448,
+          "CL_max_sample": 1.1316326063670616,
+          "dp_at_t0_plus_half_period": 2.5088384463631956,
+          "dp_1996_t0_at_CLmax_plus_half_period": 2.510844230953495
+        }
+      ],
+      "wall_seconds": 3510.4731079097837,
+      "seconds_per_step": 1.5671754948807315
+    },
+    {
+      "name": "record",
+      "dt": 0.0003125,
+      "t_start": 21.94999999999816,
+      "planned_steps": 5440,
+      "until_periodic": false,
+      "status": "completed",
+      "steps": 5440,
+      "t_end": 23.649999999996613,
+      "periodic_reached": false,
+      "cycles": [
+        {
+          "t0": 22.136699938922728,
+          "t1": 22.465005331840914,
+          "period": 0.3283053929181854,
+          "St": 0.3045944482091413,
+          "CD_max": 3.2089458443688446,
+          "CD_min": 3.12395668176335,
+          "CL_max": 1.1310938407203668,
+          "CL_min": -1.1677253248941948,
+          "CD_max_sample": 3.2089458274313114,
+          "CL_max_sample": 1.1310918744336003,
+          "dp_at_t0_plus_half_period": 2.5086973324379636,
+          "dp_1996_t0_at_CLmax_plus_half_period": 2.5107688756665185
+        },
+        {
+          "t0": 22.465005331840914,
+          "t1": 22.793309931861405,
+          "period": 0.3283046000204912,
+          "St": 0.3045951838437795,
+          "CD_max": 3.2088958322811734,
+          "CD_min": 3.1239292081254293,
+          "CL_max": 1.1309671061132842,
+          "CL_min": -1.1675414556097055,
+          "CD_max_sample": 3.2088954674449433,
+          "CL_max_sample": 1.1309656789244553,
+          "dp_at_t0_plus_half_period": 2.5086692889288096,
+          "dp_1996_t0_at_CLmax_plus_half_period": 2.5107438867435357
+        },
+        {
+          "t0": 22.793309931861405,
+          "t1": 23.121613999847657,
+          "period": 0.32830406798625233,
+          "St": 0.30459567745650806,
+          "CD_max": 3.208865238788211,
+          "CD_min": 3.123913518814923,
+          "CL_max": 1.1309055272308461,
+          "CL_min": -1.1674540379653344,
+          "CD_max_sample": 3.2088650696741365,
+          "CL_max_sample": 1.1309049745097612,
+          "dp_at_t0_plus_half_period": 2.5086552481403976,
+          "dp_1996_t0_at_CLmax_plus_half_period": 2.5107342967829958
+        },
+        {
+          "t0": 23.121613999847657,
+          "t1": 23.44991758066544,
+          "period": 0.32830358081778144,
+          "St": 0.3045961294449087,
+          "CD_max": 3.208850928495765,
+          "CD_min": 3.1239063495347796,
+          "CL_max": 1.1308718464483232,
+          "CL_min": -1.1674083849962318,
+          "CD_max_sample": 3.208850818105656,
+          "CL_max_sample": 1.1308683871587695,
+          "dp_at_t0_plus_half_period": 2.508647917166672,
+          "dp_1996_t0_at_CLmax_plus_half_period": 2.510728751829312
+        }
+      ],
+      "wall_seconds": 8557.88228940498,
+      "seconds_per_step": 1.5731401267947684
+    }
+  ],
+  "states": [
+    {
+      "file": "record.npz",
+      "sha256": "ba9e70da91485291a83390a628c3c1376473c99a0107830ca5402b9a116b47b5",
+      "t": 23.649999999996613
+    }
+  ],
+  "snapshots": [
+    {
+      "file": "snapshots_0000.npz",
+      "sha256": "758a1690dbfc807416accbd6886fe7001a598f59f87b0728c88394d5f233a461",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0001.npz",
+      "sha256": "d3caa3fd1455b4bb912c7a400ac6171fc65782551f8122ce7e824dfb46109ede",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0002.npz",
+      "sha256": "41d6571fb67d4dbe3355565e84acb4239d9ceccf84ae158080e6456257f1a33c",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0003.npz",
+      "sha256": "0fb794cea1abf8b5fb616322c2426d970641bda749b4486f57b4c6235f8f313a",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0004.npz",
+      "sha256": "6269047f3c4f792d080c353db01b025f47c002b6d2ff19f5b763580fc6db21d4",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0005.npz",
+      "sha256": "b22c3dcf7884271e0286b4ddeedd3449faa9864c657ab204ac7198795d4bb80a",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0006.npz",
+      "sha256": "b8e798331148947eb4e827cc68f3a113849fb9e65ae9ea272782a3a32791e525",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0007.npz",
+      "sha256": "6b45171e4ea637e9b781ce14b7169693b7567b55dc65d40bae8811d2a1eb9b1c",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0008.npz",
+      "sha256": "803a0528b0aad8bb14e75481a496b360b6b645530f16a5d9e273c83b9411b2b9",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0009.npz",
+      "sha256": "a03bbbe94411906d0c670f4c17a39c8ef94dbc89f0ed5f20733c2cd209952d13",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0010.npz",
+      "sha256": "64cea6204c3db2ff939ddbc2bd8ccf1af542c6b4f9f08363734674b579cda613",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0011.npz",
+      "sha256": "a879c57c3b14786150eef034183cac02fb9d592e620b708c8abc432e31508c7a",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0012.npz",
+      "sha256": "b153ddc01019294366d619f51f2f2c63eb3b4e45d2236c7540f2a3543b2c8cea",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0013.npz",
+      "sha256": "b3de0fc39fc2a78d30ef11786fc7fdc6047f94a4429eed657eba9e6a48a70cb8",
+      "count": 31
+    }
+  ],
+  "linear_checks_count": 234,
+  "linear_checks_max": 4.535128961733037e-16,
+  "factorizations": 194,
+  "timers_seconds": {
+    "conv_apply": 55.336399846710265,
+    "factor": 1647.271154757589,
+    "solve": 9848.482164801098,
+    "observe": 267.90308683086187,
+    "diagnostics": 10.051555690355599
+  },
+  "setup_seconds": 0.04984420444816351,
+  "interpolation": null,
+  "layout_sha256": "e9a4475331ea3029ba0c50d5cb245cb02bd069c5962b701dd64e41bc18d4d8fa",
+  "ndof": 437140,
+  "elapsed_seconds": 12068.912134234793
+}

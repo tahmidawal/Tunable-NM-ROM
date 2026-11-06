@@ -86,6 +86,7 @@ def check_record(Re, attempt, settle_chain):
     p['mass'] = max(z['mass'] for z in diag) <= MASS_MAX
     lin = np.load(d / 'linear_checks.npz')['rel']
     p['linear'] = lin.size > 0 and float(lin.max()) <= LIN_MAX
+    p = {k: bool(v) for k, v in p.items()}
     out = {'split': POP[Re], 'passes': p, 'R1e_pass': all(p.values()), 'settle_seconds_total': total,
            'divergence_max': max(z['divergence'] for z in diag), 'mass_max': max(z['mass'] for z in diag),
            'linear_residual_max': float(lin.max()) if lin.size else None}
@@ -124,13 +125,13 @@ def main():
     for k, (kind, tol) in DFG_TOL.items():
         ours, ref = c100[k]['mean'], dfg['finest'][k]
         err = abs(ours - ref) / abs(ref) if kind == 'rel' else abs(ours - ref)
-        rows[k] = {'ours': ours, 'featflow_finest': ref, 'error': err, 'kind': kind, 'tolerance': tol, 'pass': err <= tol}
+        rows[k] = {'ours': ours, 'featflow_finest': ref, 'error': float(err), 'kind': kind, 'tolerance': tol, 'pass': bool(err <= tol)}
     ranges = dfg['schaefer_turek_1996_ranges']
     for ours_key, range_key in RANGES_1996.items():
         lo, hi = ranges[range_key]; v = c100[ours_key]['mean']
-        rows[f'1996_range_{ours_key}'] = {'ours': v, 'range': [lo, hi], 'pass': v is not None and lo <= v <= hi}
+        rows[f'1996_range_{ours_key}'] = {'ours': v, 'range': [lo, hi], 'pass': bool(v is not None and lo <= v <= hi)}
     v = c100['CL_max']['mean']
-    rows['1996_range_CL_max_non_gating'] = {'ours': v, 'range': ranges['CL_max'], 'inside': ranges['CL_max'][0] <= v <= ranges['CL_max'][1]}
+    rows['1996_range_CL_max_non_gating'] = {'ours': v, 'range': ranges['CL_max'], 'inside': bool(ranges['CL_max'][0] <= v <= ranges['CL_max'][1])}
     res['R1d'] = rows
     res['R1d_gate'] = 'pass' if all(r['pass'] for r in rows.values() if 'pass' in r) else 'fail'
     gap = lambda k: max(sp[k], tm[k])

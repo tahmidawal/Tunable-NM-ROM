@@ -1,8 +1,8 @@
 """Identity-bound reference projections onto a retrained bank (G5-A5, Codex finding 4).
 
 Usage: rom_project.py --manifest <json> --export <dir> --bank-eval <trained_bank_eval.npz>
-       --tag trained --case <name> [--allow-heldout]
-Writes <export>/proj_<case>_<tag>.npz with uv_<tag> and the bank-eval SHA-256.
+       --tag trained --case <name> --out-dir <dir> [--allow-heldout]
+Writes <out-dir>/proj_<case>_<tag>.npz with uv_<tag>, the bank-eval SHA-256 and the export manifest SHA-256.
 """
 import argparse
 import json
@@ -15,7 +15,7 @@ import rom_export as rx
 
 def main():
     ap = argparse.ArgumentParser()
-    for k in ('--manifest', '--export', '--bank-eval', '--tag', '--case'):
+    for k in ('--manifest', '--export', '--bank-eval', '--tag', '--case', '--out-dir'):
         ap.add_argument(k, required=True)
     ap.add_argument('--allow-heldout', action='store_true'); ap.add_argument('--threads', type=int, default=16)
     a = ap.parse_args()
@@ -35,7 +35,9 @@ def main():
         if pts.shape != q['points'].shape or np.max(np.abs(pts - q['points'])) > 1e-12:
             raise ValueError('quadrature differs from the export')
         rows = rx.project(fe, w, P, case, {f'_{a.tag}': bank['V']})
-    np.savez(ex / f'proj_{a.case}_{a.tag}.npz', **rows, bank_eval_sha256=np.array(rx.sha(a.bank_eval)))
+    out = Path(a.out_dir); out.mkdir(parents=True, exist_ok=True)   # never write into another job's export
+    np.savez(out / f'proj_{a.case}_{a.tag}.npz', **rows, bank_eval_sha256=np.array(rx.sha(a.bank_eval)),
+             export_manifest_sha256=np.array(rx.sha(ex / 'EXPORT.json')))
 
 
 if __name__ == '__main__':

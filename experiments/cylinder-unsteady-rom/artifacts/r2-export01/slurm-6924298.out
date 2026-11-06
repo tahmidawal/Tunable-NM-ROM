@@ -1,0 +1,134 @@
+rom_export.py: OK
+rom_project.py: OK
+rom_qcheck.py: OK
+rom_r5.py: OK
+vendor/ref/transient.py: OK
+vendor/ref/cycles.py: OK
+vendor/ref/vendor/scalars.py: OK
+vendor/ref/vendor/oriented_normals.py: OK
+rom_core.py: OK
+rom_r2.py: OK
+rom_r4.py: OK
+bank_train.py: OK
+cycles.py: OK
+install_deps.py: OK
+vendor/geometry.py: OK
+vendor/accuracy_v2/__init__.py: OK
+vendor/accuracy_v2/spatial_bank.py: OK
+vendor/accuracy_v2/fast_spatial_bank.py: OK
+vendor/accuracy_v2/residual_head_bank.py: OK
+vendor/dependencies.py: OK
+vendor/DEPENDENCIES.json: OK
+inputs/run09_bank.npz: OK
+inputs/admitted_mesh.vol.bin: OK
+cluster/run.sh: OK
+tasks/r2_export.sh: OK
+tasks/manifest_production.json: OK
+7d5c2c04642c38dc8bb6bc08f14587e1be1861a7
+jax_backend=gpu
+jax_x64=True
+cpu_model=Intel(R) Xeon(R) 6767P
+name, uuid
+NVIDIA RTX PRO 6000 Blackwell Server Edition, GPU-9661d253-c3e5-5734-76a1-2ba412721b83
+pax187
+{"wheel": "ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl", "sha256": "4e02591fe98a1068b4f7ca094aec36844da1f6ddf826088b060e5a8e7780efff"}
+{"wheel": "netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", "sha256": "d8118835e2aec5739ee5755d61e866505313d92e3d4c6b947be7835f9fbf5122"}
+{"wheel": "netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", "sha256": "db71d77f56f79c0768489e76dde8febdeb25b95777986587a5d09575fa112f94"}
+{"wheel": "ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl", "sha256": "8d3266615c7b099e78c5891a41971c6bffe5d6014d13d736cef0cc119d1ca141"}
+Processing ./wheels/ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+Processing ./wheels/ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl
+Installing collected packages: ngsolve-openblas, ngsolve, netgen-occt, netgen-mesher
+
+Successfully installed netgen-mesher-6.2.2608 netgen-occt-7.8.1 ngsolve-6.2.2608 ngsolve-openblas-0.3.33
+{"prefix_layout_verified": true, "occt_libraries": 47, "site_packages": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r2-export01/deps/lib/python3.13/site-packages"}
+ngsolve 6.2.2608 jax gpu
+{
+  "started": 1793942301.0443497,
+  "manifest_sha256": "c2ea8baf13d43ba98a535383be274eb96941cd114b7112df1ef290497fe6a057",
+  "finished": 1793942628.169001,
+  "elapsed_seconds": 327.12465143203735,
+  "peak_rss_bytes": 24457441280,
+  "quadrature_points": 1036497,
+  "files": {
+    "basis.npz": "f289528842bbca3ab98e599427081a9dc3662c0974a566034f8ddf726b813ddb",
+    "pod.npz": "56c74a805618fe5c13d6ff795aa4125d15fce791401a9e891da7abde0485bf80",
+    "proj_re95.npz": "27c1efb39af3da662370448d733f35712dd3696f00b0e5d9b4ae3c6d0b8c6383",
+    "quadrature.npz": "6040d8e474b0e5c2df1cd50f0bc3396be611dcdadec6d302b33331d62023f964"
+{
+ "frozen_bank_r4": [
+  {
+   "median": 0.2544815052955787,
+   "max": 0.2600838502774974,
+   "min": 0.24695512224047556,
+   "count": 681
+  },
+  false
+ ],
+ "pod_r2": [
+  {
+   "median": 0.059609205612125425,
+   "max": 0.06088932072040953,
+   "min": 0.057950658397779416,
+   "count": 681
+  },
+  false
+ ],
+ "pod_r4": [
+  {
+   "median": 0.03790403143213882,
+   "max": 0.039841471234936865,
+   "min": 0.0359984335092726,
+   "count": 681
+  },
+  false
+ ],
+ "pod_r8": [
+  {
+   "median": 0.01634176189180649,
+   "max": 0.019255424428075416,
+   "min": 0.012731467460473775,
+   "count": 681
+  },
+  false
+ ],
+ "pod_r12": [
+  {
+   "median": 0.00908617944698302,
+   "max": 0.010664363553718833,
+   "min": 0.007046711131982442,
+   "count": 681
+  },
+  false
+ ],
+ "pod_r16": [
+  {
+   "median": 0.0048299466164865,
+   "max": 0.005737611070863265,
+   "min": 0.004035186523345744,
+   "count": 681
+  },
+  true
+ ],
+ "pod_r20": [
+  {
+   "median": 0.003097150229272733,
+   "max": 0.003906156263843893,
+   "min": 0.0028034533639117866,
+   "count": 681
+  },
+  true
+ ],
+ "pod_r24": [
+  {
+   "median": 0.0023549588437342165,
+   "max": 0.002749232277081809,
+   "min": 0.0021115711084239903,
+   "count": 681
+  },
+  true
+ ]
+}
+R3 required: True rank 16
+task_completed

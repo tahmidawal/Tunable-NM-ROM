@@ -768,6 +768,7 @@ def cmd_compare(a):
                job_id=os.environ.get("SLURM_JOB_ID"), cases=int(ncases), meshes={}, failures=[])
     cfile = HERE.parents[1] / "COMMIT.txt"
     rep["source_commit"] = cfile.read_text().strip() if cfile.exists() else None
+    rep["arm_labels"] = dict(main=a.label_main, interp=a.label_interp)
     try:
         import subprocess
         rep["gpu"] = subprocess.check_output(["nvidia-smi", "--query-gpu=name,uuid,memory.total",
@@ -816,6 +817,17 @@ def cmd_compare(a):
             calls.update(frozen_calls(iarms, fz0, prefix="interp_"))
             mrep["interp_frozen"] = fz0
             del Gi, oi
+        for item in (a.extra.split(";") if a.extra else []):   # A5: reference groups timed in the same block
+            pref, spec = item.split("=", 1); xbank, xrds = spec.split(":")
+            rdx = Path(dict(zip(meshes, xrds.split(",")))[n]) / "output"
+            fzx = json.loads((rdx / "frozen.json").read_text())
+            Gx, ox = load_rom(xbank, n)
+            kx = sorted({fzx[x]["k"] for x in ("head", "head_fast") if fzx.get(x)})
+            xarms = Arms(n, T, Gx, ox, np.load(rdx / "rotation.npz")["V"], load_heads(rdx, kx))
+            xc = frozen_calls(xarms, fzx, prefix=pref + "_")
+            calls.update({k: v for k, v in xc.items() if "span" not in k})
+            mrep[pref + "_frozen"] = fzx
+            del Gx, ox
         gc.collect()
         truth = []
         for c, fr in enumerate(iter_cases(arrs)):
@@ -988,6 +1000,8 @@ def main():
     p.add_argument("--devcompare", default=None); p.add_argument("--reps", type=int, default=9)
     p.add_argument("--timing-cases", default="0,1,2"); p.add_argument("--shortlist", type=int, default=4)
     p.add_argument("--gate", type=float, default=1.10); p.add_argument("--gate-block", type=float, default=1.25)
+    p.add_argument("--extra", default=None, help="prefix=bankdir:rd64,rd96,rd128[;...] head arms of another bank")
+    p.add_argument("--label-main", default=""); p.add_argument("--label-interp", default="interp_")
     p = sub.add_parser("test"); common(p); p.add_argument("--cohort", required=True)
     p.add_argument("--bank", required=True); p.add_argument("--romdev", required=True)
     p.add_argument("--fomdev", default=None); p.add_argument("--reps", type=int, default=9)

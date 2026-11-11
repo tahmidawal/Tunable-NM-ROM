@@ -22,6 +22,11 @@ def main():
         print("|---|---|---|---|---|---|---|---|---|---|---|---|")
         for n, m in rep["meshes"].items():
             for name, e in m["arms"].items():
+                lab = rep.get("arm_labels") or {}
+                if name.startswith("interp_"):
+                    name = lab.get("interp", "interp_") + name[len("interp_"):]
+                elif not name.startswith("pod_"):
+                    name = lab.get("main", "") + name
                 cfg = e["config"]
                 setting = ", ".join(f"{k}={cfg[k]}" for k in ("k", "width", "M", "steps") if k in cfg)
                 st = e["stats"]

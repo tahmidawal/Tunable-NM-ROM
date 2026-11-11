@@ -1,0 +1,299 @@
+{
+ "test_cohort_seen": false,
+ "runs": {
+  "tr6/F0-n128-s0": {
+   "path": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/tr6/runs/F0-n128-s0",
+   "best_sha256": "3e96757f788a36419fc8b1afcabd7ab46c42121358ec8d60f780b3d75d718dc5",
+   "arm": "F0",
+   "rung": 128,
+   "seed": 0,
+   "steps": 28000,
+   "best_step": 28000,
+   "stop_reason": "early_stopping",
+   "converged": true,
+   "job_id": "7117223",
+   "gpu": "NVIDIA L40S",
+   "continuation_of": null,
+   "validation": {
+    "mean": 0.03787535661831498,
+    "median": 0.03246129397302866,
+    "worst": 0.1264270693063736
+   }
+  },
+  "c2/F0-n4608-s0": {
+   "path": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/c2/runs/F0-n4608-s0",
+   "best_sha256": "a6c72792fb2efa45a88f830b37c2f1b2f8253f515a6dc62708538fa387de2a08",
+   "arm": "F0",
+   "rung": 4608,
+   "seed": 0,
+   "steps": 123000,
+   "best_step": 121000,
+   "stop_reason": "time_limit",
+   "converged": false,
+   "job_id": "7133029",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "continuation_of": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/tr1/runs/F0-n4608-s0",
+   "validation": {
+    "mean": 0.0024955019798653666,
+    "median": 0.0022032151464372873,
+    "worst": 0.008783764205873013
+   }
+  },
+  "c2/F0-n4608-s1": {
+   "path": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/c2/runs/F0-n4608-s1",
+   "best_sha256": "76eae292447c7811fac96226a8e7f10e740eeee4773d92e0109addd5e2bc2034",
+   "arm": "F0",
+   "rung": 4608,
+   "seed": 1,
+   "steps": 95000,
+   "best_step": 92500,
+   "stop_reason": "time_limit",
+   "converged": false,
+   "job_id": "7133029",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "continuation_of": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/tr2/runs/F0-n4608-s1",
+   "validation": {
+    "mean": 0.0022681940399706946,
+    "median": 0.0019531247671693563,
+    "worst": 0.00829982478171587
+   }
+  },
+  "c2/F0-n4608-s2": {
+   "path": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/c2/runs/F0-n4608-s2",
+   "best_sha256": "d946f7726e2399193291e767720f35d5410305d4070655ca587e75cd7dc78116",
+   "arm": "F0",
+   "rung": 4608,
+   "seed": 2,
+   "steps": 94000,
+   "best_step": 91500,
+   "stop_reason": "time_limit",
+   "converged": false,
+   "job_id": "7133029",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "continuation_of": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/tr3/runs/F0-n4608-s2",
+   "validation": {
+    "mean": 0.00271782520439956,
+    "median": 0.002411296241916716,
+    "worst": 0.00860781129449606
+   }
+  },
+  "c3/F0-n576-s0": {
+   "path": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/c3/runs/F0-n576-s0",
+   "best_sha256": "103cf99e1a811053d6d0501d47b692d7bceed57d3f373bec1f3654f0560330a8",
+   "arm": "F0",
+   "rung": 576,
+   "seed": 0,
+   "steps": 123500,
+   "best_step": 121500,
+   "stop_reason": "time_limit",
+   "converged": false,
+   "job_id": "7133030",
+   "gpu": "NVIDIA H200",
+   "continuation_of": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/tr6/runs/F0-n576-s0",
+   "validation": {
+    "mean": 0.005051064597864752,
+    "median": 0.004182175733149052,
+    "worst": 0.013971648178994656
+   }
+  },
+  "c3/F1-n4608-s0": {
+   "path": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/c3/runs/F1-n4608-s0",
+   "best_sha256": "2856152fd6494dc401585919993971b4c49ccc7c101d149c18a173b4ce337140",
+   "arm": "F1",
+   "rung": 4608,
+   "seed": 0,
+   "steps": 147500,
+   "best_step": 146500,
+   "stop_reason": "time_limit",
+   "converged": false,
+   "job_id": "7133030",
+   "gpu": "NVIDIA H200",
+   "continuation_of": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/tr4b/runs/F1-n4608-s0",
+   "validation": {
+    "mean": 0.0022561369069080683,
+    "median": 0.00197679630946368,
+    "worst": 0.007882059551775455
+   }
+  },
+  "c1/F2-n4608-s0": {
+   "path": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/c1/runs/F2-n4608-s0",
+   "best_sha256": "d48ff9eb4257b7126af5298c0b64553140e47b72ea7311fda9319fb880f6262f",
+   "arm": "F2",
+   "rung": 4608,
+   "seed": 0,
+   "steps": 59500,
+   "best_step": 59500,
+   "stop_reason": "time_limit",
+   "converged": false,
+   "job_id": "7133028",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "continuation_of": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/tr5/runs/F2-n4608-s0",
+   "validation": {
+    "mean": 0.002118680181865784,
+    "median": 0.0018425933085381985,
+    "worst": 0.0063832541927695274
+   }
+  },
+  "tr6/U0-n128-s0": {
+   "path": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/tr6/runs/U0-n128-s0",
+   "best_sha256": "3b718f32b5aa93ff614e7d1bb25c1110c12cbbd4b4181d812440f45c72fa4db4",
+   "arm": "U0",
+   "rung": 128,
+   "seed": 0,
+   "steps": 56000,
+   "best_step": 46000,
+   "stop_reason": "early_stopping",
+   "converged": true,
+   "job_id": "7117223",
+   "gpu": "NVIDIA L40S",
+   "continuation_of": null,
+   "validation": {
+    "mean": 0.018245519808260724,
+    "median": 0.0139928231947124,
+    "worst": 0.050347547978162766
+   }
+  },
+  "c1/U0-n4608-s0": {
+   "path": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/c1/runs/U0-n4608-s0",
+   "best_sha256": "6ba8a47bb011f82645116282f87891e7d4f1cb8c1ebf61b4ff31a1c9597867cf",
+   "arm": "U0",
+   "rung": 4608,
+   "seed": 0,
+   "steps": 106500,
+   "best_step": 99500,
+   "stop_reason": "time_limit",
+   "converged": false,
+   "job_id": "7133028",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "continuation_of": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/tr1/runs/U0-n4608-s0",
+   "validation": {
+    "mean": 0.0023115913531910337,
+    "median": 0.002115802839398384,
+    "worst": 0.005960292648524046
+   }
+  },
+  "tr2/U0-n4608-s1": {
+   "path": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/tr2/runs/U0-n4608-s1",
+   "best_sha256": "bcc0a7f4886f9489a4ef8c6de808534a7486a0a4c1bb60426463429bc8bfb4b1",
+   "arm": "U0",
+   "rung": 4608,
+   "seed": 1,
+   "steps": 107500,
+   "best_step": 98500,
+   "stop_reason": "early_stopping",
+   "converged": true,
+   "job_id": "7117218",
+   "gpu": "NVIDIA L40S",
+   "continuation_of": null,
+   "validation": {
+    "mean": 0.002655837030033581,
+    "median": 0.0023433261085301638,
+    "worst": 0.007170982658863068
+   }
+  },
+  "c1/U0-n4608-s2": {
+   "path": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/c1/runs/U0-n4608-s2",
+   "best_sha256": "b511512c38a8b31ebc159bcd6f90c089e14fa2177b930620209b5db5edad4c89",
+   "arm": "U0",
+   "rung": 4608,
+   "seed": 2,
+   "steps": 138500,
+   "best_step": 138500,
+   "stop_reason": "time_limit",
+   "converged": false,
+   "job_id": "7133028",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "continuation_of": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/tr3/runs/U0-n4608-s2",
+   "validation": {
+    "mean": 0.002341558853004244,
+    "median": 0.0020771947456523776,
+    "worst": 0.006119889207184315
+   }
+  },
+  "c2/U0-n576-s0": {
+   "path": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/c2/runs/U0-n576-s0",
+   "best_sha256": "20e99353b6e23d87be8383c67cb4891899cc8c4fd0a5138ae9729ab4e0663a6b",
+   "arm": "U0",
+   "rung": 576,
+   "seed": 0,
+   "steps": 84500,
+   "best_step": 84500,
+   "stop_reason": "time_limit",
+   "converged": false,
+   "job_id": "7133029",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "continuation_of": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/tr6/runs/U0-n576-s0",
+   "validation": {
+    "mean": 0.003303171504740021,
+    "median": 0.002872223616577685,
+    "worst": 0.010083231143653393
+   }
+  },
+  "c3/U1-n4608-s0": {
+   "path": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/c3/runs/U1-n4608-s0",
+   "best_sha256": "53ccca0ac7752007623c5a014b9a2bdd3590009770347048ebb36a83b7b0d9f1",
+   "arm": "U1",
+   "rung": 4608,
+   "seed": 0,
+   "steps": 120500,
+   "best_step": 119500,
+   "stop_reason": "time_limit",
+   "converged": false,
+   "job_id": "7133030",
+   "gpu": "NVIDIA H200",
+   "continuation_of": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/tr4b/runs/U1-n4608-s0",
+   "validation": {
+    "mean": 0.0024724450740905013,
+    "median": 0.002213810686953366,
+    "worst": 0.0063881902024149895
+   }
+  },
+  "c1/U2-n4608-s0": {
+   "path": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/c1/runs/U2-n4608-s0",
+   "best_sha256": "12b451e8985c6001078bb5e98de85427b7f79997c37ad371eb5b8314f9634519",
+   "arm": "U2",
+   "rung": 4608,
+   "seed": 0,
+   "steps": 140500,
+   "best_step": 135500,
+   "stop_reason": "time_limit",
+   "converged": false,
+   "job_id": "7133028",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "continuation_of": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/tr5/runs/U2-n4608-s0",
+   "validation": {
+    "mean": 0.003590473032090813,
+    "median": 0.0031625417759642005,
+    "worst": 0.011234213598072529
+   }
+  }
+ },
+ "selection": {
+  "FNO": {
+   "rule": "lowest validation mean at the 4,608 rung, seed 0",
+   "candidates": {
+    "F0": 0.0024955019798653666,
+    "F1": 0.0022561369069080683,
+    "F2": 0.002118680181865784
+   },
+   "selected_arm": "F2",
+   "seeds_available": [
+    0
+   ]
+  },
+  "U-Net": {
+   "rule": "lowest validation mean at the 4,608 rung, seed 0",
+   "candidates": {
+    "U0": 0.0023115913531910337,
+    "U1": 0.0024724450740905013,
+    "U2": 0.003590473032090813
+   },
+   "selected_arm": "U0",
+   "seeds_available": [
+    0,
+    1,
+    2
+   ]
+  }
+ }
+}

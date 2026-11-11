@@ -1,0 +1,54 @@
+{
+ "arm": "U0",
+ "config": {
+  "family": "unet",
+  "base": 48,
+  "groups": 8,
+  "lr": 0.0003
+ },
+ "rung": 576,
+ "seed": 0,
+ "train_cases": 512,
+ "validation_cases": 64,
+ "train_slice": [
+  0,
+  512
+ ],
+ "validation_slice": [
+  512,
+  576
+ ],
+ "normalization": {
+  "u_mean": 0.11886822432279587,
+  "u_std": 0.2648656368255615,
+  "nu_mean": 0.03867732733488083,
+  "nu_std": 0.024555305019021034,
+  "scale": 0.2321099925724243
+ },
+ "real_parameters": 17462021,
+ "gpu": "NVIDIA A100 80GB PCIe",
+ "job_id": "7133029",
+ "node": "pax106",
+ "torch": "2.11.0+cu128",
+ "eval_every": 500,
+ "plateau_patience": 6,
+ "stop_patience": 20,
+ "threshold": 0.001,
+ "min_lr": 1e-05,
+ "batch": 8,
+ "test_cohort_seen": false,
+ "continuation": {
+  "source": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/tr6/runs/U0-n576-s0",
+  "source_job": "7117223",
+  "start_step": 53000,
+  "start_validation": {
+   "mean": 0.0038744891116948565,
+   "median": 0.003415947314351797,
+   "worst": 0.011515738442540169
+  },
+  "start_lr": 1e-05,
+  "first_round_steps": 56500,
+  "first_round_seconds": 16580.732252271846,
+  "optimizer_state": "restarted (not saved by the first round)"
+ }
+}

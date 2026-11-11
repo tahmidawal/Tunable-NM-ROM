@@ -1,0 +1,72 @@
+{
+ "arm": "F0",
+ "config": {
+  "family": "fno",
+  "width": 64,
+  "modes": 32,
+  "layers": 4,
+  "lr": 0.001
+ },
+ "rung": 576,
+ "seed": 0,
+ "train_cases": 512,
+ "validation_cases": 64,
+ "train_slice": [
+  0,
+  512
+ ],
+ "validation_slice": [
+  512,
+  576
+ ],
+ "normalization": {
+  "u_mean": 0.11886822432279587,
+  "u_std": 0.2648656368255615,
+  "nu_mean": 0.03867732733488083,
+  "nu_std": 0.024555305019021034,
+  "scale": 0.2321099925724243
+ },
+ "real_parameters": 17877317,
+ "gpu": "NVIDIA H200",
+ "job_id": "7133030",
+ "node": "pax010",
+ "torch": "2.11.0+cu128",
+ "eval_every": 500,
+ "plateau_patience": 6,
+ "stop_patience": 20,
+ "threshold": 0.001,
+ "min_lr": 1e-05,
+ "batch": 8,
+ "test_cohort_seen": false,
+ "continuation": {
+  "source": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/tr6/runs/F0-n576-s0",
+  "source_job": "7117223",
+  "start_step": 29500,
+  "start_validation": {
+   "mean": 0.006398540906957351,
+   "median": 0.005403122399002314,
+   "worst": 0.016429036855697632
+  },
+  "start_lr": 0.00025,
+  "first_round_steps": 31000,
+  "first_round_seconds": 16581.94401795976,
+  "optimizer_state": "restarted (not saved by the first round)"
+ },
+ "complete": true,
+ "stop_reason": "time_limit",
+ "converged": false,
+ "steps": 123500,
+ "epochs": 1929.6875,
+ "best_step": 121500,
+ "best_validation": {
+  "mean": 0.005051064597864752,
+  "median": 0.004182175733149052,
+  "worst": 0.013971648178994656
+ },
+ "final_lr": 1e-05,
+ "training_seconds": 29245.886562594213,
+ "round_seconds": 12663.942545451224,
+ "round_steps": 94000,
+ "ms_per_step": 134.72279304392794,
+ "peak_gpu_bytes": 6309096448
+}

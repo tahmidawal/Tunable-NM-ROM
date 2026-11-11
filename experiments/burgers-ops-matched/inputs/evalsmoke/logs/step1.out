@@ -1,0 +1,14 @@
+jax_backend=gpu
+CASE 0 6.99
+DONE {"max_relative_residual": 2.6266270817068733e-07, "max_newton_iterations": 3, "median_seconds": 4.144914883188903, "total_seconds": 18.6515827300027, "name": "dev4-L256", "mesh": 256, "cases": 4, "dtype": "float64", "fields_sha256": "5128af0359831dd22a4aaa49b084c4ea8c4bdce5d9371572ba5c98fc678cf1a1", "solver": "fft_tight: Newton-BiCGStab, FFT preconditioner, dt 0.005, ntol 1e-6, ltol 1e-8", "numpy": "2.5.0", "jax": "0.10.2", "job_id": "7117215", "node": "pax105"}
+CASE 0 6.414
+DONE {"max_relative_residual": 8.319665830330124e-07, "max_newton_iterations": 3, "median_seconds": 4.766433496028185, "total_seconds": 19.894619209691882, "name": "dev4-L1024", "mesh": 1024, "cases": 4, "dtype": "float64", "fields_sha256": "a7662eb49bebeddd7cba617a5bedb84fb36cd6ee81b44f101bef510a94405bb4", "solver": "fft_tight: Newton-BiCGStab, FFT preconditioner, dt 0.005, ntol 1e-6, ltol 1e-8", "numpy": "2.5.0", "jax": "0.10.2", "job_id": "7117215", "node": "pax105"}
+/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/evalsmoke/code/evaluate.py:48: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at /pytorch/torch/csrc/utils/tensor_numpy.cpp:213.)
+  ref = torch.from_numpy(np.ascontiguousarray(fields[c])).cuda()
+EVAL F0 {'L256': (6.537, 3.667, 13.55), 'L1024_zero_shot': (6.389, 4.321, 177.25), 'L1024_coarse_bilinear': (6.521, 4.344, 13.69)}
+EVAL F1 {'L256': (5.44, 3.762, 18.65), 'L1024_zero_shot': (7.167, 4.258, 176.98), 'L1024_coarse_bilinear': (7.26, 4.303, 18.52)}
+EVAL F2 {'L256': (6.141, 3.911, 25.92), 'L1024_zero_shot': (6.974, 4.2, 278.96), 'L1024_coarse_bilinear': (7.028, 4.297, 25.91)}
+EVAL U0 {'L256': (5.867, 4.105, 18.67), 'L1024_zero_shot': (42.751, 33.657, 182.33), 'L1024_coarse_bilinear': (7.788, 4.717, 18.76)}
+EVAL U1 {'L256': (5.368, 4.63, 34.03), 'L1024_zero_shot': (44.584, 34.165, 455.96), 'L1024_coarse_bilinear': (6.907, 5.793, 34.15)}
+EVAL U2 {'L256': (6.256, 5.447, 18.62), 'L1024_zero_shot': (43.847, 34.209, 183.23), 'L1024_coarse_bilinear': (8.303, 5.782, 18.82)}
+EVALUATION DONE /cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/evalsmoke/dev-results.json

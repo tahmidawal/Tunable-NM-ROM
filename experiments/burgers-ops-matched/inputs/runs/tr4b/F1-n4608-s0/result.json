@@ -1,0 +1,56 @@
+{
+ "arm": "F1",
+ "config": {
+  "family": "fno",
+  "width": 64,
+  "modes": 48,
+  "layers": 4,
+  "lr": 0.001
+ },
+ "rung": 4608,
+ "seed": 0,
+ "train_cases": 4352,
+ "validation_cases": 256,
+ "train_slice": [
+  0,
+  4352
+ ],
+ "validation_slice": [
+  4352,
+  4608
+ ],
+ "normalization": {
+  "u_mean": 0.12552110850811005,
+  "u_std": 0.2777175307273865,
+  "nu_mean": 0.03906131535768509,
+  "nu_std": 0.024881545454263687,
+  "scale": 0.24250672771196527
+ },
+ "real_parameters": 39373125,
+ "gpu": "NVIDIA L40S",
+ "job_id": "7118311",
+ "node": "pax020",
+ "torch": "2.11.0+cu128",
+ "eval_every": 500,
+ "plateau_patience": 6,
+ "stop_patience": 20,
+ "threshold": 0.001,
+ "min_lr": 1e-05,
+ "batch": 8,
+ "test_cohort_seen": false,
+ "complete": true,
+ "stop_reason": "time_limit",
+ "converged": false,
+ "steps": 56000,
+ "epochs": 102.94117647058823,
+ "best_step": 56000,
+ "best_validation": {
+  "mean": 0.002668511283445696,
+  "median": 0.002377327880822122,
+  "worst": 0.008580224588513374
+ },
+ "final_lr": 3.125e-05,
+ "training_seconds": 16606.606786960736,
+ "ms_per_step": 296.5465497837701,
+ "peak_gpu_bytes": 12923302912
+}

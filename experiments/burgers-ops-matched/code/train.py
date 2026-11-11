@@ -68,7 +68,8 @@ def main():
     val_ids = torch.arange(ntrain, a.rung, device='cuda')
     u0 = y[:ntrain, 0]
     norm = dict(u_mean=float(u0.mean()), u_std=float(u0.std()), nu_mean=float(nu[:ntrain].mean()),
-                nu_std=float(nu[:ntrain].std()), scale=float(y[:ntrain].double().square().mean().sqrt()))
+                nu_std=float(nu[:ntrain].std()),
+                scale=float((sum(float(c.double().square().sum()) for c in y[:ntrain].split(64)) / y[:ntrain].numel()) ** .5))
     net = opnet.make(cfg)
     opt = torch.optim.AdamW(net.parameters(), lr=cfg['lr'], weight_decay=1e-4)
     sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, factor=.5, patience=PLATEAU_PATIENCE, threshold=THRESHOLD,

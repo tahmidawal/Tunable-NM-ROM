@@ -165,6 +165,8 @@ def grid(a):
     for name in a.names.split(','):
         if (out / f'{name}.json').exists():
             print('SKIP', name, flush=True); continue
+        if not (Path(a.models) / name / 'done.json').exists():
+            print('NOT-TRAINED', name, flush=True); continue
         p, cfg, step = load_model(a.models, name, jnp.float64)
         rows = []
         t0 = time.time()

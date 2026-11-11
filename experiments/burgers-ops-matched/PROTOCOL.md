@@ -163,3 +163,39 @@ twice the GPU time available in this push.
 - **A4 (hardware).** The H100 node fails the mandatory JAX preflight (job 7116898), so it is excluded. Training runs
   share GPUs (two to four runs per GPU), so training wall time is not a cost measurement; steps and epochs are
   reported. Inference timing is unaffected (separate job, one process, A100 80GB).
+
+### 2026-11-11 (about 11:15 EST), A5–A7 — made after the training outcomes (validation only) were collected, before any selection was frozen and before the test cohort was opened
+
+What was seen when these were written: the validation histories and result files of the 14 training runs
+(`inputs/runs/`, `reports/tables.md` Table 2 at commit `a782458e1`). Nothing of the test cohort: no job has
+read `data/test` except its generator (job 7116901), and no evaluation of it exists.
+
+- **A5 (one continuation round, because the first round did not converge).** 11 of the 14 runs were ended by the
+  4.6 h safety budget of A2, not by the stopping rule (two to four runs shared each GPU, and five of the six jobs
+  landed on L40S cards, slower than the A100 the budget was sized for). Several were still improving quickly at
+  the cut (best validation score over the last 10 validations: F2 at 4,608 −15 %, F0 seed 1 −6 %, F0 at 576 −6 %),
+  and for 7 of the 11 the best checkpoint is the last validation. Section 1 asks about operators trained *to
+  convergence*; reporting these as they stand would under-train the comparators, which is the reviewers' complaint.
+  Therefore every run that ended with `time_limit` is continued once:
+  - start from the run's best-validation checkpoint (`best.pt`; the only state the trainer saved), at that
+    checkpoint's step count, with the learning rate the run ended on; same data, same slices, same normalisation
+    (asserted equal), same loss, same plateau and stopping rules (A2), counters restarted;
+  - *declared deviation*: the optimiser's moment estimates and the scheduler's counters were not saved, so AdamW
+    restarts with empty moments; the shuffling generator is reseeded with `seed + 1000`. The continuation can
+    only replace the checkpoint if its validation score is lower than the first round's best;
+  - wall budget 3.5 h per run, at most three jobs, GPUs restricted to A100 80GB / H200;
+  - **this is the only continuation round.** A run that is still not stopped by the rule after it is reported
+    with the flag "not converged" and its remaining rate of improvement, as section 4 says. No further training
+    is started after this round, whatever the validation scores are.
+  The three runs that stopped by the rule (F0 and U0 at 128, U0 seed 1 at 4,608) are not continued.
+- **A6 (selection after the continuation).** Unchanged rule, applied to the final checkpoints: per family, the
+  arm with the lowest validation score at the 4,608 rung, seed 0. If the selected FNO arm is not F0 it is
+  reported single-seed (no GPU slots for extra seeds within this push: limit of three jobs), and the three seeds
+  of F0 are reported beside it. Before the test cohort is opened, a selection manifest (every run's final
+  checkpoint SHA-256, validation scores, selected arms) is committed.
+- **A7 (evaluation mechanics; no change to what is measured).** The evaluator writes one JSON file per run as it
+  goes (`<out>/<job>__<run>.json`) and never re-evaluates a run whose file exists, so that a job cut by its time
+  limit can be resumed for the runs not yet evaluated without a second look at the ones already done. The
+  $1024^2$ zero-shot route is evaluated after the $256^2$ results of all runs are on disk. Timing as in section 5
+  (A100 80GB, batch 1, 20 warm-up queries, 5 repetitions × 64 cases). Any resumption is disclosed with what had
+  been seen.

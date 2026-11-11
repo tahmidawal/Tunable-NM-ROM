@@ -1,0 +1,52 @@
+{
+ "source": "worktrees/2026-09-25-t2-burgers-test/experiments/t2-burgers-test/reports/summary.json",
+ "source_sha256": "51c078d04e685ce4404e7c90d67f728929f33bf5d34e4ec37f57393c12e0235a",
+ "job": "4327396",
+ "gpu": "NVIDIA A100 80GB PCIe",
+ "cases": 64,
+ "cohort_sha256": "cd058fd2a297c20296b897e54cb186033a44a8db9527d98dcb2c2dad6044527c",
+ "rows": {
+  "accurate": {
+   "arm": "bank384_M1536_lat64_g1em06",
+   "family": "bankspan",
+   "worst_percent": 0.8673660699644922,
+   "median_percent": 0.026465317774059416,
+   "gpu_ms": 316.28049397841096
+  },
+  "head": {
+   "arm": "q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2",
+   "family": "nmrom",
+   "worst_percent": 4.097380509023859,
+   "median_percent": 0.6717940552871094,
+   "gpu_ms": 32.38282911479473
+  },
+  "fno": {
+   "arm": "fno-large",
+   "family": "fno",
+   "worst_percent": 8.760873329159752,
+   "median_percent": 2.588268856032261,
+   "gpu_ms": 7.449556607753038
+  },
+  "unet": {
+   "arm": "unet-large",
+   "family": "unet",
+   "worst_percent": 5.9788428054993075,
+   "median_percent": 1.9968733332618198,
+   "gpu_ms": 10.285896947607398
+  },
+  "tsol": {
+   "arm": "tsol-refine",
+   "family": "transolver",
+   "worst_percent": 6.83289995473083,
+   "median_percent": 2.2586423654798438,
+   "gpu_ms": 11.465332703664899
+  },
+  "don": {
+   "arm": "don-refine",
+   "family": "deeponet",
+   "worst_percent": 64.237452519388,
+   "median_percent": 12.93867332346536,
+   "gpu_ms": 3.935492830350995
+  }
+ }
+}

@@ -1,8 +1,8 @@
 """Final evaluation of trained operators on a cohort (PROTOCOL.md section 5): errors at 256^2, batch-1 timing,
-and the two 1024^2 routes (zero-shot; coarse-then-bilinear). Refuses to overwrite an existing output file.
+and the two 1024^2 routes (zero-shot; coarse-then-bilinear). Never recomputes an existing output file.
 
-  evaluate.py --runs DIR [DIR ...] --cohort-dir DIR --cohort test64 --out FILE [--skip-1024]
-Each DIR is a directory of run directories (each with best.pt + meta.json).
+  evaluate.py --manifest FILE --cohort-dir DIR --cohort test64 --out-dir DIR [--skip-1024]
+The manifest names every run directory and the SHA-256 of its best.pt (frozen before the cohort is opened).
 """
 import argparse, json, os, time
 from pathlib import Path
@@ -65,43 +65,52 @@ def run_cohort(net, norm, fields, nus, n0s, query, reps=5, burn=20):
                 mean_percent=100 * float(ev.mean()), per_case_per_time=per, timing=stats(t))
 
 
+def sha256(path):
+    import hashlib
+    h = hashlib.sha256()
+    with open(path, 'rb') as f:
+        for chunk in iter(lambda: f.read(1 << 24), b''):
+            h.update(chunk)
+    return h.hexdigest()
+
+
 def main():
+    """Amendment A7: one JSON per run and per mesh, written as soon as it exists; a file that exists is never recomputed."""
     a = argparse.ArgumentParser()
-    a.add_argument('--runs', nargs='+', required=True); a.add_argument('--cohort-dir', required=True)
-    a.add_argument('--cohort', default='test64'); a.add_argument('--out', required=True)
-    a.add_argument('--skip-1024', action='store_true')
+    a.add_argument('--manifest', required=True, help='selection manifest: {"runs": {key: {"path": DIR, "best_sha256": ...}}}')
+    a.add_argument('--cohort-dir', required=True); a.add_argument('--cohort', default='test64')
+    a.add_argument('--out-dir', required=True); a.add_argument('--skip-1024', action='store_true')
     a = a.parse_args()
-    out = Path(a.out)
-    assert not out.exists(), 'the cohort is evaluated once; refusing to overwrite'
+    out = Path(a.out_dir); out.mkdir(parents=True, exist_ok=True)
     opnet.configure()
-    data = {}
+    manifest = json.loads(Path(a.manifest).read_text())
+    env = dict(cohort=a.cohort, gpu=torch.cuda.get_device_name(), job_id=os.environ.get('SLURM_JOB_ID'),
+               node=os.environ.get('SLURMD_NODENAME'), torch=torch.__version__, manifest_sha256=sha256(a.manifest))
     for L in (256,) if a.skip_1024 else (256, 1024):
         m = np.load(Path(a.cohort_dir) / f'{a.cohort}-L{L}.meta.npz')
-        data[L] = (np.load(Path(a.cohort_dir) / f'{a.cohort}-L{L}.fields.npy', mmap_mode='r'), m['params'][:, 4], m['n0'])
-    res = dict(cohort=a.cohort, gpu=torch.cuda.get_device_name(), job_id=os.environ.get('SLURM_JOB_ID'),
-               node=os.environ.get('SLURMD_NODENAME'), runs={})
-    for d in a.runs:
-        for run in sorted(Path(d).iterdir()):
-            if not (run / 'best.pt').exists():
+        data = (np.load(Path(a.cohort_dir) / f'{a.cohort}-L{L}.fields.npy', mmap_mode='r'), m['params'][:, 4], m['n0'])
+        for key, entry in manifest['runs'].items():
+            target = out / f"{key.replace('/', '__')}.L{L}.json"
+            if target.exists():
+                print('SKIP (already evaluated)', target.name, flush=True)
                 continue
+            run = Path(entry['path'])
+            assert sha256(run / 'best.pt') == entry['best_sha256'], f'checkpoint changed after the selection was frozen: {run}'
             net, ck = load(run)
             norm = ck['normalization']
-            r = dict(arm=ck['arm'], rung=ck['rung'], seed=ck['seed'], best_step=ck['step'], validation=ck['validation'],
-                     real_parameters=opnet.real_parameters(net),
-                     train_result=json.loads((run / 'result.json').read_text()) if (run / 'result.json').exists() else None)
-            r['L256'] = run_cohort(net, norm, *data[256], query_direct)
-            if not a.skip_1024:
-                for name, q in (('L1024_zero_shot', query_direct),
-                                ('L1024_coarse_bilinear', lambda n, u, v, nm: query_coarse(n, u, v, nm, 4))):
-                    try:
-                        r[name] = run_cohort(net, norm, *data[1024], q)
-                    except torch.cuda.OutOfMemoryError as exc:
-                        r[name] = dict(error=str(exc)[:300]); torch.cuda.empty_cache()
-            res['runs'][f'{Path(d).name}/{run.name}'] = r
-            print('EVAL', run.name, {k: (round(v['worst_percent'], 3), round(v['median_percent'], 3), round(v['timing']['median_ms'], 2))
-                                     for k, v in r.items() if isinstance(v, dict) and 'worst_percent' in v}, flush=True)
+            r = dict(env, key=key, mesh=L, arm=ck['arm'], rung=ck['rung'], seed=ck['seed'], best_step=ck['step'],
+                     validation=ck['validation'], real_parameters=opnet.real_parameters(net), best_sha256=entry['best_sha256'])
+            routes = (('L256', query_direct),) if L == 256 else (
+                ('L1024_zero_shot', query_direct), ('L1024_coarse_bilinear', lambda n, u, v, nm: query_coarse(n, u, v, nm, 4)))
+            for name, q in routes:
+                try:
+                    r[name] = run_cohort(net, norm, *data, q)
+                except torch.cuda.OutOfMemoryError as exc:
+                    r[name] = dict(error=str(exc)[:300]); torch.cuda.empty_cache()
+            tmp = Path(str(target) + '.tmp'); tmp.write_text(json.dumps(r, indent=1) + '\n'); tmp.replace(target)
+            print('EVAL', key, L, {k: (round(v['worst_percent'], 3), round(v['median_percent'], 3), round(v['timing']['median_ms'], 2))
+                                   for k, v in r.items() if isinstance(v, dict) and 'worst_percent' in v}, flush=True)
             del net; torch.cuda.empty_cache()
-    out.write_text(json.dumps(res, indent=1) + '\n')
     print('EVALUATION DONE', out, flush=True)
 
 

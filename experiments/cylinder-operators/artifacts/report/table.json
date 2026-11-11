@@ -1,0 +1,762 @@
+{
+  "re95": {
+    "node60": {
+      "e_u_rms": 0.008334520651600721,
+      "e_u_max": 0.01505162749502552,
+      "e_p_rms": 0.0038987895244131958,
+      "St_rel": 17.945614960225594,
+      "CD_max_rel": 0.001174574090244445,
+      "CL_max_abs": 1.0777682759304035,
+      "status": "completed",
+      "targets_met": 4,
+      "last_period_e_u": 0.013272399976291071,
+      "lag_saves": 1,
+      "sup": {
+        "St_rel": 22.64771186642801,
+        "CD_max_rel": 0.0005887536746304173,
+        "CL_max_abs": 0.3677437484643583
+      },
+      "sup_cycles": 5,
+      "diag": {
+        "St_rel": 0.0039856434476583215,
+        "CD_max_rel": 0.00043643838486160535,
+        "CL_max_abs": 0.0030703275654581086,
+        "St_rel_worst_cycle": 0.013936742285261788
+      },
+      "diag_cycles": 4,
+      "lift_error_rms": 0.02078642285551695,
+      "lift_error_max": 0.07903340655150388,
+      "targets_met_with_smoothed_cycles": 4,
+      "seconds_per_window": 2.504906551912427,
+      "seconds_min_max": [
+        2.504831009544432,
+        2.504961295053363
+      ],
+      "hardware": "NVIDIA L40S",
+      "config": "tr_K8_noise",
+      "params": 762888,
+      "train_gpu_hours": 2.0001030366950565,
+      "train_gpu": "NVIDIA L40S",
+      "plateau": false,
+      "relative_drop_last_20pct": 0.3237245642709779,
+      "validation": {
+        "tr_K8": 0.03370121767868456,
+        "tr_K8_noise": 0.025693846910920415,
+        "tr_K32": 0.029848762887417106
+      }
+    },
+    "node180": {
+      "e_u_rms": 0.0037127512459215043,
+      "e_u_max": 0.006474487331839988,
+      "e_p_rms": 0.0018895313969837443,
+      "St_rel": 21.63083922060647,
+      "CD_max_rel": 0.0014944103524978177,
+      "CL_max_abs": 0.8703304139829651,
+      "status": "completed",
+      "targets_met": 4,
+      "last_period_e_u": 0.005850369772181054,
+      "lag_saves": 0,
+      "sup": {
+        "St_rel": 0.0006889892993230702,
+        "CD_max_rel": 0.0013416568868640873,
+        "CL_max_abs": 0.0006720390292991318
+      },
+      "sup_cycles": 4,
+      "diag": {
+        "St_rel": 0.0006889892993230702,
+        "CD_max_rel": 0.0013416568868640873,
+        "CL_max_abs": 0.0006720390292991318,
+        "St_rel_worst_cycle": 0.0024673148718956585
+      },
+      "diag_cycles": 4,
+      "lift_error_rms": 0.009183300287386774,
+      "lift_error_max": 0.026027289891416783,
+      "targets_met_with_smoothed_cycles": 6,
+      "seconds_per_window": 2.533530417829752,
+      "seconds_min_max": [
+        2.5333856688812375,
+        2.5336474161595106
+      ],
+      "hardware": "NVIDIA L40S",
+      "config": "tr_K8_noise",
+      "params": 762888,
+      "train_gpu_hours": 3.0000201763047114,
+      "train_gpu": "NVIDIA L40S",
+      "plateau": false,
+      "relative_drop_last_20pct": 0.4378599336019923,
+      "validation": {}
+    },
+    "grid60": {
+      "e_u_rms": 0.010603148609679059,
+      "e_u_max": 0.018854040414473194,
+      "e_p_rms": 0.005566838195367625,
+      "St_rel": 0.5152322709865338,
+      "CD_max_rel": 0.008791091416247574,
+      "CL_max_abs": 0.008638130134225541,
+      "status": "completed",
+      "targets_met": 4,
+      "last_period_e_u": 0.016867385876335156,
+      "lag_saves": -1,
+      "sup": {
+        "St_rel": 0.0012959067482799461,
+        "CD_max_rel": 0.0069518497104865545,
+        "CL_max_abs": 0.0059651403902512
+      },
+      "sup_cycles": 4,
+      "diag": {
+        "St_rel": 0.0012959067482799461,
+        "CD_max_rel": 0.0069518497104865545,
+        "CL_max_abs": 0.0059651403902512,
+        "St_rel_worst_cycle": 0.0025667601603632604
+      },
+      "diag_cycles": 4,
+      "lift_error_rms": 0.019761120230761993,
+      "lift_error_max": 0.05052682225468497,
+      "targets_met_with_smoothed_cycles": 5,
+      "seconds_per_window": 0.4527449496090412,
+      "seconds_min_max": [
+        0.4524761103093624,
+        0.45291406102478504
+      ],
+      "hardware": "NVIDIA L40S",
+      "config": "fno_K8",
+      "params": 26246544,
+      "train_gpu_hours": 2.333365503615803,
+      "train_gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+      "plateau": false,
+      "relative_drop_last_20pct": 0.33991741785013874,
+      "validation": {
+        "fno_K8": 0.0534262462083165,
+        "unet_K8": 0.2828235338749269,
+        "unet_K8_noise": 0.3718192016493084,
+        "unet_K32": 0.3682085157862309
+      }
+    },
+    "grid180": {
+      "e_u_rms": 0.009004876049988265,
+      "e_u_max": 0.016232719590618554,
+      "e_p_rms": 0.004735318454711019,
+      "St_rel": 0.0011006239656671823,
+      "CD_max_rel": 0.011444608872875127,
+      "CL_max_abs": 0.005664898235659077,
+      "status": "completed",
+      "targets_met": 6,
+      "last_period_e_u": 0.014433459617526994,
+      "lag_saves": 0,
+      "sup": {
+        "St_rel": 0.00044143974579239384,
+        "CD_max_rel": 0.011441343103232263,
+        "CL_max_abs": 0.005566260334624373
+      },
+      "sup_cycles": 4,
+      "diag": {
+        "St_rel": 0.00044143974579239384,
+        "CD_max_rel": 0.011441343103232263,
+        "CL_max_abs": 0.005566260334624373,
+        "St_rel_worst_cycle": 0.0016996588335668106
+      },
+      "diag_cycles": 4,
+      "lift_error_rms": 0.00734423706647678,
+      "lift_error_max": 0.019989051947853276,
+      "targets_met_with_smoothed_cycles": 6,
+      "seconds_per_window": 0.45327051263302565,
+      "seconds_min_max": [
+        0.45299105904996395,
+        0.45335612911731005
+      ],
+      "hardware": "NVIDIA L40S",
+      "config": "fno_K8",
+      "params": 26246544,
+      "train_gpu_hours": 3.0000127847327125,
+      "train_gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+      "plateau": false,
+      "relative_drop_last_20pct": 0.40891103754388736,
+      "validation": {}
+    },
+    "don60": {
+      "e_u_rms": 0.025210939150905068,
+      "e_u_max": 0.037634587598105604,
+      "e_p_rms": 0.015124743182961064,
+      "St_rel": 0.007684868591239895,
+      "CD_max_rel": 0.00793989843228624,
+      "CL_max_abs": 0.0672650577328322,
+      "status": "completed",
+      "targets_met": 3,
+      "last_period_e_u": 0.03261245313953037,
+      "lag_saves": -3,
+      "sup": {
+        "St_rel": 0.006868829936614755,
+        "CD_max_rel": 0.007610905256094614,
+        "CL_max_abs": 0.06709459880441193
+      },
+      "sup_cycles": 4,
+      "diag": {
+        "St_rel": 0.006868829936614755,
+        "CD_max_rel": 0.007610905256094614,
+        "CL_max_abs": 0.06709459880441193,
+        "St_rel_worst_cycle": 0.00914800601603611
+      },
+      "diag_cycles": 4,
+      "lift_error_rms": 0.08838701215934344,
+      "lift_error_max": 0.17950378242608242,
+      "targets_met_with_smoothed_cycles": 3,
+      "seconds_per_window": 2.8280233591794968,
+      "seconds_min_max": [
+        2.822372688911855,
+        2.8455913411453366
+      ],
+      "hardware": "NVIDIA L40S",
+      "config": "don_p128",
+      "params": 3282947,
+      "train_gpu_hours": 1.6666900534100002,
+      "train_gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+      "plateau": false,
+      "relative_drop_last_20pct": 0.12957671620371036,
+      "validation": {
+        "don_p128": 0.021154283881016492,
+        "don_p256": 0.025834068172445646
+      }
+    },
+    "don180": {
+      "e_u_rms": 0.03536412720493781,
+      "e_u_max": 0.051504628015424235,
+      "e_p_rms": 0.020251573150293873,
+      "St_rel": 0.008271140073413839,
+      "CD_max_rel": 0.013907606517025646,
+      "CL_max_abs": 0.07319594011276276,
+      "status": "completed",
+      "targets_met": 2,
+      "last_period_e_u": 0.046294020590517876,
+      "lag_saves": -4,
+      "sup": {
+        "St_rel": 0.007443975309040747,
+        "CD_max_rel": 0.013911542396814264,
+        "CL_max_abs": 0.07289825766760116
+      },
+      "sup_cycles": 4,
+      "diag": {
+        "St_rel": 0.007443975309040747,
+        "CD_max_rel": 0.013911542396814264,
+        "CL_max_abs": 0.07289825766760116,
+        "St_rel_worst_cycle": 0.010430197386946427
+      },
+      "diag_cycles": 4,
+      "lift_error_rms": 0.1114525640607509,
+      "lift_error_max": 0.21843461508906603,
+      "targets_met_with_smoothed_cycles": 2,
+      "seconds_per_window": 2.847637173719704,
+      "seconds_min_max": [
+        2.8468274557963014,
+        2.8476496692746878
+      ],
+      "hardware": "NVIDIA L40S",
+      "config": "don_p128",
+      "params": 3282947,
+      "train_gpu_hours": 3.000006542272038,
+      "train_gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+      "plateau": false,
+      "relative_drop_last_20pct": 0.14370260615353436,
+      "validation": {}
+    },
+    "pod_r16": {
+      "e_u_rms": 0.009487389729485367,
+      "e_u_max": 0.011885670536721266,
+      "e_p_rms": 0.0033211058218015096,
+      "St_rel": 0.000623954736262133,
+      "CD_max_rel": 0.0001869794918992794,
+      "CL_max_abs": 0.006938000972084191,
+      "status": "completed",
+      "targets_met": 6,
+      "last_period_e_u": 0.0113278889627392,
+      "lag_saves": 0,
+      "lift_error_max": 0.035076770799293944,
+      "lift_error_rms": null,
+      "seconds_per_window": 2.3291000863537192,
+      "hardware": "CPU (ROM lane)"
+    },
+    "pod_r24": {
+      "e_u_rms": 0.005733881621153979,
+      "e_u_max": 0.009637403694814866,
+      "e_p_rms": 0.0029771887295535035,
+      "St_rel": 0.0015339634420979804,
+      "CD_max_rel": 3.98602049223541e-05,
+      "CL_max_abs": 0.011703879371265602,
+      "status": "completed",
+      "targets_met": 6,
+      "last_period_e_u": 0.008541188653985076,
+      "lag_saves": 1,
+      "lift_error_max": 0.06473178645300848,
+      "lift_error_rms": null,
+      "seconds_per_window": 5.002232768572867,
+      "hardware": "CPU (ROM lane)"
+    },
+    "pod_r32": {
+      "e_u_rms": 0.00186672889210807,
+      "e_u_max": 0.0021102215865367426,
+      "e_p_rms": 0.0005764605095784216,
+      "St_rel": 4.523939025917542e-05,
+      "CD_max_rel": 0.0002497746974072265,
+      "CL_max_abs": 0.00046479079144945423,
+      "status": "completed",
+      "targets_met": 6,
+      "last_period_e_u": 0.0019417101193861927,
+      "lag_saves": 0,
+      "lift_error_max": 0.006024666723455918,
+      "lift_error_rms": null,
+      "seconds_per_window": 11.040449559688568,
+      "hardware": "CPU (ROM lane)"
+    },
+    "bank_r32": {
+      "e_u_rms": 0.0019116852781426085,
+      "e_u_max": 0.0021512424211096695,
+      "e_p_rms": 0.0006734632985159614,
+      "St_rel": 5.4737712700333694e-05,
+      "CD_max_rel": 0.0006720747532300718,
+      "CL_max_abs": 0.001044973248940928,
+      "status": "completed",
+      "targets_met": 6,
+      "last_period_e_u": 0.0019874073600693706,
+      "lag_saves": 0,
+      "lift_error_max": 0.002788384154794543,
+      "lift_error_rms": null,
+      "seconds_per_window": 11.0316018788144,
+      "hardware": "CPU (ROM lane)"
+    },
+    "bank_p24": {
+      "e_u_rms": 0.005776462618801099,
+      "e_u_max": 0.009709551119010605,
+      "e_p_rms": 0.0030313216605393806,
+      "St_rel": 0.0015449800471960496,
+      "CD_max_rel": 0.0004415224583273567,
+      "CL_max_abs": 0.012362723550580879,
+      "status": "completed",
+      "targets_met": 6,
+      "last_period_e_u": 0.008605183932016385,
+      "lag_saves": 1,
+      "lift_error_max": 0.05339708490082706,
+      "lift_error_rms": null,
+      "seconds_per_window": 4.985456522554159,
+      "hardware": "CPU (ROM lane)"
+    },
+    "bank_p16": {
+      "e_u_rms": 0.009503123157339375,
+      "e_u_max": 0.011893927002146247,
+      "e_p_rms": 0.003368566380027951,
+      "St_rel": 0.0006148749208949896,
+      "CD_max_rel": 5.586952384807742e-06,
+      "CL_max_abs": 0.006226266915382195,
+      "status": "completed",
+      "targets_met": 6,
+      "last_period_e_u": 0.011341637040071337,
+      "lag_saves": 0,
+      "lift_error_max": 0.04912255445686464,
+      "lift_error_rms": null,
+      "seconds_per_window": 2.338438130915165,
+      "hardware": "CPU (ROM lane)"
+    }
+  },
+  "re105": {
+    "node60": {
+      "e_u_rms": 0.0068618262930865885,
+      "e_u_max": 0.01218498677468951,
+      "e_p_rms": 0.003585342788076868,
+      "St_rel": 15.704718890873227,
+      "CD_max_rel": 0.002371867709996631,
+      "CL_max_abs": 0.9700952372612439,
+      "status": "completed",
+      "targets_met": 4,
+      "last_period_e_u": 0.010874511530776973,
+      "lag_saves": 1,
+      "sup": {
+        "St_rel": 0.0007133570720455648,
+        "CD_max_rel": 0.0007833928844720699,
+        "CL_max_abs": 0.0020008163699931636
+      },
+      "sup_cycles": 4,
+      "diag": {
+        "St_rel": 0.0007133570720455648,
+        "CD_max_rel": 0.0007833928844720699,
+        "CL_max_abs": 0.0020008163699931636,
+        "St_rel_worst_cycle": 0.004345383167490139
+      },
+      "diag_cycles": 4,
+      "lift_error_rms": 0.021055092593801422,
+      "lift_error_max": 0.08258391152971245,
+      "targets_met_with_smoothed_cycles": 6,
+      "seconds_per_window": 2.505036696791649,
+      "seconds_min_max": [
+        2.5049016289412975,
+        2.505271915346384
+      ],
+      "hardware": "NVIDIA L40S",
+      "config": "tr_K8_noise",
+      "params": 762888,
+      "train_gpu_hours": 2.0001030366950565,
+      "train_gpu": "NVIDIA L40S",
+      "plateau": false,
+      "relative_drop_last_20pct": 0.3237245642709779,
+      "validation": {
+        "tr_K8": 0.03370121767868456,
+        "tr_K8_noise": 0.025693846910920415,
+        "tr_K32": 0.029848762887417106
+      }
+    },
+    "node180": {
+      "e_u_rms": 0.005342039565964877,
+      "e_u_max": 0.009180302262480728,
+      "e_p_rms": 0.00259143853806085,
+      "St_rel": 22.759240881972215,
+      "CD_max_rel": 0.0008913342414783059,
+      "CL_max_abs": 1.3769535079500268,
+      "status": "completed",
+      "targets_met": 4,
+      "last_period_e_u": 0.00836787969140959,
+      "lag_saves": 1,
+      "sup": {
+        "St_rel": 2.134174570079284e-05,
+        "CD_max_rel": 0.001179523905356862,
+        "CL_max_abs": 0.0019046775220781242
+      },
+      "sup_cycles": 4,
+      "diag": {
+        "St_rel": 2.134174570079284e-05,
+        "CD_max_rel": 0.001179523905356862,
+        "CL_max_abs": 0.0019046775220781242,
+        "St_rel_worst_cycle": 0.0032652996693060556
+      },
+      "diag_cycles": 4,
+      "lift_error_rms": 0.015102333366452137,
+      "lift_error_max": 0.040879283906271546,
+      "targets_met_with_smoothed_cycles": 6,
+      "seconds_per_window": 2.5334647335112095,
+      "seconds_min_max": [
+        2.5334095247089863,
+        2.5336932819336653
+      ],
+      "hardware": "NVIDIA L40S",
+      "config": "tr_K8_noise",
+      "params": 762888,
+      "train_gpu_hours": 3.0000201763047114,
+      "train_gpu": "NVIDIA L40S",
+      "plateau": false,
+      "relative_drop_last_20pct": 0.4378599336019923,
+      "validation": {}
+    },
+    "grid60": {
+      "e_u_rms": 0.009766069708303892,
+      "e_u_max": 0.01751183107546325,
+      "e_p_rms": 0.004825833334652939,
+      "St_rel": 17.214074494007953,
+      "CD_max_rel": 0.0015145970240419185,
+      "CL_max_abs": 0.9133517859278131,
+      "status": "completed",
+      "targets_met": 4,
+      "last_period_e_u": 0.01585212114712842,
+      "lag_saves": 0,
+      "sup": {
+        "St_rel": 0.0003338698746142347,
+        "CD_max_rel": 0.00031066061453048253,
+        "CL_max_abs": 0.0006574287792195932
+      },
+      "sup_cycles": 4,
+      "diag": {
+        "St_rel": 0.0003338698746142347,
+        "CD_max_rel": 0.00031066061453048253,
+        "CL_max_abs": 0.0006574287792195932,
+        "St_rel_worst_cycle": 0.0025303436558719913
+      },
+      "diag_cycles": 4,
+      "lift_error_rms": 0.013882031514821657,
+      "lift_error_max": 0.03675224731121984,
+      "targets_met_with_smoothed_cycles": 6,
+      "seconds_per_window": 0.45338489674031734,
+      "seconds_min_max": [
+        0.4531185422092676,
+        0.4535581013187766
+      ],
+      "hardware": "NVIDIA L40S",
+      "config": "fno_K8",
+      "params": 26246544,
+      "train_gpu_hours": 2.333365503615803,
+      "train_gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+      "plateau": false,
+      "relative_drop_last_20pct": 0.33991741785013874,
+      "validation": {
+        "fno_K8": 0.0534262462083165,
+        "unet_K8": 0.2828235338749269,
+        "unet_K8_noise": 0.3718192016493084,
+        "unet_K32": 0.3682085157862309
+      }
+    },
+    "grid180": {
+      "e_u_rms": 0.009856981025560955,
+      "e_u_max": 0.01769112384261716,
+      "e_p_rms": 0.005302141573932023,
+      "St_rel": 0.0006629298470187239,
+      "CD_max_rel": 0.0016810196619779585,
+      "CL_max_abs": 0.0091048625318777,
+      "status": "completed",
+      "targets_met": 6,
+      "last_period_e_u": 0.016026501358291274,
+      "lag_saves": 1,
+      "sup": {
+        "St_rel": 0.0010456710746568174,
+        "CD_max_rel": 0.0015405159889885073,
+        "CL_max_abs": 0.009516553006362782
+      },
+      "sup_cycles": 4,
+      "diag": {
+        "St_rel": 0.0010456710746568174,
+        "CD_max_rel": 0.0015405159889885073,
+        "CL_max_abs": 0.009516553006362782,
+        "St_rel_worst_cycle": 0.0016212284068009928
+      },
+      "diag_cycles": 4,
+      "lift_error_rms": 0.03193827891558595,
+      "lift_error_max": 0.09016144591345013,
+      "targets_met_with_smoothed_cycles": 6,
+      "seconds_per_window": 0.45360519364476204,
+      "seconds_min_max": [
+        0.4534075139090419,
+        0.45375595428049564
+      ],
+      "hardware": "NVIDIA L40S",
+      "config": "fno_K8",
+      "params": 26246544,
+      "train_gpu_hours": 3.0000127847327125,
+      "train_gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+      "plateau": false,
+      "relative_drop_last_20pct": 0.40891103754388736,
+      "validation": {}
+    },
+    "don60": {
+      "e_u_rms": 0.007496288385781183,
+      "e_u_max": 0.013737986427132495,
+      "e_p_rms": 0.004395454051929795,
+      "St_rel": 0.001411648724003143,
+      "CD_max_rel": 0.00043311435894066567,
+      "CL_max_abs": 0.028743751710328835,
+      "status": "completed",
+      "targets_met": 5,
+      "last_period_e_u": 0.009969042835952843,
+      "lag_saves": -1,
+      "sup": {
+        "St_rel": 0.0012787385824772242,
+        "CD_max_rel": 9.276910794368802e-05,
+        "CL_max_abs": 0.026909173938399977
+      },
+      "sup_cycles": 4,
+      "diag": {
+        "St_rel": 0.0012787385824772242,
+        "CD_max_rel": 9.276910794368802e-05,
+        "CL_max_abs": 0.026909173938399977,
+        "St_rel_worst_cycle": 0.0019205028664870001
+      },
+      "diag_cycles": 4,
+      "lift_error_rms": 0.02545738580068788,
+      "lift_error_max": 0.058037780461969946,
+      "targets_met_with_smoothed_cycles": 5,
+      "seconds_per_window": 2.809166102670133,
+      "seconds_min_max": [
+        2.80861946195364,
+        2.847399838268757
+      ],
+      "hardware": "NVIDIA L40S",
+      "config": "don_p128",
+      "params": 3282947,
+      "train_gpu_hours": 1.6666900534100002,
+      "train_gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+      "plateau": false,
+      "relative_drop_last_20pct": 0.12957671620371036,
+      "validation": {
+        "don_p128": 0.021154283881016492,
+        "don_p256": 0.025834068172445646
+      }
+    },
+    "don180": {
+      "e_u_rms": 0.012071539824411665,
+      "e_u_max": 0.018994775569547224,
+      "e_p_rms": 0.007408510111464138,
+      "St_rel": 0.0003060030947281009,
+      "CD_max_rel": 0.005795511511437131,
+      "CL_max_abs": 0.024485833998376227,
+      "status": "completed",
+      "targets_met": 4,
+      "last_period_e_u": 0.015886622328377006,
+      "lag_saves": -2,
+      "sup": {
+        "St_rel": 0.00013303687667931208,
+        "CD_max_rel": 0.005675709905164512,
+        "CL_max_abs": 0.02527964922080317
+      },
+      "sup_cycles": 4,
+      "diag": {
+        "St_rel": 0.00013303687667931208,
+        "CD_max_rel": 0.005675709905164512,
+        "CL_max_abs": 0.02527964922080317,
+        "St_rel_worst_cycle": 0.0003995708735794827
+      },
+      "diag_cycles": 4,
+      "lift_error_rms": 0.04730632312899076,
+      "lift_error_max": 0.09167370799490657,
+      "targets_met_with_smoothed_cycles": 4,
+      "seconds_per_window": 2.8461102079600096,
+      "seconds_min_max": [
+        2.8261319547891617,
+        2.8478406677022576
+      ],
+      "hardware": "NVIDIA L40S",
+      "config": "don_p128",
+      "params": 3282947,
+      "train_gpu_hours": 3.000006542272038,
+      "train_gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+      "plateau": false,
+      "relative_drop_last_20pct": 0.14370260615353436,
+      "validation": {}
+    },
+    "pod_r8": {
+      "e_u_rms": 0.027674107976512263,
+      "e_u_max": 0.034485902055705196,
+      "e_p_rms": 0.013420688358817538,
+      "St_rel": 0.0023591189241273626,
+      "CD_max_rel": 0.0014374774533825363,
+      "CL_max_abs": 0.046007735750878576,
+      "status": "completed",
+      "targets_met": 3,
+      "last_period_e_u": 0.032248961139811516,
+      "lag_saves": -2,
+      "lift_error_max": 0.38047266093543064,
+      "lift_error_rms": null,
+      "seconds_per_window": 2.088636400178075,
+      "hardware": "CPU (ROM lane)",
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-03-cylinder-unsteady-rom/experiments/cylinder-unsteady-rom/artifacts/r5-heldout01/results/r4_heldout/R4-re105.json"
+    },
+    "pod_r16": {
+      "e_u_rms": 0.008467420097528634,
+      "e_u_max": 0.010863005493177773,
+      "e_p_rms": 0.0031638875296272563,
+      "St_rel": 0.0006748527722155825,
+      "CD_max_rel": 0.0030260179995601874,
+      "CL_max_abs": 0.010588097313781075,
+      "status": "completed",
+      "targets_met": 6,
+      "last_period_e_u": 0.010086575624128567,
+      "lag_saves": 1,
+      "lift_error_max": 0.041349150978316374,
+      "lift_error_rms": null,
+      "seconds_per_window": 4.224950239993632,
+      "hardware": "CPU (ROM lane)",
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-03-cylinder-unsteady-rom/experiments/cylinder-unsteady-rom/artifacts/r5-heldout01/results/r4_heldout/R4-re105.json"
+    },
+    "pod_r24": {
+      "e_u_rms": 0.0034733865382144753,
+      "e_u_max": 0.004662645838924835,
+      "e_p_rms": 0.0016690600344499932,
+      "St_rel": 0.0005250584767455095,
+      "CD_max_rel": 3.369725311092181e-05,
+      "CL_max_abs": 0.006704885830633334,
+      "status": "completed",
+      "targets_met": 6,
+      "last_period_e_u": 0.0043269797083432615,
+      "lag_saves": 0,
+      "lift_error_max": 0.019839872509938516,
+      "lift_error_rms": null,
+      "seconds_per_window": 8.598724658600986,
+      "hardware": "CPU (ROM lane)",
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-03-cylinder-unsteady-rom/experiments/cylinder-unsteady-rom/artifacts/r5-heldout01/results/r4_heldout/R4-re105.json"
+    },
+    "frozen_bank_r4": {
+      "e_u_rms": 0.3026558216292361,
+      "e_u_max": 0.3162251263731757,
+      "e_p_rms": 0.17313631641436733,
+      "St_rel": 0.54053321187094,
+      "CD_max_rel": 0.31333689974011936,
+      "CL_max_abs": 1.0351052723664258,
+      "status": "completed",
+      "targets_met": 0,
+      "last_period_e_u": 0.3071359047740096,
+      "lag_saves": -29,
+      "lift_error_max": 28.89130490578587,
+      "lift_error_rms": null,
+      "seconds_per_window": 0.9607551023364067,
+      "hardware": "CPU (ROM lane)",
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-03-cylinder-unsteady-rom/experiments/cylinder-unsteady-rom/artifacts/r5-heldout01/results/r4_heldout/R4-re105.json"
+    },
+    "bank_r16": {
+      "e_u_rms": 0.01099993086228171,
+      "e_u_max": 0.012203819466297979,
+      "e_p_rms": 0.007678239617441502,
+      "St_rel": 0.00012047491549878789,
+      "CD_max_rel": 0.01616905282009118,
+      "CL_max_abs": 0.009157930875440368,
+      "status": "completed",
+      "targets_met": 5,
+      "last_period_e_u": 0.011459857690925014,
+      "lag_saves": 0,
+      "lift_error_max": 0.3669148888986555,
+      "lift_error_rms": null,
+      "seconds_per_window": 4.269078667275608,
+      "hardware": "CPU (ROM lane)",
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-03-cylinder-unsteady-rom/experiments/cylinder-unsteady-rom/artifacts/r5-heldout01/results/r4_heldout/R4-re105.json"
+    }
+  },
+  "sources": {
+    "rom_dev": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-03-cylinder-unsteady-rom/experiments/cylinder-unsteady-rom/artifacts/rb-a8b/results/r4/R4-re95.json",
+    "rom_heldout": [
+      "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-03-cylinder-unsteady-rom/experiments/cylinder-unsteady-rom/artifacts/r5-heldout01/results/r4_heldout/R4-re105.json"
+    ],
+    "final": "artifacts/final02"
+  },
+  "reference_readout": {
+    "re95": {
+      "cycles": {
+        "CD_max": 3.243049825009563,
+        "CL_max": 0.9162839790856973,
+        "CL_min": -0.9500826884097164,
+        "St": 0.3002377946807924,
+        "period": 0.33306932629154584,
+        "cycles": 4
+      },
+      "reference_cycles": {
+        "CD_max": 3.243052843969901,
+        "CL_max": 0.9162771453687487,
+        "CL_min": -0.9501134799316288,
+        "St": 0.3002380634599061,
+        "period": 0.3330690281186852,
+        "cycles": 4
+      },
+      "errors": {
+        "St_rel": 8.952199817390495e-07,
+        "CD_max_rel": 9.309007541388192e-07,
+        "CL_max_abs": 6.8337169485399585e-06
+      },
+      "CD_maxabs_rel_vs_history": NaN,
+      "CL_maxabs_vs_history": 9.23403538444223e-06
+    },
+    "re105": {
+      "cycles": {
+        "CD_max": 3.2165290641063367,
+        "CL_max": 1.0587291574242008,
+        "CL_min": -1.094407505962201,
+        "St": 0.3032805813790973,
+        "period": 0.32972767180500107,
+        "cycles": 4
+      },
+      "reference_cycles": {
+        "CD_max": 3.21653349515328,
+        "CL_max": 1.0587206958787827,
+        "CL_min": -1.0943969764284769,
+        "St": 0.30328064610663374,
+        "period": 0.3297276014384396,
+        "cycles": 4
+      },
+      "errors": {
+        "St_rel": 2.1342455337246872e-07,
+        "CD_max_rel": 1.3775845797408201e-06,
+        "CL_max_abs": 8.461545418114724e-06
+      },
+      "CD_maxabs_rel_vs_history": NaN,
+      "CL_maxabs_vs_history": 1.0788221587398894e-05
+    }
+  }
+}

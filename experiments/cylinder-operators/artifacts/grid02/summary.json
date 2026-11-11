@@ -1,0 +1,187 @@
+{
+  "arm": "grid",
+  "rep": "grid",
+  "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+  "tune_minutes": 20.0,
+  "final_minutes": 180.0,
+  "candidates": {},
+  "selected": "fno_K8",
+  "final": {
+    "config": {
+      "name": "fno_K8",
+      "net": "fno",
+      "W": 40,
+      "L": 4,
+      "m1": 16,
+      "m2": 64,
+      "K": 8,
+      "noise": 0.0,
+      "lr": 0.001,
+      "batch": 4
+    },
+    "params": 26246544,
+    "train": {
+      "iterations": 170962,
+      "seconds": 10800.046025037766,
+      "loss_at_80pct": 1.8086572452233856e-06,
+      "loss_final": 1.069077334517822e-06,
+      "relative_drop_last_20pct": 0.40891103754388736,
+      "plateau": false
+    },
+    "train_re100_native_e_u": {
+      "rms": 0.006051801878894218,
+      "max": 0.012771583162248135
+    }
+  },
+  "training_seconds_total": 10800.046025037766,
+  "dev_re95": {
+    "case": "re95",
+    "saves": 681,
+    "finite": true,
+    "status": "completed",
+    "e_u": {
+      "rms": 0.009004876049988265,
+      "max": 0.016232719590618554,
+      "last_period_mean": 0.014433459617526994
+    },
+    "e_p": {
+      "rms": 0.004735318454711019,
+      "max": 0.008621043183040954,
+      "last_period_mean": 0.007537507690342285
+    },
+    "cycles": {
+      "CD_max": 3.280168315323202,
+      "CL_max": 0.9106122471330896,
+      "CL_min": -0.9460531378368823,
+      "St": 0.3005685126679556,
+      "period": 0.33270994956352773,
+      "cycles": 4
+    },
+    "reference_cycles": {
+      "CD_max": 3.243052843969901,
+      "CL_max": 0.9162771453687487,
+      "CL_min": -0.9501134799316288,
+      "St": 0.3002380634599061,
+      "period": 0.3330690281186852,
+      "cycles": 4
+    },
+    "cycle_errors": {
+      "St_rel": 0.0011006239656671823,
+      "CD_max_rel": 0.011444608872875127,
+      "CL_max_abs": 0.005664898235659077
+    },
+    "phase": {
+      "lag_saves": 0,
+      "lag_seconds": 0.0,
+      "lag_fraction_of_period": 0.0,
+      "lift_rms_at_lag": 0.00676247926639315,
+      "phase_accurate": true
+    },
+    "targets": {
+      "e_u_rms": {
+        "value": 0.009004876049988265,
+        "target": 0.01,
+        "met": true
+      },
+      "e_u_max": {
+        "value": 0.016232719590618554,
+        "target": 0.03,
+        "met": true
+      },
+      "e_p_rms": {
+        "value": 0.004735318454711019,
+        "target": 0.02,
+        "met": true
+      },
+      "St_rel": {
+        "value": 0.0011006239656671823,
+        "target": 0.01,
+        "met": true
+      },
+      "CD_max_rel": {
+        "value": 0.011444608872875127,
+        "target": 0.02,
+        "met": true
+      },
+      "CL_max_abs": {
+        "value": 0.005664898235659077,
+        "target": 0.02,
+        "met": true
+      }
+    },
+    "targets_met": 6,
+    "supplementary_smoothed9": {
+      "cycles": {
+        "CD_max": 3.279365145380658,
+        "CL_max": 0.903771371273931,
+        "CL_min": -0.9375239466494175,
+        "St": 0.3003703502659817,
+        "period": 0.33292261271639134,
+        "cycles": 4
+      },
+      "reference_cycles": {
+        "CD_max": 3.242269230679402,
+        "CL_max": 0.9093376316085554,
+        "CL_min": -0.9431734263473844,
+        "St": 0.3002378133619739,
+        "period": 0.33306930556766634,
+        "cycles": 4
+      },
+      "lift_error_rms": 0.007344237066476778,
+      "lift_error_max": 0.019989051947853276,
+      "drag_error_max_rel": NaN,
+      "cycle_errors": {
+        "St_rel": 0.00044143974579239384,
+        "CD_max_rel": 0.011441343103232263,
+        "CL_max_abs": 0.005566260334624373
+      },
+      "targets_met_with_smoothed_cycles": 6
+    },
+    "diagnostic_min_distance": {
+      "cycles": {
+        "St": 0.3003703502659817,
+        "CD_max": 3.279365145380658,
+        "CL_max": 0.903771371273931,
+        "cycles": 4,
+        "St_per_cycle": [
+          0.30000409111608484,
+          0.30026899744392044,
+          0.3007481152136254,
+          0.30046019729029605
+        ]
+      },
+      "reference_cycles": {
+        "St": 0.3002378133619739,
+        "CD_max": 3.242269230679402,
+        "CL_max": 0.9093376316085554,
+        "cycles": 4,
+        "St_per_cycle": [
+          0.3002359639303503,
+          0.30023757289187747,
+          0.3002385378835407,
+          0.3002391787421272
+        ]
+      },
+      "cycle_errors": {
+        "St_rel": 0.00044143974579239384,
+        "CD_max_rel": 0.011441343103232263,
+        "CL_max_abs": 0.005566260334624373,
+        "St_rel_worst_cycle": 0.0016996588335668106
+      }
+    },
+    "inference": {
+      "warmup_seconds": 0.26538735162466764,
+      "repeats": [
+        0.2650096286088228,
+        0.2649636873975396,
+        0.2649443093687296,
+        0.26493206061422825,
+        0.2648997511714697
+      ],
+      "median_seconds": 0.2649443093687296,
+      "min_seconds": 0.2648997511714697,
+      "max_seconds": 0.2650096286088228,
+      "device": "NVIDIA RTX PRO 6000 Blackwell Server Edition"
+    }
+  }
+}

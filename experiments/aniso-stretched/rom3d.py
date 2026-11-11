@@ -10,7 +10,7 @@ import sys, os, json, time
 import numpy as np
 import aniso as an, aniso3d as a3, solve3d as s3, gal3d, hq
 HERE = os.path.dirname(os.path.abspath(__file__)); OD = f"{HERE}/runs/rom3"
-RANKS = [4, 8, 12, 16, 24, 32, 48, 64, 96, 128, 192, 256, 384, 512]
+RANKS = [int(s) for s in os.environ["RANKS"].split(",")] if os.environ.get("RANKS") else [4, 8, 12, 16, 24, 32, 48, 64, 96, 128, 192, 256, 384, 512]
 
 
 def node_coords(N, p):

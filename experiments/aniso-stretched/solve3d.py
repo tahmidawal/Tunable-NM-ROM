@@ -32,7 +32,7 @@ class Solver:
         self._full = (1, 1, N * p + 1, N * p + 1, N * p + 1)
         gather = lambda Uf: jax.lax.conv_general_dilated(Uf, self._E, (p, p, p), "VALID")
         self._scatter = jax.linear_transpose(gather, jnp.zeros(self._full, dtype))
-        self.conv = True
+        self.conv = __import__("os").environ.get("OPFORM", "conv") != "dense"
         self._solve = jax.jit(self._pcg, static_argnames=("prec",))
 
     # axis applications

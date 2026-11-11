@@ -230,7 +230,10 @@ def main():
     ap.add_argument('--pod-from', help='reuse FE modes of another export (quadrature check): pod.npz path')
     ap.add_argument('--pod-sha256')
     ap.add_argument('--threads', type=int, default=16)
+    ap.add_argument('--max-rank', type=int, help='rebuttal push: keep this many POD/pressure/supremizer modes (default 24)')
     args = ap.parse_args()
+    if args.max_rank:
+        RANKS.append(args.max_rank)
     import ngsolve as ng
     ng.SetNumThreads(args.threads)
     man = json.loads(Path(args.manifest).read_text())

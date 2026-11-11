@@ -86,7 +86,16 @@ def main():
     for spec in json.loads(a.arms):
         name = spec['name']; rec = {'spec': spec}
         try:
-            arm = rc.Arm(ex, spec['kind'], spec['r'], spec.get('key'))
+            key = spec.get('key')
+            if spec['kind'] == 'bank' and key == 'trained' and spec['r'] < z['V'].shape[-1]:
+                # PCA prefix of the trained bank (rebuttal push): first r functions, own identity-tagged key
+                key = f"trained_p{spec['r']}"; n_ = spec['r']
+                if key not in ex.bank:
+                    ex.add_bank(key, z['V'][..., :n_], z['G'][..., :n_], z['outlet_V'][..., :n_],
+                                {lab: (z[f'{lab}_V'][..., :n_], z[f'{lab}_G'][..., :n_]) for lab in ('inlet', 'outlet')})
+                    proj[f'uv_{key}'] = proj['uv_trained'][:, :n_]
+            arm = rc.Arm(ex, spec['kind'], spec['r'], key)
+            rec['floor'] = {k_: {'median': float(np.median(v_)), 'max': float(np.max(v_))} for k_, v_ in arm.floors(proj).items()}
             rec.update(velocity_dimension=arm.d, pressure_dimension=arm.dp, total_unknowns=arm.d + arm.dp,
                        retained=arm.retained, raw=arm.raw_count, orthonormality_defect=arm.orth_defect)
             full, _ = arm.ref_coeffs(proj)

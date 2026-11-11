@@ -91,3 +91,44 @@ admitted coarser mesh exists) and other time integrators.
   recorded as arms, not as candidates. The held-out job also reports the frozen bank's PCA prefixes r24 and r16.
 - A5 (2026-11-11 02:45): rb-dev2 (step ladder for the a3 bank) was cancelled before it started and replaced by
   rb-dev2b, the same step ladder for the frozen a8b bank (r32 and prefixes r24, r16) and POD r16/r24/r32.
+- Records (2026-11-11, read after the freeze; development Re 95, step 1/3200, values from artifacts/rb-a{4,5,6,7b}/results/r4/R4-re95.json):
+  a4 (r24 variable projection) 6/6, e_u RMS 5.821e-3, divergence 9.33e-3; a5 (r24 stream function) 6/6, 6.153e-3, divergence
+  1.93e-4 (below POD's 2.44e-4); a6 (r24 divergence penalty) 6/6, 5.114e-3, divergence 7.51e-3; a7b (r24 wake weight) 6/6,
+  5.726e-3, divergence 9.13e-3. None displaces the frozen a8b (1.912e-3). a7 (7120265) was replaced by a7b before it produced
+  a result; a8 (7117595) failed its GPU preflight and was rerun unchanged as a8b.
+- A6 (2026-11-11 10:10 EST, after the dev step ladder rb-dev2b was read and BEFORE the held-out case is opened in this push;
+  everything below is decided from development Re 95 only).
+  (a) What the timings contain (read from the code). `rollout_seconds` in rom_r4.py and `warm` in rom_time*.py are the wall
+  time of `rom_core.Arm.rollout` only: NumPy on the CPU (16 threads; the allocation holds a GPU that the rollout does not
+  use), BDF2/Newton steps of the reduced system, with the reduced velocity and pressure coefficients, the reaction force
+  and the two probe pressures at every step. NOT included: the operator/tensor build and start projection (per basis,
+  offline), bank training, any reconstruction or output of a full field, and the error evaluation. The FE time is the
+  stage wall time of the stepper (assembly, LU refreshes, solves, forces and probes every step, the full state kept in
+  memory at every 1/400 save); its setup and construction are excluded. Because the FE time contains the full state at
+  every save and the ROM time does not, the ROM field output is measured separately (rom_time2.py: velocity and pressure
+  at every 1/400 save on every 21st quadrature point, 49,357 points = 148,071 values per save, more than the P2/P1
+  comparator's 96,781 unknowns; and once on all 1,036,497 quadrature points) and the speed-up is reported both without
+  and with it. The build time is reported next to them.
+  (b) ROM step for the cost comparison (rule of A4 applied to rb-dev2b): the frozen arm bank_r32 meets 6/6 on Re 95 at the
+  largest laddered step 1/400 (e_u RMS 6.465e-3), so its cost-comparison step is 1/400. The same rule per prefix:
+  bank_p24 -> 1/400 (6/6, 4.660e-3); bank_p16 -> 1/800 (6/6 at 1/800, 5/6 at 1/400). POD at each rank is compared at the
+  same step as the bank of that rank.
+  (c) Arms for the cost comparison. Headline: the frozen arm bank_r32 at step 1/400. Declared secondary rows: bank_p24 at
+  1/400 (the cheapest bank configuration meeting 6/6 on Re 95: 0.63 s rollout) and bank_p16 at 1/800. On the held-out case
+  every arm (bank r32, p24, p16; POD r32, r24, r16) is rolled out at all four steps (1/3200 primary accuracy table, 1/1600,
+  1/800, 1/400) and every row is reported whatever it shows; a configuration that fails a target on Re 105 is reported as
+  failing and is not replaced by another step or rank chosen on Re 105.
+  (d) Speed-up = FE stage wall time (median of 5) / ROM time (median of 5), both measured in one allocation in the order
+  ROM, FE, ROM (16 threads). Reported twice: ROM rollout only, and ROM rollout + field output of (a).
+  (e) Change to step 4 (FE on the held-out case). Step 4 said the dev-chosen FE entry is run once on Re 105. Instead the FE
+  gets its own ladder on Re 105 and the accuracy-matched FE there is the cheapest entry meeting all six on Re 105 (same
+  rule as on dev, select_fe.py). Reason: the comparator must be allowed its cheapest passing setting on the case it is
+  scored on; the dev choice (P2/P1, 1/400, refresh 40) may not pass, or a cheaper one may pass. This lets the comparator,
+  and only the comparator, be chosen on the held-out case; it can only lower the reported speed-up. Ladder (P2/P1, step
+  inverse, refresh): (200,2) (200,20) (400,20) (400,40) (400,80) (800,40) (800,80); the dev choice is in it and is reported
+  whatever is chosen. The same list is rerun on Re 95 in one allocation with the ROM timings (rb-devt); it contains entries
+  not run on dev before ((200,20), (800,40), (800,80)); if one of them is a cheaper 6/6 entry it becomes the dev
+  accuracy-matched FE (rule unchanged).
+  (f) rom_time.py rebuilt the operators twice per repetition (about a minute per build at rank 32), which would take hours
+  for six arms at four steps; rom_time2.py builds once untimed, once timed, then repeats the rollouts. tasks/rb_ho_common.sh
+  (template, never run) is superseded by tasks/rb_ho1.sh + tasks/rb_cmp_common.sh.

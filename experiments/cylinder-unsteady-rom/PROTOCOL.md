@@ -81,3 +81,13 @@ admitted coarser mesh exists) and other time integrators.
   and P3/P2 at 1/200) because P3/P2 cost about three times P2/P1 for the same errors; P3/P2 at 1/400 and
   1/800, P2/P1 at 1/1600 and all P4/P3 entries of the planned ladder were NOT run. The reported
   accuracy-matched FE is therefore the cheapest of the entries actually run, not of the full planned grid.
+- Freeze (2026-11-11 02:45, development Re 95 only, before any held-out number of this push): frozen arm = rb-a8b
+  (job 7118315; rank 32, 4x256 + streamwise Fourier features, time-matched budget), bank_r32: 6/6 on Re 95, e_u RMS
+  1.912e-3 (POD r32 1.867e-3). sha256 trained_bank_eval.npz b5915d667372345adfedfb15817c8071e346ea1dc49543204d4d50e10f820fd4,
+  trained_bank_params.npz ad9a6bd3ba38e57e71a2a5fad47b259c7a22e3127cd70efe08494f93439b1f3d. Arms finished at the freeze:
+  a1 (r16) 9.556e-3, a2 (r16) 9.523e-3, a3 (r24) 5.632e-3, a8b (r32) 1.912e-3. Arms still running or queued at the
+  freeze (a4, a5, a6, a7) are all rank 24, whose rollout error cannot fall below the r24 projection floor on Re 95
+  (POD r24 floor 2.35e-3 > 1.912e-3), so by the selection rule they cannot displace a8b; they are run to the end and
+  recorded as arms, not as candidates. The held-out job also reports the frozen bank's PCA prefixes r24 and r16.
+- A5 (2026-11-11 02:45): rb-dev2 (step ladder for the a3 bank) was cancelled before it started and replaced by
+  rb-dev2b, the same step ladder for the frozen a8b bank (r32 and prefixes r24, r16) and POD r16/r24/r32.

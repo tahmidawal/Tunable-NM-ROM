@@ -200,7 +200,7 @@ TEST OPENED (2026-11-11, 12:14-12:57 EST). Sealed cohort opened once by job 7134
 every mesh. Results: results/cmptestB/{compare.json,ladder.json}, results/table_test.md.
 No rerun, no change of any setting afterwards.
 
-A5 (2026-11-11, 14:15 EST; written before any coordinate-network bank or operator has been
+A5 (2026-11-11, 13:50 EST; written before any coordinate-network bank or operator has been
 trained on this family and before any of their outcomes exists. The sealed test cohort (seed
 2026111113) HAS ALREADY BEEN OPENED ONCE, by job 7134832, for the per-mesh POD and
 interpolated-POD arms above; the new arms below were not part of that job. Every choice for

@@ -20,12 +20,13 @@ def main():
     ap = argparse.ArgumentParser()
     for k in ('--export', '--manifest', '--case', '--series-dir', '--arms', '--out'):
         ap.add_argument(k, required=True)
+    ap.add_argument('--allow-heldout', action='store_true')
     ap.add_argument('--trained-bank'); ap.add_argument('--stride', type=int, default=49)  # order-12 rule: 49 points per triangle
     a = ap.parse_args()
     import ngsolve as ng
     man = json.loads(Path(a.manifest).read_text())
     (case,) = [c for c in man['cases'] if c['name'] == a.case]
-    if case['split'] != 'dev':
+    if case['split'] != 'dev' and not (case['split'] == 'heldout' and a.allow_heldout):
         raise PermissionError('frames only for the development trajectory before R5')
     ex = rc.Export(a.export)
     if a.trained_bank:
@@ -41,7 +42,13 @@ def main():
     frames = np.where(ts >= ts[-1] - 2 * period)[0][::4]
     out['t'] = ts[frames]
     for spec in arms:
-        arm = rc.Arm(ex, spec['kind'], spec['r'], spec.get('key'))
+        key = spec.get('key')
+        if spec['kind'] == 'bank' and key == 'trained' and spec['r'] < z['V'].shape[-1]:
+            key = f"trained_p{spec['r']}"; n_ = spec['r']   # PCA prefix (rebuttal push), as in rom_r4
+            if key not in ex.bank:
+                ex.add_bank(key, z['V'][..., :n_], z['G'][..., :n_], z['outlet_V'][..., :n_],
+                            {lab: (z[f'{lab}_V'][..., :n_], z[f'{lab}_G'][..., :n_]) for lab in ('inlet', 'outlet')})
+        arm = rc.Arm(ex, spec['kind'], spec['r'], key)
         s = np.load(Path(a.series_dir) / f"series_{a.case}_{spec['name']}.npz")
         U = arm.lV[sel][None] + np.einsum('qcj,tj->tqc', arm.Vb[sel], s['A'][frames])
         out[f"rom_{spec['name']}"] = U          # velocity vectors (t, q, 2)

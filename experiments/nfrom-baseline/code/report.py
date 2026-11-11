@@ -44,11 +44,11 @@ def main():
         mine = []
         for r in t['results']:
             s, c = r['selection'], r['cfg']
-            label = {'C': 'CROM-style', 'L': 'CoLoRA-style'}[c['arm']]
+            label = {'C': 'CROM-style', 'L': 'CoLoRA-style', 'LR': 'CoLoRA-style decoder, online residual solve'}[s['arm']]
             what = (f"hyper-network" if s['kind'] == 'hyper' else f"collocation LM, M={s['M']}, {s['iters']} it/step" + (', refined z0' if s['refine'] else ''))
             name = f"{label} k={c['k']} ({s['name']}, {ROUND[s['models_dir']]} steps; {what}; {s['dtype']}; {s['role']})"
             mine.append((name, r['test']['worst_percent'], r['test']['median_percent'], r['ms_full']['median'],
-                         (r['ms_full']['p5'], r['ms_full']['p95'], r['ms_latent_only']['median']), 'job ' + str(t['job_id']), r['test']['nonfinite'], s['worst_percent']))
+                         (r['ms_full']['p5'], r['ms_full']['p95'], r['ms_latent_only']['median']), 'job ' + str(r.get('job_id', t['job_id'])) + f", {r['timing_warmup']} warm-up, {r['timing_repetitions']}x64 timed", r['test']['nonfinite'], s['worst_percent']))
         out.append(f"### Test cohort (test64, 256 mesh, {t['gpu']}; one evaluation, job {t['job_id']})\n")
         out.append('| method | worst error % | median error % | time per query, ms (median) | p5–p95 ms | latent-only ms | validation worst % | source |')
         out.append('|---|---|---|---|---|---|---|---|')
@@ -56,6 +56,15 @@ def main():
             out.append(f"| {n} | {f(w)}{' (+%d non-finite)' % nonf if nonf else ''} | {f(m)} | {f(ms, 1)} | {f(sp[0], 1)}–{f(sp[1], 1)} | {f(sp[2], 1)} | {f(vw)} | {src} |")
         for n, w, m, ms, sp, src in rows:
             out.append(f"| {n} | {f(w)} | {f(m)} | {f(ms, 1)} | | | | {src} (stored) |")
+        out.append('')
+        out.append('| method | cases above 0.875 % | above 3.85 % | above 10 % | 90th percentile % | case index of the worst |')
+        out.append('|---|---|---|---|---|---|')
+        summary['test_distribution'] = []
+        for (n, *_), r in zip(mine, t['results']):
+            e = [100 * x for x in r['errors']]; es = sorted(e)
+            dd = dict(name=n, above_0p875=sum(x > .875 for x in e), above_3p85=sum(x > 3.85 for x in e), above_10=sum(x > 10 for x in e), p90=es[int(.9 * (len(es) - 1))], worst_case=e.index(max(e)))
+            summary['test_distribution'].append(dd)
+            out.append(f"| {n} | {dd['above_0p875']} / 64 | {dd['above_3p85']} / 64 | {dd['above_10']} / 64 | {f(dd['p90'])} | {dd['worst_case']} |")
         summary['test_rows'] = [dict(name=x[0], worst=x[1], median=x[2], ms=x[3], p5=x[4][0], p95=x[4][1], latent_ms=x[4][2], validation_worst=x[7]) for x in mine]
         # verdicts, PROTOCOL.md section 7 (worst-case error and median time, both must be lower)
         acc, fast, hd = ref['roles']['accurate'], ref['roles']['fast'], head

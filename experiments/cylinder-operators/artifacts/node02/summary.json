@@ -1,0 +1,128 @@
+{
+  "arm": "node",
+  "rep": "n2",
+  "gpu": "NVIDIA L40S",
+  "tune_minutes": 20.0,
+  "final_minutes": 180.0,
+  "candidates": {},
+  "selected": "tr_K8_noise",
+  "final": {
+    "config": {
+      "name": "tr_K8_noise",
+      "C": 128,
+      "L": 6,
+      "H": 8,
+      "M": 32,
+      "K": 8,
+      "noise": 0.01,
+      "lr": 0.001,
+      "batch": 8,
+      "n_sub": 16384
+    },
+    "params": 762888,
+    "train": {
+      "iterations": 81178,
+      "seconds": 10800.07263469696,
+      "loss_at_80pct": 0.00031503699447057445,
+      "loss_final": 0.0001770949169895175,
+      "relative_drop_last_20pct": 0.4378599336019923,
+      "plateau": false
+    },
+    "train_re100_native_e_u": {
+      "rms": 0.004206871044305071,
+      "max": 0.00745723070576787
+    }
+  },
+  "training_seconds_total": 10800.07263469696,
+  "dev_re95": {
+    "case": "re95",
+    "saves": 681,
+    "finite": true,
+    "status": "completed",
+    "e_u": {
+      "rms": 0.0037127512459215043,
+      "max": 0.006474487331839988,
+      "last_period_mean": 0.005850369772181054
+    },
+    "e_p": {
+      "rms": 0.0018895313969837443,
+      "max": 0.0031480948896760383,
+      "last_period_mean": 0.002814105872151072
+    },
+    "cycles": {
+      "CD_max": 3.2478992957136272,
+      "CL_max": 0.04594673138578362,
+      "CL_min": -0.8405153713740454,
+      "St": 6.794639342067378,
+      "period": 0.08857151015830228,
+      "cycles": 17
+    },
+    "reference_cycles": {
+      "CD_max": 3.243052843969901,
+      "CL_max": 0.9162771453687487,
+      "CL_min": -0.9501134799316288,
+      "St": 0.3002380634599061,
+      "period": 0.3330690281186852,
+      "cycles": 4
+    },
+    "cycle_errors": {
+      "St_rel": 21.63083922060647,
+      "CD_max_rel": 0.0014944103524978177,
+      "CL_max_abs": 0.8703304139829651
+    },
+    "phase": {
+      "lag_saves": 0,
+      "lag_seconds": 0.0,
+      "lag_fraction_of_period": 0.0,
+      "lift_rms_at_lag": 0.012228402777354862,
+      "phase_accurate": true
+    },
+    "targets": {
+      "e_u_rms": {
+        "value": 0.0037127512459215043,
+        "target": 0.01,
+        "met": true
+      },
+      "e_u_max": {
+        "value": 0.006474487331839988,
+        "target": 0.03,
+        "met": true
+      },
+      "e_p_rms": {
+        "value": 0.0018895313969837443,
+        "target": 0.02,
+        "met": true
+      },
+      "St_rel": {
+        "value": 21.63083922060647,
+        "target": 0.01,
+        "met": false
+      },
+      "CD_max_rel": {
+        "value": 0.0014944103524978177,
+        "target": 0.02,
+        "met": true
+      },
+      "CL_max_abs": {
+        "value": 0.8703304139829651,
+        "target": 0.02,
+        "met": false
+      }
+    },
+    "targets_met": 4,
+    "inference": {
+      "warmup_seconds": 2.559737630188465,
+      "repeats": [
+        2.5596386045217514,
+        2.5600769305601716,
+        2.559652185998857,
+        2.559874689206481,
+        2.559832383878529
+      ],
+      "median_seconds": 2.559832383878529,
+      "min_seconds": 2.5596386045217514,
+      "max_seconds": 2.5600769305601716,
+      "device": "NVIDIA L40S"
+    }
+  }
+}

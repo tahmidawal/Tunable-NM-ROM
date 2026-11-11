@@ -20,6 +20,8 @@ def row_from_rec(r):
                last_period_e_u=r['e_u']['last_period_mean'])
     ph = r.get('phase') or r.get('phase_aligned') or {}
     out['lag_saves'] = ph.get('lag_saves')
+    if 'force' in r:  # ROM lane rows: pointwise force errors over the window
+        out['lift_error_max'] = r['force'].get('CL_maxabs'); out['lift_error_rms'] = None
     for key, tag in (('supplementary_smoothed9', 'sup'), ('diagnostic_min_distance', 'diag')):
         ce = (r.get(key) or {}).get('cycle_errors')
         if ce:
@@ -88,7 +90,7 @@ def main():
     lines.append('|---|---|---|---|---|---|')
     for case in ('re95', 're105'):
         for name, r in table[case].items():
-            if 'lift_error_rms' not in r:
+            if 'lift_error_max' not in r:
                 continue
             s_, d_ = r.get('sup'), r.get('diag')
             lines.append(f"| {case} | {name} | {fmt(r['lift_error_rms'])} | {fmt(r['lift_error_max'])} | "

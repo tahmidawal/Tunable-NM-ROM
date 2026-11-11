@@ -243,3 +243,15 @@ If a block fails for a technical reason before producing any score, only that bl
 (v) What development is used for: checking the pipeline end to end, the regression check of (i), and fixing which
 step each reduced arm is reported at; no model, rank or checkpoint is selected on any A9 case. The confirmation job is
 submitted only after the development job has completed and this file records that nothing else changed.
+
+### A8 selection record (2026-11-11 17:25 EST; development Re 95 only, step 1/3200; no Re 105 number of any stream bank exists)
+Both stream-function arms completed (rb-s1b job 7136459, rb-s2b job 7136462) and both meet all six targets at rank 32
+and at the prefixes 24 and 16. Rank-32 velocity error: s1 0.002425, s2 0.002249 (difference 7.8 %, beyond the 5 % tie
+band), so the rule selects **s2**: `rb-s2b/results/train/trained_bank_eval.npz`, SHA-256
+`39942eda6f0b0b39155bd8803a4aa17d6ac6964c8048e542f2e61e2f857b52e7` (`tasks/stream_frozen.env`). It is frozen from here
+on. For the record, on the same data POD-Galerkin at rank 32 has velocity error 0.001867 (lower than either stream arm);
+median divergence is 1.927e-4 for both stream arms at every rank against 2.42e-4 to 2.44e-4 for POD.
+FE ladder, development (rb-fa job 7136516): 64 screen entries; the five cheapest passing ones were timed (5 reps). The
+cheapest passing entry on Re 95 is mesh c2, P2/P1 (25,303 unknowns), step 1/300, refresh 30: median 35.99 s.
+Next: `rb-sd` (stream development step ladder + paired development timing) and `rb-fb` (Re 105: stream bank once at
+the four steps; FE candidates = 8 cheapest passing development entries plus the previous m0 comparator; paired timing).

@@ -1,0 +1,182 @@
+{
+  "case": "re95",
+  "Re": 95,
+  "window": {
+    "t_start": 17.45000000000225,
+    "duration": 1.7
+  },
+  "reference": {
+    "run": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1-record-re95/results/record_re95_p4",
+    "velocity_order": 4,
+    "dt": 0.0003125,
+    "ndof": 437140,
+    "refactor_every": 40,
+    "record_stage_wall_seconds": 8725.920302036218,
+    "cycles": {
+      "CD_max": 3.243052843969901,
+      "CL_max": 0.9162771453687487,
+      "CL_min": -0.9501134799316288,
+      "St": 0.3002380634599061,
+      "dp_at_t0_plus_half_period": 2.473340004452295,
+      "period": 0.3330690281186852,
+      "cycles": 4
+    }
+  },
+  "targets": {
+    "e_u_rms": 0.01,
+    "e_u_max": 0.03,
+    "e_p_rms": 0.02,
+    "St_rel": 0.01,
+    "CD_max_rel": 0.02,
+    "CL_max_abs": 0.02
+  },
+  "threads": 16,
+  "entries": {
+    "p2_dt400_K40": {
+      "velocity_order": 2,
+      "pressure_order": 1,
+      "dt_inverse": 400,
+      "refactor_every": 40,
+      "frozen_lag_seconds": 0.1,
+      "ndof": 96781,
+      "timing": [
+        {
+          "warm_seconds": 135.64063327666372,
+          "construct_seconds": 1.9345904318615794,
+          "setup_seconds": 0.0036121010780334473,
+          "steps": 680,
+          "lu_refreshes": 18,
+          "timers": {
+            "conv_apply": 1.8341102954000235,
+            "factor": 16.96479308977723,
+            "solve": 106.65770706161857,
+            "observe": 3.4928746419027448,
+            "diagnostics": 0.0
+          }
+        },
+        {
+          "warm_seconds": 134.84892574045807,
+          "construct_seconds": 1.7964134737849236,
+          "setup_seconds": 0.004011873155832291,
+          "steps": 680,
+          "lu_refreshes": 18,
+          "timers": {
+            "conv_apply": 1.8402615943923593,
+            "factor": 16.86374189797789,
+            "solve": 108.14176850114018,
+            "observe": 3.362499107606709,
+            "diagnostics": 0.0
+          }
+        },
+        {
+          "warm_seconds": 135.18335863109678,
+          "construct_seconds": 1.703034502454102,
+          "setup_seconds": 0.003888196311891079,
+          "steps": 680,
+          "lu_refreshes": 18,
+          "timers": {
+            "conv_apply": 1.9922093506902456,
+            "factor": 16.664085237309337,
+            "solve": 108.35815212130547,
+            "observe": 3.420595746487379,
+            "diagnostics": 0.0
+          }
+        },
+        {
+          "warm_seconds": 135.06698149442673,
+          "construct_seconds": 1.7400070130825043,
+          "setup_seconds": 0.0032602306455373764,
+          "steps": 680,
+          "lu_refreshes": 18,
+          "timers": {
+            "conv_apply": 1.7938019381836057,
+            "factor": 16.836286175996065,
+            "solve": 109.2586644552648,
+            "observe": 3.4262279365211725,
+            "diagnostics": 0.0
+          }
+        },
+        {
+          "warm_seconds": 134.9626399371773,
+          "construct_seconds": 1.8184492597356439,
+          "setup_seconds": 0.0040572816506028175,
+          "steps": 680,
+          "lu_refreshes": 18,
+          "timers": {
+            "conv_apply": 1.7680369280278683,
+            "factor": 16.785019879229367,
+            "solve": 108.42406355030835,
+            "observe": 3.3951635202392936,
+            "diagnostics": 0.0
+          }
+        }
+      ],
+      "warm_seconds_median": 135.06698149442673,
+      "warm_seconds_min": 134.84892574045807,
+      "warm_seconds_max": 135.64063327666372,
+      "force": {
+        "CD_maxabs_rel": 0.0015028214903508937,
+        "CL_maxabs": 0.03192450198514146
+      },
+      "cycles": {
+        "CD_max": 3.245517051750314,
+        "CL_max": 0.9225550040198186,
+        "CL_min": -0.9581017327018955,
+        "St": 0.3006164888534689,
+        "dp_at_t0_plus_half_period": 2.4752008092505067,
+        "period": 0.33264975749957504,
+        "cycles": 4
+      },
+      "cycle_errors": {
+        "St_rel": 0.001260417780483533,
+        "CD_max_rel": 0.0007598420065817298,
+        "CL_max_abs": 0.00627785865106989
+      },
+      "e_u": {
+        "rms": 0.00496083365184345,
+        "max": 0.007058229037466187,
+        "at_start": 0.0002095465395225405,
+        "saves": 681
+      },
+      "e_p": {
+        "rms": 0.0026293276577178757,
+        "max": 0.0036589279044213856,
+        "at_start": 0.0005402565469824351
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.00496083365184345,
+          "target": 0.01,
+          "met": true
+        },
+        "e_u_max": {
+          "value": 0.007058229037466187,
+          "target": 0.03,
+          "met": true
+        },
+        "e_p_rms": {
+          "value": 0.0026293276577178757,
+          "target": 0.02,
+          "met": true
+        },
+        "St_rel": {
+          "value": 0.001260417780483533,
+          "target": 0.01,
+          "met": true
+        },
+        "CD_max_rel": {
+          "value": 0.0007598420065817298,
+          "target": 0.02,
+          "met": true
+        },
+        "CL_max_abs": {
+          "value": 0.00627785865106989,
+          "target": 0.02,
+          "met": true
+        }
+      },
+      "targets_met": 6,
+      "status": "completed"
+    }
+  }
+}

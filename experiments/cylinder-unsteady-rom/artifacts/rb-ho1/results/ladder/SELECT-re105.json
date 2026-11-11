@@ -1,0 +1,110 @@
+{
+  "case": "re105",
+  "rule": "cheapest completed entry meeting all six targets",
+  "chosen": {
+    "name": "p2_dt400_K40",
+    "entry": [
+      2,
+      400,
+      40
+    ],
+    "status": "completed",
+    "targets_met": 6,
+    "warm_seconds_median": 126.20297246798873,
+    "e_u_rms": 0.005689638552363654,
+    "error": null
+  },
+  "entries": [
+    {
+      "name": "p2_dt200_K2",
+      "entry": [
+        2,
+        200,
+        2
+      ],
+      "status": "completed",
+      "targets_met": 4,
+      "warm_seconds_median": 231.2203526319936,
+      "e_u_rms": 0.01829999844785037,
+      "error": null
+    },
+    {
+      "name": "p2_dt200_K20",
+      "entry": [
+        2,
+        200,
+        20
+      ],
+      "status": "failed",
+      "targets_met": null,
+      "warm_seconds_median": null,
+      "e_u_rms": null,
+      "error": "ArithmeticError('instability')"
+    },
+    {
+      "name": "p2_dt400_K20",
+      "entry": [
+        2,
+        400,
+        20
+      ],
+      "status": "completed",
+      "targets_met": 6,
+      "warm_seconds_median": 139.97421233635396,
+      "e_u_rms": 0.005165338579214088,
+      "error": null
+    },
+    {
+      "name": "p2_dt400_K40",
+      "entry": [
+        2,
+        400,
+        40
+      ],
+      "status": "completed",
+      "targets_met": 6,
+      "warm_seconds_median": 126.20297246798873,
+      "e_u_rms": 0.005689638552363654,
+      "error": null
+    },
+    {
+      "name": "p2_dt400_K80",
+      "entry": [
+        2,
+        400,
+        80
+      ],
+      "status": "failed",
+      "targets_met": null,
+      "warm_seconds_median": null,
+      "e_u_rms": null,
+      "error": "ArithmeticError('instability')"
+    },
+    {
+      "name": "p2_dt800_K40",
+      "entry": [
+        2,
+        800,
+        40
+      ],
+      "status": "completed",
+      "targets_met": 6,
+      "warm_seconds_median": 248.56781329400837,
+      "e_u_rms": 0.001154452211491787,
+      "error": null
+    },
+    {
+      "name": "p2_dt800_K80",
+      "entry": [
+        2,
+        800,
+        80
+      ],
+      "status": "completed",
+      "targets_met": 6,
+      "warm_seconds_median": 223.8172526312992,
+      "e_u_rms": 0.0012773846763109759,
+      "error": null
+    }
+  ]
+}

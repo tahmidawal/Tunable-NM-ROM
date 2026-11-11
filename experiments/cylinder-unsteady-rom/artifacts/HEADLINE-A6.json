@@ -1,0 +1,148 @@
+{
+ "re95": {
+  "attempt": "rb-devt",
+  "host": "pax106",
+  "cpu": "Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz",
+  "threads": "16",
+  "fe_entry": "p2_dt400_K40",
+  "fe_seconds_median": 135.06698149442673,
+  "fe_seconds_min": 134.84892574045807,
+  "fe_seconds_max": 135.64063327666372,
+  "fe_targets_met": 6,
+  "rom": {
+   "bank_r32": {
+    "dt": "0.0025",
+    "rollout_seconds": 2.1973498933948576,
+    "output_seconds": 3.208965494763106,
+    "e_u_rms": 0.006464965030654216,
+    "build_seconds": 40.10886650951579,
+    "full_quadrature_output_seconds": 90.71460256492719,
+    "speedup_rollout_only": 61.46812662855035,
+    "speedup_with_output": 24.98318573686591
+   },
+   "bank_p24": {
+    "dt": "0.0025",
+    "rollout_seconds": 1.0837074471637607,
+    "output_seconds": 2.254398176446557,
+    "e_u_rms": 0.004659680607602447,
+    "build_seconds": 24.90980948600918,
+    "full_quadrature_output_seconds": 70.27981434296817,
+    "speedup_rollout_only": 124.63417303989104,
+    "speedup_with_output": 40.46216528892979
+   },
+   "bank_p16": {
+    "dt": "0.00125",
+    "rollout_seconds": 0.9639087608084083,
+    "output_seconds": 1.8655571709387004,
+    "e_u_rms": 0.009915028993150036,
+    "build_seconds": 13.49601126741618,
+    "full_quadrature_output_seconds": 56.03623502003029,
+    "speedup_rollout_only": 140.12423891774688,
+    "speedup_with_output": 47.73585713789704
+   },
+   "pod_r32": {
+    "dt": "0.0025",
+    "rollout_seconds": 2.20398589130491,
+    "output_seconds": 3.197017720900476,
+    "e_u_rms": 0.006430732220817244,
+    "build_seconds": 42.684037767350674,
+    "full_quadrature_output_seconds": 92.53867287747562,
+    "speedup_rollout_only": 61.283051777821434,
+    "speedup_with_output": 25.007756186127594
+   },
+   "pod_r24": {
+    "dt": "0.0025",
+    "rollout_seconds": 1.0830369517207146,
+    "output_seconds": 2.5473408782854676,
+    "e_u_rms": 0.004640533642420799,
+    "build_seconds": 26.75615035323426,
+    "full_quadrature_output_seconds": 72.29771758941934,
+    "speedup_rollout_only": 124.71133259103867,
+    "speedup_with_output": 37.204662384740466
+   },
+   "pod_r16": {
+    "dt": "0.00125",
+    "rollout_seconds": 0.9666934250853956,
+    "output_seconds": 1.9637902057729661,
+    "e_u_rms": 0.00990222031464012,
+    "build_seconds": 14.32993556978181,
+    "full_quadrature_output_seconds": 57.26754756178707,
+    "speedup_rollout_only": 139.72059599194566,
+    "speedup_with_output": 46.09033815174888
+   }
+  }
+ },
+ "re105": {
+  "attempt": "rb-ho1",
+  "host": "pax023",
+  "cpu": "Intel(R) Xeon(R) Gold 6448Y",
+  "threads": "16",
+  "fe_entry": "p2_dt400_K40",
+  "fe_seconds_median": 122.8564598094672,
+  "fe_seconds_min": 122.12910014763474,
+  "fe_seconds_max": 123.4072745507583,
+  "fe_targets_met": 6,
+  "rom": {
+   "bank_r32": {
+    "dt": "0.0025",
+    "rollout_seconds": 1.715668831486255,
+    "output_seconds": 2.2615074454806745,
+    "e_u_rms": 0.0069503264203807265,
+    "build_seconds": 40.14776675449684,
+    "full_quadrature_output_seconds": 94.99681804981083,
+    "speedup_rollout_only": 71.60849317466398,
+    "speedup_with_output": 30.890373283419027
+   },
+   "bank_p24": {
+    "dt": "0.0025",
+    "rollout_seconds": 0.8223166069947183,
+    "output_seconds": 1.8756432933732867,
+    "e_u_rms": 0.005459387601100519,
+    "build_seconds": 25.215165739879012,
+    "full_quadrature_output_seconds": 78.39142072480172,
+    "speedup_rollout_only": 149.4028683896643,
+    "speedup_with_output": 45.53679978442579
+   },
+   "bank_p16": {
+    "dt": "0.00125",
+    "rollout_seconds": 0.7885308400727808,
+    "output_seconds": 1.6380077456124127,
+    "e_u_rms": 0.008266766183722839,
+    "build_seconds": 13.151315925177187,
+    "full_quadrature_output_seconds": 59.35792095120996,
+    "speedup_rollout_only": 155.80425465429815,
+    "speedup_with_output": 50.63033431004585
+   },
+   "pod_r32": {
+    "dt": "0.0025",
+    "rollout_seconds": 1.7271984559483826,
+    "output_seconds": 2.300480827689171,
+    "e_u_rms": 0.006882207361585433,
+    "build_seconds": 40.57589476369321,
+    "full_quadrature_output_seconds": 94.99659312190488,
+    "speedup_rollout_only": 71.13048265319823,
+    "speedup_with_output": 30.50303938264686
+   },
+   "pod_r24": {
+    "dt": "0.0025",
+    "rollout_seconds": 0.8236212092451751,
+    "output_seconds": 1.8763816845603287,
+    "e_u_rms": 0.005426952133074576,
+    "build_seconds": 25.892001959029585,
+    "full_quadrature_output_seconds": 78.52763853920624,
+    "speedup_rollout_only": 149.16621673944212,
+    "speedup_with_output": 45.502343753531264
+   },
+   "pod_r16": {
+    "dt": "0.00125",
+    "rollout_seconds": 0.7907473440282047,
+    "output_seconds": 1.586741589475423,
+    "e_u_rms": 0.008266605589958296,
+    "build_seconds": 13.551541806664318,
+    "full_quadrature_output_seconds": 59.591306081973016,
+    "speedup_rollout_only": 155.36752761459178,
+    "speedup_with_output": 51.67488187985702
+   }
+  }
+ }
+}

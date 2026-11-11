@@ -132,3 +132,9 @@ admitted coarser mesh exists) and other time integrators.
   (f) rom_time.py rebuilt the operators twice per repetition (about a minute per build at rank 32), which would take hours
   for six arms at four steps; rom_time2.py builds once untimed, once timed, then repeats the rollouts. tasks/rb_ho_common.sh
   (template, never run) is superseded by tasks/rb_ho1.sh + tasks/rb_cmp_common.sh.
+- Held-out opened (2026-11-11, rb-ho1 job 7133112, one job, no rerun, nothing changed afterwards). Re 105, frozen a8b bank,
+  values in artifacts/rb-ho1 and artifacts/HEADLINE-A6.json: every arm (bank r32/p24/p16, POD r32/r24/r16) meets 6/6 at all
+  four steps. bank_r32 at 1/3200: e_u RMS 1.892e-3 (POD r32 1.860e-3). Accuracy-matched FE chosen on Re 105 by the rule of
+  A6(e): P2/P1, 1/400, refresh 40 (122.86 s, median of 5); (200,20) and (400,80) unstable, (200,2) 4/6. Headline (A6 b-d):
+  bank_r32 at 1/400, rollout 1.716 s -> 71.6x; with field output 3.98 s -> 30.9x. Dev pair (rb-devt 7133114): 61.5x / 25.0x.
+  Not claimed: bank_p16 at 1/400 also meets 6/6 on Re 105 (0.40 s) but failed on dev, so by A6(b) its step is 1/800.

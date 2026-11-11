@@ -1,0 +1,10 @@
+/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2803: RuntimeWarning: overflow encountered in multiply
+  s = (x.conj() * x).real
+/cluster/tufts/paralab/tawal01/rebuttal-ns3d-confirm/cdev128c/experiments/ns3d-grok/diag_floor.py:67: RuntimeWarning: overflow encountered in multiply
+  num = np.sqrt(np.sum(diff * diff, axis=tuple(range(1, diff.ndim))))
+/cluster/tufts/paralab/tawal01/rebuttal-ns3d-confirm/cdev128c/experiments/ns3d-shift-head/head_ladder.py:74: RuntimeWarning: invalid value encountered in subtract
+  if float(np.max(np.abs(errors[case] - check))) > 1e-12 * max(1.0, float(np.max(np.abs(check)))):
+/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2804: RuntimeWarning: overflow encountered in reduce
+  return sqrt(add.reduce(s, axis=axis, keepdims=keepdims))
+/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/numpy/_core/fromnumeric.py:83: RuntimeWarning: overflow encountered in reduce
+  return ufunc.reduce(obj, axis, dtype, out, **passkwargs)

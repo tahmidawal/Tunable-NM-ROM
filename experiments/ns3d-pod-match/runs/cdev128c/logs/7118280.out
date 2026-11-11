@@ -1,0 +1,104 @@
+host=pax007 source_commit=df897c6ef7b34f7d6e1141951aad68614498f0f0 job=7118280 mode=rom config=experiments/ns3d-pod-match/configs/confirm_dev128.json
+NVIDIA A100 80GB PCIe, GPU-6481e68e-7435-8539-633a-66f852b4a8e9, 81920 MiB
+10.235.106.28:/projects/paralab  4.6T  1.7T  3.0T  36% /cluster/tufts/paralab
+jax_backend=gpu
+interpolated-POD control: POD at 64^3, resampled to 128^3
+generated 1/128 dt=0.001
+generated 32/128 dt=0.001
+generated 64/128 dt=0.001
+generated 96/128 dt=0.001
+generated 128/128 dt=0.001
+gram rows 64/768
+gram rows 128/768
+gram rows 192/768
+gram rows 256/768
+gram rows 320/768
+gram rows 384/768
+gram rows 448/768
+gram rows 512/768
+gram rows 576/768
+gram rows 640/768
+gram rows 704/768
+gram rows 768/768
+eigh dimension 768
+pod rank=64 orth=2.338e-09 energy_tail=1.413e-08
+generated 1/4 dt=0.001
+generated 4/4 dt=0.001
+interpolated POD bank: {'source_n': 64, 'source_rebuild_gap': 2.379400640448521e-13, 'resample_plus_mask_removed_worst': 9.196850606956058e-27, 'column_norm_after_resample_min': 0.999999999999944, 'orthonormality_before_lowdin': 1.0658141036401503e-14, 'lowdin_relative_change': 1.968445894560721e-15, 'orthonormality_after': 2.886579864025407e-15}
+coordnet bank at 128^3: {'n': 128, 'leray_removed_worst': 1.3071341143542694e-12, 'leray_removed_median': 3.203284193411703e-13, 'orthonormality_before_lowdin': 0.0003169917148584389, 'orthonormality_before_lowdin_spectral': 0.000842434632659433, 'lowdin_relative_change': 5.8737662010606866e-05, 'lowdin_worst_column_change': 0.00024552944593335646, 'orthonormality_after': 1.2434497875801753e-14, 'prefix': None}
+generating evaluation trajectories
+generated 1/16 dt=0.001
+generated 16/16 dt=0.001
+coordnet D_d autodiff vs spectral: 7.978e-12
+floors: interp_R8=0.060205, interp_R16=0.019684, interp_R32=0.006942, interp_R64=0.001289, coordnet_R8=0.049771, coordnet_R16=0.019639, coordnet_R32=0.006490, coordnet_R48=0.002752, coordnet_R64=0.001828
+coordnet head trained at 96^3 used zero-shot, output scale 1.539601
+head floors: coordnet_head_k8=0.001837, interp_head_k8=0.001300
+coordnet_head_k8: evolved worst 0.001937
+coordnet_span64: evolved worst 0.012838
+coordnet_span48: evolved worst 0.017706
+coordnet_span32: evolved worst 0.009506
+coordnet_span16: evolved worst 0.024849
+coordnet_span8: evolved worst 0.049519
+interp_head_k8: evolved worst 0.001520
+interp_span8: evolved worst 0.058282
+interp_span16: evolved worst 0.033215
+interp_span32: evolved worst 0.010921
+interp_span64: evolved worst 0.006160
+CNAB2 steps=200: 0.000000
+CNAB2 steps=100: 0.000186
+CNAB2 steps=80: 0.000325
+CNAB2 steps=70: 0.000466
+CNAB2 steps=60: 0.004811
+CNAB2 steps=50: 0.058094
+CNAB2 steps=40: 0.417742
+coarse m=24 cnab2: s5=0.72946, s10=0.09328, s15=0.02648, s20=0.02331, s25=0.02237, s30=0.02197, s40=0.02164, s50=0.02152, s60=0.02146, s80=0.02140, s100=0.02138, s200=0.02135
+coarse m=24 rk4: s5=0.02056, s10=0.02130, s15=0.02134, s20=0.02134, s30=0.02134, s40=0.02134
+coarse m=32 cnab2: s5=1.27123, s10=0.76761, s15=0.10750, s20=0.00994, s25=0.00715, s30=0.00649, s40=0.00600, s50=0.00584, s60=0.00577, s80=0.00572, s100=0.00570, s200=0.00568
+coarse m=32 rk4: s5=0.96778, s10=0.00564, s15=0.00567, s20=0.00568, s30=0.00568, s40=0.00568
+coarse m=40 cnab2: s5=1.36626, s10=1.89802, s15=0.82261, s20=0.12592, s25=0.00905, s30=0.00315, s40=0.00224, s50=0.00192, s60=0.00179, s80=0.00170, s100=0.00168, s200=0.00166
+coarse m=40 rk4: s5=3595486258162105355244974288928768.00000, s10=0.00165, s15=0.00165, s20=0.00165, s30=0.00166, s40=0.00166
+coarse m=48 cnab2: s5=1.37219, s10=2.37287, s15=2.03771, s20=0.47211, s25=0.05860, s30=0.00434, s40=0.00162, s50=0.00117, s60=0.00096, s80=0.00081, s100=0.00076, s200=0.00074
+coarse m=48 rk4: s5=801106448968281788377106549293022558075249638520532812022297919488.00000, s10=2574663735980230610780160.00000, s15=0.00074, s20=0.00074, s30=0.00074, s40=0.00074
+coarse m=56 cnab2: s5=1.37318, s10=2.64275, s15=4.79018, s20=2.19918, s25=0.39273, s30=0.05409, s40=0.00151, s50=0.00094, s60=0.00064, s80=0.00038, s100=0.00028, s200=0.00022
+coarse m56_rk4_s10: nonfinite field on case 3
+coarse m=56 rk4: s5=1027099295729874330751918081246997115873007989874670398226322953083356354797658506581253783625991292212182488449024.00000, s10=nan, s15=inf, s20=0.00023, s30=0.00022, s40=0.00022
+coarse m=64 cnab2: s5=1.37325, s10=2.72038, s15=6.67538, s20=6.86143, s25=1.56261, s30=0.27482, s40=0.00382, s50=0.00093, s60=0.00063, s80=0.00033, s100=0.00019, s200=0.00006
+coarse m64_rk4_s10: nonfinite field on case 0
+coarse m64_rk4_s15: nonfinite field on case 0
+coarse m64_rk4_s20: nonfinite field on case 4
+coarse m=64 rk4: s5=inf, s10=nan, s15=nan, s20=nan, s30=0.00009, s40=0.00009
+coarse m=72 cnab2: s5=1.37325, s10=2.73755, s15=7.25474, s20=10.44636, s25=3.56025, s30=0.57772, s40=0.01516, s50=0.00093, s60=0.00063, s80=0.00033, s100=0.00019, s200=0.00003
+coarse m72_rk4_s10: nonfinite field on case 0
+coarse m72_rk4_s15: nonfinite field on case 0
+coarse m72_rk4_s20: nonfinite field on case 0
+coarse m72_rk4_s30: nonfinite field on case 4
+coarse m=72 rk4: s5=inf, s10=nan, s15=nan, s20=nan, s30=nan, s40=0.00006
+coarse m=80 cnab2: s5=1.37325, s10=2.74542, s15=7.62067, s20=14.43767, s25=8.19794, s30=1.50732, s40=0.06402, s50=0.00118, s60=0.00063, s80=0.00033, s100=0.00019, s200=0.00001
+coarse m80_rk4_s10: nonfinite field on case 0
+coarse m80_rk4_s15: nonfinite field on case 0
+coarse m80_rk4_s20: nonfinite field on case 0
+coarse m80_rk4_s30: nonfinite field on case 0
+coarse m80_rk4_s40: nonfinite field on case 3
+coarse m=80 rk4: s5=inf, s10=nan, s15=nan, s20=nan, s30=nan, s40=nan
+coarse m=96 cnab2: s5=1.37325, s10=2.74727, s15=7.80453, s20=17.07942, s25=14.51625, s30=4.19289, s40=0.21106, s50=0.01048, s60=0.00063, s80=0.00033, s100=0.00019, s200=0.00000
+coarse m96_rk4_s10: nonfinite field on case 0
+coarse m96_rk4_s15: nonfinite field on case 0
+coarse m96_rk4_s20: nonfinite field on case 0
+coarse m96_rk4_s30: nonfinite field on case 0
+coarse m96_rk4_s40: nonfinite field on case 0
+coarse m=96 rk4: s5=inf, s10=nan, s15=nan, s20=nan, s30=nan, s40=nan
+coarse m=128 cnab2: s5=1.37325, s10=2.74747, s15=7.86998, s20=17.72688, s25=17.17540, s30=6.51142, s40=0.41774, s50=0.05810, s60=0.00480, s80=0.00033, s100=0.00019, s200=0.00000
+coarse m128_rk4_s5: nonfinite field on case 4
+coarse m128_rk4_s10: nonfinite field on case 0
+coarse m128_rk4_s15: nonfinite field on case 0
+coarse m128_rk4_s20: nonfinite field on case 0
+coarse m128_rk4_s30: nonfinite field on case 0
+coarse m128_rk4_s40: nonfinite field on case 0
+coarse m=128 rk4: s5=nan, s10=nan, s15=nan, s20=nan, s30=nan, s40=nan
+timing gate True; timed outputs vs accuracy pass 0.000e+00
+coarse ratios (comparator ms / arm ms): coordnet_head_k8=0.34[m40_rk4_s10], coordnet_span64=0.26[m32_cnab2_s20], coordnet_span48=0.32[m32_cnab2_s20], coordnet_span32=0.40[m32_cnab2_s25], coordnet_span16=0.39[m24_rk4_s5], coordnet_span8=0.44[m24_rk4_s5], interp_head_k8=0.58[m48_rk4_s15], interp_span8=0.44[m24_rk4_s5], interp_span16=0.38[m24_rk4_s5], interp_span32=0.37[m32_cnab2_s20], interp_span64=0.29[m32_rk4_s10]
+speedups: coordnet_head_k8=9.49, coordnet_span64=8.27, coordnet_span48=9.90, coordnet_span32=11.47, coordnet_span16=14.47, coordnet_span8=16.44, interp_head_k8=9.46, interp_span8=13.80, interp_span16=14.42, interp_span32=11.52, interp_span64=8.29
+done; failures: []
+no fields saved: audit skipped
+MESH=output/mesh RUN_EXIT=0 VERIFY_EXIT=0
+ALL_EXIT=0

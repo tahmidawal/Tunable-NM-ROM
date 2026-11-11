@@ -96,6 +96,22 @@ def main():
                     for tol in TOLS[:4]:
                         (u, it, info), ts = med(lambda: cg(A, b, tol, M, maxiter=500))
                         add(solver="frozen_amg_" + name, tol=tol, iters=it, info=info, solve=ts, total_ms=ts["med_ms"], **score(u))
+            if "fd" in solvers and fam == "A":
+                # fast-diagonalisation preconditioner: diagonal part Kxx Sx(x)My + Kyy Mx(x)Sy inverted exactly
+                # (1D generalised eigen-decompositions depend on the mesh only: offline, not timed)
+                import scipy.linalg as sla
+                def eig1(xn):
+                    h = np.diff(xn); S1 = (np.diag(1 / h[:-1] + 1 / h[1:]) - np.diag(1 / h[1:-1], 1) - np.diag(1 / h[1:-1], -1))
+                    return sla.eigh(S1, an.mass1d(xn).toarray()[1:-1, 1:-1])
+                (lx, Vx), (ly, Vy) = eig1(x), eig1(y)
+                a_, b_, c_ = an.tensor(fam, mu, np.array([0.5]), np.array([0.5]))
+                den = a_[0, 0] * lx[:, None] + c_[0, 0] * ly[None, :]
+                def fdinv(r):
+                    return (Vx @ ((Vx.T @ r.reshape(N - 1, N - 1) @ Vy) / den) @ Vy.T).ravel()
+                M = spla.LinearOperator(A.shape, matvec=fdinv)
+                for tol in TOLS[:4]:
+                    (u, it, info), ts = med(lambda: cg(A, b, tol, M, maxiter=2000))
+                    add(solver="fd_pcg", tol=tol, iters=it, info=info, solve=ts, total_ms=ts["med_ms"], **score(u))
             if "cg" in solvers:
                 for tol in TOLS[:4]:
                     (u, it, info), ts = med(lambda: cg(A, b, tol), 3)

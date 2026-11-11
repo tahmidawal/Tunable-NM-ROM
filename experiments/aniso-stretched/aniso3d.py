@@ -51,13 +51,18 @@ class Space:
         c = np.broadcast_to((np.arange(N)[:, None] * (p + 1) + np.arange(p + 1)[None, :])[:, None, :], Lq.shape).ravel()
         self.Lq = sp.coo_matrix((Lq.ravel(), (r, c)), shape=(n1, N * (p + 1))).tocsr()[1:-1]
         self.n = n1 - 2
-        k3 = lambda a, b, c: sp.kron(sp.kron(a, b, format="csr"), c, format="csr")
-        M, S, C = self.M, self.S, self.C
-        self.terms = {
-            (0, 0): k3(S, M, M), (1, 1): k3(M, S, M), (2, 2): k3(M, M, S),
-            (0, 1): k3(C, C.T, M) + k3(C.T, C, M), (0, 2): k3(C, M, C.T) + k3(C.T, M, C), (1, 2): k3(M, C, C.T) + k3(M, C.T, C),
-        }
-        self._idx = None
+        self._terms = None
+
+    @property
+    def terms(self):
+        if self._terms is None:      # assembled Kronecker terms: only for small problems (pyamg / direct)
+            k3 = lambda a, b, c: sp.kron(sp.kron(a, b, format="csr"), c, format="csr")
+            M, S, C = self.M, self.S, self.C
+            self._terms = {
+                (0, 0): k3(S, M, M), (1, 1): k3(M, S, M), (2, 2): k3(M, M, S),
+                (0, 1): k3(C, C.T, M) + k3(C.T, C, M), (0, 2): k3(C, M, C.T) + k3(C.T, M, C), (1, 2): k3(M, C, C.T) + k3(M, C.T, C),
+            }
+        return self._terms
 
     def matrix(self, mu):
         K = ktensor(mu)

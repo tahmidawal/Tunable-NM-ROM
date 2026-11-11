@@ -97,4 +97,35 @@ Measure comparators first, CPU only. For each family and the 1 % target:
 
 ## Amendments
 
-(none yet)
+**Amendment 1 (2026-11-11 03:00 EST, before any 3D solver outcome; only a manufactured-solution
+check of the 3D element code had been run).** Reason: the dev error sweep and the rough single-case
+timing show that in 2D the 1 % target is reached with ~4k–9k unknowns (a few ms on one CPU core),
+and a degree-4 element check shows the tighter targets collapse the same way. 2D is therefore
+heading for "no-go" (final 2D numbers follow the protocol above). The only place a regime can
+plausibly exist is 3D, where no fast transform applies either and sparse direct solvers scale
+badly. A 3D comparator pilot is added, with the same decision rule.
+
+- **Family A3.** $(0,1)^3$, $K=\varepsilon I+(1-\varepsilon)\,b b^T$,
+  $b=(\cos e\cos a,\cos e\sin a,\sin e)$ constant in space, $a,e\in[15^\circ,75^\circ]$,
+  $\log_{10}\varepsilon\in[-4,-2]$, source $1+10\exp(-|x-c|^2/(2\sigma^2))$, $\sigma=0.1$,
+  $c\in[0.3,0.7]^3$; $\mu\in\mathbb R^6$. Seeds dev 3101 / held-out 3102 / train 3103, 16 cases each.
+  The operator is exactly affine with six terms; the load is separable in $(c_x,c_y,c_z)$.
+- **Discretisation.** Degree-$p$ tensor Lagrange elements (GLL nodes, Gauss quadrature) on uniform
+  $N^3$ grids, $p\in\{1,2,4\}$ (code `aniso3d.py`, verified on a manufactured solution).
+- **Reference.** $p=4$ on the finest grid that fits (target $N=24$–32), matrix-free preconditioned CG
+  to relative residual $10^{-10}$; its error is estimated from the next-coarser $p=4$ solution and must
+  be $\le 0.25\times$ the target, else $\varepsilon$ range/targets are restricted and that is said.
+  Evaluation grid: uniform $129^3$ nodes; same weighted relative $L^2$ metric; targets 3 %, 1 %, 0.3 %.
+- **Comparators** (each picks $p$, $N$, tolerance on the dev cohort): Jacobi-CG and unpreconditioned
+  CG; smoothed-aggregation / Ruge–Stüben AMG-PCG (pyamg, CPU, setup + solve); sparse direct where it
+  fits; and a **fast-diagonalisation PCG** (preconditioner = the diagonal part
+  $\sum_i K_{ii}\,\partial_i^2$ inverted exactly through 1D generalised eigen-decompositions,
+  matrix-free Kronecker operator) on CPU and GPU — the strongest structure-exploiting solver we can
+  think of for this family, mesh-independent iteration count. GPU: matrix-free CG variants in JAX on
+  the same GPU as the ROM; GPU AMG/direct only if a library imports.
+- **ROM arms if go:** POD-Galerkin (six affine terms, separable-source load tensor) and the paper's
+  coordinate bank + Galerkin span on the same snapshots. Field reconstruction on the evaluation
+  grid is timed separately from the coefficient solve for the ROM, and interpolation to the
+  evaluation grid separately for the solvers.
+- 2D arms continue unchanged; the fast-diagonalisation PCG is also added to 2D Family A (it applies
+  there for the same reason) so that the 2D verdict is not flattered by its absence.

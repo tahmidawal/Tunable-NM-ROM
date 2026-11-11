@@ -187,3 +187,10 @@ relaxed from 1.10); (iii) two solver sentinels are added (the cheapest and the d
 shortlisted solve-only configuration of the block) under the same rule, so that a solver that
 is slowed by interleaving more than the ROM is visible. Nothing else changes; the rehearsal
 ratios (13x and 23x at 64^3 against the old ladder) are not reported as results.
+
+FREEZE (2026-11-11, 12:08 EST). Development comparison cmpdevB (job 7134656, commit 2155a978b,
+status final, no failures) is in results/cmpdevB/compare.json. Frozen for the sealed test: the
+code at this commit, results/romdevB_{64,96,128}/frozen.json with their head and rotation
+files on the cluster, the interpolated bank interpB (job 7133684), the A3 ladder, the A3/A4
+rules. The sealed-test job is submitted from this commit with the same command as cmpdevB
+except: cohort genB_test, ladder run in-job, --devcompare cmpdevB.

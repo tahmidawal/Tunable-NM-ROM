@@ -5,6 +5,7 @@
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=16
 #SBATCH --mem=96G
+#SBATCH --exclude=pax063
 #SBATCH --output=slurm-%j.out
 #SBATCH --error=slurm-%j.err
 set -euo pipefail

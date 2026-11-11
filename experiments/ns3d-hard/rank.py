@@ -5,7 +5,7 @@ Stages (gen, bank, headdata are pipeline.py unchanged, with a rank-128 bank / se
   rdev     heads on bank prefixes (rank r <= bank rank), dev floors, dev rollouts.
            Without --frozen: the A5 grid, for selection by freeze_rank.py.
            With --frozen: only the frozen arms (replicates; no selection).
-  ladder   free solver ladder on a slice of a cohort, in blocks of (meshes : cnab2 : rk4)
+  ladder   free solver ladder on a slice of a cohort, in blocks meshes:cnab2:rk4 separated by "/"
   cmp      frozen arms of all ranks against the merged ladder on one cohort (A3.6 / A4 rules,
            pipeline.cmd_compare with this lane's arm builder)
 """
@@ -218,7 +218,7 @@ def cmd_ladder(a):
     rep = dict(schema="ns3d-hard-rank-ladder-v1", family=a.family, args=vars(a), device=str(jax.devices()[0]),
                job_id=os.environ.get("SLURM_JOB_ID"), start=a.start, count=count, total=total, rows=[])
     seen = set()
-    for block in a.blocks.split(";"):
+    for block in a.blocks.split("/"):
         ms, cn, rk = block.split(":")
         t0 = time.time()
         rows = P.fom_ladder(sl, parS, count, fam["horizon"], ints(ms), ints(cn) if cn else [], ints(rk) if rk else [],

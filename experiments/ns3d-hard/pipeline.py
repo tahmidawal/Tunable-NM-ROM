@@ -113,6 +113,37 @@ def cmd_gen(a):
     log("DONE")
 
 
+def build_tensor_chunked(G, n, ids, chunk=32):
+    """ns3d_rom.build_tensor (T_mjk = <phi_m, G_j x curl G_k>) with the j index processed in
+    chunks and the vorticity formed per column, so a rank-128 bank on the padded 144^3 mesh
+    fits on one 80 GB GPU (the stock builder holds rank-sized complex spectra at once).
+    Same arithmetic per entry; build_ops validates the result against dense tests."""
+    rank = G.shape[1]
+    fields = jnp.asarray(np.ascontiguousarray(G.T).reshape(rank, 3, n, n, n))
+    geom = F.geometry(n)
+    indices = jnp.asarray(np.asarray([x["wave"] for x in ids], dtype=int) % n)
+    pol = jnp.asarray([x["polarization"] for x in ids])
+    cosine = jnp.asarray([x["kind"] == "cos" for x in ids])
+
+    @jax.jit
+    def curl(u):
+        return F.ifft(1j * F.cross(geom[0], F.fft(u)))
+
+    @jax.jit
+    def column(block, one_omega):
+        spectra = F.fft(jax.vmap(lambda u: F.cross(u, one_omega))(block))
+        selected = spectra[:, :, indices[:, 0], indices[:, 1], indices[:, 2]]
+        value = jnp.einsum("rcm,mc->rm", selected, pol)
+        return (np.sqrt(2 * n ** 3) * jnp.where(cosine[None, :], value.real, -value.imag)).T
+
+    result = np.empty((len(ids), rank, rank), dtype=np.float64)
+    for k in range(rank):
+        om = curl(fields[k])
+        for start in range(0, rank, chunk):
+            result[:, start:start + chunk, k] = np.asarray(column(fields[start:start + chunk], om))
+    return result
+
+
 def build_ops(G, n, modes, check_modes=8, chunk=8, seed=11):
     """A, lam, Dd as shift_rom.build_operators_fast; the quadratic tensor is built on a
     zero-padded mesh so the product of bank fields (content up to |k| < n/2) is alias-free
@@ -135,7 +166,7 @@ def build_ops(G, n, modes, check_modes=8, chunk=8, seed=11):
         Dd[:, :, start:start + chunk] = np.asarray(der).transpose(0, 2, 1)
         Gp[:, start:start + chunk] = np.asarray(pad_or_truncate(block, N)).reshape(block.shape[0], -1).T
     scale = (n / N) ** 1.5
-    T = R.build_tensor(Gp, N, ids) * scale
+    T = build_tensor_chunked(Gp, N, ids) * scale
     rng = np.random.default_rng(seed)
     subset = np.sort(rng.choice(modes, size=min(check_modes, modes), replace=False))
     c = rng.normal(size=r)

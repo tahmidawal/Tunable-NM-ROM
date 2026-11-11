@@ -173,3 +173,28 @@ Nothing else changes (same residual, same knob grid, same selection rule). The v
 are kept (`grid-v1/`, `grid-x-v1/`) and reported; every decoder's knob grid is (re)computed with v2 and the
 selection is made over the v2 grids only. The network-free solver check (`check_solver.py`) was re-run with v2 and
 gives the same errors as before.
+
+### A4 (2026-11-11, after all validation grids, before the test file is read)
+
+(a) `C16-w512d6-lr3` was not trained (A2(e): only if budget allowed; it did not). All other configurations of
+section 5 were trained for 600,000 steps and have a v2 knob grid; the selection pool is every decoder in `grid/`
+(120k) and `grid-x/` (600k).
+(b) The CoLoRA-style decoder used with the online residual solve instead of its hyper-network (`grid-x-lres/`,
+L16-w256 only) is carried to the test as a separate extra arm "LR"; it does not compete with the hyper-network rows.
+(c) Timing of slow settings: a selected setting whose rough validation time is above 1 s per query is timed with
+3 warm-up queries and 1 repetition of the 64 cases instead of 20 and 5 (the C32 setting takes about 5 s per query;
+the full schedule would take hours of GPU time for a row that is two orders of magnitude slower than the paper
+rows). The spread reported for those rows is over 64 timings; the row states the schedule used.
+(d) No decoder reached the 2 % plateau criterion; none is extended further. Reported as such.
+
+### A5 (2026-11-11, during the test evaluation; no selection or setting changes)
+
+Test job 7125612 (A100 80GB, 2 h limit) was cancelled by me after 40 minutes: the A100 is about 2.3 times slower
+than the H200 the rough validation timings came from, so the twelve selected rows would have needed about 135
+minutes and the job would have been killed before writing its file. Its log (two completed rows, CROM-style k=16
+accurate in float64 and float32) is kept in `results/test-cancelled/7125612.out` and those two printed results are
+quoted in the report beside the re-run. The same frozen `selection.json` (sha256 8a2185ef…) is now evaluated by
+three jobs on A100 80GB, each on its own GPU and each covering a contiguous slice of the selected rows
+(`--rows 0:4`, `4:6`, `6:12`), with unchanged code paths, timing schedule and metric; the slices are merged by
+`code/merge_test.py`. The rollout is deterministic, so the two repeated rows must reproduce the cancelled job's
+errors; any difference is reported. Nothing was changed in response to the two test numbers seen.

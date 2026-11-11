@@ -57,6 +57,21 @@ def main():
         for n, w, m, ms, sp, src in rows:
             out.append(f"| {n} | {f(w)} | {f(m)} | {f(ms, 1)} | | | | {src} (stored) |")
         summary['test_rows'] = [dict(name=x[0], worst=x[1], median=x[2], ms=x[3], p5=x[4][0], p95=x[4][1], latent_ms=x[4][2], validation_worst=x[7]) for x in mine]
+        # verdicts, PROTOCOL.md section 7 (worst-case error and median time, both must be lower)
+        acc, fast, hd = ref['roles']['accurate'], ref['roles']['fast'], head
+        out.append('')
+        out.append('| method | beats accurate setting (R\'=384) | beats fast setting (R\'=96) | beats head k=16 | error vs accurate | time vs accurate | time vs fast |')
+        out.append('|---|---|---|---|---|---|---|')
+        summary['verdicts'] = []
+        for n, w, m, ms, sp, src, nonf, vw in mine:
+            ok = nonf == 0
+            v = dict(name=n, beats_accurate=bool(ok and w < acc['worst_evolved_percent'] and ms < acc['median_gpu_ms']),
+                     beats_fast=bool(ok and w < fast['worst_evolved_percent'] and ms < fast['median_gpu_ms']),
+                     beats_head=bool(ok and w < hd['worst_evolved_percent'] and ms < hd['gpu_ms']),
+                     error_over_accurate=w / acc['worst_evolved_percent'], time_over_accurate=ms / acc['median_gpu_ms'], time_over_fast=ms / fast['median_gpu_ms'])
+            summary['verdicts'].append(v)
+            yn = lambda b: 'yes' if b else 'no'
+            out.append(f"| {n} | {yn(v['beats_accurate'])} | {yn(v['beats_fast'])} | {yn(v['beats_head'])} | ×{f(v['error_over_accurate'], 2)} | ×{f(v['time_over_accurate'], 2)} | ×{f(v['time_over_fast'], 2)} |")
         out.append('')
 
     # ---- other learned baselines already stored for the same cohort and mesh

@@ -257,9 +257,12 @@ def select(a):
 def test(a):
     assert jax.default_backend() == 'gpu' or a.allow_cpu
     out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
-    assert not (out / 'test.json').exists(), 'the test cohort is evaluated once'
+    lo, hi = [int(x) for x in a.rows.split(':')]                     # amendment A5: the selected rows are split over jobs
+    tag = f'test-{lo}-{hi}.json'
+    assert not (out / tag).exists() and not (out / 'test.json').exists(), 'the test cohort is evaluated once'
     sel_text = Path(a.selection).read_text()
-    sel = json.loads(sel_text)['selected']
+    sel_all = json.loads(sel_text)['selected']
+    sel = sel_all[lo:hi]
     meta = np.load(a.test + '.meta.npz')
     params, n0 = meta['params'], meta['n0']
     assert hashlib.sha256(np.ascontiguousarray(params).tobytes()).hexdigest() == TEST_SHA
@@ -279,15 +282,16 @@ def test(a):
         it, rf = jnp.int32(s['iters']), jnp.int32(s['refine'])
         args = [(p, jnp.asarray(u0[i], dtype), jnp.asarray(params[i, 4], dtype), jnp.asarray(params[i], dtype), it, rf) for i in range(64)]
         err = metric(np.stack([np.asarray(jf(*x)) for x in args]), ref, n0)
-        ms = time_fn(jf, args, 20, 5)
-        ml = time_fn(jl, args, 20, 5)
+        warm, reps = (20, 5) if s['rough_ms'] < 1000 else (3, 1)        # amendment A4
+        ms = time_fn(jf, args, warm, reps)
+        ml = time_fn(jl, args, warm, reps)
         r = dict(selection=s, cfg=cfg, parameters_decoder_and_rest=nf.count(p), test=summary(err), errors=[float(x) for x in err],
-                 ms_full=spread(ms), ms_latent_only=spread(ml), ms_full_per_case_median=[float(x) for x in np.median(ms, 0)])
+                 ms_full=spread(ms), ms_latent_only=spread(ml), timing_warmup=warm, timing_repetitions=reps, ms_full_per_case_median=[float(x) for x in np.median(ms, 0)])
         res.append(r)
         print('TEST', json.dumps({k: v for k, v in r.items() if k not in ('errors', 'ms_full_per_case_median')}), flush=True)
-    (out / 'test.json').write_text(json.dumps(dict(
+    (out / tag).write_text(json.dumps(dict(rows=[lo, hi], selected_total=len(sel_all),
         cohort='test64 = params_draw(20260916, 64)', cohort_sha256=TEST_SHA, mesh=L, metric='max over t=0.05..0.25 of |u-u_ref|_2/|u0|_2',
-        timing='batch 1, 20 warm-up queries, 5 repetitions x 64 cases, u0 on GPU -> five output fields on GPU',
+        timing='batch 1, 20 warm-up queries, 5 repetitions x 64 cases (3 and 1 for settings above 1 s per query, see each row), u0 on GPU -> five output fields on GPU',
         solver=SOLVER, selection_sha256=hashlib.sha256(sel_text.encode()).hexdigest(), gpu=os.environ.get('NF_GPU_NAME'),
         job_id=os.environ.get('SLURM_JOB_ID'), node=os.environ.get('SLURMD_NODENAME'), backend=jax.default_backend(), jax=jax.__version__,
         results=res), indent=1) + '\n')
@@ -297,7 +301,7 @@ def main():
     a = argparse.ArgumentParser()
     a.add_argument('cmd', choices=('grid', 'select', 'test'))
     a.add_argument('--models'); a.add_argument('--names'); a.add_argument('--data'); a.add_argument('--out')
-    a.add_argument('--grid'); a.add_argument('--selection'); a.add_argument('--test')
+    a.add_argument('--grid'); a.add_argument('--selection'); a.add_argument('--test'); a.add_argument('--rows', default='0:9999')
     a.add_argument('--M', default='512,2048,8192'); a.add_argument('--iters', default='1,2,4')
     a.add_argument('--refine-iters', type=int, default=4)
     a.add_argument('--val-start', type=int, default=NTRAIN); a.add_argument('--cases', type=int, default=NGRID)

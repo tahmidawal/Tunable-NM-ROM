@@ -1,0 +1,37 @@
+{
+ "name": "C32-w512",
+ "cfg": {
+  "arm": "C",
+  "k": 32,
+  "width": 512,
+  "depth": 5,
+  "lr": 0.001
+ },
+ "parameters": 3094945,
+ "steps": 600000,
+ "batch": 64,
+ "points": 512,
+ "train_states": 113152,
+ "val_trajectories": 64,
+ "final": {
+  "step": 600000,
+  "train_loss": 4.003757139798836e-06,
+  "train_rel": 0.0020009390644891802,
+  "val_mean": 0.0028913095248289237,
+  "val_max": 0.03284531487929384,
+  "val_t0_mean": 0.005255870786854708,
+  "val_evolved_mean": 0.002418397272423767,
+  "val_evolved_worst": 0.008543842885504058,
+  "train_seconds": 3908.570027589798,
+  "steps_per_second": 154.50341875738894
+ },
+ "best_val_mean": 0.0028913095248289237,
+ "train_seconds": 3908.570027589798,
+ "improvement_over_last_tenth": 0.029962162719709085,
+ "at_plateau": false,
+ "gpu": "NVIDIA H200",
+ "job_id": "7123239",
+ "node": "pax011",
+ "backend": "gpu",
+ "jax": "0.10.2"
+}

@@ -1,0 +1,37 @@
+{
+ "name": "L16-w512",
+ "cfg": {
+  "arm": "L",
+  "k": 16,
+  "width": 512,
+  "hyper": 512,
+  "lr": 0.001
+ },
+ "parameters": 1736465,
+ "steps": 600000,
+ "batch": 64,
+ "points": 512,
+ "train_states": 113152,
+ "val_trajectories": 64,
+ "final": {
+  "step": 600000,
+  "train_loss": 1.094502533760533e-06,
+  "train_rel": 0.0010461847512559781,
+  "val_mean": 0.001195763612524755,
+  "val_max": 0.005992838050546845,
+  "val_t0_mean": 0.0019440805069888664,
+  "val_evolved_mean": 0.0010461002336319323,
+  "val_evolved_worst": 0.0034085475452858283,
+  "train_seconds": 3644.865855693817,
+  "steps_per_second": 165.3942015591986
+ },
+ "best_val_mean": 0.0011390533222426366,
+ "train_seconds": 3644.865855693817,
+ "improvement_over_last_tenth": 0.05099498512873979,
+ "at_plateau": false,
+ "gpu": "NVIDIA H200",
+ "job_id": "7122346",
+ "node": "pax010",
+ "backend": "gpu",
+ "jax": "0.10.2"
+}

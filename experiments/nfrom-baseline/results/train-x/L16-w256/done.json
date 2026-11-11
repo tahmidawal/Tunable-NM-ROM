@@ -1,0 +1,37 @@
+{
+ "name": "L16-w256",
+ "cfg": {
+  "arm": "L",
+  "k": 16,
+  "width": 256,
+  "hyper": 256,
+  "lr": 0.001
+ },
+ "parameters": 475153,
+ "steps": 600000,
+ "batch": 64,
+ "points": 512,
+ "train_states": 113152,
+ "val_trajectories": 64,
+ "final": {
+  "step": 600000,
+  "train_loss": 1.2070275170117384e-06,
+  "train_rel": 0.0010986480405533604,
+  "val_mean": 0.001212871032262426,
+  "val_max": 0.006571460785468158,
+  "val_t0_mean": 0.0020176601808851446,
+  "val_evolved_mean": 0.0010519132025378825,
+  "val_evolved_worst": 0.0030732669161139536,
+  "train_seconds": 1659.2343451976776,
+  "steps_per_second": 365.3092501025126
+ },
+ "best_val_mean": 0.001212871032262426,
+ "train_seconds": 1659.2343451976776,
+ "improvement_over_last_tenth": 0.06388015301956917,
+ "at_plateau": false,
+ "gpu": "NVIDIA H200",
+ "job_id": "7122346",
+ "node": "pax010",
+ "backend": "gpu",
+ "jax": "0.10.2"
+}

@@ -108,7 +108,7 @@ produces). An operator that beats the ROM on these targets is reported exactly s
   supplementary read-out (same forces, cycle statistics taken after a centred 9-save moving
   average of C_D and C_L; chosen now, before looking at its outcome) is reported alongside,
   labelled post hoc, for every arm; it does not replace the fixed one.
-- 2026-11-11 05:20 (after checking the 04:58 supplementary read-out offline on the saved 60-min
+- 2026-11-11 05:00 (after checking the 04:58 supplementary read-out offline on the saved 60-min
   development series): with the 9-save average the node arm still shows one double lift minimum
   (5 "cycles"), so the supplementary read-out also fails St / C_L,max for it; reported as such.
   Added a third, explicitly diagnostic read-out for every arm (smoothed signals, lift minima closer

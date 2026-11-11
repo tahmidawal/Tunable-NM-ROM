@@ -20,6 +20,14 @@ def row_from_rec(r):
                last_period_e_u=r['e_u']['last_period_mean'])
     ph = r.get('phase') or r.get('phase_aligned') or {}
     out['lag_saves'] = ph.get('lag_saves')
+    for key, tag in (('supplementary_smoothed9', 'sup'), ('diagnostic_min_distance', 'diag')):
+        ce = (r.get(key) or {}).get('cycle_errors')
+        if ce:
+            out[tag] = ce
+            out[tag + '_cycles'] = r[key]['cycles']['cycles']
+    if 'supplementary_smoothed9' in r:
+        out['lift_error_rms'] = r['supplementary_smoothed9'].get('lift_error_rms'); out['lift_error_max'] = r['supplementary_smoothed9'].get('lift_error_max')
+        out['targets_met_with_smoothed_cycles'] = r['supplementary_smoothed9'].get('targets_met_with_smoothed_cycles')
     return out
 
 
@@ -75,6 +83,17 @@ def main():
         for name, r in table[case].items():
             lines.append(f'| {name} | ' + ' | '.join(fmt(r.get(k)) for k in KEYS) + f" | {r['targets_met']}/6 | {fmt(r.get('lag_saves'))} | "
                          f"{fmt(r.get('seconds_per_window'))} | {r.get('hardware', '')} |")
+    lines.append('\n### operator arms: lift signal and alternative cycle read-outs (post hoc; not counted towards the six targets)\n')
+    lines.append('| case | arm | lift err rms | lift err max | smoothed-9: cycles / St / CL_max | min-distance diagnostic: cycles / St (worst cycle) / CD_max / CL_max |')
+    lines.append('|---|---|---|---|---|---|')
+    for case in ('re95', 're105'):
+        for name, r in table[case].items():
+            if 'lift_error_rms' not in r:
+                continue
+            s_, d_ = r.get('sup'), r.get('diag')
+            lines.append(f"| {case} | {name} | {fmt(r['lift_error_rms'])} | {fmt(r['lift_error_max'])} | "
+                         + (f"{r['sup_cycles']} / {fmt(s_['St_rel'])} / {fmt(s_['CL_max_abs'])}" if s_ else '-') + ' | '
+                         + (f"{r['diag_cycles']} / {fmt(d_['St_rel'])} ({fmt(d_['St_rel_worst_cycle'])}) / {fmt(d_['CD_max_rel'])} / {fmt(d_['CL_max_abs'])}" if d_ else '-') + ' |')
     (out / 'table.md').write_text('\n'.join(lines) + '\n')
     print('\n'.join(lines))
 

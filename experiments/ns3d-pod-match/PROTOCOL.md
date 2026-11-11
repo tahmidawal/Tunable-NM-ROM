@@ -76,3 +76,12 @@ outputs equal the accuracy-pass outputs (1e-9); the independent NumPy audit
   as n^{3/2}; without the factor the zero-shot interpolated-POD head failed trivially (59 %)
   from normalisation alone, which would have been an unfair control. Applies to the
   interpolated-POD head (64^3 -> n) and to the 96^3 coordinate head at 128^3.
+- A2 (2026-11-11, after the first development job cdev32 = 7117079, before any test job):
+  (a) BUG FIX in the comparator's favour: the end-to-end coarse query used a scatter for the
+  spectral zero-padding which cost ~220 ms regardless of the solve (solve-only: 2-20 ms).
+  Replaced by slices + concatenation; identical output. The cdev32 end-to-end coarse
+  timings and the ratios derived from them are void; its errors and solve-only timings stand.
+  The other first-round development jobs (7117085, 7117092, 7117100) were cancelled.
+  (b) Ladder widened in the comparator's favour after cdev32 showed a spatial floor
+  (m=24 vs 32^3 truth: 2.1 %): coarse meshes are now {12,16,20,24,28,32,40,48,56,64,72,80}
+  (m < n), and {24,...,96} at 128^3.

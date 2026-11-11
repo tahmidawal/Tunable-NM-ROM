@@ -9,7 +9,7 @@ dev_src = {32: "dev32b", 64: "dev64", 96: "dev96"}
 d64 = json.loads((HERE / "configs/dev64.json").read_text())
 interp = dict(source_n=64, dir=d64["pod_frozen_dir"], sha256=d64["pod_frozen_sha256"],
               spans=[8, 16, 32, 64])
-coarse = dict(meshes=[12, 16, 20, 24, 32, 48, 64],
+coarse = dict(meshes=[12, 16, 20, 24, 28, 32, 40, 48, 56, 64, 72, 80],
               cnab2_steps=[5, 10, 15, 20, 25, 30, 40, 50, 60, 80, 100, 200],
               rk4_steps=[5, 10, 15, 20, 30, 40], time_below=0.05)
 smoke = dict(eval_cases=2, reference_errors=None, timing_repetitions=3, cnab2_steps=[200, 40],
@@ -34,7 +34,7 @@ for key in ("reference_errors", "reference_source", "smoke"):
     big.pop(key, None)
 big.update(name="confirm_dev128", n=128, pod_frozen_dir=None, pod_frozen_sha256={},
            save_fields=False, controls=False, cnab2_steps=[200, 100, 80, 70, 60, 50, 40],
-           coarse=dict(coarse, meshes=[16, 20, 24, 32, 48, 64, 96]))
+           coarse=dict(coarse, meshes=[24, 32, 40, 48, 56, 64, 72, 80, 96]))
 (HERE / "configs/confirm_dev128.json").write_text(json.dumps(big, indent=1) + "\n")
 fz = HERE / "frozen/frozen_settings.json"
 f = json.loads(fz.read_text())

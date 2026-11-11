@@ -72,13 +72,14 @@ def spec_resample(u, n_to):
     if n == n_to:
         return u
     m = min(n, n_to) // 2
-    src_i = np.r_[0:m, n - m + 1:n]
-    dst_i = np.r_[0:m, n_to - m + 1:n_to]
     spec = jnp.fft.fftn(u, axes=(-3, -2, -1), norm="forward")
-    kept = spec[..., src_i, :, :][..., :, src_i, :][..., :, :, src_i]
-    out = jnp.zeros(u.shape[:-3] + (n_to, n_to, n_to), dtype=spec.dtype)
-    out = out.at[..., dst_i[:, None, None], dst_i[None, :, None], dst_i[None, None, :]].set(kept)
-    return jnp.fft.ifftn(out, axes=(-3, -2, -1), norm="forward").real
+    for axis in (-3, -2, -1):       # slices and concatenation only (no scatter)
+        low = jax.lax.slice_in_dim(spec, 0, m, axis=axis)
+        high = jax.lax.slice_in_dim(spec, n - m + 1, n, axis=axis)
+        shape = list(spec.shape)
+        shape[axis] = n_to - (2 * m - 1)
+        spec = jnp.concatenate((low, jnp.zeros(shape, dtype=spec.dtype), high), axis=axis)
+    return jnp.fft.ifftn(spec, axes=(-3, -2, -1), norm="forward").real
 
 
 def build_pod(cfg, nm, pod_dir, horizon):

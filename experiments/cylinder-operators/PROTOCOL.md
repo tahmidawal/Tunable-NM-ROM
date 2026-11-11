@@ -93,3 +93,18 @@ produces). An operator that beats the ROM on these targets is reported exactly s
 - 2026-11-11 03:00 (before any training job): the candidate list lives in `ops_train.py`
   (`CONFIGS`) rather than a separate configs.py; it is committed before the first training job.
   Node rule outcome from prep01: N2 floor on Re 100 is below 5e-4, so arms 1 and 3 use N2.
+- 2026-11-11 04:58 (after the 60-min finals of arms 1 and 3 and their development scores; held-out
+  still sealed): both finals are flagged not converged by the protocol's own rule (training loss
+  still falling over the last 20 % of the budget: node 32 %, coordinate network 13 %). As the
+  protocol allows, each gets ONE longer run: same selected configuration, same data, same
+  everything, final budget 180 min instead of 60 (no re-tuning, no change picked from development
+  results). The grid arm gets the same if its 60-min final is flagged. Both the 60-min and the
+  180-min checkpoints are kept, both are listed (hashes) before the single held-out job, and both
+  are reported on development and held-out; neither is dropped.
+- 2026-11-11 04:58 observation recorded before any fix: on development the node arm's lift from
+  the fixed read-out has save-to-save jitter (about 0.02 in C_L), which makes the ROM lane's
+  cycle detector (cycles.py, lift minimum to lift minimum) count 15 "cycles" instead of 4, so the
+  St and C_L,max targets fail under the fixed read-out. This is reported as measured. A
+  supplementary read-out (same forces, cycle statistics taken after a centred 9-save moving
+  average of C_D and C_L; chosen now, before looking at its outcome) is reported alongside,
+  labelled post hoc, for every arm; it does not replace the fixed one.

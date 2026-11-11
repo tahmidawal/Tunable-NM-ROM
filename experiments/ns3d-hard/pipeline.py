@@ -875,6 +875,10 @@ def cmd_compare(a):
                     cl["E2E|" + tag] = (lambda e2e=e2e, geom=geom: e2e(uS, nu, geom))
                     cl["SOLVE|" + tag] = (lambda solver=solver, u0m=u0m, geom=geom: solver(u0m, nu, geom))
                 sent = {k: cl[k] for k in ("head", "span64") if k in cl} or {k: cl[k] for k in list(cl)[:1]}
+                sk = [k for k in cl if k.startswith("SOLVE|")]
+                if sk:  # cheapest and dearest shortlisted solver configurations as solver sentinels (A4)
+                    order = sorted(sk, key=lambda k: rowof[(k.split("|")[1], int(k.split("|")[2]), int(k.split("|")[3]))]["seconds_median"])
+                    sent[order[0]] = cl[order[0]]; sent[order[-1]] = cl[order[-1]]
                 warm = jnp.ones((1024, 1024)) * 1e-3; t0 = time.perf_counter()
                 while time.perf_counter() - t0 < 2.0:
                     warm = warm @ warm * 1e-3 + 1e-3
@@ -887,7 +891,7 @@ def cmd_compare(a):
                     b, i, e = np.median(s0[k]), np.median(samples[k]), np.median(s1[k])
                     g[k] = dict(solo_before_ms=float(b), in_block_ms=float(i), solo_end_ms=float(e),
                                 ratio=float(i / b), end_ratio=float(e / b))
-                    ok = ok and (1 / gate <= i / b <= gate) and (1 / gate <= e / b <= gate)
+                    ok = ok and (1 / gate <= i / b <= a.gate_block) and (1 / gate <= e / b <= gate)
                 tim["gate"][str(c)] = g
                 tim["cases"][str(c)] = {k: v for k, v in samples.items()}
                 tr = jnp.asarray(truth[c])
@@ -983,7 +987,7 @@ def main():
     p.add_argument("--interp-source", type=int, default=64); p.add_argument("--interp-romdev", default=None)
     p.add_argument("--devcompare", default=None); p.add_argument("--reps", type=int, default=9)
     p.add_argument("--timing-cases", default="0,1,2"); p.add_argument("--shortlist", type=int, default=4)
-    p.add_argument("--gate", type=float, default=1.10)
+    p.add_argument("--gate", type=float, default=1.10); p.add_argument("--gate-block", type=float, default=1.25)
     p = sub.add_parser("test"); common(p); p.add_argument("--cohort", required=True)
     p.add_argument("--bank", required=True); p.add_argument("--romdev", required=True)
     p.add_argument("--fomdev", default=None); p.add_argument("--reps", type=int, default=9)

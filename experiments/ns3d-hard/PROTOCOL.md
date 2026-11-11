@@ -172,3 +172,18 @@ NOT known: any head fit, floor on the main cohorts, or ROM rollout (romdev was n
    wall-time request several times its expected duration. A re-run is allowed only for a
    technical failure (crash, node fault, failed gate) with byte-identical code and inputs.
    No family, arm or setting is changed after the test job is submitted.
+
+A4 (2026-11-11, 11:45 EST; after the technical rehearsal job 7133721 = the new compare stage on
+the development cohort at 64^3/96^3 with the OLD ladder fomdevB; before the development
+comparison that is reported and before the sealed test). The rehearsal's outputs agreed
+(ROM 0, solver 1e-13) but the A3 timing gate failed in all 3 attempts at 64^3: the ROM
+sentinels were reproducible alone (before/after within 1 %) yet 5-17 % SLOWER inside the
+interleaved block (head 14.5 ms alone, 15.2-16.9 ms in block; span64 17.3 vs 18.1-19.3 ms).
+This is an interleaving cost on an idle GPU, not contention, and it is charged to the ROM:
+all reported ROM times and ratios remain the in-block medians (the slower number).
+Change to the gate only: (i) sentinel alone-before vs alone-after within 1.10 (unchanged;
+detects drift/contention); (ii) in-block / alone-before within [1/1.10, 1.25] (upper bound
+relaxed from 1.10); (iii) two solver sentinels are added (the cheapest and the dearest
+shortlisted solve-only configuration of the block) under the same rule, so that a solver that
+is slowed by interleaving more than the ROM is visible. Nothing else changes; the rehearsal
+ratios (13x and 23x at 64^3 against the old ladder) are not reported as results.

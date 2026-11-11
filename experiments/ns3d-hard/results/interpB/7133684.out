@@ -1,0 +1,10 @@
+host=pax049 source_commit=e39d77b5d2c56faefcfb44a2c81e63324e165150 job=7133684
+NVIDIA A100 80GB PCIe, GPU-74d9bc51-9598-c873-88b7-cf67f1886e14, 81920 MiB
+jax_backend=gpu
+backend=gpu devices=[CudaDevice(id=0)] args={'cmd': 'interp', 'family': 'B', 'out': 'output', 'truth_n': 192, 'truth_dt': 0.00025, 'store_n': 128, 'smoke': False, 'meshes': '96,128', 'cases': 0, 'fom_meshes': '32,40,48,56,64,72,80,88,96,104,112,128', 'cn_steps': '5,10,15,20,30,40,50,60,70,80,100,120,160,240', 'rk_steps': '5,10,15,20,25,30,40,60,80', 'bank': '/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/bankB', 'source': 64, 'modes': 2336}
+interp 64->96: orthonormality 4.885e-15
+interp 96: done 78s {'modes': 2336, 'rank': 64, 'bank_orthonormality': 4.884981308350689e-15, 'pad_mesh': 112, 'kmax': 6, 'A_condition': 223.266867805222, 'A_relative': 9.496564786480881e-15, 'derivative_relative': 4.559802622572007e-15, 'tensor_relative': 1.4659768945912044e-14, 'tensor_vs_masked_mesh_product': 2.9604974523448385e-15}
+interp 64->128: orthonormality 8.660e-15
+interp 128: done 169s {'modes': 2336, 'rank': 64, 'bank_orthonormality': 8.659739592076221e-15, 'pad_mesh': 144, 'kmax': 6, 'A_condition': 223.26686780522155, 'A_relative': 8.409812309279965e-15, 'derivative_relative': 5.604121040298155e-15, 'tensor_relative': 1.859198446369816e-14, 'tensor_vs_masked_mesh_product': 3.695216158981314e-15}
+DONE
+RUN_EXIT=0

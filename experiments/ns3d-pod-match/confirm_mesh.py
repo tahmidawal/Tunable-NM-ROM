@@ -492,7 +492,7 @@ def main():
     # ------------------------------------------ 5b. coarse-mesh solver control ----
     coarse, coarse_fn, coarse_solve = {}, {}, {}
     cc = cfg.get("coarse") or {}
-    for m in [int(x) for x in cc.get("meshes", []) if int(x) < n]:
+    for m in [int(x) for x in cc.get("meshes", []) if int(x) < n] + ([n] if cc.get("include_same_mesh") else []):
         geom_m = F.geometry(m)
         for scheme, ladder in (("cnab2", cc["cnab2_steps"]), ("rk4", cc["rk4_steps"])):
             for st in [int(x) for x in ladder]:

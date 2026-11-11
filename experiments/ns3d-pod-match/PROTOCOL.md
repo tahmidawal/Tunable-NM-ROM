@@ -85,3 +85,7 @@ outputs equal the accuracy-pass outputs (1e-9); the independent NumPy audit
   (b) Ladder widened in the comparator's favour after cdev32 showed a spatial floor
   (m=24 vs 32^3 truth: 2.1 %): coarse meshes are now {12,16,20,24,28,32,40,48,56,64,72,80}
   (m < n), and {24,...,96} at 128^3.
+- A3 (2026-11-11, while the second development round was running, before any test job; no
+  new outcome seen): the comparator ladder also runs at m = n (so RK4 at the ROM's own mesh
+  is a candidate; the same-mesh ladder so far was CNAB2 only). In the comparator's favour.
+  The second development round (cdev*b) ran without it; the test jobs and cdev128c run with it.

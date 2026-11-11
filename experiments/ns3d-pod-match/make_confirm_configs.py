@@ -11,10 +11,11 @@ interp = dict(source_n=64, dir=d64["pod_frozen_dir"], sha256=d64["pod_frozen_sha
               spans=[8, 16, 32, 64])
 coarse = dict(meshes=[12, 16, 20, 24, 28, 32, 40, 48, 56, 64, 72, 80],
               cnab2_steps=[5, 10, 15, 20, 25, 30, 40, 50, 60, 80, 100, 200],
-              rk4_steps=[5, 10, 15, 20, 30, 40], time_below=0.05)
+              rk4_steps=[5, 10, 15, 20, 30, 40], time_below=0.05, include_same_mesh=True)
 smoke = dict(eval_cases=2, reference_errors=None, timing_repetitions=3, cnab2_steps=[200, 40],
              neighbour_gate_ratio=10.0,
-             coarse=dict(meshes=[16, 24], cnab2_steps=[20, 40], rk4_steps=[10], time_below=0.05))
+             coarse=dict(meshes=[16, 24], cnab2_steps=[20, 40], rk4_steps=[10], time_below=0.05,
+                         include_same_mesh=True))
 for n, name in dev_src.items():
     dev = json.loads((HERE / f"configs/{name}.json").read_text())
     dev.update(name=f"confirm_dev{n}", interp_pod=interp, coarse=coarse, smoke=smoke)

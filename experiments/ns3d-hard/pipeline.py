@@ -754,8 +754,9 @@ def band(worst):
     return "useful" if worst <= 0.03 else ("marginal" if worst <= 0.05 else "not useful")
 
 
-def cmd_compare(a):
-    """Frozen ROM arms + controls against the free solver ladder on one cohort (A3)."""
+def cmd_compare(a, build=None, rows=None):
+    """Frozen ROM arms + controls against the free solver ladder on one cohort (A3).
+    Rank lane (A5): `build(n, T) -> (calls, frozen)` supplies the arms, `rows` a merged ladder."""
     if jax.default_backend() != "gpu" and not a.smoke:
         raise RuntimeError(f"need a GPU backend, got {jax.default_backend()}")
     fam = H.FAMILIES[a.family]; out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
@@ -764,6 +765,7 @@ def cmd_compare(a):
     ncases = a.cases or sum(x.shape[0] for x in arrs)
     nus = par[:ncases, -1]; S = arrs[0].shape[-1]
     meshes = ints(a.meshes); romdirs = dict(zip(meshes, a.romdev.split(",")))
+    sentinels = getattr(a, "sentinels", "head,span64").split(",")
     rep = dict(schema="ns3d-hard-compare-v1", family=a.family, args=vars(a), device=str(jax.devices()[0]),
                job_id=os.environ.get("SLURM_JOB_ID"), cases=int(ncases), meshes={}, failures=[])
     cfile = HERE.parents[1] / "COMMIT.txt"
@@ -779,7 +781,9 @@ def cmd_compare(a):
         rep["elapsed_seconds"] = time.time() - t_job; jdump(out / "compare.json", rep)
     dump()
     # ---- solver ladder for THIS cohort (errors; its timings only shortlist candidates)
-    if a.ladder:
+    if rows is not None:
+        rep["ladder_source"] = a.ladder
+    elif a.ladder:
         table = {}
         for d in a.ladder.split(","):
             fj = json.loads((Path(d) / "output" / "fom.json").read_text())
@@ -798,16 +802,19 @@ def cmd_compare(a):
     tcases = [c for c in ints(a.timing_cases) if c < ncases]
     solvers = {}; e2es = {}; reps = int(a.reps); gate = float(a.gate)
     for n in meshes:
-        rd = Path(romdirs[n]) / "output"
-        frozen = json.loads((rd / "frozen.json").read_text())
-        G, ops = load_rom(a.bank, n)
-        V = np.load(rd / "rotation.npz")["V"]
-        ks = sorted({frozen[x]["k"] for x in ("head", "head_fast") if frozen.get(x)})
-        arms = Arms(n, T, G, ops, V, load_heads(rd, ks))
-        calls = frozen_calls(arms, frozen)
-        del G, ops
+        if build is not None:
+            calls, frozen = build(n, T); arms = None
+        else:
+            rd = Path(romdirs[n]) / "output"
+            frozen = json.loads((rd / "frozen.json").read_text())
+            G, ops = load_rom(a.bank, n)
+            V = np.load(rd / "rotation.npz")["V"]
+            ks = sorted({frozen[x]["k"] for x in ("head", "head_fast") if frozen.get(x)})
+            arms = Arms(n, T, G, ops, V, load_heads(rd, ks))
+            calls = frozen_calls(arms, frozen)
+            del G, ops
         mrep = dict(frozen=frozen, arms={}); rep["meshes"][str(n)] = mrep
-        if a.interp and n != a.interp_source:
+        if build is None and a.interp and n != a.interp_source:
             src = a.interp_source; rd0 = Path(a.interp_romdev or romdirs[src]) / "output"
             fz0 = json.loads((rd0 / "frozen.json").read_text())
             Gi, oi = load_rom(a.interp, n)
@@ -874,7 +881,7 @@ def cmd_compare(a):
                     tag = f"{scheme}|{m}|{s}"
                     cl["E2E|" + tag] = (lambda e2e=e2e, geom=geom: e2e(uS, nu, geom))
                     cl["SOLVE|" + tag] = (lambda solver=solver, u0m=u0m, geom=geom: solver(u0m, nu, geom))
-                sent = {k: cl[k] for k in ("head", "span64") if k in cl} or {k: cl[k] for k in list(cl)[:1]}
+                sent = {k: cl[k] for k in sentinels if k in cl} or {k: cl[k] for k in list(cl)[:1]}
                 sk = [k for k in cl if k.startswith("SOLVE|")]
                 if sk:  # cheapest and dearest shortlisted solver configurations as solver sentinels (A4)
                     order = sorted(sk, key=lambda k: rowof[(k.split("|")[1], int(k.split("|")[2]), int(k.split("|")[3]))]["seconds_median"])

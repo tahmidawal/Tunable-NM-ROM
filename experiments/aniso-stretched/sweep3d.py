@@ -9,7 +9,7 @@ import numpy as np, jax
 import aniso3d as a3, solve3d as s3
 HERE = os.path.dirname(os.path.abspath(__file__)); RD = f"{HERE}/runs/ref3"; os.makedirs(RD, exist_ok=True)
 mode, cohort = sys.argv[1], sys.argv[2]
-P = a3.sample_params(cohort, 16); ev = a3.Evaluator3(128); backend = jax.default_backend()
+P = a3.sample_params(cohort, 16); ev = a3.Evaluator3(128); backend = os.environ.get("BACKEND_LABEL", jax.default_backend())
 if mode == "ref":
     S32, S24 = s3.Solver(32, 4), s3.Solver(24, 4); rows = []
     for i in range(16):

@@ -157,3 +157,14 @@ the report states the absolute comparator time first.
   fastest accuracy-matched comparator on each backend.
 - The comparator is additionally timed on the CPU with the same matrix-free FD-PCG code (JAX CPU
   backend, default threads and one thread), so that the CPU column is not limited to assembled solvers.
+
+**Amendment 3 (2026-11-11 04:02 EST, after the first dev-cohort POD-Galerkin result, before any
+held-out ROM number and before any bank was trained).** Dev evidence: with 512 snapshots (truth Q4
+$N=12$, 103 823 unknowns) POD-Galerkin reaches only 2.1 % mean error at rank 128 (9 % at rank 32);
+the 3D six-parameter family is much less linearly reducible than the 2D ones. Changes: (i) the rank
+ladder is extended to $\{192, 256, 384, 512\}$ and the 2048-snapshot set foreseen in Amendment 2 is
+used; (ii) the bank arm is run at the registered width $R=128$ and additionally at $R=256$ (same
+hyper-parameters, 40k steps or the wall cap), both reported; since POD is the optimal linear basis
+for the snapshots, the bank span is not expected to beat it at equal rank, and that expectation is
+recorded here before training; (iii) final ROM online timings are taken pinned to one CPU core on
+a quiet machine, in a separate pass from the dev rank selection.

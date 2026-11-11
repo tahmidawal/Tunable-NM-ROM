@@ -199,3 +199,85 @@ TEST OPENED (2026-11-11, 12:14-12:57 EST). Sealed cohort opened once by job 7134
 9d2a8bba8, the freeze commit): status final, no failures, gate passed at the first attempt at
 every mesh. Results: results/cmptestB/{compare.json,ladder.json}, results/table_test.md.
 No rerun, no change of any setting afterwards.
+
+A5 (2026-11-11, 14:15 EST; written before any coordinate-network bank or operator has been
+trained on this family and before any of their outcomes exists. The sealed test cohort (seed
+2026111113) HAS ALREADY BEEN OPENED ONCE, by job 7134832, for the per-mesh POD and
+interpolated-POD arms above; the new arms below were not part of that job. Every choice for
+the new arms is frozen on the training/development cohorts and then evaluated on the test
+cohort by exactly one job; nothing is selected on test, and the report says that the cohort
+had been opened earlier for other arms.)
+
+Why. The arms that beat the solver use a per-mesh centred POD bank. The method's bank is ONE
+coordinate network, fitted once, read on any mesh. A5 adds that bank for family B, and
+neural-operator baselines trained on the head's trajectories.
+
+A5.1 Coordinate-network bank (script coordbank.py).
+* Function class. A periodic vector potential psi_theta : T^3 -> R^{3 x R}; the first layer is
+  a linear map of the integer Fourier features {sin, cos (2 pi k.x) : max|k_i| <= kmax}, then
+  SiLU dense layers, then a linear layer. On a uniform mesh the first layer is evaluated by an
+  inverse FFT of its zero-padded weights (identical function; checked against the direct sum).
+  DEVIATION from the sibling lane's network (stated in every report): the curl is taken
+  spectrally on the evaluation mesh, G_n = n^{-3/2} mask_n curl_n psi(grid_n) (mask_n = the
+  solver's |k_i| < n/2), instead of by automatic differentiation; the bank is exactly
+  discretely divergence-free on every mesh and four times cheaper to train. The bank used on
+  mesh n is Loewdin(G_n R_64^{-1}), R_64 from the QR of G_64 (so the 64^3 bank is the Q
+  factor). One set of weights for all meshes; no per-mesh fitting of the bank.
+* Data: the SAME snapshots as the POD bank (bank cohort, first 128 cases of seed 2026111111,
+  six frames, centred, unweighted) on the 64^3 grid. Objective: the variable-projection
+  loss 1 - ||P_G Y||^2/||Y||^2, whose optimum is that POD bank. To make it one bank rather
+  than a 64^3 fit, each Adam step samples the network on the grid displaced by a random
+  sub-cell shift and shifts the samples back spectrally before the loss (content above the
+  64^3 Nyquist then acts as error); L-BFGS uses the mean over two fixed shifts.
+  Optimiser: Adam (clip 1, warm-up 1000, cosine 1e-3 -> 1e-6, 9000 s wall) then L-BFGS
+  (memory 20, zoom line search, 3600 s wall); the bank of record is the end of L-BFGS.
+* Variants trained in parallel (one job each): c1 kmax 8 width 512, 4 hidden layers, R 64;
+  c2 = c1 with kmax 12; c3 = c1 with width 768; c4 = c1 with 3 hidden layers; c5 = c1 with
+  R 96 (bank size). If a variant fails technically it is rerun or dropped (reported).
+* Bank selection (development cohort only, no ROM run): the R=64 variant with the smallest
+  development projection floor (evolved worst over the 64 cases, error / ||u0||) at 64^3,
+  among those whose 96^3 and 128^3 floors are within 1.05 of their 64^3 floor (otherwise the
+  network is not one bank and the variant is disqualified; if all are, the best is carried
+  and the defect is reported). c5 (R=96) is a secondary arm: carried through the same steps
+  only if its 64^3 floor is at least 10 % below the selected R=64 bank's and budget remains;
+  it is reported separately (different online size), never substituted for the R=64 arm.
+* Heads, settings, comparator: UNCHANGED from sections 2, A1-A4. headdata (the 512 head
+  trajectories re-solved, projected on the coordinate bank), romdev at 64/96/128 with the
+  same ladders and the same selection rule, weak operators by the same build_ops with the
+  same checks, comparator ladder and timing block of A3/A4, A100 80 GB.
+  Arms: `coord_head`, `coord_head_fast`, `coord_span*` (bank read at mesh n; head trained on
+  that mesh's coefficients, as for the POD arms) and `coord1_head`, `coord1_head_fast`
+  (ONE head: the 64^3 heads, rotation and frozen settings used unchanged with the bank read
+  at 96^3 and 128^3, outputs scaled (n/64)^{3/2}; the same mechanism as the interp arms).
+  The existing per-mesh POD `head`/`head_fast` arms are re-run in the same job and timing
+  block as a reference (`pod_*`; their errors must reproduce job 7134832's).
+* Order: development comparison (cohort genB_dev, ladders fomdevB+fomdevB2) -> FREEZE commit
+  -> one test job (cohort genB_test, ladder in-job, --devcompare), as in section 8.
+* What counts. Per mesh, on the test cohort: SUCCESS if `coord_head` or `coord_head_fast`
+  is useful (worst <= 3 %) and its any-mesh solve-only ratio is > 1 with all gates passed;
+  the one-head arms are judged by the same rule and reported beside. RETENTION is reported as
+  (coord ratio)/(per-mesh POD ratio of the same job) and (coord worst)/(POD worst); the
+  coordinate bank "matches POD" only if worst error <= 1.25x and ratio >= 0.8x of the POD
+  arm on that mesh. FAILURE: not useful, or ratio <= 1, or a failed gate, on any mesh -
+  reported as such per mesh; a coordinate bank that is worse than POD or loses to the solver
+  is reported with the same prominence as a win.
+
+A5.2 Neural-operator baseline (script opbase.py; code from experiments/ns3d-operators).
+* Data: the 512 head trajectories (seed 2026111111, first 512; split as the head: index = 7
+  mod 8 validation, 448/64), six frames of the 192^3 truth truncated to 64^3. Map: (u0, log nu)
+  -> the five evolved frames, uncentred frame, random cyclic grid shifts as augmentation
+  (an exact symmetry). Loss, optimiser, checkpoint rule: the operators lane's (squared
+  initial-relative error; AdamW 1e-3, wd 1e-4, batch 8, clip 1, cosine in wall time; best
+  validation checkpoint). FNO at two sizes (the lane's 64^3 configuration and a larger one),
+  wall budget 5400 s each; other operator families only if budget remains. The reported
+  operator is the one with the smaller validation error; the development cohort is used for
+  nothing but a report; test is evaluated once with the frozen checkpoint.
+* Evaluation: same cases and metric as the ROM. Native at 64^3; at 96^3/128^3 the input is
+  truncated to 64^3 and the output zero-padded spectrally (in the operator's favour: no
+  zero-shot resolution change). Time: batch-1 float64 forward pass on an A100 80 GB (median
+  of 9 repetitions on 3 cases after warm-up, synchronised), a PyTorch measurement outside the
+  JAX interleaved block (stated). Matched solver: the same rule and ladder (fastest
+  configuration whose worst error on the cohort is <= the operator's), with the solver time
+  taken from the test job's timing block when that configuration is in it, otherwise from the
+  ladder's own solve-only median (labelled). An operator that is faster than the ROM but less
+  accurate, or the reverse, is reported as measured.

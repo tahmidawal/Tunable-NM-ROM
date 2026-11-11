@@ -281,3 +281,16 @@ A5.2 Neural-operator baseline (script opbase.py; code from experiments/ns3d-oper
   taken from the test job's timing block when that configuration is in it, otherwise from the
   ladder's own solve-only median (labelled). An operator that is faster than the ROM but less
   accurate, or the reverse, is reported as measured.
+
+A5 record 1 (2026-11-11 17:55 EST; development cohort only, no ROM run yet, test untouched).
+Bank jobs 7136408/10/12/15/21 (c1..c5) completed; results/coordnet/coordbank_c*.json.
+Development projection floors, evolved worst over 64 cases, 64^3 / 96^3 / 128^3
+(per-mesh POD: 1.348 / 1.389 / 1.390 %): c1 1.360/1.440/1.442 %, c2 1.334/1.438/1.442 %,
+c3 1.322/1.407/1.410 %, c4 1.324/1.410/1.412 %, c5 (R=96) 0.914/1.023/1.027 %.
+Rule applied as written: every R=64 variant has a 128^3 floor more than 1.05 times its own
+64^3 floor (1.06 to 1.08; the per-mesh POD bank's own ratio is 1.031), so all four fail the
+transfer check; the fallback of the rule applies and the variant with the smallest 64^3
+floor is carried: c3 (width 768). The defect (floors on the finer meshes 6.6 % above the
+64^3 floor, 1.3 to 1.4 % above the per-mesh POD floor there) is reported with the result.
+c5 meets its condition (64^3 floor 32 % below c3's) and is carried as the secondary R=96
+arm, reported separately; nothing else changes.

@@ -115,3 +115,11 @@ produces). An operator that beats the ROM on these targets is reported exactly s
   than half a reference period to a lower one are discarded) to state what the underlying shedding
   frequency and amplitude are. It was chosen after seeing the outcome and is never counted
   towards the six targets.
+- 2026-11-11 08:25: all arms frozen; checkpoint hashes (sha256 of final.pt) listed before the single
+  held-out job final01:
+  node60  069f5b8560e3aa39214adfd32931401f0cf07f4a799157fcec87548222518229  node01/results/node/final.pt
+  node180 2a9b5143121f78a1f7af6c7b63dd9b07786ed3663e5c373794086f9f377f2eae  node02/results/node/final.pt
+  grid60  a2af5440073637702257e68e6f6fbc7b8381cab08123428d23adc9ce20fbcc95  grid01/results/grid/final.pt
+  grid180 1a07c6ad90d416beb1df66c9d55893b8c86bf1ef6bb6041b52fd91b1480e309a  grid02/results/grid/final.pt
+  don60   a1f161d8c4b253592ab9f02fd5ff0075f35212794015f6bda66b823d5263c191  don01/results/don/final.pt
+  don180  1aa0d510ab8487097bc760c538be8736b5f741a23006bf5ef36f34389781519b  don02/results/don/final.pt

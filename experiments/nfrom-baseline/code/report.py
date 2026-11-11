@@ -80,15 +80,23 @@ def main():
             summary['training'].append(dict(name=d['name'], steps=d['steps'], val_mean=h['val_mean'], val_evolved_worst=h['val_evolved_worst'], seconds=d['train_seconds'], at_plateau=d['at_plateau']))
         out.append(f"\nTotal training time of all runs listed: {sum(json.loads(p.read_text())['train_seconds'] for p in tr) / 3600:.2f} GPU-hours.\n")
 
-    # ---- validation knob grid
-    gr = sorted((R / 'grid').glob('*.json')) + sorted((R / 'grid-x').glob('*.json'))
-    if gr:
-        out.append('### Validation knob grid (first 32 validation trajectories; times are rough batch-1 timings used for selection only)\n')
-        out.append('| decoder | steps | kind | M | LM it/step | refined z0 | precision | worst % | median % | rough ms | non-finite |\n|---|---|---|---|---|---|---|---|---|---|---|')
+    # ---- validation knob grids
+    groups = [('solver v2 (used for selection)', ['grid', 'grid-x']),
+              ('arm L with the online residual solve instead of the hyper-network (solver v2; not used for selection of hyper rows)', ['grid-x-lres']),
+              ('solver v1 (superseded by amendment A3; kept for the record)', ['grid-v1', 'grid-x-v1'])]
+    for title, dirs in groups:
+        gr = [p for d in dirs for p in sorted((R / d).glob('*.json'))]
+        if not gr:
+            continue
+        out.append(f'### Validation knob grid, {title}\n')
+        out.append('First 32 validation trajectories; times are rough batch-1 timings on the GPU named in the row, used for selection only.\n')
+        out.append('| decoder | steps | kind | M | LM it/step | refined z0 | precision | worst % | median % | rough ms | non-finite | GPU | job |\n|---|---|---|---|---|---|---|---|---|---|---|---|---|')
         for p in gr:
             d = json.loads(p.read_text())
             for r in d['rows']:
-                out.append(f"| {d['name']} | {d['checkpoint_step']:,} | {r['kind']} | {r['M'] or '—'} | {r['iters'] or '—'} | {'yes' if r['refine'] else 'no'} | {r['dtype']} | {f(r['worst_percent'])} | {f(r['median_percent'])} | {f(r['rough_ms'], 1)} | {r['nonfinite']} |")
+                if p.parent.name.endswith('lres') and r['kind'] == 'hyper':
+                    continue
+                out.append(f"| {d['name']} | {d['checkpoint_step']:,} | {r['kind']} | {r['M'] or '—'} | {r['iters'] or '—'} | {'yes' if r['refine'] else 'no'} | {r['dtype']} | {f(r['worst_percent'])} | {f(r['median_percent'])} | {f(r['rough_ms'], 1)} | {r['nonfinite']} | {d.get('gpu')} | {d.get('job_id')} |")
         out.append('')
     Path(a.out).write_text('\n'.join(out) + '\n')
     (Path(a.out).parent / 'summary.json').write_text(json.dumps(summary, indent=1) + '\n')

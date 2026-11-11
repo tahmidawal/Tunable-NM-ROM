@@ -225,7 +225,9 @@ def select(a):
       for f in sorted(Path(g).glob('*.json')):
         d = json.loads(f.read_text())
         for r in d['rows']:
-            rows.append(dict({k: v for k, v in r.items() if k != 'errors'}, models_dir=sub, arm=d['cfg']['arm'] + ('' if r['kind'] != 'residual' or d['cfg']['arm'] == 'C' else 'R'),
+            if r['kind'] == 'hyper' and g.rstrip('/').endswith('lres'):
+                continue                      # the hyper-network rows of that decoder are already in its own grid file
+            rows.append(dict({k: v for k, v in r.items() if k != 'errors'}, models_dir=sub, grid_gpu=d.get('gpu'), grid_job=d.get('job_id'), arm=d['cfg']['arm'] + ('' if r['kind'] != 'residual' or d['cfg']['arm'] == 'C' else 'R'),
                              k=d['cfg']['k'], checkpoint_step=d['checkpoint_step']))
     sel = []
     for arm in sorted({r['arm'] for r in rows}):

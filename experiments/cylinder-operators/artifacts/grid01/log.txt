@@ -1,0 +1,102 @@
+arm grid rep grid device NVIDIA RTX PRO 6000 Blackwell Server Edition data_device cuda
+candidate fno_K8 params 26246544
+  it 200 t 14s loss 5.9997e-01 lr 6.66e-04
+  it 2200 t 141s loss 8.2737e-04 lr 9.67e-04
+  it 4200 t 267s loss 5.6096e-05 lr 8.83e-04
+  it 6200 t 393s loss 2.1536e-04 lr 7.58e-04
+  it 8200 t 519s loss 2.7422e-05 lr 6.05e-04
+  it 10200 t 646s loss 2.8138e-05 lr 4.40e-04
+  it 12200 t 772s loss 1.7215e-05 lr 2.83e-04
+  it 14200 t 898s loss 1.1706e-05 lr 1.48e-04
+  it 16200 t 1025s loss 8.7720e-06 lr 5.19e-05
+  it 18200 t 1151s loss 8.0253e-06 lr 4.16e-06
+  -> val e_u rms 0.0534262462083165 max 0.11771906912326813 iters 18980
+candidate unet_K8 params 1930904
+  it 200 t 7s loss 4.5906e-01 lr 6.67e-04
+  it 2200 t 74s loss 3.4462e-03 lr 9.91e-04
+  it 4200 t 142s loss 1.9064e-03 lr 9.66e-04
+  it 6200 t 209s loss 1.2337e-03 lr 9.27e-04
+  it 8200 t 277s loss 1.0992e-03 lr 8.74e-04
+  it 10200 t 345s loss 9.4329e-04 lr 8.10e-04
+  it 12200 t 412s loss 5.8197e-04 lr 7.36e-04
+  it 14200 t 480s loss 5.3101e-04 lr 6.55e-04
+  it 16200 t 547s loss 3.9168e-04 lr 5.69e-04
+  it 18200 t 615s loss 1.4034e-04 lr 4.81e-04
+  it 20200 t 682s loss 8.4320e-05 lr 3.93e-04
+  it 22200 t 750s loss 5.7945e-05 lr 3.09e-04
+  it 24200 t 818s loss 4.2409e-05 lr 2.30e-04
+  it 26200 t 885s loss 2.8958e-05 lr 1.61e-04
+  it 28200 t 953s loss 2.6838e-05 lr 1.01e-04
+  it 30200 t 1020s loss 1.8700e-05 lr 5.44e-05
+  it 32200 t 1088s loss 1.5682e-05 lr 2.15e-05
+  it 34200 t 1155s loss 1.4693e-05 lr 3.43e-06
+  -> val e_u rms 0.2828235338749269 max 0.5248345732688904 iters 35524
+candidate unet_K8_noise params 1930904
+  it 200 t 7s loss 4.9467e-01 lr 6.67e-04
+  it 2200 t 74s loss 3.9541e-02 lr 9.91e-04
+  it 4200 t 142s loss 6.1444e-03 lr 9.66e-04
+  it 6200 t 210s loss 4.9756e-03 lr 9.27e-04
+  it 8200 t 277s loss 2.5286e-03 lr 8.74e-04
+  it 10200 t 345s loss 3.8106e-03 lr 8.10e-04
+  it 12200 t 413s loss 1.6443e-03 lr 7.36e-04
+  it 14200 t 480s loss 4.3817e-03 lr 6.54e-04
+  it 16200 t 548s loss 1.0481e-03 lr 5.68e-04
+  it 18200 t 615s loss 8.6065e-04 lr 4.80e-04
+  it 20200 t 683s loss 6.8301e-04 lr 3.92e-04
+  it 22200 t 751s loss 5.7490e-04 lr 3.08e-04
+  it 24200 t 818s loss 5.1549e-04 lr 2.30e-04
+  it 26200 t 886s loss 4.3998e-04 lr 1.60e-04
+  it 28200 t 954s loss 3.9463e-04 lr 1.01e-04
+  it 30200 t 1021s loss 3.6352e-04 lr 5.38e-05
+  it 32200 t 1089s loss 3.4240e-04 lr 2.10e-05
+  it 34200 t 1157s loss 3.3232e-04 lr 3.22e-06
+  -> val e_u rms 0.3718192016493084 max 0.6623121500015259 iters 35480
+candidate unet_K32 params 1933280
+  it 200 t 8s loss 6.7146e-01 lr 6.67e-04
+  it 2200 t 88s loss 4.6232e-03 lr 9.87e-04
+  it 4200 t 167s loss 1.3773e-03 lr 9.53e-04
+  it 6200 t 247s loss 8.3346e-04 lr 8.99e-04
+  it 8200 t 327s loss 8.2814e-04 lr 8.28e-04
+  it 10200 t 406s loss 7.5400e-04 lr 7.43e-04
+  it 12200 t 486s loss 3.5769e-04 lr 6.47e-04
+  it 14200 t 566s loss 3.7022e-04 lr 5.45e-04
+  it 16200 t 645s loss 2.3821e-04 lr 4.41e-04
+  it 18200 t 725s loss 2.2834e-04 lr 3.40e-04
+  it 20200 t 804s loss 1.3025e-04 lr 2.45e-04
+  it 22200 t 884s loss 1.0334e-04 lr 1.62e-04
+  it 24200 t 964s loss 8.8528e-05 lr 9.27e-05
+  it 26200 t 1043s loss 7.6178e-05 lr 4.15e-05
+  it 28200 t 1123s loss 7.1566e-05 lr 1.02e-05
+  -> val e_u rms 0.3682085157862309 max 0.5967870354652405 iters 30139
+selected fno_K8
+  it 200 t 13s loss 5.7724e-01 lr 6.67e-04
+  it 2200 t 139s loss 2.6445e-04 lr 9.96e-04
+  it 4200 t 266s loss 8.3521e-05 lr 9.87e-04
+  it 6200 t 392s loss 1.7865e-03 lr 9.71e-04
+  it 8200 t 519s loss 1.4388e-04 lr 9.50e-04
+  it 10200 t 646s loss 3.3695e-05 lr 9.23e-04
+  it 12200 t 772s loss 4.2325e-05 lr 8.91e-04
+  it 14200 t 899s loss 2.0731e-05 lr 8.54e-04
+  it 16200 t 1025s loss 3.6811e-05 lr 8.13e-04
+  it 18200 t 1152s loss 4.2771e-05 lr 7.68e-04
+  it 20200 t 1279s loss 1.3533e-04 lr 7.20e-04
+  it 22200 t 1405s loss 1.5797e-05 lr 6.69e-04
+  it 24200 t 1532s loss 2.5009e-05 lr 6.16e-04
+  it 26200 t 1658s loss 1.4428e-04 lr 5.62e-04
+  it 28200 t 1785s loss 2.0760e-05 lr 5.07e-04
+  it 30200 t 1911s loss 2.0526e-05 lr 4.51e-04
+  it 32200 t 2038s loss 8.3295e-06 lr 3.97e-04
+  it 34200 t 2165s loss 1.1820e-05 lr 3.44e-04
+  it 36200 t 2291s loss 2.1679e-05 lr 2.92e-04
+  it 38200 t 2418s loss 6.2846e-06 lr 2.43e-04
+  it 40200 t 2544s loss 4.9754e-06 lr 1.98e-04
+  it 42200 t 2671s loss 4.5287e-06 lr 1.56e-04
+  it 44200 t 2798s loss 4.9070e-06 lr 1.18e-04
+  it 46200 t 2924s loss 3.6005e-06 lr 8.45e-05
+  it 48200 t 3051s loss 3.2848e-06 lr 5.63e-05
+  it 50200 t 3177s loss 3.1850e-06 lr 3.36e-05
+  it 52200 t 3304s loss 2.8666e-06 lr 1.66e-05
+  it 54200 t 3431s loss 2.6161e-06 lr 5.46e-06
+  it 56200 t 3557s loss 2.7929e-06 lr 3.50e-07
+dev {"status": "completed", "e_u": {"rms": 0.010603148609679059, "max": 0.018854040414473194, "last_period_mean": 0.016867385876335156}, "e_p": {"rms": 0.005566838195367625, "max": 0.009855080282870018, "last_period_mean": 0.008883202509240247}, "cycle_errors": {"St_rel": 0.5152322709865338, "CD_max_rel": 0.008791091416247574, "CL_max_abs": 0.008638130134225541}, "phase": {"lag_saves": -1, "lag_seconds": -0.0024999999999977263, "lag_fraction_of_period": -0.007505951586428747, "lift_rms_at_lag": 0.02193548277604428, "phase_accurate": true}, "targets_met": 4}
+arm_done

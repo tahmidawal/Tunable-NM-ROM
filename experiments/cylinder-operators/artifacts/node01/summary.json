@@ -1,0 +1,210 @@
+{
+  "arm": "node",
+  "rep": "n2",
+  "gpu": "NVIDIA L40S",
+  "tune_minutes": 20.0,
+  "final_minutes": 60.0,
+  "candidates": {
+    "tr_K8": {
+      "config": {
+        "name": "tr_K8",
+        "C": 128,
+        "L": 6,
+        "H": 8,
+        "M": 32,
+        "K": 8,
+        "noise": 0.0,
+        "lr": 0.001,
+        "batch": 8,
+        "n_sub": 16384
+      },
+      "params": 762888,
+      "train": {
+        "iterations": 9010,
+        "seconds": 1200.1456162929535,
+        "loss_at_80pct": 0.00021867105460842142,
+        "loss_final": 0.00014543041324941442,
+        "relative_drop_last_20pct": 0.334935236353803,
+        "plateau": false
+      },
+      "val_e_u_rms": 0.03370121767868456,
+      "val_e_u_max": 0.057302359491586685,
+      "val_e_u_last": 0.05681952089071274,
+      "finite": true
+    },
+    "tr_K8_noise": {
+      "config": {
+        "name": "tr_K8_noise",
+        "C": 128,
+        "L": 6,
+        "H": 8,
+        "M": 32,
+        "K": 8,
+        "noise": 0.01,
+        "lr": 0.001,
+        "batch": 8,
+        "n_sub": 16384
+      },
+      "params": 762888,
+      "train": {
+        "iterations": 9017,
+        "seconds": 1200.0110292434692,
+        "loss_at_80pct": 0.011831741438557704,
+        "loss_final": 0.009911080449819564,
+        "relative_drop_last_20pct": 0.16233121715109666,
+        "plateau": false
+      },
+      "val_e_u_rms": 0.025693846910920415,
+      "val_e_u_max": 0.038854386657476425,
+      "val_e_u_last": 0.03581608831882477,
+      "finite": true
+    },
+    "tr_K32": {
+      "config": {
+        "name": "tr_K32",
+        "C": 128,
+        "L": 6,
+        "H": 8,
+        "M": 32,
+        "K": 32,
+        "noise": 0.0,
+        "lr": 0.001,
+        "batch": 8,
+        "n_sub": 16384
+      },
+      "params": 772176,
+      "train": {
+        "iterations": 8908,
+        "seconds": 1200.1198604106903,
+        "loss_at_80pct": 0.000321242144855205,
+        "loss_final": 0.00023620711945113727,
+        "relative_drop_last_20pct": 0.26470694074837525,
+        "plateau": false
+      },
+      "val_e_u_rms": 0.029848762887417106,
+      "val_e_u_max": 0.04264078289270401,
+      "val_e_u_last": 0.041529182344675064,
+      "finite": true
+    }
+  },
+  "selected": "tr_K8_noise",
+  "final": {
+    "config": {
+      "name": "tr_K8_noise",
+      "C": 128,
+      "L": 6,
+      "H": 8,
+      "M": 32,
+      "K": 8,
+      "noise": 0.01,
+      "lr": 0.001,
+      "batch": 8,
+      "n_sub": 16384
+    },
+    "params": 762888,
+    "train": {
+      "iterations": 27042,
+      "seconds": 3600.0944261550903,
+      "loss_at_80pct": 0.0018380977599669925,
+      "loss_final": 0.0012430603635342173,
+      "relative_drop_last_20pct": 0.3237245642709779,
+      "plateau": false
+    },
+    "train_re100_native_e_u": {
+      "rms": 0.006914301358731776,
+      "max": 0.012183855287730694
+    }
+  },
+  "training_seconds_total": 7200.370932102203,
+  "dev_re95": {
+    "case": "re95",
+    "saves": 681,
+    "finite": true,
+    "status": "completed",
+    "e_u": {
+      "rms": 0.008334520651600721,
+      "max": 0.01505162749502552,
+      "last_period_mean": 0.013272399976291071
+    },
+    "e_p": {
+      "rms": 0.0038987895244131958,
+      "max": 0.006873404552121719,
+      "last_period_mean": 0.006125309587441571
+    },
+    "cycles": {
+      "CD_max": 3.2468620498137217,
+      "CL_max": -0.1614911305616548,
+      "CL_min": -0.9482977831187753,
+      "St": 5.688194746715158,
+      "period": 0.10119043017975594,
+      "cycles": 15
+    },
+    "reference_cycles": {
+      "CD_max": 3.243052843969901,
+      "CL_max": 0.9162771453687487,
+      "CL_min": -0.9501134799316288,
+      "St": 0.3002380634599061,
+      "period": 0.3330690281186852,
+      "cycles": 4
+    },
+    "cycle_errors": {
+      "St_rel": 17.945614960225594,
+      "CD_max_rel": 0.001174574090244445,
+      "CL_max_abs": 1.0777682759304035
+    },
+    "phase": {
+      "lag_saves": 1,
+      "lag_seconds": 0.0024999999999977263,
+      "lag_fraction_of_period": 0.007505951586428747,
+      "lift_rms_at_lag": 0.010320434908919367,
+      "phase_accurate": true
+    },
+    "targets": {
+      "e_u_rms": {
+        "value": 0.008334520651600721,
+        "target": 0.01,
+        "met": true
+      },
+      "e_u_max": {
+        "value": 0.01505162749502552,
+        "target": 0.03,
+        "met": true
+      },
+      "e_p_rms": {
+        "value": 0.0038987895244131958,
+        "target": 0.02,
+        "met": true
+      },
+      "St_rel": {
+        "value": 17.945614960225594,
+        "target": 0.01,
+        "met": false
+      },
+      "CD_max_rel": {
+        "value": 0.001174574090244445,
+        "target": 0.02,
+        "met": true
+      },
+      "CL_max_abs": {
+        "value": 1.0777682759304035,
+        "target": 0.02,
+        "met": false
+      }
+    },
+    "targets_met": 4,
+    "inference": {
+      "warmup_seconds": 2.5604883348569274,
+      "repeats": [
+        2.560300135985017,
+        2.5605509551241994,
+        2.560594880953431,
+        2.5604951502755284,
+        2.5605968115851283
+      ],
+      "median_seconds": 2.5605509551241994,
+      "min_seconds": 2.560300135985017,
+      "max_seconds": 2.5605968115851283,
+      "device": "NVIDIA L40S"
+    }
+  }
+}

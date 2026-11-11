@@ -53,4 +53,14 @@ checked, timed in the same allocation as the ROM). Not covered, to be stated: co
 admitted coarser mesh exists) and other time integrators.
 
 ## Amendments
-(none yet)
+
+- A1 (2026-11-11 00:30, before any arm result): every arm uses the same budget so arms are time-matched:
+  stage 1 = Adam 20k steps + L-BFGS for 1800 s; stage 2 = 1200 s (plain continuation for A1/A2/A3/A5, the
+  arm's own variant for A4/A6/A7). The extra streamwise Fourier frequencies are 12,16,24,32,48 (the text
+  above said 16, 32). A6 divergence weight is 10; A7 box weight 4.
+- A2 (2026-11-11 00:45, before any ladder result): the FE ladder keeps the frozen-convection lag at 1/80 s
+  where the step divides it (1/400: K=5, 1/800: K=10, 1/1600: K=20); at step 1/200 it uses K=2 (lag 1/100 s)
+  because 1/80 s is not a multiple of the step. Ladder entries run with the ROM's output contract (reaction
+  forces and probes every step, state every save; no surface-force integral), so the stage wall time is the
+  entry's cost. Lower-order start states are the reference state interpolated into the lower-order space.
+

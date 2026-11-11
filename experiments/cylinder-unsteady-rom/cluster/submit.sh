@@ -10,7 +10,7 @@ NS=/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103
 DIR=$NS/$ATTEMPT
 git diff --quiet HEAD -- . || { echo "uncommitted changes in lane; commit first"; exit 2; }
 COMMIT=$(git rev-parse HEAD)
-FILES=(inputs/EXPORT-SHA256SUMS inputs/R3-SHA256SUMS inputs/R1DE.json rom_frames.py rom_export.py rom_project.py rom_qcheck.py rom_r5.py vendor/ref/transient.py vendor/ref/cycles.py vendor/ref/vendor/scalars.py vendor/ref/vendor/oriented_normals.py rom_core.py rom_r2.py rom_r4.py bank_train.py bank_train2.py bank_diag.py cycles.py install_deps.py vendor/geometry.py vendor/accuracy_v2/__init__.py vendor/accuracy_v2/spatial_bank.py vendor/accuracy_v2/fast_spatial_bank.py vendor/accuracy_v2/residual_head_bank.py
+FILES=(inputs/EXPORT-SHA256SUMS inputs/R3-SHA256SUMS inputs/R1DE.json rom_frames.py rom_export.py rom_project.py rom_qcheck.py rom_r5.py vendor/ref/transient.py vendor/ref/cycles.py vendor/ref/vendor/scalars.py vendor/ref/vendor/oriented_normals.py rom_core.py rom_r2.py rom_r4.py bank_train.py bank_train2.py bank_diag.py fe_ladder.py cycles.py install_deps.py vendor/geometry.py vendor/accuracy_v2/__init__.py vendor/accuracy_v2/spatial_bank.py vendor/accuracy_v2/fast_spatial_bank.py vendor/accuracy_v2/residual_head_bank.py
        vendor/dependencies.py vendor/DEPENDENCIES.json inputs/run09_bank.npz inputs/admitted_mesh.vol.bin cluster/run.sh "$@")
 echo "squeue before:"; ssh tufts-login "squeue -u \$USER -h -o '%i %j %Z'" | grep cyl-unsteady-20261103 || echo "(no campaign jobs)"
 ssh tufts-login "test ! -e $DIR && mkdir -p $DIR" || { echo "attempt directory exists or cannot be created: $DIR"; exit 4; }

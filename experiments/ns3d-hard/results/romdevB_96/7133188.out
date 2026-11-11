@@ -1,0 +1,138 @@
+host=pax049 source_commit=ffcfc4c9acf3bb7e0f5afc3396fe52b2f7f8cdca job=7133188
+NVIDIA A100 80GB PCIe, GPU-793c50be-fdce-eeff-be9d-e2286320ae0d, 81920 MiB
+jax_backend=gpu
+backend=gpu devices=[CudaDevice(id=0)] args={'cmd': 'romdev', 'family': 'B', 'out': 'output', 'truth_n': 192, 'truth_dt': 0.00025, 'store_n': 128, 'smoke': False, 'meshes': '64,96,128', 'cases': 0, 'fom_meshes': '32,40,48,56,64,72,80,88,96,104,112,128', 'cn_steps': '5,10,15,20,30,40,50,60,70,80,100,120,160,240', 'rk_steps': '5,10,15,20,25,30,40,60,80', 'bank': '/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/bankB', 'headdata': '/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/hdB_0,/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/hdB_1,/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/hdB_2,/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/hdB_3', 'dev': '/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/genB_dev', 'mesh': 96, 'rank': 64, 'ks': '8,16,32', 'spans': '64,48,32,16,8', 'modes': '292,584,1168,2336', 'steps': '10,20,40'}
+head data {'cases': 512, 'frames': 21, 'states_train': 9408, 'states_val': 1344, 'bank_outside_worst': 0.014561269081151853, 'bank_outside_median': 0.008833799183544828}
+  head step 10000/100000 weighted fit 1.7897e-03 (11s)
+  head step 20000/100000 weighted fit 6.9036e-04 (18s)
+  head step 30000/100000 weighted fit 5.5783e-04 (25s)
+  head step 40000/100000 weighted fit 2.3495e-04 (32s)
+  head step 50000/100000 weighted fit 2.3780e-04 (39s)
+  head step 60000/100000 weighted fit 1.9571e-04 (46s)
+  head step 70000/100000 weighted fit 1.2841e-04 (53s)
+  head step 80000/100000 weighted fit 1.1209e-04 (60s)
+  head step 90000/100000 weighted fit 9.6670e-05 (66s)
+  head step 100000/100000 weighted fit 8.7921e-05 (73s)
+head k=8 95s fit {'train': {'median': 0.0030797119489672274, 'worst': 0.014570042377479957}, 'val': {'median': 0.0027359756869302773, 'worst': 0.01305424835898473}}
+  head step 10000/100000 weighted fit 5.8954e-04 (10s)
+  head step 20000/100000 weighted fit 3.2042e-04 (17s)
+  head step 30000/100000 weighted fit 1.9594e-04 (24s)
+  head step 40000/100000 weighted fit 1.5695e-04 (31s)
+  head step 50000/100000 weighted fit 1.0335e-04 (38s)
+  head step 60000/100000 weighted fit 6.1725e-05 (45s)
+  head step 70000/100000 weighted fit 4.7080e-05 (52s)
+  head step 80000/100000 weighted fit 3.5683e-05 (59s)
+  head step 90000/100000 weighted fit 2.9148e-05 (67s)
+  head step 100000/100000 weighted fit 2.5940e-05 (74s)
+head k=16 85s fit {'train': {'median': 0.0030785373674490175, 'worst': 0.014562520037413242}, 'val': {'median': 0.0027316700466656395, 'worst': 0.013053770683724687}}
+  head step 10000/100000 weighted fit 2.2906e-04 (10s)
+  head step 20000/100000 weighted fit 6.5715e-05 (18s)
+  head step 30000/100000 weighted fit 6.2450e-05 (25s)
+  head step 40000/100000 weighted fit 6.3601e-05 (33s)
+  head step 50000/100000 weighted fit 2.7672e-05 (40s)
+  head step 60000/100000 weighted fit 1.2893e-05 (47s)
+  head step 70000/100000 weighted fit 7.0342e-06 (55s)
+  head step 80000/100000 weighted fit 4.5824e-06 (62s)
+  head step 90000/100000 weighted fit 3.6222e-06 (70s)
+  head step 100000/100000 weighted fit 3.1114e-06 (77s)
+head k=32 90s fit {'train': {'median': 0.003078193383359518, 'worst': 0.01456138007159256}, 'val': {'median': 0.002731064851853692, 'worst': 0.013053699311723}}
+floors span 64:0.0139, 48:0.0230, 32:0.0439, 16:0.0838, 8:0.1634 | head 8:0.0139, 16:0.0139, 32:0.0139
+span64 M292 steps10: worst 0.32471 median 0.14870
+span48 M292 steps10: worst 0.31751 median 0.14361
+span32 M292 steps10: worst 0.14782 median 0.07032
+span16 M292 steps10: worst 0.18713 median 0.09559
+span8 M292 steps10: worst 0.20815 median 0.10749
+head k8 M292 steps10: worst 0.01470 median 0.00596
+head k16 M292 steps10: worst 0.02793 median 0.01006
+head k32 M292 steps10: worst 0.20855 median 0.03148
+span64 M292 steps20: worst 0.84332 median 0.20377
+span48 M292 steps20: worst 0.89903 median 0.38472
+span32 M292 steps20: worst 0.31843 median 0.08729
+span16 M292 steps20: worst 0.23503 median 0.10458
+span8 M292 steps20: worst 0.21294 median 0.11051
+head k8 M292 steps20: worst 0.01462 median 0.00470
+head k16 M292 steps20: worst 0.03248 median 0.00912
+head k32 M292 steps20: worst 0.12384 median 0.02957
+span64 M292 steps40: worst 7.58535 median 0.89038
+span48 M292 steps40: worst 5.58303 median 1.38323
+span32 M292 steps40: worst 0.69819 median 0.11524
+span16 M292 steps40: worst 0.34614 median 0.11307
+span8 M292 steps40: worst 0.21555 median 0.11121
+head k8 M292 steps40: worst 0.01473 median 0.00457
+head k16 M292 steps40: worst 0.03511 median 0.00977
+head k32 M292 steps40: worst 0.16047 median 0.03443
+span64 M584 steps10: worst 0.26050 median 0.09468
+span48 M584 steps10: worst 0.20198 median 0.09020
+span32 M584 steps10: worst 0.12973 median 0.05332
+span16 M584 steps10: worst 0.14231 median 0.07865
+span8 M584 steps10: worst 0.20886 median 0.10473
+head k8 M584 steps10: worst 0.01452 median 0.00578
+head k16 M584 steps10: worst 0.02439 median 0.00870
+head k32 M584 steps10: worst 0.07538 median 0.01944
+span64 M584 steps20: worst 0.48363 median 0.11628
+span48 M584 steps20: worst 0.51819 median 0.24532
+span32 M584 steps20: worst 0.15719 median 0.05634
+span16 M584 steps20: worst 0.16873 median 0.08197
+span8 M584 steps20: worst 0.21439 median 0.10534
+head k8 M584 steps20: worst 0.01419 median 0.00425
+head k16 M584 steps20: worst 0.02583 median 0.00754
+head k32 M584 steps20: worst 0.07116 median 0.01847
+span64 M584 steps40: worst 4.05329 median 0.53408
+span48 M584 steps40: worst 3.36191 median 0.94144
+span32 M584 steps40: worst 0.22132 median 0.06249
+span16 M584 steps40: worst 0.18750 median 0.08719
+span8 M584 steps40: worst 0.21737 median 0.10560
+head k8 M584 steps40: worst 0.01426 median 0.00398
+head k16 M584 steps40: worst 0.02684 median 0.00748
+head k32 M584 steps40: worst 0.14459 median 0.02139
+span64 M1168 steps10: worst 0.15768 median 0.05228
+span48 M1168 steps10: worst 0.11052 median 0.04814
+span32 M1168 steps10: worst 0.10707 median 0.04134
+span16 M1168 steps10: worst 0.13656 median 0.06119
+span8 M1168 steps10: worst 0.19918 median 0.10448
+head k8 M1168 steps10: worst 0.01484 median 0.00577
+head k16 M1168 steps10: worst 0.02066 median 0.00707
+head k32 M1168 steps10: worst 0.04078 median 0.01446
+span64 M1168 steps20: worst 0.17925 median 0.06070
+span48 M1168 steps20: worst 0.25311 median 0.10955
+span32 M1168 steps20: worst 0.11724 median 0.04450
+span16 M1168 steps20: worst 0.13298 median 0.06321
+span8 M1168 steps20: worst 0.20437 median 0.10510
+head k8 M1168 steps20: worst 0.01402 median 0.00402
+head k16 M1168 steps20: worst 0.02006 median 0.00551
+head k32 M1168 steps20: worst 0.05242 median 0.01429
+span64 M1168 steps40: worst 0.78430 median 0.14029
+span48 M1168 steps40: worst 2.44119 median 0.51949
+span32 M1168 steps40: worst 0.11804 median 0.05271
+span16 M1168 steps40: worst 0.12959 median 0.06401
+span8 M1168 steps40: worst 0.20729 median 0.10550
+head k8 M1168 steps40: worst 0.01401 median 0.00382
+head k16 M1168 steps40: worst 0.02033 median 0.00580
+head k32 M1168 steps40: worst 0.06417 median 0.01716
+span64 M2336 steps10: worst 0.07493 median 0.02781
+span48 M2336 steps10: worst 0.07272 median 0.03443
+span32 M2336 steps10: worst 0.09685 median 0.03862
+span16 M2336 steps10: worst 0.12530 median 0.04946
+span8 M2336 steps10: worst 0.18813 median 0.09826
+head k8 M2336 steps10: worst 0.01560 median 0.00598
+head k16 M2336 steps10: worst 0.01894 median 0.00678
+head k32 M2336 steps10: worst 0.03686 median 0.01242
+span64 M2336 steps20: worst 0.06984 median 0.02718
+span48 M2336 steps20: worst 0.10054 median 0.04607
+span32 M2336 steps20: worst 0.09688 median 0.03948
+span16 M2336 steps20: worst 0.13193 median 0.05073
+span8 M2336 steps20: worst 0.19273 median 0.09934
+head k8 M2336 steps20: worst 0.01404 median 0.00395
+head k16 M2336 steps20: worst 0.01697 median 0.00459
+head k32 M2336 steps20: worst 0.03785 median 0.01178
+span64 M2336 steps40: worst 0.11185 median 0.03647
+span48 M2336 steps40: worst 0.48248 median 0.12114
+span32 M2336 steps40: worst 0.11955 median 0.04538
+span16 M2336 steps40: worst 0.13518 median 0.05127
+span8 M2336 steps40: worst 0.19551 median 0.09989
+head k8 M2336 steps40: worst 0.01391 median 0.00370
+head k16 M2336 steps40: worst 0.01690 median 0.00439
+head k32 M2336 steps40: worst 0.04004 median 0.01341
+frozen {"family": "B", "mesh": 96, "spans": {"64": {"width": 64, "M": 2336, "steps": 20, "iters": 3, "dev_worst": 0.06984288942277185, "dev_median": 0.027182230437338327}, "48": {"width": 48, "M": 2336, "steps": 10, "iters": 3, "dev_worst": 0.07272425112875028, "dev_median": 0.03442795809173833}, "32": {"width": 32, "M": 2336, "steps": 10, "iters": 3, "dev_worst": 0.09685148513157074, "dev_median": 0.038624153518045115}, "16": {"width": 16, "M": 2336, "steps": 10, "iters": 3, "dev_worst": 0.12530246217584046, "dev_median": 0.04946181967654381}, "8": {"width": 8, "M": 2336, "steps": 10, "iters": 3, "dev_worst": 0.18812750226226954, "dev_median": 0.09826276748160648}}, "head": {"k": 8, "M": 584, "steps": 10, "iters": 3, "dev_worst": 0.01451891072165445, "dev_median": 0.005782302492774791}, "head_fast": {"k": 8, "M": 292, "steps": 10, "iters": 3, "dev_worst": 0.014696964196369759, "dev_median": 0.005956217333441748}}
+DONE
+RUN_EXIT=0

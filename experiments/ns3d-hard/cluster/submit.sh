@@ -15,6 +15,6 @@ for pkg in ns3d ns2d separable-decoder ns3d-grok ns3d-shift ns3d-shift-head ns3d
     "$HERE/experiments/$pkg/" "tufts-login:$DEST/experiments/$pkg/"
 done
 git -c gc.auto=0 -C "$HERE" rev-parse HEAD | ssh tufts-login "cat > $DEST/COMMIT.txt"
-ID=$(ssh tufts-login "cd $DEST && sbatch --parsable --job-name=nh_$JOB --gres=$GRES --mem=$MEM --time=$TIME \
+ID=$(ssh tufts-login "cd $DEST && sbatch --parsable --job-name=nh_$JOB --gres=$GRES ${SBATCH_EXTRA:---constraint=a100-80G} --mem=$MEM --time=$TIME \
   --output=$DEST/logs/%j.out --error=$DEST/logs/%j.err experiments/ns3d-hard/cluster/job.sbatch $*")
 echo "submitted job $ID into $DEST"

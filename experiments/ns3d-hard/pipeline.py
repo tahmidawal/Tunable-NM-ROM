@@ -407,6 +407,9 @@ def cmd_romdev(a):
     hsel = select([r for r in rows if r["arm"] == "head"], lambda r: (r["steps"], r["M"], r["k"]))
     frozen["head"] = None if hsel is None else {k: hsel[k] for k in ("k", "M", "steps", "iters")} | dict(
         dev_worst=hsel["stats"]["evolved_worst"], dev_median=hsel["stats"]["evolved_median"])
+    fsel = select([r for r in rows if r["arm"] == "head"], lambda r: (r["steps"], r["M"], r["k"]), slack=1.25)
+    frozen["head_fast"] = None if fsel is None else {k: fsel[k] for k in ("k", "M", "steps", "iters")} | dict(
+        dev_worst=fsel["stats"]["evolved_worst"], dev_median=fsel["stats"]["evolved_median"])
     for w in spans:
         s = select([r for r in rows if r["arm"] == "span" and r["width"] == w], lambda r: (r["steps"], r["M"]))
         frozen["spans"][str(w)] = None if s is None else {k: s[k] for k in ("width", "M", "steps", "iters")} | dict(
@@ -662,6 +665,291 @@ def cmd_test(a):
     log("DONE")
 
 
+# ------------------------------------------------- interp + compare (amendment A3) --
+
+def spec_resample(u, n_to):
+    """Fourier resampling of (..., n, n, n) real fields to mesh n_to (slices and
+    concatenation only). Copies |k_i| <= min(n, n_to)/2 - 1; identical to truncate_field /
+    keep_mask + zero padding."""
+    n = u.shape[-1]
+    if n == n_to:
+        return u
+    m = min(n, n_to) // 2
+    spec = jnp.fft.fftn(u, axes=(-3, -2, -1), norm="forward")
+    for axis in (-3, -2, -1):
+        low = jax.lax.slice_in_dim(spec, 0, m, axis=axis)
+        high = jax.lax.slice_in_dim(spec, spec.shape[axis] - m + 1, spec.shape[axis], axis=axis)
+        shape = list(spec.shape); shape[axis] = n_to - (2 * m - 1)
+        spec = jnp.concatenate((low, jnp.zeros(shape, dtype=spec.dtype), high), axis=axis)
+    return jnp.fft.ifftn(spec, axes=(-3, -2, -1), norm="forward").real
+
+
+def cmd_interp(a):
+    """Interpolated-POD control: the source-mesh bank resampled to each other mesh + operators."""
+    out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
+    src = a.source
+    G0 = np.load(Path(a.bank) / "output" / f"G_{src}.npy"); r = G0.shape[1]
+    rep = dict(source=src, rank=r, meshes={})
+    for n in ints(a.meshes):
+        if n == src: continue
+        t0 = time.time()
+        G = np.empty((3 * n ** 3, r))
+        for j in range(r):
+            G[:, j] = np.asarray(spec_resample(jnp.asarray(G0[:, j].reshape(3, src, src, src)), n)).ravel() * (src / n) ** 1.5
+        orth = float(np.max(np.abs(G.T @ G - np.eye(r))))
+        log(f"interp {src}->{n}: orthonormality {orth:.3e}")
+        if orth > 1e-10:
+            G, _ = np.linalg.qr(G)
+        np.save(out / f"G_{n}.npy", G)
+        ops, orep = build_ops(G, n, a.modes)
+        np.savez(out / f"ops_{n}.npz", A=ops["A"], T=ops["T"], Dd=ops["Dd"], lam=ops["lam"])
+        rep["meshes"][str(n)] = dict(orthonormality_before_fix=orth, operator_checks=orep, seconds=time.time() - t0)
+        jdump(out / "interp.json", rep)
+        log(f"interp {n}: done {time.time() - t0:.0f}s {orep}")
+        del G, ops; gc.collect()
+    log("DONE")
+
+
+def time_block2(callables, reps, burn, seed):
+    rng = np.random.default_rng(seed); names = list(callables)
+    for name in names:
+        for _ in range(burn):
+            jax.block_until_ready(callables[name]())
+    samples = {name: [] for name in names}; last = {}
+    for _ in range(reps):
+        for name in rng.permutation(names):
+            t0 = time.perf_counter(); v = callables[name](); jax.block_until_ready(v)
+            samples[name].append((time.perf_counter() - t0) * 1e3); last[name] = v
+    return samples, last
+
+
+def tstat(v):
+    v = np.asarray(v, dtype=np.float64)
+    return dict(median_ms=float(np.median(v)), min_ms=float(v.min()), max_ms=float(v.max()),
+                q25_ms=float(np.percentile(v, 25)), q75_ms=float(np.percentile(v, 75)), n=int(v.size))
+
+
+def load_heads(rd, ks, scale=1.0):
+    heads = {}
+    for k in ks:
+        ck = np.load(Path(rd) / f"head_k{k}.npz")
+        p = {key[2:]: ck[key] for key in ck.files if key.startswith("p_")}
+        if scale != 1.0:
+            p = {key: (v * scale if key in ("W3", "b3", "Ws") else v) for key, v in p.items()}
+        heads[k] = dict(p=p, Z=ck["Z"])
+    return heads
+
+
+def frozen_calls(arms, frozen, prefix=""):
+    calls = {}
+    for name in ("head", "head_fast"):
+        h = frozen.get(name)
+        if h: calls[prefix + name] = (arms.head(h["k"], h["M"], h["steps"], h["iters"]), h)
+    for w, s in frozen["spans"].items():
+        if s: calls[f"{prefix}span{w}"] = (arms.span(s["width"], s["M"], s["steps"], s["iters"]), s)
+    return calls
+
+
+def band(worst):
+    return "useful" if worst <= 0.03 else ("marginal" if worst <= 0.05 else "not useful")
+
+
+def cmd_compare(a):
+    """Frozen ROM arms + controls against the free solver ladder on one cohort (A3)."""
+    if jax.default_backend() != "gpu" and not a.smoke:
+        raise RuntimeError(f"need a GPU backend, got {jax.default_backend()}")
+    fam = H.FAMILIES[a.family]; out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
+    T = fam["horizon"]; t_job = time.time()
+    arrs, par = load_truth(a.cohort.split(","))
+    ncases = a.cases or sum(x.shape[0] for x in arrs)
+    nus = par[:ncases, -1]; S = arrs[0].shape[-1]
+    meshes = ints(a.meshes); romdirs = dict(zip(meshes, a.romdev.split(",")))
+    rep = dict(schema="ns3d-hard-compare-v1", family=a.family, args=vars(a), device=str(jax.devices()[0]),
+               job_id=os.environ.get("SLURM_JOB_ID"), cases=int(ncases), meshes={}, failures=[])
+    cfile = HERE.parents[1] / "COMMIT.txt"
+    rep["source_commit"] = cfile.read_text().strip() if cfile.exists() else None
+    try:
+        import subprocess
+        rep["gpu"] = subprocess.check_output(["nvidia-smi", "--query-gpu=name,uuid,memory.total",
+                                              "--format=csv,noheader"], text=True).strip()
+    except Exception:
+        rep["gpu"] = "unavailable"
+
+    def dump():
+        rep["elapsed_seconds"] = time.time() - t_job; jdump(out / "compare.json", rep)
+    dump()
+    # ---- solver ladder for THIS cohort (errors; its timings only shortlist candidates)
+    if a.ladder:
+        table = {}
+        for d in a.ladder.split(","):
+            fj = json.loads((Path(d) / "output" / "fom.json").read_text())
+            if fj["args"]["cohort"] != a.cohort or (fj["args"]["cases"] or sum(x.shape[0] for x in arrs)) != ncases:
+                raise RuntimeError(f"ladder {d} is for another cohort")
+            for r in fj["rows"]:
+                table[(r["scheme"], r["n"], r["steps"])] = r
+        rows = list(table.values()); rep["ladder_source"] = a.ladder
+    else:
+        rows = fom_ladder(arrs, par, ncases, T, ints(a.fom_meshes), ints(a.cn_steps), ints(a.rk_steps), meshes)
+        jdump(out / "ladder.json", dict(rows=rows)); rep["ladder_source"] = "in-job"
+    rep["ladder_configurations"] = len(rows); dump()
+    log(f"ladder: {len(rows)} configurations ({rep['ladder_source']})")
+    rowof = {(r["scheme"], r["n"], r["steps"]): r for r in rows}
+    devc = json.loads((Path(a.devcompare) / "output" / "compare.json").read_text()) if a.devcompare else None
+    tcases = [c for c in ints(a.timing_cases) if c < ncases]
+    solvers = {}; e2es = {}; reps = int(a.reps); gate = float(a.gate)
+    for n in meshes:
+        rd = Path(romdirs[n]) / "output"
+        frozen = json.loads((rd / "frozen.json").read_text())
+        G, ops = load_rom(a.bank, n)
+        V = np.load(rd / "rotation.npz")["V"]
+        ks = sorted({frozen[x]["k"] for x in ("head", "head_fast") if frozen.get(x)})
+        arms = Arms(n, T, G, ops, V, load_heads(rd, ks))
+        calls = frozen_calls(arms, frozen)
+        del G, ops
+        mrep = dict(frozen=frozen, arms={}); rep["meshes"][str(n)] = mrep
+        if a.interp and n != a.interp_source:
+            src = a.interp_source; rd0 = Path(a.interp_romdev or romdirs[src]) / "output"
+            fz0 = json.loads((rd0 / "frozen.json").read_text())
+            Gi, oi = load_rom(a.interp, n)
+            k0 = sorted({fz0[x]["k"] for x in ("head", "head_fast") if fz0.get(x)})
+            iarms = Arms(n, T, Gi, oi, np.load(rd0 / "rotation.npz")["V"], load_heads(rd0, k0, (n / src) ** 1.5))
+            calls.update(frozen_calls(iarms, fz0, prefix="interp_"))
+            mrep["interp_frozen"] = fz0
+            del Gi, oi
+        gc.collect()
+        truth = []
+        for c, fr in enumerate(iter_cases(arrs)):
+            if c >= ncases: break
+            truth.append(np.asarray(to_mesh(np.asarray(fr), n)))
+        # ---- accuracy pass
+        for name, (call, cfg) in calls.items():
+            e, _ = run_cohort(call, truth, nus)
+            st = stats(e)
+            mrep["arms"][name] = dict(config=cfg, stats=st, errors=e.tolist(),
+                                      band=band(st["evolved_worst"]) if st["finite"] else "nonfinite")
+            log(f"mesh {n} {name}: worst {st['evolved_worst']:.5f} median {st['evolved_median']:.5f}")
+            dump()
+        # ---- comparator shortlist
+        sn = str(n)
+        stable = [r for r in rows if r["stats"][sn]["finite"] and r["stats"][sn]["evolved_worst"] <= 1.0]
+        timed = {}
+        for name, entry in mrep["arms"].items():
+            if not entry["stats"]["finite"]: continue
+            worst = entry["stats"]["evolved_worst"]
+            elig = sorted((r for r in stable if r["stats"][sn]["evolved_worst"] <= worst), key=lambda r: r["seconds_median"])
+            same = [r for r in elig if r["n"] == n]
+            short = [(r["scheme"], r["n"], r["steps"]) for r in elig[:a.shortlist] + same[:2]]
+            entry["eligible"] = len(elig); entry["eligible_same_mesh"] = len(same)
+            entry["shortlist"] = [list(x) for x in dict.fromkeys(short)]
+            if devc:
+                d = devc["meshes"][sn]["arms"].get(name, {}).get("any_mesh_solve")
+                if d:
+                    key = (d["scheme"], d["n"], d["steps"])
+                    entry["dev_chosen_key"] = list(key) if key in rowof else None
+                    if key in rowof:
+                        short.append(key)
+                        if key in [(r["scheme"], r["n"], r["steps"]) for r in elig] and list(key) not in entry["shortlist"]:
+                            entry["shortlist"].append(list(key))
+            for key in short: timed[key] = None
+        log(f"mesh {n}: {len(timed)} solver configurations in the timing block")
+        # ---- timing
+        attempts = []
+        for attempt in range(3):
+            tim = dict(cases={}, gate={}); ok = True; agree_rom = 0.0; agree_fom = 0.0
+            for c in tcases:
+                u0 = jnp.asarray(truth[c][0]); nu = float(nus[c])
+                uS = jnp.asarray(np.asarray(next(x for i, x in enumerate(iter_cases(arrs)) if i == c)[0]))
+                cl = {name: (lambda call=call: call(u0, nu)) for name, (call, _) in calls.items()
+                      if mrep["arms"][name]["stats"]["finite"]}
+                for key in timed:
+                    scheme, m, s = key
+                    if key not in solvers:
+                        solvers[key] = F.make_solver(T / s, s, s // 5, scheme=scheme)
+                    solver = solvers[key]; geom = F.geometry(m)
+                    if (key, n) not in e2es:
+                        e2es[(key, n)] = jax.jit(lambda u, v, g, solver=solver, m=m, n=n:
+                                                 spec_resample(solver(spec_resample(u, m), v, g), n))
+                    e2e = e2es[(key, n)]
+                    u0m = jax.block_until_ready(spec_resample(uS, m))
+                    tag = f"{scheme}|{m}|{s}"
+                    cl["E2E|" + tag] = (lambda e2e=e2e, geom=geom: e2e(uS, nu, geom))
+                    cl["SOLVE|" + tag] = (lambda solver=solver, u0m=u0m, geom=geom: solver(u0m, nu, geom))
+                sent = {k: cl[k] for k in ("head", "span64") if k in cl} or {k: cl[k] for k in list(cl)[:1]}
+                warm = jnp.ones((1024, 1024)) * 1e-3; t0 = time.perf_counter()
+                while time.perf_counter() - t0 < 2.0:
+                    warm = warm @ warm * 1e-3 + 1e-3
+                jax.block_until_ready(warm)
+                s0, _ = time_block2(sent, reps, 2, 1)
+                samples, last = time_block2(cl, reps, 2, 1000 + c)
+                s1, _ = time_block2(sent, reps, 1, 5)
+                g = {}
+                for k in sent:
+                    b, i, e = np.median(s0[k]), np.median(samples[k]), np.median(s1[k])
+                    g[k] = dict(solo_before_ms=float(b), in_block_ms=float(i), solo_end_ms=float(e),
+                                ratio=float(i / b), end_ratio=float(e / b))
+                    ok = ok and (1 / gate <= i / b <= gate) and (1 / gate <= e / b <= gate)
+                tim["gate"][str(c)] = g
+                tim["cases"][str(c)] = {k: v for k, v in samples.items()}
+                tr = jnp.asarray(truth[c])
+                for name, v in last.items():
+                    if name.startswith("SOLVE|"): continue
+                    e = np.asarray(rel_err(v, tr))
+                    if name.startswith("E2E|"):
+                        scheme, m, s = name.split("|")[1:]
+                        ref = rowof[(scheme, int(m), int(s))]["stats"][sn]["per_case_worst"][c]
+                        agree_fom = max(agree_fom, abs(float(e[1:].max()) - ref))
+                    else:
+                        agree_rom = max(agree_rom, float(np.max(np.abs(e - np.asarray(mrep["arms"][name]["errors"][c])))))
+                del cl, last; gc.collect()
+            tim["gate_passed"] = bool(ok); tim["agreement_rom"] = agree_rom; tim["agreement_solver"] = agree_fom
+            attempts.append(tim)
+            log(f"mesh {n} timing attempt {attempt + 1}: gate {ok} agreement rom {agree_rom:.2e} solver {agree_fom:.2e}")
+            if ok: break
+        tim = attempts[-1]
+        mrep["timing_attempts"] = len(attempts)
+        mrep["timing_failed_attempts"] = [dict(gate=t["gate"]) for t in attempts[:-1]]
+        mrep["timing"] = dict(gate=tim["gate"], gate_passed=tim["gate_passed"], agreement_rom=tim["agreement_rom"],
+                              agreement_solver=tim["agreement_solver"], cases=tcases, reps=tim["cases"])
+        if not tim["gate_passed"]: rep["failures"].append(f"mesh {n}: timing gate failed in 3 attempts")
+        if not tim["agreement_rom"] <= 1e-9: rep["failures"].append(f"mesh {n}: timed ROM outputs differ {tim['agreement_rom']:.2e}")
+        if not tim["agreement_solver"] <= 1e-7: rep["failures"].append(f"mesh {n}: timed solver outputs differ {tim['agreement_solver']:.2e}")
+        pooled = {k: tstat(np.concatenate([tim["cases"][str(c)][k] for c in tcases])) for k in tim["cases"][str(tcases[0])]}
+        percase = {k: [float(np.median(tim["cases"][str(c)][k])) for c in tcases] for k in pooled}
+        mrep["timing_pooled"] = pooled
+
+        def comp(name, key, kind):
+            tag = f"{kind}|{key[0]}|{key[1]}|{key[2]}"; r = rowof[tuple(key)]
+            return dict(scheme=key[0], n=key[1], steps=key[2], kind=kind,
+                        cohort_worst=r["stats"][sn]["evolved_worst"], cohort_median=r["stats"][sn]["evolved_median"],
+                        ms=pooled[tag]["median_ms"], ms_min=pooled[tag]["min_ms"], ms_max=pooled[tag]["max_ms"],
+                        ratio=pooled[tag]["median_ms"] / pooled[name]["median_ms"],
+                        ratio_per_case=[x / y for x, y in zip(percase[tag], percase[name])])
+        for name, entry in mrep["arms"].items():
+            if name not in pooled: continue
+            entry["ms"] = pooled[name]
+            keys = [tuple(x) for x in entry["shortlist"]]
+            same = [k for k in keys if k[1] == n]
+            for label, cand, kind in (("any_mesh_solve", keys, "SOLVE"), ("any_mesh_e2e", keys, "E2E"),
+                                      ("same_mesh_solve", same, "SOLVE"), ("same_mesh_e2e", same, "E2E")):
+                if cand:
+                    best = min(cand, key=lambda k: pooled[f"{kind}|{k[0]}|{k[1]}|{k[2]}"]["median_ms"])
+                    entry[label] = comp(name, best, kind)
+                else:
+                    entry[label] = None
+            if entry.get("dev_chosen_key"):
+                entry["dev_chosen_solve"] = comp(name, entry["dev_chosen_key"], "SOLVE")
+                entry["dev_chosen_e2e"] = comp(name, entry["dev_chosen_key"], "E2E")
+            x = entry["any_mesh_solve"]; y = entry["same_mesh_solve"]
+            log(f"mesh {n} {name}: {entry['stats']['evolved_worst']:.5f} {pooled[name]['median_ms']:.2f} ms | any-mesh solve "
+                + (f"{x['scheme']} m{x['n']} s{x['steps']} {x['ms']:.2f} ms ratio {x['ratio']:.2f}" if x else "none")
+                + " | same-mesh " + (f"{y['scheme']} s{y['steps']} {y['ms']:.2f} ms ratio {y['ratio']:.2f}" if y else "none"))
+        dump()
+        del arms, truth, calls; gc.collect()
+    rep["status"] = "final" if not rep["failures"] else "failed-gates"
+    dump()
+    log(f"DONE status {rep['status']} failures {rep['failures']}")
+
+
 def main():
     ap = argparse.ArgumentParser(); sub = ap.add_subparsers(dest="cmd", required=True)
     def common(p):
@@ -669,9 +957,9 @@ def main():
         p.add_argument("--truth-n", type=int, default=192); p.add_argument("--truth-dt", type=float, default=2.5e-4)
         p.add_argument("--store-n", type=int, default=128); p.add_argument("--smoke", action="store_true")
         p.add_argument("--meshes", default="64,96,128"); p.add_argument("--cases", type=int, default=0)
-        p.add_argument("--fom-meshes", default="32,48,64,80,96,112,128")
-        p.add_argument("--cn-steps", default="5,10,20,40,60,80,120,160,240,320,640")
-        p.add_argument("--rk-steps", default="5,10,20,40,60,80,120,160")
+        p.add_argument("--fom-meshes", default="32,40,48,56,64,72,80,88,96,104,112,128")
+        p.add_argument("--cn-steps", default="5,10,15,20,30,40,50,60,70,80,100,120,160,240")
+        p.add_argument("--rk-steps", default="5,10,15,20,25,30,40,60,80")
     p = sub.add_parser("gen"); common(p); p.add_argument("--cohort", required=True)
     p.add_argument("--start", type=int, default=0); p.add_argument("--count", type=int, required=True)
     p.add_argument("--total", type=int, default=None)
@@ -685,15 +973,25 @@ def main():
     p.add_argument("--headdata", required=True); p.add_argument("--dev", required=True)
     p.add_argument("--mesh", type=int, required=True); p.add_argument("--rank", type=int, default=64)
     p.add_argument("--ks", default="8,16,32"); p.add_argument("--spans", default="64,48,32,16,8")
-    p.add_argument("--modes", default="292,584,1168,2336"); p.add_argument("--steps", default="10,20")
+    p.add_argument("--modes", default="292,584,1168,2336"); p.add_argument("--steps", default="10,20,40")
     p = sub.add_parser("fom"); common(p); p.add_argument("--cohort", required=True)
+    p = sub.add_parser("interp"); common(p); p.add_argument("--bank", required=True)
+    p.add_argument("--source", type=int, default=64); p.add_argument("--modes", type=int, default=2336)
+    p = sub.add_parser("compare"); common(p); p.add_argument("--cohort", required=True)
+    p.add_argument("--bank", required=True); p.add_argument("--romdev", required=True)
+    p.add_argument("--interp", default=None); p.add_argument("--ladder", default=None)
+    p.add_argument("--interp-source", type=int, default=64); p.add_argument("--interp-romdev", default=None)
+    p.add_argument("--devcompare", default=None); p.add_argument("--reps", type=int, default=9)
+    p.add_argument("--timing-cases", default="0,1,2"); p.add_argument("--shortlist", type=int, default=4)
+    p.add_argument("--gate", type=float, default=1.10)
     p = sub.add_parser("test"); common(p); p.add_argument("--cohort", required=True)
     p.add_argument("--bank", required=True); p.add_argument("--romdev", required=True)
     p.add_argument("--fomdev", default=None); p.add_argument("--reps", type=int, default=9)
     p.add_argument("--timing-cases", default="0,1,2")
     a = ap.parse_args()
     log(f"backend={jax.default_backend()} devices={jax.devices()} args={vars(a)}")
-    dict(gen=cmd_gen, bank=cmd_bank, headdata=cmd_headdata, romdev=cmd_romdev, fom=cmd_fom, test=cmd_test)[a.cmd](a)
+    dict(gen=cmd_gen, bank=cmd_bank, headdata=cmd_headdata, romdev=cmd_romdev, fom=cmd_fom, test=cmd_test,
+         interp=cmd_interp, compare=cmd_compare)[a.cmd](a)
 
 
 if __name__ == "__main__":

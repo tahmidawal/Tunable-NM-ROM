@@ -38,8 +38,11 @@ def collocation(M, seed=7):
     return i, j, ij / L, mask
 
 
-def lm(fun, z, iters):
-    """`iters` Levenberg-Marquardt iterations on 0.5 |fun(z)|^2 (Marquardt scaling, accept/reject)."""
+SOLVER = 'v2: damping carried across time steps, extrapolated initial guess (amendment A3)'
+
+
+def lm(fun, z, lam, iters):
+    """`iters` Levenberg-Marquardt iterations on 0.5 |fun(z)|^2 (Marquardt scaling, accept/reject) -> z, damping."""
     k = z.shape[0]
 
     def body(s):
@@ -52,8 +55,8 @@ def lm(fun, z, iters):
         rc = fun(cand)
         ok = jnp.isfinite(rc).all() & (jnp.sum(rc * rc) < jnp.sum(r * r))
         return jnp.where(ok, cand, z), jnp.where(ok, jnp.maximum(lam * .1, LAM_MIN), jnp.minimum(lam * 10., LAM_MAX)), it + 1
-    z, _, _ = jax.lax.while_loop(lambda s: s[2] < iters, body, (z, jnp.asarray(LAM0, z.dtype), jnp.int32(0)))
-    return z
+    z, lam, _ = jax.lax.while_loop(lambda s: s[2] < iters, body, (z, lam, jnp.int32(0)))
+    return z, lam
 
 
 def build(cfg, M, dtype, kind):
@@ -87,18 +90,24 @@ def build(cfg, M, dtype, kind):
             else:
                 z = nf.hyper_l(p, jnp.zeros((), dtype), mu)
             u0c = u0[ci, cj]
-            z = lm(lambda q: dec(p, xyc, q) - u0c, z, refine)
+            lam0 = jnp.asarray(LAM0, dtype)
+            z, _ = lm(lambda q: dec(p, xyc, q) - u0c, z, lam0, refine)
 
-            def step(z, _):
+            def step(c, _):
+                z, zold, lam = c
                 prev_c = dec(p, xyc, z)
-                z = lm(lambda q: res(p, q, prev_c, nu), z, iters)
-                return z, z
-            _, zs = jax.lax.scan(step, z, None, length=NSTEP)
+                fun = lambda q: res(p, q, prev_c, nu)
+                guess = 2 * z - zold                      # linear extrapolation; used only if its residual is smaller
+                rg, rz = fun(guess), fun(z)
+                start = jnp.where(jnp.isfinite(rg).all() & (jnp.sum(rg * rg) < jnp.sum(rz * rz)), guess, z)
+                znew, lam = lm(fun, start, lam, iters)   # the damping is carried to the next time step
+                return (znew, z, lam), znew
+            _, zs = jax.lax.scan(step, (z, z, lam0), None, length=NSTEP)
             return zs[9::10]
 
     def full(p, u0, nu, mu, iters, refine):
         return fields(p, latent(p, u0, nu, mu, iters, refine))
-    return latent, full
+    return latent, full, fields
 
 
 def metric(f, ref, n0):
@@ -137,12 +146,14 @@ def run_setting(cfg, p, M, dtype, kind, iters, refine, u0, nu, mu, ref, n0, timi
     ck = (key, M, np.dtype(dtype).name, kind)
     if ck not in _FN:                      # iters / refine are traced, so one compilation serves every setting at this M
         _FN.clear()
-        latent, full = build(cfg, M, dtype, kind)
-        _FN[ck] = (jax.jit(jax.vmap(full, in_axes=(None, 0, 0, 0, None, None))), jax.jit(full))
-    vf, one = _FN[ck]
+        latent, full, fields = build(cfg, M, dtype, kind)
+        # latents are solved in batches; the full-grid decoding is done one case at a time (memory)
+        _FN[ck] = (jax.jit(jax.vmap(latent, in_axes=(None, 0, 0, 0, None, None))), jax.jit(fields), jax.jit(full))
+    vl, fld, one = _FN[ck]
     it, rf = jnp.int32(iters), jnp.int32(refine)
-    out = [np.asarray(vf(p, jnp.asarray(u0[a:a + bs], dtype), jnp.asarray(nu[a:a + bs], dtype), jnp.asarray(mu[a:a + bs], dtype), it, rf))
-           for a in range(0, len(u0) - len(u0) % bs, bs)]
+    zs = [vl(p, jnp.asarray(u0[a:a + bs], dtype), jnp.asarray(nu[a:a + bs], dtype), jnp.asarray(mu[a:a + bs], dtype), it, rf)
+          for a in range(0, len(u0) - len(u0) % bs, bs)]
+    out = [np.stack([np.asarray(fld(p, z)) for z in zb]) for zb in zs]
     assert len(u0) % bs == 0
     err = metric(np.concatenate(out), ref, n0)
     args = [(p, jnp.asarray(u0[i], dtype), jnp.asarray(nu[i], dtype), jnp.asarray(mu[i], dtype), it, rf) for i in range(min(timing_cases, len(u0)))]
@@ -202,17 +213,19 @@ def grid(a):
             for r in {(r['M'], r['iters'], r['refine']) for r in picks}:
                 go(r[0], r[1], r[2], dtype=jnp.float32, pp=p32)
         (out / f'{name}.json').write_text(json.dumps(dict(name=name, cfg=cfg, checkpoint_step=step, cases=n, val_start=lo, rows=rows,
-                                                           gpu=os.environ.get('NF_GPU_NAME'), job_id=os.environ.get('SLURM_JOB_ID'),
+                                                           gpu=os.environ.get('NF_GPU_NAME'), job_id=os.environ.get('SLURM_JOB_ID'), solver=SOLVER,
                                                            backend=jax.default_backend(), seconds=time.time() - t0), indent=1) + '\n')
 
 
 def select(a):
     """PROTOCOL.md section 5, mechanically. One accurate and (if any) one fast setting per (arm, k)."""
     rows = []
-    for f in sorted(Path(a.grid).glob('*.json')):
+    # --grid is a comma list of <grid dir>=<model sub-directory> (training rounds); one pool, one rule
+    for g, sub in [x.split('=') for x in a.grid.split(',')]:
+      for f in sorted(Path(g).glob('*.json')):
         d = json.loads(f.read_text())
         for r in d['rows']:
-            rows.append(dict({k: v for k, v in r.items() if k != 'errors'}, arm=d['cfg']['arm'] + ('' if r['kind'] != 'residual' or d['cfg']['arm'] == 'C' else 'R'),
+            rows.append(dict({k: v for k, v in r.items() if k != 'errors'}, models_dir=sub, arm=d['cfg']['arm'] + ('' if r['kind'] != 'residual' or d['cfg']['arm'] == 'C' else 'R'),
                              k=d['cfg']['k'], checkpoint_step=d['checkpoint_step']))
     sel = []
     for arm in sorted({r['arm'] for r in rows}):
@@ -226,11 +239,11 @@ def select(a):
             fast = [r for r in c64 if r['worst_percent'] <= a.fast_gate]
             if fast and arm != 'L':
                 f = min(fast, key=lambda r: r['rough_ms'])
-                if (f['name'], f['M'], f['iters'], f['refine']) != (acc['name'], acc['M'], acc['iters'], acc['refine']):
+                if any(f[q] != acc[q] for q in ('models_dir', 'name', 'M', 'iters', 'refine')):
                     chosen.append(dict(f, role='fast'))
             for c in chosen:
                 sel.append(c)
-                tw = [r for r in rows if r['dtype'] == 'float32' and all(r[q] == c[q] for q in ('name', 'M', 'iters', 'refine', 'kind'))]
+                tw = [r for r in rows if r['dtype'] == 'float32' and all(r[q] == c[q] for q in ('models_dir', 'name', 'M', 'iters', 'refine', 'kind'))]
                 if tw and tw[0]['nonfinite'] == 0 and tw[0]['worst_percent'] <= 1.05 * c['worst_percent']:
                     sel.append(dict(tw[0], role=c['role'] + '-float32'))
     Path(a.out).write_text(json.dumps(dict(rule='PROTOCOL.md section 5 (and amendments)', fast_gate_percent=a.fast_gate,
@@ -257,9 +270,9 @@ def test(a):
     res = []
     for s in sel:
         dtype = jnp.float64 if s['dtype'] == 'float64' else jnp.float32
-        p, cfg, step = load_model(a.models, s['name'], dtype)
+        p, cfg, step = load_model(Path(a.models) / s['models_dir'], s['name'], dtype)
         assert step == s['checkpoint_step']
-        latent, full = build(cfg, s['M'], dtype, s['kind'])
+        latent, full, _ = build(cfg, s['M'], dtype, s['kind'])
         jf, jl = jax.jit(full), jax.jit(latent)
         it, rf = jnp.int32(s['iters']), jnp.int32(s['refine'])
         args = [(p, jnp.asarray(u0[i], dtype), jnp.asarray(params[i, 4], dtype), jnp.asarray(params[i], dtype), it, rf) for i in range(64)]
@@ -273,7 +286,7 @@ def test(a):
     (out / 'test.json').write_text(json.dumps(dict(
         cohort='test64 = params_draw(20260916, 64)', cohort_sha256=TEST_SHA, mesh=L, metric='max over t=0.05..0.25 of |u-u_ref|_2/|u0|_2',
         timing='batch 1, 20 warm-up queries, 5 repetitions x 64 cases, u0 on GPU -> five output fields on GPU',
-        selection_sha256=hashlib.sha256(sel_text.encode()).hexdigest(), gpu=os.environ.get('NF_GPU_NAME'),
+        solver=SOLVER, selection_sha256=hashlib.sha256(sel_text.encode()).hexdigest(), gpu=os.environ.get('NF_GPU_NAME'),
         job_id=os.environ.get('SLURM_JOB_ID'), node=os.environ.get('SLURMD_NODENAME'), backend=jax.default_backend(), jax=jax.__version__,
         results=res), indent=1) + '\n')
 

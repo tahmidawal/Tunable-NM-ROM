@@ -10,6 +10,9 @@ def f(x, n=3):
     return '—' if x is None else f'{x:.{n}f}'
 
 
+ROUND = {'models': '120k', 'models-x': '600k'}
+
+
 def main():
     a = argparse.ArgumentParser()
     a.add_argument('--results', required=True); a.add_argument('--worktrees', required=True); a.add_argument('--out', required=True)
@@ -43,7 +46,7 @@ def main():
             s, c = r['selection'], r['cfg']
             label = {'C': 'CROM-style', 'L': 'CoLoRA-style'}[c['arm']]
             what = (f"hyper-network" if s['kind'] == 'hyper' else f"collocation LM, M={s['M']}, {s['iters']} it/step" + (', refined z0' if s['refine'] else ''))
-            name = f"{label} k={c['k']} ({s['name']}; {what}; {s['dtype']}; {s['role']})"
+            name = f"{label} k={c['k']} ({s['name']}, {ROUND[s['models_dir']]} steps; {what}; {s['dtype']}; {s['role']})"
             mine.append((name, r['test']['worst_percent'], r['test']['median_percent'], r['ms_full']['median'],
                          (r['ms_full']['p5'], r['ms_full']['p95'], r['ms_latent_only']['median']), 'job ' + str(t['job_id']), r['test']['nonfinite'], s['worst_percent']))
         out.append(f"### Test cohort (test64, 256 mesh, {t['gpu']}; one evaluation, job {t['job_id']})\n")
@@ -64,28 +67,28 @@ def main():
     out.append('')
 
     # ---- training
-    tr = sorted((R / 'train').glob('*/done.json'))
+    tr = sorted((R / 'train').glob('*/done.json')) + sorted((R / 'train-x').glob('*/done.json'))
     if tr:
-        out.append('### Offline training (120,000 Adam steps each; validation = 64 held-out training-pool trajectories, reconstruction/prediction error)\n')
-        out.append('| config | arm | k | parameters | lr | val mean % | val evolved worst % | train time, min | steps/s (last) | plateau | GPU | job |')
-        out.append('|---|---|---|---|---|---|---|---|---|---|---|---|')
+        out.append('### Offline training (validation = 64 held-out training-pool trajectories, reconstruction (C) / prediction (L) error)\n')
+        out.append('| config | steps | arm | k | parameters | lr | val mean % | val evolved worst % | train time, min | steps/s (last) | plateau | GPU | job |')
+        out.append('|---|---|---|---|---|---|---|---|---|---|---|---|---|')
         summary['training'] = []
         for p in tr:
             d = json.loads(p.read_text()); c = d['cfg']; h = d['final']
-            out.append(f"| {d['name']} | {c['arm']} | {c['k']} | {d['parameters']:,} | {c['lr']:g} | {f(100 * h['val_mean'])} | {f(100 * h['val_evolved_worst'])} | "
+            out.append(f"| {d['name']} | {d['steps']:,} | {c['arm']} | {c['k']} | {d['parameters']:,} | {c['lr']:g} | {f(100 * h['val_mean'])} | {f(100 * h['val_evolved_worst'])} | "
                        f"{f(d['train_seconds'] / 60, 1)} | {f(h['steps_per_second'], 0)} | {'yes' if d['at_plateau'] else 'no (%.1f %% over last tenth)' % (100 * (d['improvement_over_last_tenth'] or 0))} | {d['gpu']} | {d['job_id']} |")
-            summary['training'].append(dict(name=d['name'], val_mean=h['val_mean'], val_evolved_worst=h['val_evolved_worst'], seconds=d['train_seconds'], at_plateau=d['at_plateau']))
-        out.append(f"\nTotal training time of the grid: {sum(json.loads(p.read_text())['train_seconds'] for p in tr) / 3600:.2f} GPU-hours.\n")
+            summary['training'].append(dict(name=d['name'], steps=d['steps'], val_mean=h['val_mean'], val_evolved_worst=h['val_evolved_worst'], seconds=d['train_seconds'], at_plateau=d['at_plateau']))
+        out.append(f"\nTotal training time of all runs listed: {sum(json.loads(p.read_text())['train_seconds'] for p in tr) / 3600:.2f} GPU-hours.\n")
 
     # ---- validation knob grid
-    gr = sorted((R / 'grid').glob('*.json'))
+    gr = sorted((R / 'grid').glob('*.json')) + sorted((R / 'grid-x').glob('*.json'))
     if gr:
         out.append('### Validation knob grid (first 32 validation trajectories; times are rough batch-1 timings used for selection only)\n')
-        out.append('| decoder | kind | M | LM it/step | refined z0 | precision | worst % | median % | rough ms | non-finite |\n|---|---|---|---|---|---|---|---|---|---|')
+        out.append('| decoder | steps | kind | M | LM it/step | refined z0 | precision | worst % | median % | rough ms | non-finite |\n|---|---|---|---|---|---|---|---|---|---|---|')
         for p in gr:
             d = json.loads(p.read_text())
             for r in d['rows']:
-                out.append(f"| {d['name']} | {r['kind']} | {r['M'] or '—'} | {r['iters'] or '—'} | {'yes' if r['refine'] else 'no'} | {r['dtype']} | {f(r['worst_percent'])} | {f(r['median_percent'])} | {f(r['rough_ms'], 1)} | {r['nonfinite']} |")
+                out.append(f"| {d['name']} | {d['checkpoint_step']:,} | {r['kind']} | {r['M'] or '—'} | {r['iters'] or '—'} | {'yes' if r['refine'] else 'no'} | {r['dtype']} | {f(r['worst_percent'])} | {f(r['median_percent'])} | {f(r['rough_ms'], 1)} | {r['nonfinite']} |")
         out.append('')
     Path(a.out).write_text('\n'.join(out) + '\n')
     (Path(a.out).parent / 'summary.json').write_text(json.dumps(summary, indent=1) + '\n')

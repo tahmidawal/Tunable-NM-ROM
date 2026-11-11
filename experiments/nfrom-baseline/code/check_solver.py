@@ -22,7 +22,7 @@ for case in range(2):
         pp = dict(Phi=jnp.asarray(Vt[:k].reshape(k, L + 1, L + 1)), z0=jnp.asarray(Vt[:k] @ X[0]))
         proj = np.sqrt((((X @ Vt[:k].T) @ Vt[:k] - X)[10::10] ** 2).sum(1)).max() / np.linalg.norm(u0)
         for M, it in ((512, 1), (512, 3), (4096, 3)):
-            lat, full = rom.build(dict(arm='C', k=k, width=1), M, jnp.float64, 'residual')
+            lat, full, _ = rom.build(dict(arm='C', k=k, width=1), M, jnp.float64, 'residual')
             f = np.asarray(jax.jit(full)(pp, jnp.asarray(u0), jnp.asarray(p[4]), jnp.asarray(p), jnp.int32(it), jnp.int32(0)))
             err = rom.metric(f[None], F[10::10][None], np.array([np.linalg.norm(u0)]))[0]
             print(f'case {case} nu {p[4]:.3f} k {k} M {M} iters {it}: rollout {100 * err:.3f} %  projection {100 * proj:.3f} %', flush=True)

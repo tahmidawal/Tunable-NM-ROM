@@ -137,3 +137,39 @@ arm-C decoder enters the knob grid (not only the two with the best reconstructio
 decoders are not excluded. (f) The float32 online variant is run on validation for each decoder's most accurate
 setting and its fastest setting under the 3.85 % gate. (g) Selection times are rough batch-1 timings from the grid
 job (2 warm-ups, 2 repetitions of 3 cases); the reported times are from the final timing protocol of section 6.
+
+**A2 (2026-11-11 ~04:30 EST; after the first validation *reconstruction* curves of three arm-C decoders, before any
+rollout, any arm-L outcome and any test evaluation; reason: the 120,000-step budget of A1 is not a plateau).**
+Evidence (job 7121932, validation monitor only): C16-w128, C16-w256 and C16-w256-lr3 finished 120,000 steps with
+validation mean reconstruction error 0.591 %, 0.452 %, 0.570 % and were all flagged "not at plateau" (3.2 %, 5.0 %,
+4.6 % improvement over the last tenth of the schedule); the measured throughput (700 / 370 / 155 steps per second at
+width 128 / 256 / 512) is about thirty times the estimate A1 was sized for, so a longer schedule is affordable.
+Leaving the baselines at 120,000 steps would handicap them. Therefore:
+(a) the offline step budget is raised to **600,000 Adam steps** (same batch, warm-up, cosine decay to $10^{-5}$) for
+every configuration of both arms; these runs are stored under `models-x/` with the knob grid under `grid-x/`;
+(b) the 120,000-step arm-C runs (`models/`, `grid/`) are kept and reported as a short-budget row of the training
+table, and their validation knob grid is reported, but the selection of section 5 is made over **all** decoders that
+were trained (both budgets), by the same rule — a longer-trained decoder is not preferred by fiat;
+(c) the 120,000-step round is not run for $k=32$ and for arm L (their first jobs, 7121934 and 7121935, failed with a
+GPU out-of-memory error on 48 GB cards before the first validation; no outcome exists);
+(d) if a 600,000-step run is still flagged "not at plateau", that is reported beside its row; a further extension is
+run only if time allows and is again an amendment;
+(e) C16-w512d6-lr3 is trained last and only if the wall budget allows; if it is not trained this is reported;
+(f) training jobs are restricted to GPUs with at least 80 GB (the training set is held on the GPU). Training
+hardware is reported per run; the test evaluation and timing remain on an A100 80GB.
+
+**A3 (2026-11-11 ~05:35 EST; after validation rollouts of two arm-C decoders, before any test evaluation; reason:
+a robustness defect of the baseline's online solver that would have handicapped it).** Evidence (validation only,
+jobs 7121932 and 7122345): with the solver as first written ("v1": Levenberg–Marquardt damping reset to $10^{-6}$ at
+every time step, initial guess = previous latent) the worst validation case sat at 75–84 % for every knob setting of
+C16-w256 (600k) and at 82 % for C16-w128 (120k) with 1–2 iterations, while the median was 1–6 %: on one trajectory
+every trial step was rejected and the few iterations per step never raised the damping far enough, so the latent
+froze. The paper's own latent solver carries its damping across time steps and uses an extrapolated predictor
+(its settings are named `lamcarry`, `pred2`), so the baseline is given the same two devices ("v2"):
+(a) the damping is carried from one time step to the next (still $\times 0.1$ on acceptance, $\times 10$ on rejection);
+(b) the initial guess of a step is the linear extrapolation $2z_n - z_{n-1}$ whenever its collocation residual is
+smaller than that of $z_n$, otherwise $z_n$.
+Nothing else changes (same residual, same knob grid, same selection rule). The v1 validation grids already computed
+are kept (`grid-v1/`, `grid-x-v1/`) and reported; every decoder's knob grid is (re)computed with v2 and the
+selection is made over the v2 grids only. The network-free solver check (`check_solver.py`) was re-run with v2 and
+gives the same errors as before.

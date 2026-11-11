@@ -129,3 +129,31 @@ badly. A 3D comparator pilot is added, with the same decision rule.
   evaluation grid separately for the solvers.
 - 2D arms continue unchanged; the fast-diagonalisation PCG is also added to 2D Family A (it applies
   there for the same reason) so that the 2D verdict is not flattered by its absence.
+
+**Amendment 2 (2026-11-11 03:27 EST, before any 3D ROM was built or scored; 3D comparator sweep still
+running, Q1 rows only seen).** Reason: the 3D comparator picture is two-sided. Assembled one-core CPU
+solvers (Jacobi-CG, AMG-PCG, SuperLU) cost $\ge 70$ ms at about 1 %, while the matrix-free
+fast-diagonalisation PCG on the GPU costs a few ms to a few tens of ms. Under the brief's rule ("a
+few ms" $\Rightarrow$ no regime) this is heading for no-go or borderline; under the literal "go"
+clause above (CPU $\ge 20$ ms and GPU solver not below a plausible ROM query) it is not clearly
+no-go. To avoid arguing from a rule instead of from numbers, the 3D ROM arms are run whatever the
+comparator verdict, **labelled exploratory**: they do not change the verdict given by the rule, and
+the report states the absolute comparator time first.
+
+- Truth space for the ROM: chosen on the dev cohort as the cheapest $(p,N)$ whose discretisation
+  error is $\le$ one third of the 1 % target (so that ROM error is dominated by reduction).
+- Snapshots: 512 training parameters (seed 3103), FD-PCG to $10^{-9}$. If the dev error at the
+  largest rank has not saturated, 2048 is tried once and that is said.
+- Arm 1 POD-Galerkin: mass-orthonormal POD basis, ranks $\{4,\dots,128\}$; rank for each target picked
+  on dev (smallest rank with dev-mean error $\le$ target); held-out cohort scored once at those ranks.
+- Arm 2 coordinate bank + Galerkin span: bank trained as in the paper's bank phase (random Fourier
+  features, MLP, boundary factor, free coefficients, Gram penalty), width $R=128$, one training run with
+  the paper's hyper-parameters (no tuning on held-out; if a second run is made on dev evidence it is
+  reported as such), PCA ordering from the training snapshots, restricted widths as the knob;
+  evaluated on the truth nodes with the same Galerkin operators. Local GPU slot only.
+- Online time: reduced solve on one CPU core (numpy), median of 200 repeats with min/max; field
+  reconstruction reported separately, as interpolation is for the solvers.
+- Offline cost: snapshots + basis/bank training + reduced-operator assembly; break-even against the
+  fastest accuracy-matched comparator on each backend.
+- The comparator is additionally timed on the CPU with the same matrix-free FD-PCG code (JAX CPU
+  backend, default threads and one thread), so that the CPU column is not limited to assembled solvers.

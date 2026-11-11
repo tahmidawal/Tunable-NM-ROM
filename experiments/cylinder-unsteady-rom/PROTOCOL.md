@@ -210,3 +210,36 @@ nothing. (iii) The development screening and the paired dev timing run in ONE al
 run per entry, then ROM, the five cheapest passing entries with five repetitions each, ROM. (iv) All seven first
 submissions of this push failed at the GPU preflight on node pax063 before any task code ran and were resubmitted with
 that node excluded; the four extra references are packed two per allocation (16 threads each).
+
+**A9b (2026-11-11, before any new reference exists and before any model is run on a new case).**
+(i) Operators. All six frozen checkpoints of the operator lane are evaluated as they are, by hash: mesh-node
+transformer 60 / 180 min (069f5b85..., 2a9b5143...), Fourier operator on the 1024 x 192 grid 60 / 180 min (a2af5440...,
+1a07c6ad...), DeepONet 60 / 180 min (a1f161d8..., 1aa0d510...). No retraining, no fine-tuning, no change of
+normalisation: the Reynolds input is the lane's (Re - 100)/10 feature, so Re 80-120 are outside the values seen in
+training (90, 100, 110). Rollout exactly as in the lane's final evaluation: the reference state at the first save in the
+arm's own representation, then the arm's autoregressive rollout over all saves (681, or 2041 for the long window); the
+DeepONet is queried at tau = j/400, so the long window asks it for tau beyond the 1.7 s it was trained on and is
+reported as extrapolation in time as well. Scoring: the lane's own scorer (`ops/ops_common.py`, byte-identical copy;
+`ops/ops_models.py`, `ops/ops_train.py` likewise, hashes in `ops/VENDORED.txt`): fields mapped to the quadrature Q, the
+same six targets, force read-out by the lane's volume functional, end-of-window lift lag, the lane's supplementary
+smoothed read-out reported next to the fixed one. Data: `ops/ops_prep2.py`, the lane's prep.py with only bookkeeping
+changes (any number of saves; reference on Q stored for every case; geometry compared with the lane's geom.npz, which
+is the one the evaluation loads). Inference timing as in the lane (warm-up + 5 repeats, same GPU as the scoring).
+Regression check: the development job also re-scores Re 95 (short window) from the lane's own data; its numbers must
+reproduce the lane's final evaluation, otherwise the operator results are not reported.
+(ii) Reduced models. On every new case: POD 16/24/32, ordinary bank a8b 32/p24/p16, frozen stream bank 32/p24/p16, at
+all four steps of the development ladder (1/3200, 1/1600, 1/800, 1/400); reported at 1/3200 and at each arm's
+cost-comparison step. Modes and banks by hash; the new trajectories are projected onto them only for the start
+coefficients and the error evaluation (`rom_export.py --pod-from`, `rom_project.py`). The reference-uncertainty file
+bound into `rom_r4.py` belongs to the Re 95 reference; its "resolved" labels are not used for the new cases.
+(iii) Phase drift for every method, from the saved lift series (`drift.py`): the window is cut into consecutive
+supports of one reference period; on each the lag minimising the RMS lift difference is searched within a quarter
+period of the previous support's lag, so drifts beyond half a period are followed. Reported: lag at the end (in
+periods), largest lag, and for the long window the errors over each third of the window. The end-of-window lag of
+`rom_r4.py` / the lane's scorer (limited to half a period) is reported as well.
+(iv) Jobs. Because the account's GPU cap is shared, each role (development, confirmation) is ONE allocation that runs
+merge -> reduced models -> operators (`tasks/rb_xe_common.sh`); each family's block touches a confirmation case once.
+If a block fails for a technical reason before producing any score, only that block is re-run and this is reported.
+(v) What development is used for: checking the pipeline end to end, the regression check of (i), and fixing which
+step each reduced arm is reported at; no model, rank or checkpoint is selected on any A9 case. The confirmation job is
+submitted only after the development job has completed and this file records that nothing else changed.

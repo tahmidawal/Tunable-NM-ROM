@@ -1,0 +1,44 @@
+{
+ "mesh_path": "inputs/admitted_mesh.vol.bin",
+ "mesh_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+ "probe_points": [
+  [
+   0.15,
+   0.2
+  ],
+  [
+   0.25,
+   0.2
+  ]
+ ],
+ "center": [
+  0.2,
+  0.2
+ ],
+ "velocity_order": 4,
+ "quadrature_order": 12,
+ "purpose": "Second rebuttal push A9: FINAL CONFIRMATION cases (Re 80, Re 120, long window Re 105); opened once per method family",
+ "cases": [
+  {
+   "name": "re80",
+   "split": "heldout",
+   "run_dir": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-xconf/results/record_re80_p4",
+   "stage": "record",
+   "Re": 80
+  },
+  {
+   "name": "re120",
+   "split": "heldout",
+   "run_dir": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-xconf/results/record_re120_p4",
+   "stage": "record",
+   "Re": 120
+  },
+  {
+   "name": "re105L",
+   "split": "heldout",
+   "run_dir": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-merged/re105L",
+   "stage": "record",
+   "Re": 105
+  }
+ ]
+}

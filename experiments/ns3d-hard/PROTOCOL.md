@@ -194,3 +194,8 @@ code at this commit, results/romdevB_{64,96,128}/frozen.json with their head and
 files on the cluster, the interpolated bank interpB (job 7133684), the A3 ladder, the A3/A4
 rules. The sealed-test job is submitted from this commit with the same command as cmpdevB
 except: cohort genB_test, ladder run in-job, --devcompare cmpdevB.
+
+TEST OPENED (2026-11-11, 12:14-12:57 EST). Sealed cohort opened once by job 7134832 (commit
+9d2a8bba8, the freeze commit): status final, no failures, gate passed at the first attempt at
+every mesh. Results: results/cmptestB/{compare.json,ladder.json}, results/table_test.md.
+No rerun, no change of any setting afterwards.

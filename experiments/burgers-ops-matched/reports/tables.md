@@ -10,6 +10,20 @@
 | FNO, paper row (128 traj., 3000 s cap; stored, job 4327396) | 128 | 0 | — | 8.76 | 2.59 | 7.45 | no (wall cap) |
 | U-Net, paper row (128 traj., 3000 s cap; stored, job 4327396) | 128 | 0 | — | 5.98 | 2.00 | 10.3 | no (wall cap) |
 | Transolver, paper row (128 traj., 3000 s cap; stored, job 4327396) | 128 | 0 | — | 6.83 | 2.26 | 11.5 | no (wall cap) |
+| FNO F0 | 128 | 0 | 17,877,317 | 9.78 | 2.61 | 4.06 [4.05, 4.09; min 4.05, max 5.07] | yes |
+| FNO F0 | 576 | 0 | 17,877,317 | 4.03 | 0.402 | 4.05 [4.04, 4.08; min 4.04, max 4.16] | **no** (time_limit) |
+| FNO F0 | 4,608 | 0 | 17,877,317 | 0.477 | 0.22 | 4.06 [4.05, 4.08; min 4.04, max 5.04] | **no** (time_limit) |
+| FNO F0 | 4,608 | 1 | 17,877,317 | 0.435 | 0.195 | 4.06 [4.05, 4.08; min 4.04, max 4.44] | **no** (time_limit) |
+| FNO F0 | 4,608 | 2 | 17,877,317 | 0.492 | 0.233 | 4.06 [4.05, 4.08; min 4.04, max 4.85] | **no** (time_limit) |
+| FNO F1 | 4,608 | 0 | 39,373,125 | 0.463 | 0.199 | 4.27 [4.25, 4.29; min 4.25, max 4.38] | **no** (time_limit) |
+| FNO F2 | 4,608 | 0 | 40,222,181 | 0.483 | 0.189 | 6.60 [6.59, 6.64; min 6.58, max 6.68] | **no** (time_limit) |
+| U-Net U0 | 128 | 0 | 17,462,021 | 5.01 | 1.23 | 7.39 [7.36, 7.54; min 7.35, max 7.60] | yes |
+| U-Net U0 | 576 | 0 | 17,462,021 | 0.741 | 0.27 | 7.38 [7.36, 7.40; min 7.36, max 7.42] | **no** (time_limit) |
+| U-Net U0 | 4,608 | 0 | 17,462,021 | 0.453 | 0.213 | 7.40 [7.38, 7.44; min 7.37, max 7.63] | **no** (time_limit) |
+| U-Net U0 | 4,608 | 1 | 17,462,021 | 0.502 | 0.224 | 7.41 [7.37, 7.44; min 7.36, max 7.55] | yes |
+| U-Net U0 | 4,608 | 2 | 17,462,021 | 0.506 | 0.203 | 7.38 [7.37, 7.41; min 7.36, max 7.42] | **no** (time_limit) |
+| U-Net U1 | 4,608 | 0 | 31,038,469 | 0.459 | 0.216 | 10.1 [10.0, 10.4; min 9.99, max 10.4] | **no** (time_limit) |
+| U-Net U2 | 4,608 | 0 | 17,462,021 | 0.682 | 0.32 | 7.40 [7.38, 7.43; min 7.37, max 7.53] | **no** (time_limit) |
 
 ### Table 2. Training record of every run
 
@@ -53,12 +67,22 @@ Round 1 = first training; round 2 = the single continuation of amendment A5 (cum
 | FNO, paper row (trained at $1024^2$, 128 traj.; stored, job 4327389) | 128 | 0 | 14.8 | 4.12 | 100.7 | | | |
 | U-Net, paper row (trained at $1024^2$, 128 traj.; stored, job 4327389) | 128 | 0 | 11.5 | 2.62 | 53.9 | | | |
 | Transolver, paper row (trained at $1024^2$, 128 traj.; stored, job 4327389) | 128 | 0 | 14.9 | 4.53 | 135.1 | | | |
+| FNO F0 | 4,608 | 0 | 3.17 | 0.753 | 52.1 | 3.00 | 0.742 | 4.19 |
+| FNO F0 | 4,608 | 1 | 2.99 | 0.7 | 52.2 | 2.85 | 0.717 | 4.17 |
+| FNO F0 | 4,608 | 2 | 3.04 | 0.758 | 52.2 | 2.89 | 0.761 | 4.17 |
+| FNO F1 | 4,608 | 0 | 2.91 | 0.747 | 52.5 | 2.74 | 0.746 | 4.38 |
+| FNO F2 | 4,608 | 0 | 2.98 | 0.717 | 85.0 | 2.84 | 0.756 | 6.75 |
+| U-Net U0 | 4,608 | 0 | 53.5 | 19.4 | 90.6 | 2.95 | 0.703 | 7.50 |
+| U-Net U0 | 4,608 | 1 | 54.0 | 21.0 | 90.6 | 2.86 | 0.736 | 7.50 |
+| U-Net U0 | 4,608 | 2 | 53.4 | 19.6 | 90.7 | 2.84 | 0.708 | 7.53 |
+| U-Net U1 | 4,608 | 0 | 53.0 | 19.2 | 134.7 | 2.86 | 0.73 | 10.1 |
+| U-Net U2 | 4,608 | 0 | 52.2 | 21.0 | 90.6 | 3.04 | 0.747 | 7.50 |
 
 ### Table 4. Verdict inputs (PROTOCOL section 6)
 
 | family | validation scores of the grid at 4,608 (seed 0), % | selected arm | seeds | worst % min / median / max | median % min / median / max | time ms | worst: ROM advantage | ratio to ROM accurate | median: ROM advantage | ratio | dominates ROM fast (worst) |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| FNO | F0 0.25, F1 0.226, F2 0.212 | F2 | not evaluated | | | | | | | | |
-| U-Net | U0 0.231, U1 0.247, U2 0.359 | U0 | not evaluated | | | | | | | | |
+| FNO | F0 0.25, F1 0.226, F2 0.212 | F2 | [0] | 0.483 / 0.483 / 0.483 | 0.189 / 0.189 / 0.189 | 6.60 | lost | 0.552× | survives | 7.16× | yes |
+| U-Net | U0 0.231, U1 0.247, U2 0.359 | U0 | [0, 1, 2] | 0.453 / 0.502 / 0.506 | 0.203 / 0.213 / 0.224 | 7.40 | lost | 0.573× | survives | 8.07× | yes |
 
 Ratios are operator / ROM accurate setting (above 1: the operator is less accurate). Time is the median over the seeds of the per-run median.

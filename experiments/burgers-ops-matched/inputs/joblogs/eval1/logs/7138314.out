@@ -1,0 +1,35 @@
+host=pax049 source_commit=6effd83e9ca39d293e30456be6ff0863bf7d1ed7 job=7138314
+name, uuid, memory.total [MiB], driver_version
+NVIDIA A100 80GB PCIe, GPU-d881b2b0-b08f-83e6-0f3d-e646626625cc, 81920 MiB, 575.57.08
+jax_backend=gpu
+torch 2.11.0+cu128 cuda True
+EVAL tr6/F0-n128-s0 256 {'L256': (9.778, 2.614, 4.06)}
+EVAL c2/F0-n4608-s0 256 {'L256': (0.477, 0.22, 4.06)}
+EVAL c2/F0-n4608-s1 256 {'L256': (0.435, 0.195, 4.06)}
+EVAL c2/F0-n4608-s2 256 {'L256': (0.492, 0.233, 4.06)}
+EVAL c3/F0-n576-s0 256 {'L256': (4.027, 0.402, 4.05)}
+EVAL c3/F1-n4608-s0 256 {'L256': (0.463, 0.199, 4.27)}
+EVAL c1/F2-n4608-s0 256 {'L256': (0.483, 0.189, 6.6)}
+EVAL tr6/U0-n128-s0 256 {'L256': (5.005, 1.229, 7.39)}
+EVAL c1/U0-n4608-s0 256 {'L256': (0.453, 0.213, 7.4)}
+EVAL tr2/U0-n4608-s1 256 {'L256': (0.502, 0.224, 7.41)}
+EVAL c1/U0-n4608-s2 256 {'L256': (0.506, 0.203, 7.38)}
+EVAL c2/U0-n576-s0 256 {'L256': (0.741, 0.27, 7.38)}
+EVAL c3/U1-n4608-s0 256 {'L256': (0.459, 0.216, 10.11)}
+EVAL c1/U2-n4608-s0 256 {'L256': (0.682, 0.32, 7.4)}
+EVAL tr6/F0-n128-s0 1024 {'L1024_zero_shot': (11.118, 2.917, 51.89), 'L1024_coarse_bilinear': (11.146, 2.813, 4.17)}
+EVAL c2/F0-n4608-s0 1024 {'L1024_zero_shot': (3.168, 0.753, 52.12), 'L1024_coarse_bilinear': (3.004, 0.742, 4.19)}
+EVAL c2/F0-n4608-s1 1024 {'L1024_zero_shot': (2.986, 0.7, 52.18), 'L1024_coarse_bilinear': (2.848, 0.717, 4.17)}
+EVAL c2/F0-n4608-s2 1024 {'L1024_zero_shot': (3.044, 0.758, 52.2), 'L1024_coarse_bilinear': (2.89, 0.761, 4.17)}
+EVAL c3/F0-n576-s0 1024 {'L1024_zero_shot': (4.476, 0.859, 52.22), 'L1024_coarse_bilinear': (3.684, 0.826, 4.17)}
+EVAL c3/F1-n4608-s0 1024 {'L1024_zero_shot': (2.907, 0.747, 52.5), 'L1024_coarse_bilinear': (2.745, 0.746, 4.38)}
+EVAL c1/F2-n4608-s0 1024 {'L1024_zero_shot': (2.976, 0.717, 85.01), 'L1024_coarse_bilinear': (2.836, 0.756, 6.75)}
+EVAL tr6/U0-n128-s0 1024 {'L1024_zero_shot': (53.16, 17.958, 90.62), 'L1024_coarse_bilinear': (4.802, 1.442, 7.5)}
+EVAL c1/U0-n4608-s0 1024 {'L1024_zero_shot': (53.455, 19.426, 90.6), 'L1024_coarse_bilinear': (2.955, 0.703, 7.5)}
+EVAL tr2/U0-n4608-s1 1024 {'L1024_zero_shot': (54.026, 20.963, 90.62), 'L1024_coarse_bilinear': (2.856, 0.736, 7.5)}
+EVAL c1/U0-n4608-s2 1024 {'L1024_zero_shot': (53.385, 19.594, 90.74), 'L1024_coarse_bilinear': (2.841, 0.708, 7.53)}
+EVAL c2/U0-n576-s0 1024 {'L1024_zero_shot': (53.398, 19.392, 90.65), 'L1024_coarse_bilinear': (3.102, 0.772, 7.52)}
+EVAL c3/U1-n4608-s0 1024 {'L1024_zero_shot': (53.01, 19.179, 134.68), 'L1024_coarse_bilinear': (2.863, 0.73, 10.12)}
+EVAL c1/U2-n4608-s0 1024 {'L1024_zero_shot': (52.171, 20.979, 90.61), 'L1024_coarse_bilinear': (3.04, 0.747, 7.5)}
+EVALUATION DONE /cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/eval1/out
+ALL-DONE

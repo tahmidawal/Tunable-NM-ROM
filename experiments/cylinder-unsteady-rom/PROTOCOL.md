@@ -63,4 +63,9 @@ admitted coarser mesh exists) and other time integrators.
   because 1/80 s is not a multiple of the step. Ladder entries run with the ROM's output contract (reaction
   forces and probes every step, state every save; no surface-force integral), so the stage wall time is the
   entry's cost. Lower-order start states are the reference state interpolated into the lower-order space.
-
+- A3 (2026-11-11 01:10, after the first three ladder entries: P2/P1 at step 1/400 with lag 1/80 s meets all
+  six on Re 95 in 302 s; step 1/200 misses e_u RMS and CL_max): to give the FE comparator its own choice of
+  solver setting, the frozen-convection lag is also laddered at the cheapest passing step (refresh every
+  10, 20, 40 steps and never after the start-up). The accuracy-matched FE is the cheapest entry of the
+  enlarged ladder that meets all six on Re 95. This can only make the FE cheaper, i.e. the reported
+  speed-up smaller.

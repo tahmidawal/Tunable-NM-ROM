@@ -69,3 +69,15 @@ admitted coarser mesh exists) and other time integrators.
   10, 20, 40 steps and never after the start-up). The accuracy-matched FE is the cheapest entry of the
   enlarged ladder that meets all six on Re 95. This can only make the FE cheaper, i.e. the reported
   speed-up smaller.
+- A4 (2026-11-11 01:45, before any ROM result at a step other than 1/3200 and before any FE entry with lag
+  above 40 steps): the accuracy-matched FE chose its own step and lag on Re 95, so the ROM gets the same
+  choice. On Re 95 the frozen bank arm and POD at the same ranks are rolled out at steps 1/1600, 1/800 and
+  1/400 as well as 1/3200; the ROM's cost-comparison step is the largest step at which the arm still meets
+  all six targets on Re 95. Held-out Re 105: the primary accuracy table stays at step 1/3200 (the step used
+  so far); the dev-chosen step is reported next to it and is the one used for the accuracy-matched speed-up.
+  Both sets of numbers are reported whatever they show. The FE lag ladder is extended by refresh every 80
+  and 160 steps at step 1/400 (same rule: cheapest entry meeting all six on Re 95).
+- Note (2026-11-11 01:45): job rb-fe1 was cancelled by hand after four entries (P2/P1 at 1/200, 1/400, 1/800
+  and P3/P2 at 1/200) because P3/P2 cost about three times P2/P1 for the same errors; P3/P2 at 1/400 and
+  1/800, P2/P1 at 1/1600 and all P4/P3 entries of the planned ladder were NOT run. The reported
+  accuracy-matched FE is therefore the cheapest of the entries actually run, not of the full planned grid.

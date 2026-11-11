@@ -77,6 +77,14 @@ def main():
         ax.plot(t[ok], (sb[key] - sb[f'{key}_ref'])[ok], color=C_BANK, lw=1.2, label='neural bank - reference')
         ax.plot(t[ok], (sp[key] - sp[f'{key}_ref'])[ok], color=C_POD, lw=1.2, ls=(0, (4, 2)), label='POD - reference')
         ax.axhline(0, color=MUTED, lw=0.5)
+        # the first rollout steps carry a start-up spike in the reaction force; keep the data, set the axis by the rest
+        skip = 40
+        for row, series in ((0, [sb[f'{key}_ref'], sb[key], sp[key]]), (1, [sb[key] - sb[f'{key}_ref'], sp[key] - sp[f'{key}_ref']])):
+            body = np.concatenate([x[ok][skip:] for x in series]); lo, hi = body.min(), body.max(); pad = 0.08 * (hi - lo)
+            axs[row, col].set_ylim(lo - pad, hi + pad)
+        spike = max(np.abs((x[key] - x[f'{key}_ref'])[ok][:skip]).max() for x in (sb, sp))
+        ax.text(0.99, 0.03, f'first {skip} steps (start-up) reach |error| {spike:.2g}, off scale', transform=ax.transAxes,
+                ha='right', va='bottom', fontsize=7, color=MUTED)
         ax.set_ylabel(f'error in {key[0]}$_{key[1]}$', fontsize=9); ax.set_xlabel('time (s)', fontsize=9)
     for ax in axs.ravel():
         ax.grid(True, color='#e3e3e3', lw=0.5); ax.tick_params(labelsize=8, colors=MUTED)

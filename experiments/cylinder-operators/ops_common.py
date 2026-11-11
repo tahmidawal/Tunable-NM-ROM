@@ -37,6 +37,24 @@ def stats(t, cd, cl):
     return {k: float(np.mean([r[k] for r in recs])) for k in ('CD_max', 'CL_max', 'CL_min', 'St', 'period')} | {'cycles': len(recs)}
 
 
+def robust_stats(t, cd, cl, min_dist):
+    """Cycle statistics with a minimum distance between lift minima (keeps the lower of two close minima)."""
+    mins = []
+    for i, tm in cyc.lift_minima(t, cl):
+        if mins and tm - mins[-1][1] < min_dist:
+            if cl[i] < cl[mins[-1][0]]:
+                mins[-1] = (i, tm)
+        else:
+            mins.append((i, tm))
+    if len(mins) < 2:
+        return None
+    recs = []
+    for (i0, t0), (i1, t1) in zip(mins[:-1], mins[1:]):
+        w = slice(i0, i1 + 1)
+        recs.append({'St': 0.1 / (t1 - t0), 'CD_max': cyc.extremum(t, cd, w, 1), 'CL_max': cyc.extremum(t, cl, w, 1)})
+    return {k: float(np.mean([r[k] for r in recs])) for k in ('St', 'CD_max', 'CL_max')} | {'cycles': len(recs), 'St_per_cycle': [float(r['St']) for r in recs]}
+
+
 class Geometry:
     def __init__(self, data_dir, device):
         z = np.load(Path(data_dir) / 'geom.npz')
@@ -181,6 +199,28 @@ class Scorer:
         rec['targets'] = {k: {'value': got.get(k), 'target': v, 'met': got.get(k) is not None and got[k] <= v} for k, v in TARGETS.items()}
         rec['targets_met'] = int(sum(v['met'] for v in rec['targets'].values()))
         series.update(CD=cd, CL=cl, CD_ref=np.interp(ts, self.hist[:, 0], self.hist[:, 1]), CL_ref=cl_ref)
+        # supplementary (post hoc, PROTOCOL amendment 04:58): cycle statistics after a centred 9-save moving average,
+        # prediction and reference history filtered identically; does not replace the fixed read-out above
+        ker = np.ones(9) / 9; sm = lambda z: np.convolve(z, ker, mode='valid')
+        h = self.hist[1:]; cdr = np.interp(ts, h[:, 0], h[:, 1]); clr = np.interp(ts, h[:, 0], h[:, 2])
+        st_s, rs_s = stats(ts[4:-4], sm(cd), sm(cl)), stats(ts[4:-4], sm(cdr), sm(clr))
+        sup = {'cycles': st_s, 'reference_cycles': rs_s, 'lift_error_rms': rms(cl[3:-3] - clr[3:-3]), 'lift_error_max': float(np.max(np.abs(cl[3:-3] - clr[3:-3]))),
+               'drag_error_max_rel': float(np.max(np.abs(cd[3:-3] - cdr[3:-3])) / np.max(np.abs(cdr)))}
+        if st_s and rs_s:
+            sup['cycle_errors'] = {'St_rel': abs(st_s['St'] - rs_s['St']) / rs_s['St'], 'CD_max_rel': abs(st_s['CD_max'] - rs_s['CD_max']) / rs_s['CD_max'],
+                                   'CL_max_abs': abs(st_s['CL_max'] - rs_s['CL_max'])}
+            sup['targets_met_with_smoothed_cycles'] = int(sum(rec['targets'][k]['met'] for k in ('e_u_rms', 'e_u_max', 'e_p_rms'))
+                                                          + sum(sup['cycle_errors'][k] <= TARGETS[k] for k in ('St_rel', 'CD_max_rel', 'CL_max_abs')))
+        rec['supplementary_smoothed9'] = sup
+        # diagnostic (post hoc, chosen after seeing that one double minimum survives the smoothing): same smoothed
+        # signals, lift minima closer than half a reference period to a lower minimum are discarded
+        rec['diagnostic_min_distance'] = {'cycles': robust_stats(ts[4:-4], sm(cd), sm(cl), 0.5 * period)}
+        rr = robust_stats(ts[4:-4], sm(cdr), sm(clr), 0.5 * period); st_r = rec['diagnostic_min_distance']['cycles']
+        rec['diagnostic_min_distance']['reference_cycles'] = rr
+        if st_r and rr:
+            rec['diagnostic_min_distance']['cycle_errors'] = {
+                'St_rel': abs(st_r['St'] - rr['St']) / rr['St'], 'CD_max_rel': abs(st_r['CD_max'] - rr['CD_max']) / rr['CD_max'],
+                'CL_max_abs': abs(st_r['CL_max'] - rr['CL_max']), 'St_rel_worst_cycle': float(np.max(np.abs(np.array(st_r['St_per_cycle']) - rr['St'])) / rr['St'])}
         return rec, series
 
 

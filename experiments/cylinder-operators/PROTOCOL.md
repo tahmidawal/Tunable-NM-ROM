@@ -90,4 +90,6 @@ POD-Galerkin and bank ROM at r = 16/24/32 on Re 95 (and the held-out rows the RO
 produces). An operator that beats the ROM on these targets is reported exactly so.
 
 ## Amendments
-(none yet)
+- 2026-11-11 03:00 (before any training job): the candidate list lives in `ops_train.py`
+  (`CONFIGS`) rather than a separate configs.py; it is committed before the first training job.
+  Node rule outcome from prep01: N2 floor on Re 100 is below 5e-4, so arms 1 and 3 use N2.

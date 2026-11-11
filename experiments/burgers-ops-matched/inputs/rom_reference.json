@@ -1,0 +1,132 @@
+{
+ "source": "worktrees/2026-09-25-burgers2d-test/experiments/burgers2d-test/reports/summary.json",
+ "source_sha256": "bb9435b66b95034af3748c83841e61b6c01a75f56121c667c16a056401a2a79c",
+ "meshes": {
+  "256": {
+   "job": "4319328",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "cases": 64,
+   "source": "experiments/burgers2d-test/checks/t256-summary.json",
+   "table1": {
+    "fom": "lean_nt3e-3_l3e-3_dt005__graphs",
+    "fom_gpu_ms": 17.416086979210377,
+    "fom_worst_evolved_percent": 0.10906831348624618,
+    "fom_median_evolved_percent": 0.029926991260977292,
+    "rule": "fastest timed converged (setting, mode) with worst error <= the accurate arm, same job"
+   },
+   "roles": {
+    "accurate": {
+     "name": "R384_lin_M1536_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs",
+     "worst_evolved_percent": 0.8748597576173374,
+     "median_evolved_percent": 0.02641921794844461,
+     "median_gpu_ms": 45.23743106983602,
+     "A1_median_ms": 45.233139768242836,
+     "A2_median_ms": 45.2447987627238,
+     "table1_speedup_gpu": 0.3849928381725304,
+     "own_fom": "lean_nt3e-3_l3e-3_dt005__graphs",
+     "own_fom_ms": 17.416086979210377,
+     "own_speedup_gpu": 0.3849928381725304,
+     "stalled_exits": 0,
+     "budget_exits": 0,
+     "max_iterations_per_step": 8,
+     "invocations": 256
+    },
+    "fast": {
+     "name": "R96_lin_M384_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs",
+     "worst_evolved_percent": 3.8456440879539118,
+     "median_evolved_percent": 0.529332482759059,
+     "median_gpu_ms": 14.244350837543607,
+     "A1_median_ms": 14.258153038099408,
+     "A2_median_ms": 14.244350837543607,
+     "table1_speedup_gpu": 1.222666246980317,
+     "own_fom": "nt1e-2_dt01__graphs",
+     "own_fom_ms": 8.222133619710803,
+     "own_speedup_gpu": 0.5772206619651531,
+     "stalled_exits": 0,
+     "budget_exits": 0,
+     "max_iterations_per_step": 5,
+     "invocations": 256
+    },
+    "extra": {
+     "name": "R128_lin_M512_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs",
+     "worst_evolved_percent": 2.546900696830229,
+     "median_evolved_percent": 0.26750863074969033,
+     "median_gpu_ms": 18.27898737974465,
+     "A1_median_ms": 18.27898737974465,
+     "A2_median_ms": 18.27266812324524,
+     "table1_speedup_gpu": 0.9527927678592047,
+     "own_fom": "lean_nt1e-2_l1e-2_dt01__graphs",
+     "own_fom_ms": 8.875119499862194,
+     "own_speedup_gpu": 0.4855367157645128,
+     "stalled_exits": 0,
+     "budget_exits": 0,
+     "max_iterations_per_step": 6,
+     "invocations": 256
+    }
+   }
+  },
+  "1024": {
+   "job": "4319323",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "cases": 64,
+   "source": "experiments/burgers2d-test/checks/t1024-summary.json",
+   "table1": {
+    "fom": "lean_nt3e-3_l3e-3_dt005",
+    "fom_gpu_ms": 74.0969330072403,
+    "fom_worst_evolved_percent": 0.12903385089044428,
+    "fom_median_evolved_percent": 0.032494421122516395,
+    "rule": "fastest timed converged (setting, mode) with worst error <= the accurate arm, same job"
+   },
+   "roles": {
+    "accurate": {
+     "name": "R384_lin_M1536_lat64_g0p001_fast_chol_clip_lamcarry_pred2__eng",
+     "worst_evolved_percent": 1.249860116883402,
+     "median_evolved_percent": 0.029219426633211365,
+     "median_gpu_ms": 49.07379043288529,
+     "A1_median_ms": 49.25514757633209,
+     "A2_median_ms": 48.93206642009318,
+     "table1_speedup_gpu": 1.509908493996961,
+     "own_fom": "lean_nt3e-3_l3e-3_dt005",
+     "own_fom_ms": 74.0969330072403,
+     "own_speedup_gpu": 1.509908493996961,
+     "stalled_exits": 0,
+     "budget_exits": 0,
+     "max_iterations_per_step": 9,
+     "invocations": 256
+    },
+    "fast": {
+     "name": "R96_lin_M384_lat64_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs",
+     "worst_evolved_percent": 4.254809510664357,
+     "median_evolved_percent": 0.558002313303753,
+     "median_gpu_ms": 19.144739490002394,
+     "A1_median_ms": 19.255624385550618,
+     "A2_median_ms": 19.0636795014143,
+     "table1_speedup_gpu": 3.8703547283019746,
+     "own_fom": "nt1e-2_dt01",
+     "own_fom_ms": 32.55682857707143,
+     "own_speedup_gpu": 1.7005626320521616,
+     "stalled_exits": 0,
+     "budget_exits": 0,
+     "max_iterations_per_step": 5,
+     "invocations": 256
+    },
+    "extra": {
+     "name": "R128_lin_M512_lat64_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs",
+     "worst_evolved_percent": 2.959555509161793,
+     "median_evolved_percent": 0.2887172397416494,
+     "median_gpu_ms": 21.568851079791784,
+     "A1_median_ms": 21.706229308620095,
+     "A2_median_ms": 21.45897108130157,
+     "table1_speedup_gpu": 3.4353676388754404,
+     "own_fom": "lean_nt1e-2_l1e-2_dt01",
+     "own_fom_ms": 37.808760069310665,
+     "own_speedup_gpu": 1.75293342837043,
+     "stalled_exits": 0,
+     "budget_exits": 0,
+     "max_iterations_per_step": 6,
+     "invocations": 256
+    }
+   }
+  }
+ }
+}

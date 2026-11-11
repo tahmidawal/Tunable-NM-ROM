@@ -1,0 +1,127 @@
+host=pax050 source_commit=8b40a15379b33204426e668a790dbad29a71a227 job=7118376 mode=rom config=experiments/ns3d-pod-match/configs/confirm_test32.json
+NVIDIA A100 80GB PCIe, GPU-7e4a47f7-94ae-5071-1329-bd1dd16a77be, 81920 MiB
+10.235.106.20:/projects/paralab  4.6T  1.7T  3.0T  36% /cluster/tufts/paralab
+jax_backend=gpu
+test disjointness (rounded-row overlaps): {'202609201': 0, '202609202': 0, '202609203': 0, '202609211': 0}
+POD reference bank: parent recipe
+generated 1/128 dt=0.001
+generated 32/128 dt=0.001
+generated 64/128 dt=0.001
+generated 96/128 dt=0.001
+generated 128/128 dt=0.001
+gram rows 64/768
+gram rows 128/768
+gram rows 192/768
+gram rows 256/768
+gram rows 320/768
+gram rows 384/768
+gram rows 448/768
+gram rows 512/768
+gram rows 576/768
+gram rows 640/768
+gram rows 704/768
+gram rows 768/768
+eigh dimension 768
+pod rank=64 orth=8.635e-10 energy_tail=1.408e-08
+generated 1/4 dt=0.001
+generated 4/4 dt=0.001
+POD bank rebuild vs the paper's probe: 2.386e-13
+interpolated-POD control: POD at 64^3, resampled to 32^3
+generated 1/128 dt=0.001
+generated 32/128 dt=0.001
+generated 64/128 dt=0.001
+generated 96/128 dt=0.001
+generated 128/128 dt=0.001
+gram rows 64/768
+gram rows 128/768
+gram rows 192/768
+gram rows 256/768
+gram rows 320/768
+gram rows 384/768
+gram rows 448/768
+gram rows 512/768
+gram rows 576/768
+gram rows 640/768
+gram rows 704/768
+gram rows 768/768
+eigh dimension 768
+pod rank=64 orth=2.339e-09 energy_tail=1.413e-08
+generated 1/4 dt=0.001
+generated 4/4 dt=0.001
+interpolated POD bank: {'source_n': 64, 'source_rebuild_gap': 3.764347353922298e-13, 'resample_plus_mask_removed_worst': 0.0902867349218849, 'column_norm_after_resample_min': 0.9931414302911545, 'orthonormality_before_lowdin': 0.1027226057166879, 'lowdin_relative_change': 0.04394367753840387, 'orthonormality_after': 3.1086244689504383e-15}
+coordnet bank at 32^3: {'n': 32, 'leray_removed_worst': 1.0906077418299811e-06, 'leray_removed_median': 3.155035936978422e-08, 'orthonormality_before_lowdin': 0.6069599696017276, 'orthonormality_before_lowdin_spectral': 0.8042739144408063, 'lowdin_relative_change': 0.09825556696692957, 'lowdin_worst_column_change': 0.7561502217794599, 'orthonormality_after': 2.220446049250313e-15, 'prefix': None}
+generating evaluation trajectories
+generated 1/32 dt=0.001
+generated 32/32 dt=0.001
+coordnet D_d autodiff vs spectral: 1.616e-02
+floors: pod_R64=0.001890, interp_R8=0.068164, interp_R16=0.025949, interp_R32=0.007045, interp_R64=0.003976, coordnet_R8=0.063174, coordnet_R16=0.022732, coordnet_R32=0.007125, coordnet_R48=0.003071, coordnet_R64=0.001800
+head floors: coordnet_head_k8=0.001802, pod_head_k8=0.001893, interp_head_k8=0.004126
+coordnet_head_k8: evolved worst 0.002081
+pod_head_k8: evolved worst 0.002056
+pod_linear_R64: evolved worst 0.010927
+coordnet_span64: evolved worst 0.008571
+coordnet_span48: evolved worst 0.012866
+coordnet_span32: evolved worst 0.013388
+coordnet_span16: evolved worst 0.026709
+coordnet_span8: evolved worst 0.062129
+interp_head_k8: evolved worst 0.004331
+interp_span8: evolved worst 0.066839
+interp_span16: evolved worst 0.037968
+interp_span32: evolved worst 0.014343
+interp_span64: evolved worst 0.009562
+POD reproduction vs the paper's job: {'pod_head_k8': 1.7587125332452214e-13}
+control frame-zero (coordnet head): 0.4240
+coordnet head parity vs LM: 6.908e-10
+CNAB2 steps=200: 0.000000
+CNAB2 steps=100: 0.000229
+CNAB2 steps=80: 0.000401
+CNAB2 steps=70: 0.000547
+CNAB2 steps=60: 0.000774
+CNAB2 steps=50: 0.001151
+CNAB2 steps=40: 0.001854
+CNAB2 steps=20: 0.032511
+CNAB2 steps=10: 2.945019
+coarse m=12 cnab2: s5=0.20858, s10=0.20183, s15=0.20142, s20=0.20134, s25=0.20132, s30=0.20131, s40=0.20131, s50=0.20131, s60=0.20131, s80=0.20131, s100=0.20131, s200=0.20131
+coarse m=12 rk4: s5=0.20132, s10=0.20131, s15=0.20131, s20=0.20131, s30=0.20131, s40=0.20131
+coarse m=16 cnab2: s5=0.36265, s10=0.08031, s15=0.07051, s20=0.06876, s25=0.06815, s30=0.06786, s40=0.06762, s50=0.06752, s60=0.06747, s80=0.06743, s100=0.06741, s200=0.06738
+coarse m=16 rk4: s5=0.06682, s10=0.06736, s15=0.06737, s20=0.06737, s30=0.06737, s40=0.06737
+coarse m=20 cnab2: s5=0.73404, s10=0.08497, s15=0.04593, s20=0.04304, s25=0.04212, s30=0.04171, s40=0.04136, s50=0.04123, s60=0.04116, s80=0.04110, s100=0.04107, s200=0.04104
+coarse m=20 rk4: s5=0.04001, s10=0.04098, s15=0.04102, s20=0.04102, s30=0.04102, s40=0.04102
+coarse m=24 cnab2: s5=1.19569, s10=0.22017, s15=0.03362, s20=0.02872, s25=0.02755, s30=0.02705, s40=0.02663, s50=0.02646, s60=0.02638, s80=0.02631, s100=0.02628, s200=0.02624
+coarse m=24 rk4: s5=0.02513, s10=0.02616, s15=0.02622, s20=0.02623, s30=0.02623, s40=0.02623
+coarse m=28 cnab2: s5=1.92440, s10=1.39699, s15=0.15826, s20=0.01587, s25=0.01266, s30=0.01207, s40=0.01167, s50=0.01154, s60=0.01148, s80=0.01144, s100=0.01142, s200=0.01141
+coarse m=28 rk4: s5=0.04802, s10=0.01135, s15=0.01140, s20=0.01141, s30=0.01141, s40=0.01141
+coarse m=32 cnab2: s5=2.10834, s10=2.94502, s15=0.49076, s20=0.03251, s25=0.00523, s30=0.00341, s40=0.00185, s50=0.00115, s60=0.00077, s80=0.00040, s100=0.00023, s200=0.00000
+coarse m=32 rk4: s5=1.11307, s10=0.00063, s15=0.00017, s20=0.00010, s30=0.00008, s40=0.00008
+timing gate True; timed outputs vs accuracy pass 0.000e+00
+coarse ratios (comparator ms / arm ms): coordnet_head_k8=0.63[m32_rk4_s10], pod_head_k8=0.63[m32_rk4_s10], pod_linear_R64=0.64[m32_cnab2_s25], coordnet_span64=0.64[m32_cnab2_s25], coordnet_span48=0.87[m28_cnab2_s25], coordnet_span32=0.90[m28_cnab2_s25], coordnet_span16=0.57[m24_rk4_s5], coordnet_span8=0.58[m20_rk4_s5], interp_head_k8=0.63[m32_rk4_s10], interp_span8=0.59[m20_rk4_s5], interp_span16=0.56[m24_rk4_s5], interp_span32=0.90[m28_cnab2_s25], interp_span64=0.65[m32_cnab2_s25]
+speedups: coordnet_head_k8=0.91, pod_head_k8=0.92, pod_linear_R64=1.00, coordnet_span64=1.00, coordnet_span48=1.36, coordnet_span32=1.41, coordnet_span16=1.63, coordnet_span8=0.95, interp_head_k8=0.92, interp_span8=0.96, interp_span16=0.91, interp_span32=1.40, interp_span64=1.00
+done; failures: ['flag (bar c): orthonormality before Lowdin 6.07e-01', 'flag: D_d autodiff vs spectral 1.62e-02 > 1e-4']
+control: perturbed copy of coordnet_head_k8 gap 6.383e-04 rejected=True (gap 6.383e-04 > 1e-12)
+coordnet_head_k8 {"dtype": "float64", "gap": 1.734723475976807e-17, "ok": true, "reason": "ok", "evolved_worst": 0.002081255396326975}
+coordnet_span16 {"dtype": "float64", "gap": 1.734723475976807e-16, "ok": true, "reason": "ok", "evolved_worst": 0.02670892482859272}
+coordnet_span32 {"dtype": "float64", "gap": 5.204170427930421e-17, "ok": true, "reason": "ok", "evolved_worst": 0.013388249026871026}
+coordnet_span48 {"dtype": "float64", "gap": 7.632783294297951e-17, "ok": true, "reason": "ok", "evolved_worst": 0.012866042640625838}
+coordnet_span64 {"dtype": "float64", "gap": 6.331740687315346e-17, "ok": true, "reason": "ok", "evolved_worst": 0.008571406887975712}
+coordnet_span8 {"dtype": "float64", "gap": 5.204170427930421e-16, "ok": true, "reason": "ok", "evolved_worst": 0.06212904937417025}
+interp_head_k8 {"dtype": "float64", "gap": 1.7780915628762273e-17, "ok": true, "reason": "ok", "evolved_worst": 0.00433074312646412}
+interp_span16 {"dtype": "float64", "gap": 1.8735013540549517e-16, "ok": true, "reason": "ok", "evolved_worst": 0.03796808604467572}
+interp_span32 {"dtype": "float64", "gap": 6.765421556309548e-17, "ok": true, "reason": "ok", "evolved_worst": 0.014342690758837786}
+interp_span64 {"dtype": "float64", "gap": 4.423544863740858e-17, "ok": true, "reason": "ok", "evolved_worst": 0.009561667310914972}
+interp_span8 {"dtype": "float64", "gap": 4.3021142204224816e-16, "ok": true, "reason": "ok", "evolved_worst": 0.06683855586305043}
+pod_head_k8 {"dtype": "float64", "gap": 1.0842021724855044e-17, "ok": true, "reason": "ok", "evolved_worst": 0.002056238857991947}
+pod_linear_R64 {"dtype": "float64", "gap": 4.2500725161431774e-17, "ok": true, "reason": "ok", "evolved_worst": 0.010926647222056928}
+control_frame_zero {"dtype": "float64", "gap": 4.107825191113079e-15, "ok": true, "reason": "ok", "evolved_worst": 0.4239961821314881}
+cnab2_s10 {"dtype": "float32", "gap": 8.77815711971278e-09, "ok": true, "reason": "ok", "evolved_worst": 2.945019384015445}
+cnab2_s100 {"dtype": "float32", "gap": 2.5851842788956403e-08, "ok": true, "reason": "ok", "evolved_worst": 0.00022866408501761245}
+cnab2_s20 {"dtype": "float32", "gap": 2.5851842788956403e-08, "ok": true, "reason": "ok", "evolved_worst": 0.03251082465523689}
+cnab2_s200 {"dtype": "float32", "gap": 2.5851842788956403e-08, "ok": true, "reason": "ok", "evolved_worst": 2.5111142079028777e-08}
+cnab2_s40 {"dtype": "float32", "gap": 2.5851842788956403e-08, "ok": true, "reason": "ok", "evolved_worst": 0.0018537891091402934}
+cnab2_s50 {"dtype": "float32", "gap": 2.5851842788956403e-08, "ok": true, "reason": "ok", "evolved_worst": 0.0011512809651526223}
+cnab2_s60 {"dtype": "float32", "gap": 2.5851842788956403e-08, "ok": true, "reason": "ok", "evolved_worst": 0.0007736750935589044}
+cnab2_s70 {"dtype": "float32", "gap": 2.5851842788956403e-08, "ok": true, "reason": "ok", "evolved_worst": 0.0005471844600090874}
+cnab2_s80 {"dtype": "float32", "gap": 2.5851842788956403e-08, "ok": true, "reason": "ok", "evolved_worst": 0.000400620166251272}
+floor audit {'rank': 64, 'local': 0.0017996704016349364, 'claimed': 0.0017996704016349364, 'relative_gap': 0.0}
+verify ok
+MESH=output/mesh RUN_EXIT=0 VERIFY_EXIT=0
+ALL_EXIT=0

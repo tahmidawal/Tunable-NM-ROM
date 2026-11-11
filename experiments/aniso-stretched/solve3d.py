@@ -10,7 +10,7 @@ import aniso3d as a3
 
 class Solver:
     def __init__(self, N, p, dtype=jnp.float64):
-        self.sp = sp = a3.Space(N, p)
+        self.sp = sp = a3.Space(N, p); self.p_ = p
         self.n = sp.n
         M, S, C = (np.asarray(m.todense()) for m in (sp.M, sp.S, sp.C))
         lam, V = sla.eigh(S, M)                      # V^T M V = I, V^T S V = diag(lam)
@@ -18,6 +18,21 @@ class Solver:
         self.M, self.S, self.C, self.V, self.lam = (jnp.asarray(a, dtype) for a in (M, S, C, V, lam))
         self.dM, self.dS = jnp.asarray(np.diag(M), dtype), jnp.asarray(np.diag(S), dtype)
         self.dtype = dtype
+        # element-local operators for the convolution form of the operator (uniform grids):
+        # A u = G^T (A_loc (G u)), G = gather of the (p+1)^3 local dofs of each element (stride p)
+        q, w = np.polynomial.legendre.leggauss(p + 1)
+        import hq as _hq
+        Vq, Dq = _hq.ref1d(p, q); h = 1.0 / N
+        m = np.einsum("q,qi,qj->ij", w, Vq, Vq) * h / 2; s_ = np.einsum("q,qi,qj->ij", w, Dq, Dq) * 2 / h; c = np.einsum("q,qi,qj->ij", w, Dq, Vq)
+        k3 = lambda a, b, c_: np.einsum("ad,be,cf->abcdef", a, b, c_).reshape((p + 1) ** 3, (p + 1) ** 3)
+        loc = [k3(s_, m, m), k3(m, s_, m), k3(m, m, s_), k3(c, c.T, m) + k3(c.T, c, m), k3(c, m, c.T) + k3(c.T, m, c), k3(m, c, c.T) + k3(m, c.T, c)]
+        self.loc = jnp.asarray(np.stack(loc), dtype)                  # (6, L, L), order xx yy zz xy xz yz
+        L = (p + 1) ** 3
+        self._E = jnp.asarray(np.eye(L).reshape(L, 1, p + 1, p + 1, p + 1), dtype)
+        self._full = (1, 1, N * p + 1, N * p + 1, N * p + 1)
+        gather = lambda Uf: jax.lax.conv_general_dilated(Uf, self._E, (p, p, p), "VALID")
+        self._scatter = jax.linear_transpose(gather, jnp.zeros(self._full, dtype))
+        self.conv = True
         self._solve = jax.jit(self._pcg, static_argnames=("prec",))
 
     # axis applications
@@ -29,6 +44,16 @@ class Solver:
     def _z(A, U): return U @ A.T
 
     def matvec(self, K, U):
+        if self.conv:
+            p = self.p_; L = (p + 1) ** 3
+            Aloc = (K[0, 0] * self.loc[0] + K[1, 1] * self.loc[1] + K[2, 2] * self.loc[2]
+                    + K[0, 1] * self.loc[3] + K[0, 2] * self.loc[4] + K[1, 2] * self.loc[5])
+            Uf = jnp.pad(U, 1)[None, None]
+            y = jax.lax.conv_general_dilated(Uf, Aloc.reshape(L, 1, p + 1, p + 1, p + 1), (p, p, p), "VALID")
+            return self._scatter(y)[0][0, 0, 1:-1, 1:-1, 1:-1]
+        return self.matvec_dense(K, U)
+
+    def matvec_dense(self, K, U):
         M, S, C = self.M, self.S, self.C; Ct = C.T
         x, y, z = self._x, self._y, self._z
         Mz, Sz, Cz, Ctz = z(M, U), z(S, U), z(C, U), z(Ct, U)

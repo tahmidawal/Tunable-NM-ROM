@@ -9,7 +9,7 @@ from multiprocessing import Pool
 import aniso as an
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-NS = [32, 48, 64, 96, 128, 192, 256, 384, 512, 768, 1024]
+NS = [n for n in [32, 48, 64, 96, 128, 192, 256, 384, 512, 768, 1024] if n <= int(os.environ.get("NSMAX", "1024"))]
 BETAS = [0, 1.5, 2.5]
 NREF, BREF = 2048, 2.5
 

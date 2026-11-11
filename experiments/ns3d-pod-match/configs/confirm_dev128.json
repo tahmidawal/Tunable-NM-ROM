@@ -1,0 +1,116 @@
+{
+ "n": 128,
+ "dt_truth": 0.001,
+ "horizon": 0.2,
+ "train_seed": 202609201,
+ "train_cases": 128,
+ "head_train_cases": 512,
+ "head_frame_every": 10,
+ "val_every": 8,
+ "modes": 292,
+ "check_modes": 8,
+ "gram_block": 64,
+ "k": 8,
+ "width": 256,
+ "head_seed": 20260923,
+ "head_steps": 100000,
+ "head_log_every": 5000,
+ "head_lr": 0.001,
+ "head_floor_lr": 1e-05,
+ "code_reg": 1e-06,
+ "ic_iters": 12,
+ "ladder_dt": 0.02,
+ "ladder_iters": 3,
+ "damping": 1e-06,
+ "lm_budget": 60,
+ "lm_gtol": 1e-07,
+ "cnab2_steps": [
+  200,
+  100,
+  80,
+  70,
+  60,
+  50,
+  40
+ ],
+ "timing_case": 0,
+ "timing_repetitions": 7,
+ "neighbour_gate_ratio": 1.1,
+ "target_relative": 0.05,
+ "one_bank_orthonormality_gate": 0.05,
+ "span_ladder": [
+  256,
+  192,
+  128,
+  64,
+  48,
+  32,
+  16,
+  8
+ ],
+ "bank_prefix": null,
+ "sample_chunk_eval": 32768,
+ "coordnet_bank_file": "experiments/ns3d-pod-match/banks/a2_mu001/bank_selected.npz",
+ "coordnet_bank_sha256": "a1af98e2297c41339a037cb427f757fc1f23bb8791132985f29cbda826431bd5",
+ "pod_frozen_dir": null,
+ "pod_frozen_sha256": {},
+ "eval_seed": 202609202,
+ "eval_cases": 16,
+ "closed_seeds": [
+  202609203,
+  202609211,
+  202609221
+ ],
+ "name": "confirm_dev128",
+ "source_bank_job": "bank_a2_mu001",
+ "interp_pod": {
+  "source_n": 64,
+  "dir": "experiments/ns3d-operators/frozen/h64",
+  "sha256": {
+   "head_k8.npz": "605637b1a54087d59b88c7f6563c6dafaa4adcea58b04022253abf8196437c02",
+   "bank_probe.npz": "36bde9e938d26ba8d8a66a4e5e3dedefe58685f6257453a812fbd5cf7e297ff3"
+  },
+  "spans": [
+   8,
+   16,
+   32,
+   64
+  ]
+ },
+ "coarse": {
+  "meshes": [
+   16,
+   20,
+   24,
+   32,
+   48,
+   64,
+   96
+  ],
+  "cnab2_steps": [
+   5,
+   10,
+   15,
+   20,
+   25,
+   30,
+   40,
+   50,
+   60,
+   80,
+   100,
+   200
+  ],
+  "rk4_steps": [
+   5,
+   10,
+   15,
+   20,
+   30,
+   40
+  ],
+  "time_below": 0.05
+ },
+ "save_fields": false,
+ "controls": false
+}

@@ -1,0 +1,67 @@
+{
+ "schema": "ns3d-coordnet-frozen-v1",
+ "heads": {
+  "32": {
+   "file": "coordnet_head_k8_n32.npz",
+   "sha256": "7cea73f84d3bfefbe7f4448dd7913aa3ca8b2a6c00264f838736eae4c4a95f78",
+   "source_job": "6859541",
+   "source_run": "dev32b"
+  },
+  "64": {
+   "file": "coordnet_head_k8_n64.npz",
+   "sha256": "4d9d86ce7aa3f7d139c581dfc5ed20b5afd9bcdbab15893eb7b582b5753adbd8",
+   "source_job": "6858038",
+   "source_run": "dev64"
+  },
+  "96": {
+   "file": "coordnet_head_k8_n96.npz",
+   "sha256": "954ece4439fd6c88fc4bd941d44c6966f43845e778faf362fcfb271129c16105",
+   "source_job": "6858031",
+   "source_run": "dev96"
+  },
+  "128": {
+   "file": "coordnet_head_k8_n96.npz",
+   "sha256": "954ece4439fd6c88fc4bd941d44c6966f43845e778faf362fcfb271129c16105",
+   "source_job": "6858031",
+   "source_run": "dev96",
+   "trained_n": 96,
+   "note": "96^3 head used zero-shot at 128^3 (exploratory)"
+  }
+ },
+ "sources": {
+  "32": {
+   "summary_sha256": "9265e2c23515f93aae8c3630e23168c4d2bffe30dfb0b3f4121569b23a273bdb",
+   "job": "6859541",
+   "commit": "2aee4b3648345d5eb5f4fc94c9db2811d4d06f68"
+  },
+  "64": {
+   "summary_sha256": "f8791ddf3bc78f7514ab27d3363e776846e305482f77e7423e6f33917ff0b02f",
+   "job": "6858038",
+   "commit": "9181988bc238acc9c83edc10bf7119c5c4154463"
+  },
+  "96": {
+   "summary_sha256": "8423843d22b8523898d91616fa2fb3c2a8c48f68b907404d3329465a41172ec8",
+   "job": "6858031",
+   "commit": "9181988bc238acc9c83edc10bf7119c5c4154463"
+  }
+ },
+ "coordnet_bank_file": "experiments/ns3d-pod-match/banks/a2_mu001/bank_selected.npz",
+ "coordnet_bank_sha256": "a1af98e2297c41339a037cb427f757fc1f23bb8791132985f29cbda826431bd5",
+ "bank_prefix": null,
+ "k": 8,
+ "ladder_dt": 0.02,
+ "ladder_iters": 3,
+ "damping": 1e-06,
+ "ic_iters": 12,
+ "modes": 292,
+ "span_ladder": [
+  256,
+  192,
+  128,
+  64,
+  48,
+  32,
+  16,
+  8
+ ]
+}

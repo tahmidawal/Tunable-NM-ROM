@@ -1,0 +1,51 @@
+{
+ "bank": "/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/cb_c3",
+ "modes": 2336,
+ "meshes": {
+  "64": {
+   "operator_checks": {
+    "modes": 2336,
+    "rank": 64,
+    "bank_orthonormality": 1.5543122344752192e-15,
+    "pad_mesh": 80,
+    "kmax": 6,
+    "A_condition": 166.58386370125115,
+    "A_relative": 2.8743703308105216e-15,
+    "derivative_relative": 1.820422741658961e-15,
+    "tensor_relative": 5.304617901245893e-15,
+    "tensor_vs_masked_mesh_product": 0.15031103788214692
+   },
+   "seconds": 27.731998682022095
+  },
+  "96": {
+   "operator_checks": {
+    "modes": 2336,
+    "rank": 64,
+    "bank_orthonormality": 7.105427357601002e-15,
+    "pad_mesh": 112,
+    "kmax": 6,
+    "A_condition": 167.01164861476968,
+    "A_relative": 6.0846291054853914e-15,
+    "derivative_relative": 5.368307978011131e-15,
+    "tensor_relative": 1.4274787589326492e-14,
+    "tensor_vs_masked_mesh_product": 0.007205974034650897
+   },
+   "seconds": 76.2972424030304
+  },
+  "128": {
+   "operator_checks": {
+    "modes": 2336,
+    "rank": 64,
+    "bank_orthonormality": 1.0436096431476471e-14,
+    "pad_mesh": 144,
+    "kmax": 6,
+    "A_condition": 167.0104068128847,
+    "A_relative": 1.0888250729925353e-14,
+    "derivative_relative": 4.849780525631347e-15,
+    "tensor_relative": 1.6188152706344877e-14,
+    "tensor_vs_masked_mesh_product": 0.00017539626971246284
+   },
+   "seconds": 173.03118228912354
+  }
+ }
+}

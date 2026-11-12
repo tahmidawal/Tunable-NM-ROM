@@ -294,3 +294,33 @@ floor is carried: c3 (width 768). The defect (floors on the finer meshes 6.6 % a
 64^3 floor, 1.3 to 1.4 % above the per-mesh POD floor there) is reported with the result.
 c5 meets its condition (64^3 floor 32 % below c3's) and is carried as the secondary R=96
 arm, reported separately; nothing else changes.
+
+A5 record 2 - FREEZE (2026-11-11 20:20 EST; development cohort only; the test cohort has not
+been touched by any A5 arm or by the operator).
+Jobs: operators 7142236 (c5 operators, blocked tensor assembly after 7141241 ran out of GPU
+memory at 128^3), 7141228 (c3 operators); head data 7141230/32/35/37 (c3), hdC5_0..3 (c5);
+romdev 7142238/40/42 (c3), 7142505/10/11 (c5); dev comparison 7142848 (c3), 7142971 (c5);
+operator dev evaluation 7142243. Files: results/coordnet/.
+Frozen settings (romdev rule, unchanged; all k = 8):
+* c3 (R=64, primary): 64^3 head M=584 steps 20, fast M=292 steps 10; 96^3 head M=584 steps 10,
+  fast M=292 steps 10; 128^3 head = fast = M=292 steps 10. One-head arms: the 64^3 settings.
+* c5 (R=96, secondary): 64^3/96^3 head M=292 steps 20, fast M=292 steps 10; 128^3 as in
+  results/coordnet/frozen_C5_128.json.
+Development outcome (worst error, any-mesh solve-only ratio; per-mesh POD of the same job in
+brackets): c3 coord_head 64^3 1.37 % 8.90x [1.40 % 7.43x], 96^3 1.49 % 6.68x [1.45 % 6.68x],
+128^3 1.47 % 3.76x [1.45 % 3.67x]; coord_head_fast 1.49 % 13.63x [1.53 % 13.60x], 1.54 % 6.81x
+[1.47 % 6.88x], 1.47 % 3.76x [1.50 % 3.69x]; one head (coord1_head) 96^3 1.45 % 5.48x, 128^3
+1.46 % 3.27x; coord1_head_fast 1.56 % 6.84x, 1.57 % 3.71x. All c3 gates passed. POD errors in
+this job reproduce job 7134656.
+c5: head 0.97 % 8.32x, 1.10 % 7.92x, 1.09 % 4.18x; fast 1.06 % 11.68x, 1.23 % 5.81x, 1.23 % 3.04x;
+the 128^3 timing gate FAILED in all three attempts on one sentinel only (the cheapest solver
+configuration, a 2.2 ms call measured 1.17 to 1.35 times slower inside the block; head, span
+and the dearest solver sentinel within 2.5 %). The gate rule is not changed; if it fails on
+test the c5 128^3 ratios are reported as gate-failed.
+Operator: fno-xl is the validation-selected operator (validation mean 1.18 % vs 1.56 %); its
+checkpoint is frozen. Dev report: worst 3.33/3.38/3.39 %, median 1.10/1.12/1.12 %, 18.4/21.0/
+23.5 ms; fno-l worst 4.16/4.20/4.20 %, 11.6/14.2/16.8 ms.
+Nothing is changed after this record. Test: one comparison job per carried bank (c3, c5) on
+genB_test with the in-job ladder and the per-mesh POD arms re-timed in the same block, then
+one operator evaluation of fno-xl. The test cohort was opened earlier (job 7134832) for the
+per-mesh POD and interpolated-POD arms; no A5 choice used it.

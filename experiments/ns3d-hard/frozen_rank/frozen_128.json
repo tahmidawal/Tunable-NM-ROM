@@ -2,7 +2,8 @@
  "family": "B",
  "mesh": 128,
  "sources": [
-  "results/rdev_s0_128/romdev.json"
+  "results/rdev_s0_128/romdev.json",
+  "results/rdev192_s0_128/romdev.json"
  ],
  "parent": "results/romdevB_128/frozen.json",
  "arms": {
@@ -98,6 +99,37 @@
    "iters": 3,
    "dev_worst": 0.18520920630117857,
    "dev_median": 0.09165901737982632
+  },
+  "r192_head": {
+   "kind": "head",
+   "rank": 192,
+   "k": 8,
+   "width": 256,
+   "M": 2336,
+   "steps": 40,
+   "iters": 3,
+   "dev_worst": 0.005861647191791272,
+   "dev_median": 0.0007004475919273354
+  },
+  "r192_head_fast": {
+   "kind": "head",
+   "rank": 192,
+   "k": 8,
+   "width": 256,
+   "M": 584,
+   "steps": 20,
+   "iters": 3,
+   "dev_worst": 0.006714045580138089,
+   "dev_median": 0.0009049305831284002
+  },
+  "r192_span": {
+   "kind": "span",
+   "rank": 192,
+   "M": 2336,
+   "steps": 10,
+   "iters": 3,
+   "dev_worst": 0.639944828755001,
+   "dev_median": 0.29336639775532247
   }
  }
 }

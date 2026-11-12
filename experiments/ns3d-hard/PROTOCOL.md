@@ -288,3 +288,24 @@ Added arm, same rules: rank 192.
 4. A dev comparison of the A5 arms against the dev ladder may run before the rank-192
    selection (it performs no selection); the dev comparison handed to the fresh-cohort jobs
    as the A4 timing reference is the one that contains all frozen arms.
+
+FREEZE (2026-11-11, 22:05 EST; rank lane, A5/A6). Written before any ROM job has read the
+fresh cohort (seed 2026111151; only the solver-ladder jobs 7137078 and 7137196 have run on
+it, as A5.4 allows). Frozen, from replicate 0 on the dev cohort only:
+- arms and settings: frozen_rank/frozen_{64,96,128}.json of this commit, produced by
+  freeze_rank.py from results/rdev_s0_*/romdev.json (ranks 96, 128; jobs 7141854, 7141858,
+  7141859) and results/rdev192_s0_*/romdev.json (rank 192; jobs 7143621, 7143623, 7143624)
+  and the parent's frozen rank-64 files. Adding rank 192 left every rank-64/96/128 entry
+  unchanged. All selected heads are k = 8, width 256; contingency not triggered anywhere.
+  Dev worst error of the selected heads (meshes 64/96/128): rank 64 1.40/1.45/1.45 %,
+  rank 96 0.85/0.85/0.87 %, rank 128 0.67/0.66/0.71 %, rank 192 0.50/0.56/0.59 %.
+- banks/heads: replicate 0 bank128_s0b + rdev_s0_*, bank192_s0 + rdev192_s0_*, parent bankB
+  + romdevB_* for rank 64; replicates 1, 2 bank128_s{1,2} + rrep_s{1,2}_* (ranks 64-128),
+  bank192_s{1,2} + heads trained after this entry at the frozen settings (no selection).
+- comparator: merged extended ladder fomF_0 + fomF_64 (450 configurations, 128 cases),
+  rule A3.6, gates A4, timing cases 0,16,...,112, 9 repetitions, sentinels r64_head and
+  r128_head, dev reference = the all-arm dev comparison of replicate 0 run from this commit.
+- code: rank.py / pipeline.py of this commit; no code change between this commit and the
+  three fresh-cohort compare jobs, which are submitted together.
+Known at freeze (dev only): devcmp1 (job 7142556) any-mesh solve-only ratios 3.2-9.6x for
+the rank-64/96/128 heads; replicate 1, 2 dev errors for ranks 64-128. Nothing else.

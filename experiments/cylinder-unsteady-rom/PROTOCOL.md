@@ -255,3 +255,14 @@ FE ladder, development (rb-fa job 7136516): 64 screen entries; the five cheapest
 cheapest passing entry on Re 95 is mesh c2, P2/P1 (25,303 unknowns), step 1/300, refresh 30: median 35.99 s.
 Next: `rb-sd` (stream development step ladder + paired development timing) and `rb-fb` (Re 105: stream bank once at
 the four steps; FE candidates = 8 cheapest passing development entries plus the previous m0 comparator; paired timing).
+
+### A9 record before the development evaluation (2026-11-11 20:20 EST)
+References: rb-xdev (job 7136515; Re 85, Re 115) and rb-xl2 (job 7136519; continuations of Re 95 and Re 105) both ended
+with scheduler state FAILED because the last line of the task script (a log print, `tail -3` on two files) returned an
+error; every solver stage in them is `completed` in `stages.json` (record: 5,440 steps; continuations: 10,880 steps).
+The data are used as they are. Cycle-to-cycle change of the lift maximum inside the new record windows: 2.4e-4 (Re 85)
+and 2.3e-4 (Re 115) absolute, far below the 2e-2 target. `merge_runs.py` was corrected after a smoke run on the
+development long case only (the first run's history file also holds its settle stage); the Re 105 continuation has not
+been read by any script. Cost-comparison steps for the reduced arms, fixed on development Re 95 (rb-sd): 1/400 for
+every rank-32 and rank-24 arm; 1/800 for POD-16 and the ordinary bank's 16-prefix; 1/1600 for the stream bank's
+16-prefix. A9 results are reported at 1/3200 and at these steps. Development evaluation job: `rb-xedev`.

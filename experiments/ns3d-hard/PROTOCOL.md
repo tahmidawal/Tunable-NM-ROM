@@ -309,3 +309,21 @@ it, as A5.4 allows). Frozen, from replicate 0 on the dev cohort only:
   three fresh-cohort compare jobs, which are submitted together.
 Known at freeze (dev only): devcmp1 (job 7142556) any-mesh solve-only ratios 3.2-9.6x for
 the rank-64/96/128 heads; replicate 1, 2 dev errors for ranks 64-128. Nothing else.
+
+NOTE (2026-11-12, 01:36 EST; rank lane; fresh cohort opened, timing reruns). The three
+fresh-cohort compare jobs were submitted together from commit 07ca046b8 and read the cohort
+once each: replicate 2 (job 7144218, node pax105) status final; replicate 0 (job 7144215,
+pax106) failed-gates at 64^3 only; replicate 1 (job 7144216, pax106) failed-gates at all
+three meshes. All errors are final (128 cases; timed ROM outputs agree with the evaluated
+ones to 0, solver to 3e-12). Every gate violation, in every attempt, is the same sentinel:
+the cheapest shortlisted solver (rk4 32^3 x5, 2.2-2.4 ms alone) ran 1.25-1.39x slower
+inside the interleaved block (limit 1.25); every ROM sentinel (max in-block ratio 1.095,
+before/after within 1.10) and the dearest solver sentinel (max 1.013) passed everywhere.
+That solver is matched only to the unstable linear-span controls (ratios 0.04-0.15x), and
+a slower in-block solver would raise, not lower, a ROM ratio. Decision, taken before any
+rerun: this is a timing-measurement failure, so A5.6 allows one rerun per failed job with
+identical code and inputs (no code file changed since 07ca046b8; same arguments; new job
+directories fresh_s0b, fresh_s1b; node pax106 excluded in the scheduler request only). The
+gate is not changed. Errors are deterministic and must reproduce; both the failed-gate and
+the rerun timings are reported, and if a rerun fails the gate again it is reported as
+failed with no further rerun.

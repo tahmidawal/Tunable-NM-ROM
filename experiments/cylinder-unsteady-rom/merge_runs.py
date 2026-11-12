@@ -3,7 +3,8 @@
 The merged directory has the layout the exporters read (stages.json with one completed stage `record`, snapshot list
 with hashes, history.npz).  Snapshot chunks are referenced by absolute path, not copied; only the first continuation
 chunk is rewritten without the duplicate of the junction state.  History: the continuation's rows at or before the
-junction time are dropped, and reaction-force entries that are NaN (start-up rows without a consistent time derivative)
+junction time are dropped, the first run's rows before its record stage are dropped (the readers select by the
+stage's time window, so their selection for the first window is unchanged), and reaction-force entries that are NaN (start-up rows without a consistent time derivative)
 are filled by linear interpolation in time between their neighbours; the count is recorded.
 Usage: merge_runs.py --first RUN_DIR --cont RUN_DIR --out DIR
 """
@@ -56,9 +57,12 @@ for i, r in enumerate(sb['snapshots']):
         dropped += int((~keep).sum())
 ha, hb = np.load(A / 'history.npz'), np.load(B / 'history.npz')
 rows_b = hb['rows'][hb['rows'][:, 0] > tj + 1e-9]
-rows = np.concatenate([ha['rows'], rows_b])
-if np.any(np.diff(rows[:, 0]) <= 0):
-    raise ValueError('merged history times are not increasing')
+rows_a = ha['rows'][ha['rows'][:, 0] >= ra['t_start'] - 1e-9]   # exactly the rows the readers select for the first window
+rows_b[:, -1] = rows_a[-1, -1]                                  # same stage label as the first window
+rows = np.concatenate([rows_a, rows_b])
+d = np.diff(rows[:, 0])
+if np.any(d < 0) or np.any(d[len(rows_a) - 2:] <= 0):
+    raise ValueError('merged history times are not increasing across the junction')
 in_rec = rows[:, 0] > ra['t_start'] + 1e-9          # the first row of the record stage keeps its NaN (as in every run)
 filled = {}
 for j in range(1, rows.shape[1] - 1):

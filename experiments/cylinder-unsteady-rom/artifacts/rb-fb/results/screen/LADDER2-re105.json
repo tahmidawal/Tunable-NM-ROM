@@ -1,0 +1,1009 @@
+{
+  "case": "re105",
+  "Re": 105,
+  "window": {
+    "t_start": 17.45000000000225,
+    "duration": 1.7
+  },
+  "reference": {
+    "run": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1-record-re105/results/record_re105_p4",
+    "velocity_order": 4,
+    "dt": 0.0003125,
+    "ndof": 437140,
+    "record_stage_wall_seconds": 8452.585040125996,
+    "cycles": {
+      "CD_max": 3.21653349515328,
+      "CL_max": 1.0587206958787827,
+      "CL_min": -1.0943969764284769,
+      "St": 0.30328064610663374,
+      "dp_at_t0_plus_half_period": 2.4951820908133784,
+      "period": 0.3297276014384396,
+      "cycles": 4
+    }
+  },
+  "quadrature": {
+    "points": 1036497,
+    "order": 12,
+    "area": 0.8941460183660065
+  },
+  "targets": {
+    "e_u_rms": 0.01,
+    "e_u_max": 0.03,
+    "e_p_rms": 0.02,
+    "St_rel": 0.01,
+    "CD_max_rel": 0.02,
+    "CL_max_abs": 0.02
+  },
+  "threads": 16,
+  "meshes": {
+    "c2": {
+      "path": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-meshes/c2.vol.bin",
+      "sha256": "20d784600457c0c5cd12eb4893d1bf1d046dcf5d70737d77766c95d82b7e1438",
+      "elements": 5444,
+      "points_outside": 0,
+      "weight_outside": 0.0,
+      "locate_seconds": 2.993953248485923
+    },
+    "c4": {
+      "path": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-meshes/c4.vol.bin",
+      "sha256": "bd2f8d421b133886c46465ebd8cd76d725ed1b1febbeafdda66c062beb874c0e",
+      "elements": 1480,
+      "points_outside": 0,
+      "weight_outside": 0.0,
+      "locate_seconds": 1.2194522274658084
+    },
+    "c3": {
+      "path": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-meshes/c3.vol.bin",
+      "sha256": "1b79c9b30ed3fecbc3e6c381f5d095d8d3f2f6b1881a3133827791e15a15935e",
+      "elements": 2882,
+      "points_outside": 0,
+      "weight_outside": 0.0,
+      "locate_seconds": 1.6635633371770382
+    },
+    "c1": {
+      "path": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-meshes/c1.vol.bin",
+      "sha256": "cfa532d329bc0b0bf5e68bcbc5259f2e3d2abe34c871bd71ee482042c2fff1b9",
+      "elements": 11050,
+      "points_outside": 0,
+      "weight_outside": 0.0,
+      "locate_seconds": 3.9342771684750915
+    },
+    "m0": {
+      "path": "inputs/admitted_mesh.vol.bin",
+      "sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+      "elements": 21153,
+      "points_outside": 0,
+      "weight_outside": 0.0,
+      "locate_seconds": 4.6792724262923
+    }
+  },
+  "entries": {
+    "c2_p2_dt300_frozen_oseen_K30": {
+      "mesh": "c2",
+      "velocity_order": 2,
+      "pressure_order": 1,
+      "dt_inverse": 300,
+      "scheme": "frozen_oseen",
+      "refactor_every": 30,
+      "entry": [
+        "c2",
+        2,
+        300,
+        "frozen_oseen",
+        30
+      ],
+      "start_projection": {
+        "e_u": 0.0010356301973986504,
+        "e_p": 0.0019015423697136132,
+        "evaluation_check": 6.661338147750939e-16
+      },
+      "ndof": 25303,
+      "timing": [
+        {
+          "warm_seconds": 47.08937943633646,
+          "construct_seconds": 0.3590992484241724,
+          "setup_seconds": 0.0027665887027978897,
+          "steps": 510,
+          "lu_refreshes": 18,
+          "timers": {
+            "conv_apply": 23.784524343907833,
+            "factor": 4.768998389132321,
+            "solve": 13.000541274435818,
+            "observe": 3.730127837508917,
+            "diagnostics": 0.0
+          }
+        }
+      ],
+      "warm_seconds_median": 47.08937943633646,
+      "warm_seconds_min": 47.08937943633646,
+      "warm_seconds_max": 47.08937943633646,
+      "force": {
+        "CD_maxabs_rel": 0.00464905083871537,
+        "CL_maxabs": 0.0536277405183402
+      },
+      "cycles": {
+        "CD_max": 3.2134360579968697,
+        "CL_max": 1.0611570183987364,
+        "CL_min": -1.097802264715702,
+        "St": 0.3028541081780644,
+        "dp_at_t0_plus_half_period": 2.493387279407261,
+        "period": 0.3301921420469647,
+        "cycles": 4
+      },
+      "cycle_errors": {
+        "St_rel": 0.0014064132810484914,
+        "CD_max_rel": 0.0009629736985725011,
+        "CL_max_abs": 0.0024363225199537375
+      },
+      "e_u": {
+        "rms": 0.00998954207848781,
+        "max": 0.015114790361684522,
+        "at_start": 0.0010356301707012934,
+        "saves": 171
+      },
+      "e_p": {
+        "rms": 0.005393413543634383,
+        "max": 0.00802387824342981,
+        "at_start": 0.0019015423814998805
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.00998954207848781,
+          "target": 0.01,
+          "met": true
+        },
+        "e_u_max": {
+          "value": 0.015114790361684522,
+          "target": 0.03,
+          "met": true
+        },
+        "e_p_rms": {
+          "value": 0.005393413543634383,
+          "target": 0.02,
+          "met": true
+        },
+        "St_rel": {
+          "value": 0.0014064132810484914,
+          "target": 0.01,
+          "met": true
+        },
+        "CD_max_rel": {
+          "value": 0.0009629736985725011,
+          "target": 0.02,
+          "met": true
+        },
+        "CL_max_abs": {
+          "value": 0.0024363225199537375,
+          "target": 0.02,
+          "met": true
+        }
+      },
+      "targets_met": 6,
+      "status": "completed"
+    },
+    "c4_p3_dt300_frozen_oseen_K30": {
+      "mesh": "c4",
+      "velocity_order": 3,
+      "pressure_order": 2,
+      "dt_inverse": 300,
+      "scheme": "frozen_oseen",
+      "refactor_every": 30,
+      "entry": [
+        "c4",
+        3,
+        300,
+        "frozen_oseen",
+        30
+      ],
+      "start_projection": {
+        "e_u": 0.0014145901292508323,
+        "e_p": 0.0009006576805303166,
+        "evaluation_check": 4.440892098500626e-16
+      },
+      "ndof": 16912,
+      "timing": [
+        {
+          "warm_seconds": 47.21412236522883,
+          "construct_seconds": 0.1433671833947301,
+          "setup_seconds": 0.0016290303319692612,
+          "steps": 510,
+          "lu_refreshes": 18,
+          "timers": {
+            "conv_apply": 24.31121095456183,
+            "factor": 3.9968322683125734,
+            "solve": 11.234144658781588,
+            "observe": 5.676195399835706,
+            "diagnostics": 0.0
+          }
+        }
+      ],
+      "warm_seconds_median": 47.21412236522883,
+      "warm_seconds_min": 47.21412236522883,
+      "warm_seconds_max": 47.21412236522883,
+      "force": {
+        "CD_maxabs_rel": 0.004117558120773269,
+        "CL_maxabs": 0.06461169734322936
+      },
+      "cycles": {
+        "CD_max": 3.2252520078084266,
+        "CL_max": 1.0736378073102346,
+        "CL_min": -1.1104275241721633,
+        "St": 0.3039163580774259,
+        "dp_at_t0_plus_half_period": 2.4956003563434686,
+        "period": 0.3290379136827717,
+        "cycles": 4
+      },
+      "cycle_errors": {
+        "St_rel": 0.0020961178332778783,
+        "CD_max_rel": 0.0027105306592590953,
+        "CL_max_abs": 0.014917111431451913
+      },
+      "e_u": {
+        "rms": 0.009386397168509706,
+        "max": 0.012525763196705304,
+        "at_start": 0.0014145901411377465,
+        "saves": 171
+      },
+      "e_p": {
+        "rms": 0.005213044258626171,
+        "max": 0.007114480193032921,
+        "at_start": 0.0009006576774556788
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.009386397168509706,
+          "target": 0.01,
+          "met": true
+        },
+        "e_u_max": {
+          "value": 0.012525763196705304,
+          "target": 0.03,
+          "met": true
+        },
+        "e_p_rms": {
+          "value": 0.005213044258626171,
+          "target": 0.02,
+          "met": true
+        },
+        "St_rel": {
+          "value": 0.0020961178332778783,
+          "target": 0.01,
+          "met": true
+        },
+        "CD_max_rel": {
+          "value": 0.0027105306592590953,
+          "target": 0.02,
+          "met": true
+        },
+        "CL_max_abs": {
+          "value": 0.014917111431451913,
+          "target": 0.02,
+          "met": true
+        }
+      },
+      "targets_met": 6,
+      "status": "completed"
+    },
+    "c4_p3_dt400_frozen_oseen_K40": {
+      "mesh": "c4",
+      "velocity_order": 3,
+      "pressure_order": 2,
+      "dt_inverse": 400,
+      "scheme": "frozen_oseen",
+      "refactor_every": 40,
+      "entry": [
+        "c4",
+        3,
+        400,
+        "frozen_oseen",
+        40
+      ],
+      "start_projection": {
+        "e_u": 0.0014145901292508323,
+        "e_p": 0.0009006576805303166,
+        "evaluation_check": 4.440892098500626e-16
+      },
+      "ndof": 16912,
+      "timing": [
+        {
+          "warm_seconds": 58.06274842377752,
+          "construct_seconds": 0.14414669387042522,
+          "setup_seconds": 0.0016496991738677025,
+          "steps": 680,
+          "lu_refreshes": 18,
+          "timers": {
+            "conv_apply": 30.759828745387495,
+            "factor": 4.136292244307697,
+            "solve": 14.68331964686513,
+            "observe": 6.708200078457594,
+            "diagnostics": 0.0
+          }
+        }
+      ],
+      "warm_seconds_median": 58.06274842377752,
+      "warm_seconds_min": 58.06274842377752,
+      "warm_seconds_max": 58.06274842377752,
+      "force": {
+        "CD_maxabs_rel": 0.0035290427578136448,
+        "CL_maxabs": 0.02862824024309979
+      },
+      "cycles": {
+        "CD_max": 3.2216640853345213,
+        "CL_max": 1.0652333667576235,
+        "CL_min": -1.101174996059012,
+        "St": 0.3035730565588889,
+        "dp_at_t0_plus_half_period": 2.493179040157,
+        "period": 0.3294100032772027,
+        "cycles": 4
+      },
+      "cycle_errors": {
+        "St_rel": 0.0009641579705430038,
+        "CD_max_rel": 0.0015950681654558739,
+        "CL_max_abs": 0.006512670878840776
+      },
+      "e_u": {
+        "rms": 0.005356332776053294,
+        "max": 0.006534255822972671,
+        "at_start": 0.0014145901411377465,
+        "saves": 681
+      },
+      "e_p": {
+        "rms": 0.003002088368327659,
+        "max": 0.008202861397237917,
+        "at_start": 0.0009006576774556788
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.005356332776053294,
+          "target": 0.01,
+          "met": true
+        },
+        "e_u_max": {
+          "value": 0.006534255822972671,
+          "target": 0.03,
+          "met": true
+        },
+        "e_p_rms": {
+          "value": 0.003002088368327659,
+          "target": 0.02,
+          "met": true
+        },
+        "St_rel": {
+          "value": 0.0009641579705430038,
+          "target": 0.01,
+          "met": true
+        },
+        "CD_max_rel": {
+          "value": 0.0015950681654558739,
+          "target": 0.02,
+          "met": true
+        },
+        "CL_max_abs": {
+          "value": 0.006512670878840776,
+          "target": 0.02,
+          "met": true
+        }
+      },
+      "targets_met": 6,
+      "status": "completed"
+    },
+    "c2_p2_dt400_frozen_oseen_K40": {
+      "mesh": "c2",
+      "velocity_order": 2,
+      "pressure_order": 1,
+      "dt_inverse": 400,
+      "scheme": "frozen_oseen",
+      "refactor_every": 40,
+      "entry": [
+        "c2",
+        2,
+        400,
+        "frozen_oseen",
+        40
+      ],
+      "start_projection": {
+        "e_u": 0.0010356301973986504,
+        "e_p": 0.0019015423697136132,
+        "evaluation_check": 4.440892098500626e-16
+      },
+      "ndof": 25303,
+      "timing": [
+        {
+          "warm_seconds": 58.903872358612716,
+          "construct_seconds": 0.34145360346883535,
+          "setup_seconds": 0.0017877817153930664,
+          "steps": 680,
+          "lu_refreshes": 18,
+          "timers": {
+            "conv_apply": 18.045484934933484,
+            "factor": 5.001647531054914,
+            "solve": 19.942112318240106,
+            "observe": 14.088534355163574,
+            "diagnostics": 0.0
+          }
+        }
+      ],
+      "warm_seconds_median": 58.903872358612716,
+      "warm_seconds_min": 58.903872358612716,
+      "warm_seconds_max": 58.903872358612716,
+      "force": {
+        "CD_maxabs_rel": 0.005471094237309454,
+        "CL_maxabs": 0.0837392101677541
+      },
+      "cycles": {
+        "CD_max": 3.210202057516588,
+        "CL_max": 1.0526925912423266,
+        "CL_min": -1.0905836760833871,
+        "St": 0.3025518077461635,
+        "dp_at_t0_plus_half_period": 2.4910273530350056,
+        "period": 0.33052204329313195,
+        "cycles": 4
+      },
+      "cycle_errors": {
+        "St_rel": 0.002403181244259017,
+        "CD_max_rel": 0.0019684040742096866,
+        "CL_max_abs": 0.006028104636456089
+      },
+      "e_u": {
+        "rms": 0.009583670935419253,
+        "max": 0.017448064027454625,
+        "at_start": 0.0010356301707012934,
+        "saves": 681
+      },
+      "e_p": {
+        "rms": 0.005407055654777863,
+        "max": 0.009370285075466162,
+        "at_start": 0.0019015423814998805
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.009583670935419253,
+          "target": 0.01,
+          "met": true
+        },
+        "e_u_max": {
+          "value": 0.017448064027454625,
+          "target": 0.03,
+          "met": true
+        },
+        "e_p_rms": {
+          "value": 0.005407055654777863,
+          "target": 0.02,
+          "met": true
+        },
+        "St_rel": {
+          "value": 0.002403181244259017,
+          "target": 0.01,
+          "met": true
+        },
+        "CD_max_rel": {
+          "value": 0.0019684040742096866,
+          "target": 0.02,
+          "met": true
+        },
+        "CL_max_abs": {
+          "value": 0.006028104636456089,
+          "target": 0.02,
+          "met": true
+        }
+      },
+      "targets_met": 6,
+      "status": "completed"
+    },
+    "c3_p3_dt300_frozen_oseen_K30": {
+      "mesh": "c3",
+      "velocity_order": 3,
+      "pressure_order": 2,
+      "dt_inverse": 300,
+      "scheme": "frozen_oseen",
+      "refactor_every": 30,
+      "entry": [
+        "c3",
+        3,
+        300,
+        "frozen_oseen",
+        30
+      ],
+      "start_projection": {
+        "e_u": 0.0004970114149721883,
+        "e_p": 0.00043064818601525864,
+        "evaluation_check": 6.661338147750939e-16
+      },
+      "ndof": 32630,
+      "timing": [
+        {
+          "warm_seconds": 70.96649650670588,
+          "construct_seconds": 0.22576269507408142,
+          "setup_seconds": 0.0018343031406402588,
+          "steps": 510,
+          "lu_refreshes": 18,
+          "timers": {
+            "conv_apply": 4.56429108325392,
+            "factor": 6.802497864700854,
+            "solve": 27.34617011155933,
+            "observe": 30.929774548858404,
+            "diagnostics": 0.0
+          }
+        }
+      ],
+      "warm_seconds_median": 70.96649650670588,
+      "warm_seconds_min": 70.96649650670588,
+      "warm_seconds_max": 70.96649650670588,
+      "force": {
+        "CD_maxabs_rel": 0.004247663821646137,
+        "CL_maxabs": 0.08432982381161691
+      },
+      "cycles": {
+        "CD_max": 3.223875091103468,
+        "CL_max": 1.0752066732218366,
+        "CL_min": -1.1126555348164102,
+        "St": 0.3040912975826848,
+        "dp_at_t0_plus_half_period": 2.496685178219103,
+        "period": 0.3288486227132994,
+        "cycles": 4
+      },
+      "cycle_errors": {
+        "St_rel": 0.002672941667916578,
+        "CD_max_rel": 0.0022824559300410065,
+        "CL_max_abs": 0.016485977343053904
+      },
+      "e_u": {
+        "rms": 0.010201219557201479,
+        "max": 0.01523300692174846,
+        "at_start": 0.0004970113912382459,
+        "saves": 171
+      },
+      "e_p": {
+        "rms": 0.005680677745698303,
+        "max": 0.008595267751282441,
+        "at_start": 0.0004306481848354672
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.010201219557201479,
+          "target": 0.01,
+          "met": false
+        },
+        "e_u_max": {
+          "value": 0.01523300692174846,
+          "target": 0.03,
+          "met": true
+        },
+        "e_p_rms": {
+          "value": 0.005680677745698303,
+          "target": 0.02,
+          "met": true
+        },
+        "St_rel": {
+          "value": 0.002672941667916578,
+          "target": 0.01,
+          "met": true
+        },
+        "CD_max_rel": {
+          "value": 0.0022824559300410065,
+          "target": 0.02,
+          "met": true
+        },
+        "CL_max_abs": {
+          "value": 0.016485977343053904,
+          "target": 0.02,
+          "met": true
+        }
+      },
+      "targets_met": 5,
+      "status": "completed"
+    },
+    "c1_p2_dt300_frozen_oseen_K30": {
+      "mesh": "c1",
+      "velocity_order": 2,
+      "pressure_order": 1,
+      "dt_inverse": 300,
+      "scheme": "frozen_oseen",
+      "refactor_every": 30,
+      "entry": [
+        "c1",
+        2,
+        300,
+        "frozen_oseen",
+        30
+      ],
+      "start_projection": {
+        "e_u": 0.00043239922832700615,
+        "e_p": 0.0010201581315278719,
+        "evaluation_check": 4.440892098500626e-16
+      },
+      "ndof": 50875,
+      "timing": [
+        {
+          "warm_seconds": 61.33131075743586,
+          "construct_seconds": 0.9874514797702432,
+          "setup_seconds": 0.002074834890663624,
+          "steps": 510,
+          "lu_refreshes": 18,
+          "timers": {
+            "conv_apply": 4.514872771687806,
+            "factor": 8.488869328983128,
+            "solve": 34.49648189172149,
+            "observe": 12.577922317199409,
+            "diagnostics": 0.0
+          }
+        }
+      ],
+      "warm_seconds_median": 61.33131075743586,
+      "warm_seconds_min": 61.33131075743586,
+      "warm_seconds_max": 61.33131075743586,
+      "force": {
+        "CD_maxabs_rel": 0.002513197501551536,
+        "CL_maxabs": 0.06096470891975714
+      },
+      "cycles": {
+        "CD_max": 3.2206146025901123,
+        "CL_max": 1.0689541825387936,
+        "CL_min": -1.1077841557528882,
+        "St": 0.30388412864934405,
+        "dp_at_t0_plus_half_period": 2.498242739949996,
+        "period": 0.329072813299744,
+        "cycles": 4
+      },
+      "cycle_errors": {
+        "St_rel": 0.0019898485131099484,
+        "CD_max_rel": 0.0012687905917914476,
+        "CL_max_abs": 0.010233486660010893
+      },
+      "e_u": {
+        "rms": 0.009005440883118812,
+        "max": 0.012334661267645724,
+        "at_start": 0.0004323992071324413,
+        "saves": 171
+      },
+      "e_p": {
+        "rms": 0.0049271260102135795,
+        "max": 0.006931816109751596,
+        "at_start": 0.0010201581152701185
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.009005440883118812,
+          "target": 0.01,
+          "met": true
+        },
+        "e_u_max": {
+          "value": 0.012334661267645724,
+          "target": 0.03,
+          "met": true
+        },
+        "e_p_rms": {
+          "value": 0.0049271260102135795,
+          "target": 0.02,
+          "met": true
+        },
+        "St_rel": {
+          "value": 0.0019898485131099484,
+          "target": 0.01,
+          "met": true
+        },
+        "CD_max_rel": {
+          "value": 0.0012687905917914476,
+          "target": 0.02,
+          "met": true
+        },
+        "CL_max_abs": {
+          "value": 0.010233486660010893,
+          "target": 0.02,
+          "met": true
+        }
+      },
+      "targets_met": 6,
+      "status": "completed"
+    },
+    "c1_p2_dt400_frozen_oseen_K40": {
+      "mesh": "c1",
+      "velocity_order": 2,
+      "pressure_order": 1,
+      "dt_inverse": 400,
+      "scheme": "frozen_oseen",
+      "refactor_every": 40,
+      "entry": [
+        "c1",
+        2,
+        400,
+        "frozen_oseen",
+        40
+      ],
+      "start_projection": {
+        "e_u": 0.00043239922832700615,
+        "e_p": 0.0010201581315278719,
+        "evaluation_check": 4.440892098500626e-16
+      },
+      "ndof": 50875,
+      "timing": [
+        {
+          "warm_seconds": 90.98853155691177,
+          "construct_seconds": 0.9682583846151829,
+          "setup_seconds": 0.0020688222721219063,
+          "steps": 680,
+          "lu_refreshes": 18,
+          "timers": {
+            "conv_apply": 4.743010675534606,
+            "factor": 8.90666710305959,
+            "solve": 46.552493918687105,
+            "observe": 29.120768480934203,
+            "diagnostics": 0.0
+          }
+        }
+      ],
+      "warm_seconds_median": 90.98853155691177,
+      "warm_seconds_min": 90.98853155691177,
+      "warm_seconds_max": 90.98853155691177,
+      "force": {
+        "CD_maxabs_rel": 0.0013668565470889686,
+        "CL_maxabs": 0.025382629991692995
+      },
+      "cycles": {
+        "CD_max": 3.217125195382615,
+        "CL_max": 1.0605189263579948,
+        "CL_min": -1.098602242527118,
+        "St": 0.3035424068921266,
+        "dp_at_t0_plus_half_period": 2.495795519039317,
+        "period": 0.32944326834824,
+        "cycles": 4
+      },
+      "cycle_errors": {
+        "St_rel": 0.0008630975594822555,
+        "CD_max_rel": 0.00018395587368419915,
+        "CL_max_abs": 0.0017982304792121262
+      },
+      "e_u": {
+        "rms": 0.004903498280014656,
+        "max": 0.00626193544659651,
+        "at_start": 0.0004323992071324413,
+        "saves": 681
+      },
+      "e_p": {
+        "rms": 0.0027224758111319687,
+        "max": 0.0036129235663496075,
+        "at_start": 0.0010201581152701185
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.004903498280014656,
+          "target": 0.01,
+          "met": true
+        },
+        "e_u_max": {
+          "value": 0.00626193544659651,
+          "target": 0.03,
+          "met": true
+        },
+        "e_p_rms": {
+          "value": 0.0027224758111319687,
+          "target": 0.02,
+          "met": true
+        },
+        "St_rel": {
+          "value": 0.0008630975594822555,
+          "target": 0.01,
+          "met": true
+        },
+        "CD_max_rel": {
+          "value": 0.00018395587368419915,
+          "target": 0.02,
+          "met": true
+        },
+        "CL_max_abs": {
+          "value": 0.0017982304792121262,
+          "target": 0.02,
+          "met": true
+        }
+      },
+      "targets_met": 6,
+      "status": "completed"
+    },
+    "c3_p3_dt400_frozen_oseen_K40": {
+      "mesh": "c3",
+      "velocity_order": 3,
+      "pressure_order": 2,
+      "dt_inverse": 400,
+      "scheme": "frozen_oseen",
+      "refactor_every": 40,
+      "entry": [
+        "c3",
+        3,
+        400,
+        "frozen_oseen",
+        40
+      ],
+      "start_projection": {
+        "e_u": 0.0004970114149721883,
+        "e_p": 0.00043064818601525864,
+        "evaluation_check": 4.440892098500626e-16
+      },
+      "ndof": 32630,
+      "timing": [
+        {
+          "warm_seconds": 77.32373019680381,
+          "construct_seconds": 0.22699480596929789,
+          "setup_seconds": 0.0017478689551353455,
+          "steps": 680,
+          "lu_refreshes": 18,
+          "timers": {
+            "conv_apply": 6.906439485959709,
+            "factor": 6.758235317654908,
+            "solve": 34.65121256560087,
+            "observe": 27.198096157051623,
+            "diagnostics": 0.0
+          }
+        }
+      ],
+      "warm_seconds_median": 77.32373019680381,
+      "warm_seconds_min": 77.32373019680381,
+      "warm_seconds_max": 77.32373019680381,
+      "force": {
+        "CD_maxabs_rel": 0.002247482561592693,
+        "CL_maxabs": 0.04720684769615535
+      },
+      "cycles": {
+        "CD_max": 3.2202427703027428,
+        "CL_max": 1.0666655104307443,
+        "CL_min": -1.1031228682817404,
+        "St": 0.3037386903977627,
+        "dp_at_t0_plus_half_period": 2.494197478001364,
+        "period": 0.329230369948581,
+        "cycles": 4
+      },
+      "cycle_errors": {
+        "St_rel": 0.001510298454613211,
+        "CD_max_rel": 0.0011531902761317875,
+        "CL_max_abs": 0.00794481455196161
+      },
+      "e_u": {
+        "rms": 0.005888689062218109,
+        "max": 0.008767806151045532,
+        "at_start": 0.0004970113912382459,
+        "saves": 681
+      },
+      "e_p": {
+        "rms": 0.0032523921724579357,
+        "max": 0.004949570357335656,
+        "at_start": 0.0004306481848354672
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.005888689062218109,
+          "target": 0.01,
+          "met": true
+        },
+        "e_u_max": {
+          "value": 0.008767806151045532,
+          "target": 0.03,
+          "met": true
+        },
+        "e_p_rms": {
+          "value": 0.0032523921724579357,
+          "target": 0.02,
+          "met": true
+        },
+        "St_rel": {
+          "value": 0.001510298454613211,
+          "target": 0.01,
+          "met": true
+        },
+        "CD_max_rel": {
+          "value": 0.0011531902761317875,
+          "target": 0.02,
+          "met": true
+        },
+        "CL_max_abs": {
+          "value": 0.00794481455196161,
+          "target": 0.02,
+          "met": true
+        }
+      },
+      "targets_met": 6,
+      "status": "completed"
+    },
+    "m0_p2_dt400_frozen_oseen_K40": {
+      "mesh": "m0",
+      "velocity_order": 2,
+      "pressure_order": 1,
+      "dt_inverse": 400,
+      "scheme": "frozen_oseen",
+      "refactor_every": 40,
+      "entry": [
+        "m0",
+        2,
+        400,
+        "frozen_oseen",
+        40
+      ],
+      "start_projection": {
+        "e_u": 0.00020271963646940276,
+        "e_p": 0.0005773340686977305,
+        "evaluation_check": 4.440892098500626e-16
+      },
+      "ndof": 96781,
+      "timing": [
+        {
+          "warm_seconds": 121.67550194542855,
+          "construct_seconds": 1.5207224637269974,
+          "setup_seconds": 0.0028457026928663254,
+          "steps": 680,
+          "lu_refreshes": 18,
+          "timers": {
+            "conv_apply": 1.8043333198875189,
+            "factor": 17.276688747107983,
+            "solve": 97.43175304494798,
+            "observe": 3.191083655692637,
+            "diagnostics": 0.0
+          }
+        }
+      ],
+      "warm_seconds_median": 121.67550194542855,
+      "warm_seconds_min": 121.67550194542855,
+      "warm_seconds_max": 121.67550194542855,
+      "force": {
+        "CD_maxabs_rel": 0.0019345944339029953,
+        "CL_maxabs": 0.04408939819917035
+      },
+      "cycles": {
+        "CD_max": 3.2195980846989936,
+        "CL_max": 1.065526427672199,
+        "CL_min": -1.1037460607017313,
+        "St": 0.30370810946444826,
+        "dp_at_t0_plus_half_period": 2.4975266029152943,
+        "period": 0.32926352017661387,
+        "cycles": 4
+      },
+      "cycle_errors": {
+        "St_rel": 0.001409464676701528,
+        "CD_max_rel": 0.0009527615833416712,
+        "CL_max_abs": 0.006805731793416259
+      },
+      "e_u": {
+        "rms": 0.00569259278244508,
+        "max": 0.008311974474143249,
+        "at_start": 0.000202719594333871,
+        "saves": 681
+      },
+      "e_p": {
+        "rms": 0.0031574478262429303,
+        "max": 0.004722008273214697,
+        "at_start": 0.0005773340769613956
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.00569259278244508,
+          "target": 0.01,
+          "met": true
+        },
+        "e_u_max": {
+          "value": 0.008311974474143249,
+          "target": 0.03,
+          "met": true
+        },
+        "e_p_rms": {
+          "value": 0.0031574478262429303,
+          "target": 0.02,
+          "met": true
+        },
+        "St_rel": {
+          "value": 0.001409464676701528,
+          "target": 0.01,
+          "met": true
+        },
+        "CD_max_rel": {
+          "value": 0.0009527615833416712,
+          "target": 0.02,
+          "met": true
+        },
+        "CL_max_abs": {
+          "value": 0.006805731793416259,
+          "target": 0.02,
+          "met": true
+        }
+      },
+      "targets_met": 6,
+      "status": "completed"
+    }
+  }
+}

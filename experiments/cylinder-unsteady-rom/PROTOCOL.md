@@ -266,3 +266,27 @@ development long case only (the first run's history file also holds its settle s
 been read by any script. Cost-comparison steps for the reduced arms, fixed on development Re 95 (rb-sd): 1/400 for
 every rank-32 and rank-24 arm; 1/800 for POD-16 and the ordinary bank's 16-prefix; 1/1600 for the stream bank's
 16-prefix. A9 results are reported at 1/3200 and at these steps. Development evaluation job: `rb-xedev`.
+
+### A9 wall-time split of the development evaluation (2026-11-11 22:40 EST)
+
+`rb-xedev` (7143294, 5 h limit) spends about 16 minutes per case and step on the short cases (9 arms, scoring
+dominated), so the three-times-longer Re 95 window at four steps plus the operator block cannot finish inside its limit.
+Seen so far: only the job log's per-arm velocity-error lines for Re 85 and Re 115 (development cases). Nothing is
+changed in any model, arm, step list, score or role. Plumbing only: `tasks/rb_xe_common.sh` takes the step list from
+`DTS` if set (default unchanged); `rb-xedev2` runs the operator block of the development role; `rb-xedev3` runs the long
+Re 95 window at steps 1/400 and 1/800; `rb-xedev` keeps running and supplies Re 85, Re 115 and the long window at
+1/3200 and 1/1600 (it is cancelled or times out after that and is reported as such). The confirmation job will be given
+a longer limit (one allocation, all stages) instead of being split. This departs from "one allocation per role" for the
+development role only.
+
+### A9 record after the development evaluation, before the confirmation job (2026-11-12 00:45 EST)
+
+Development evaluation complete: `rb-xedev` 7143294 (Re 85, Re 115 at four steps; long Re 95 at 1/3200 and 1/1600;
+cancelled by me at 4:16 once those were written, the rest being duplicated elsewhere - scheduler state CANCELLED),
+`rb-xedev3` 7144213 (long Re 95 at 1/400, 1/800; COMPLETED), `rb-xedev2` 7144212 (operators; COMPLETED). Every arm of
+every case returned a score (table: `artifacts/XTABLE-dev.txt`, written by `xtable.py`). Operator regression check on the
+Re 95 short window reproduces the operator lane's velocity errors and targets-met counts for all six checkpoints, so
+operator results are reported. Nothing was changed after seeing the development outcomes: same frozen banks, POD basis,
+arms, steps, checkpoints, scores and scripts (only the `DTS` default plumbing above). The confirmation cases (Re 80,
+Re 120, long Re 105) are now run once, in one allocation, as `rb-xeconf` with an 8 h limit; their reference records
+completed in `rb-xconf` (scheduler state FAILED from the final log-print line only) and `rb-xl2`.

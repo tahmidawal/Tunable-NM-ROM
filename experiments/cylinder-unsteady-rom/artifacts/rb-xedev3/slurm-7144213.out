@@ -1,0 +1,95 @@
+inputs/EXPORT-SHA256SUMS: OK
+inputs/R3-SHA256SUMS: OK
+inputs/R1DE.json: OK
+rom_frames.py: OK
+rom_export.py: OK
+rom_project.py: OK
+rom_qcheck.py: OK
+rom_r5.py: OK
+ref_cfg.py: OK
+vendor/ref/transient.py: OK
+vendor/ref/cycles.py: OK
+vendor/ref/vendor/scalars.py: OK
+vendor/ref/vendor/oriented_normals.py: OK
+rom_core.py: OK
+rom_r2.py: OK
+rom_r4.py: OK
+bank_train.py: OK
+bank_train2.py: OK
+bank_diag.py: OK
+fe_ladder.py: OK
+rom_time.py: OK
+rom_time2.py: OK
+select_fe.py: OK
+fe_mesh.py: OK
+fe_ladder2.py: OK
+fe_select2.py: OK
+merge_runs.py: OK
+drift.py: OK
+ops/ops_common.py: OK
+ops/ops_models.py: OK
+ops/ops_train.py: OK
+ops/ops_prep2.py: OK
+ops/ops_eval2.py: OK
+ops/VENDORED.txt: OK
+cycles.py: OK
+install_deps.py: OK
+vendor/geometry.py: OK
+vendor/accuracy_v2/__init__.py: OK
+vendor/accuracy_v2/spatial_bank.py: OK
+vendor/accuracy_v2/fast_spatial_bank.py: OK
+vendor/accuracy_v2/residual_head_bank.py: OK
+vendor/dependencies.py: OK
+vendor/DEPENDENCIES.json: OK
+inputs/run09_bank.npz: OK
+inputs/admitted_mesh.vol.bin: OK
+cluster/run.sh: OK
+tasks/rb_xedev3.sh: OK
+tasks/rb_common.sh: OK
+tasks/manifest_production.json: OK
+tasks/rb_xe_common.sh: OK
+tasks/manifest_xdev.json: OK
+tasks/stream_frozen.env: OK
+4cdb87ecb36756e49e908ad8463b4269158b03fa
+jax_backend=gpu
+jax_x64=True
+cpu_model=Intel(R) Xeon(R) Gold 6448Y
+name, uuid
+NVIDIA L40S, GPU-ecb9a7d8-0f73-022e-8cc0-48e937c186d2
+pax025
+{"wheel": "ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl", "sha256": "4e02591fe98a1068b4f7ca094aec36844da1f6ddf826088b060e5a8e7780efff"}
+{"wheel": "netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", "sha256": "d8118835e2aec5739ee5755d61e866505313d92e3d4c6b947be7835f9fbf5122"}
+{"wheel": "netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", "sha256": "db71d77f56f79c0768489e76dde8febdeb25b95777986587a5d09575fa112f94"}
+{"wheel": "ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl", "sha256": "8d3266615c7b099e78c5891a41971c6bffe5d6014d13d736cef0cc119d1ca141"}
+Processing ./wheels/ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+Processing ./wheels/ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl
+Installing collected packages: ngsolve-openblas, ngsolve, netgen-occt, netgen-mesher
+
+Successfully installed netgen-mesher-6.2.2608 netgen-occt-7.8.1 ngsolve-6.2.2608 ngsolve-openblas-0.3.33
+{"prefix_layout_verified": true, "occt_libraries": 47, "site_packages": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-xedev3/deps/lib/python3.13/site-packages"}
+ngsolve 6.2.2608 jax gpu
+/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-a8b/results/train/trained_bank_eval.npz: OK
+/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-s2b/results/train/trained_bank_eval.npz: OK
+pod_r16 completed {'rms': 0.04653763013983814, 'max': 0.09853771904017873, 'last_period_mean': 0.09322798180609006} 
+pod_r24 completed {'rms': 0.004631480106498921, 'max': 0.005319212278944471, 'last_period_mean': 0.004711694120835275} 
+pod_r32 completed {'rms': 0.013896458562239795, 'max': 0.020861263871153148, 'last_period_mean': 0.020504734941223474} 
+bank_r32 completed {'rms': 0.01396284487132182, 'max': 0.02095363530679332, 'last_period_mean': 0.02059867886008216} 
+bank_p24 completed {'rms': 0.004677000096583466, 'max': 0.00533594407673689, 'last_period_mean': 0.0048123607529827} 
+bank_p16 completed {'rms': 0.046434925668581435, 'max': 0.09832124513468592, 'last_period_mean': 0.09301629545426256} 
+stream_r32 completed {'rms': 0.013261534331510587, 'max': 0.01909077540885107, 'last_period_mean': 0.01881345525952851} 
+stream_p24 completed {'rms': 0.004777514998535277, 'max': 0.005471870817707962, 'last_period_mean': 0.0048135728317601515} 
+stream_p16 completed {'rms': 0.047255031969306104, 'max': 0.10028653619897177, 'last_period_mean': 0.09484781931258246} 
+drift results/DRIFT-rom-re95L-dt0.0025.json {'bank_p16': (0.06004782287568883, 'completed'), 'bank_p24': (0.0, 'completed'), 'bank_r32': (0.0075059778594611035, 'completed'), 'pod_r16': (0.06004782287568883, 'completed'), 'pod_r24': (0.0, 'completed'), 'pod_r32': (0.0075059778594611035, 'completed'), 'stream_p16': (0.06004782287568883, 'completed'), 'stream_p24': (0.0, 'completed'), 'stream_r32': (0.0075059778594611035, 'completed')}
+pod_r16 completed {'rms': 0.033726046216635025, 'max': 0.07396538075822612, 'last_period_mean': 0.06954639975619628} 
+pod_r24 completed {'rms': 0.014652839408921882, 'max': 0.026435980891254863, 'last_period_mean': 0.02557447860063881} 
+pod_r32 completed {'rms': 0.00296330645192208, 'max': 0.0034628008075549563, 'last_period_mean': 0.0031398401504126173} 
+bank_r32 completed {'rms': 0.0030449268203531954, 'max': 0.003552329719488616, 'last_period_mean': 0.0032594896954295234} 
+bank_p24 completed {'rms': 0.014794427092897773, 'max': 0.026679123668579104, 'last_period_mean': 0.025818424989239256} 
+bank_p16 completed {'rms': 0.03362912591140735, 'max': 0.07374682452327089, 'last_period_mean': 0.06933291114914211} 
+stream_r32 completed {'rms': 0.002972844763279895, 'max': 0.003454765571786415, 'last_period_mean': 0.002786518292710304} 
+stream_p24 completed {'rms': 0.014691578447644783, 'max': 0.026414579258319904, 'last_period_mean': 0.02555248062558921} 
+stream_p16 completed {'rms': 0.03440308263298247, 'max': 0.07559031055473016, 'last_period_mean': 0.07105527561126368} 
+drift results/DRIFT-rom-re95L-dt0.00125.json {'bank_p16': (0.04503586715676662, 'completed'), 'bank_p24': (-0.015011955718922207, 'completed'), 'bank_r32': (0.0, 'completed'), 'pod_r16': (0.04503586715676662, 'completed'), 'pod_r24': (-0.015011955718922207, 'completed'), 'pod_r32': (0.0, 'completed'), 'stream_p16': (0.04503586715676662, 'completed'), 'stream_p24': (-0.015011955718922207, 'completed'), 'stream_r32': (0.0, 'completed')}
+task_completed

@@ -9,7 +9,7 @@ EX=$NS/rb-export32/results/export
 BANK=$NS/rb-a8b/results/train/trained_bank_eval.npz
 echo "b5915d667372345adfedfb15817c8071e346ea1dc49543204d4d50e10f820fd4  $BANK" | sha256sum -c
 echo "$SBANK_SHA  $SBANK" | sha256sum -c
-DTS="0.0003125 0.000625 0.00125 0.0025"
+DTS=${DTS:-"0.0003125 0.000625 0.00125 0.0025"}
 ARMS='[{"name":"pod_r16","kind":"pod","r":16},{"name":"pod_r24","kind":"pod","r":24},{"name":"pod_r32","kind":"pod","r":32},{"name":"bank_r32","kind":"bank","r":32,"key":"trained"},{"name":"bank_p24","kind":"bank","r":24,"key":"trained"},{"name":"bank_p16","kind":"bank","r":16,"key":"trained"}]'
 SARMS='[{"name":"stream_r32","kind":"bank","r":32,"key":"trained"},{"name":"stream_p24","kind":"bank","r":24,"key":"trained"},{"name":"stream_p16","kind":"bank","r":16,"key":"trained"}]'
 case " $STAGES " in *" merge "*)

@@ -1,0 +1,44 @@
+{
+ "mesh_path": "inputs/admitted_mesh.vol.bin",
+ "mesh_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+ "probe_points": [
+  [
+   0.15,
+   0.2
+  ],
+  [
+   0.25,
+   0.2
+  ]
+ ],
+ "center": [
+  0.2,
+  0.2
+ ],
+ "velocity_order": 4,
+ "quadrature_order": 12,
+ "purpose": "Second rebuttal push A9: DEVELOPMENT extrapolation cases (Re 85, Re 115, long window Re 95); no training case",
+ "cases": [
+  {
+   "name": "re85",
+   "split": "dev",
+   "run_dir": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-xdev/results/record_re85_p4",
+   "stage": "record",
+   "Re": 85
+  },
+  {
+   "name": "re115",
+   "split": "dev",
+   "run_dir": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-xdev/results/record_re115_p4",
+   "stage": "record",
+   "Re": 115
+  },
+  {
+   "name": "re95L",
+   "split": "dev",
+   "run_dir": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-merged/re95L",
+   "stage": "record",
+   "Re": 95
+  }
+ ]
+}

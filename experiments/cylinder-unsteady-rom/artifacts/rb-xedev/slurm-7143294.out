@@ -1,0 +1,175 @@
+inputs/EXPORT-SHA256SUMS: OK
+inputs/R3-SHA256SUMS: OK
+inputs/R1DE.json: OK
+rom_frames.py: OK
+rom_export.py: OK
+rom_project.py: OK
+rom_qcheck.py: OK
+rom_r5.py: OK
+ref_cfg.py: OK
+vendor/ref/transient.py: OK
+vendor/ref/cycles.py: OK
+vendor/ref/vendor/scalars.py: OK
+vendor/ref/vendor/oriented_normals.py: OK
+rom_core.py: OK
+rom_r2.py: OK
+rom_r4.py: OK
+bank_train.py: OK
+bank_train2.py: OK
+bank_diag.py: OK
+fe_ladder.py: OK
+rom_time.py: OK
+rom_time2.py: OK
+select_fe.py: OK
+fe_mesh.py: OK
+fe_ladder2.py: OK
+fe_select2.py: OK
+merge_runs.py: OK
+drift.py: OK
+ops/ops_common.py: OK
+ops/ops_models.py: OK
+ops/ops_train.py: OK
+ops/ops_prep2.py: OK
+ops/ops_eval2.py: OK
+ops/VENDORED.txt: OK
+cycles.py: OK
+install_deps.py: OK
+vendor/geometry.py: OK
+vendor/accuracy_v2/__init__.py: OK
+vendor/accuracy_v2/spatial_bank.py: OK
+vendor/accuracy_v2/fast_spatial_bank.py: OK
+vendor/accuracy_v2/residual_head_bank.py: OK
+vendor/dependencies.py: OK
+vendor/DEPENDENCIES.json: OK
+inputs/run09_bank.npz: OK
+inputs/admitted_mesh.vol.bin: OK
+cluster/run.sh: OK
+tasks/rb_xedev.sh: OK
+tasks/rb_common.sh: OK
+tasks/manifest_production.json: OK
+tasks/rb_xe_common.sh: OK
+tasks/manifest_xdev.json: OK
+tasks/stream_frozen.env: OK
+bc5e0a90f1e344133b6a754a9bece4ceda81699c
+jax_backend=gpu
+jax_x64=True
+cpu_model=Intel(R) Xeon(R) Gold 6448Y
+name, uuid
+NVIDIA L40S, GPU-52d6b981-35ff-871c-8599-2f325eb1df8c
+pax021
+{"wheel": "ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl", "sha256": "4e02591fe98a1068b4f7ca094aec36844da1f6ddf826088b060e5a8e7780efff"}
+{"wheel": "netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", "sha256": "d8118835e2aec5739ee5755d61e866505313d92e3d4c6b947be7835f9fbf5122"}
+{"wheel": "netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", "sha256": "db71d77f56f79c0768489e76dde8febdeb25b95777986587a5d09575fa112f94"}
+{"wheel": "ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl", "sha256": "8d3266615c7b099e78c5891a41971c6bffe5d6014d13d736cef0cc119d1ca141"}
+Processing ./wheels/ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+Processing ./wheels/ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl
+Installing collected packages: ngsolve-openblas, ngsolve, netgen-occt, netgen-mesher
+
+Successfully installed netgen-mesher-6.2.2608 netgen-occt-7.8.1 ngsolve-6.2.2608 ngsolve-openblas-0.3.33
+{"prefix_layout_verified": true, "occt_libraries": 47, "site_packages": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-xedev/deps/lib/python3.13/site-packages"}
+ngsolve 6.2.2608 jax gpu
+/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-a8b/results/train/trained_bank_eval.npz: OK
+/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-s2b/results/train/trained_bank_eval.npz: OK
+merged /cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-merged/re95L snapshots 2041 t 17.45000000000225 22.549999999997613 {"CD_reaction": [17.45031250000225, 19.150312500000705], "CL_reaction": [17.45031250000225, 19.150312500000705]}
+pod_r16 completed {'rms': 0.037880096434599754, 'max': 0.07201903729762307, 'last_period_mean': 0.06100155428077477} 
+pod_r24 completed {'rms': 0.01829984761137597, 'max': 0.0338084385806088, 'last_period_mean': 0.028958081832077914} 
+pod_r32 completed {'rms': 0.0055214167666160245, 'max': 0.005954305591673016, 'last_period_mean': 0.0057676868715239625} 
+bank_r32 completed {'rms': 0.005536673182201697, 'max': 0.005965358984353516, 'last_period_mean': 0.00577978254322617} 
+bank_p24 completed {'rms': 0.018212776711246978, 'max': 0.03359603436285282, 'last_period_mean': 0.028787413694341762} 
+bank_p16 completed {'rms': 0.03782804204867503, 'max': 0.07188332800903076, 'last_period_mean': 0.060896904182349755} 
+stream_r32 completed {'rms': 0.00561264643514087, 'max': 0.006054083650407599, 'last_period_mean': 0.005849858845995534} 
+stream_p24 completed {'rms': 0.01870117995295008, 'max': 0.0346987965488396, 'last_period_mean': 0.029675860057811063} 
+stream_p16 completed {'rms': 0.03841540363485271, 'max': 0.07326844578356297, 'last_period_mean': 0.06200818210089162} 
+drift results/DRIFT-rom-re85-dt0.0003125.json {'bank_p16': (0.04445089280400792, 'completed'), 'bank_p24': (0.02222544640200396, 'completed'), 'bank_r32': (0.0, 'completed'), 'pod_r16': (0.04445089280400792, 'completed'), 'pod_r24': (0.02222544640200396, 'completed'), 'pod_r32': (0.0, 'completed'), 'stream_p16': (0.04445089280400792, 'completed'), 'stream_p24': (0.02222544640200396, 'completed'), 'stream_r32': (0.0, 'completed')}
+pod_r16 completed {'rms': 0.03804977908538731, 'max': 0.07236996546012414, 'last_period_mean': 0.06130697003160163} 
+pod_r24 completed {'rms': 0.018436737923449912, 'max': 0.034086296867190925, 'last_period_mean': 0.029200477015583873} 
+pod_r32 completed {'rms': 0.005549830531991146, 'max': 0.0060017655523149065, 'last_period_mean': 0.005816859925061049} 
+bank_r32 completed {'rms': 0.005562464944727062, 'max': 0.006007115313788456, 'last_period_mean': 0.005823126625523809} 
+bank_p24 completed {'rms': 0.01834951574276687, 'max': 0.03387411074858871, 'last_period_mean': 0.029029878507029358} 
+bank_p16 completed {'rms': 0.03799763579097946, 'max': 0.07223428543377634, 'last_period_mean': 0.06120227995442095} 
+stream_r32 completed {'rms': 0.005630439646478058, 'max': 0.006078820929000941, 'last_period_mean': 0.005876072915324588} 
+stream_p24 completed {'rms': 0.018837648978386436, 'max': 0.03497587199208969, 'last_period_mean': 0.029917523506438136} 
+stream_p16 completed {'rms': 0.03858510520054526, 'max': 0.0736188278253111, 'last_period_mean': 0.06231322870001355} 
+drift results/DRIFT-rom-re85-dt0.000625.json {'bank_p16': (0.04445089280400792, 'completed'), 'bank_p24': (0.02222544640200396, 'completed'), 'bank_r32': (0.0, 'completed'), 'pod_r16': (0.04445089280400792, 'completed'), 'pod_r24': (0.02222544640200396, 'completed'), 'pod_r32': (0.0, 'completed'), 'stream_p16': (0.04445089280400792, 'completed'), 'stream_p24': (0.02222544640200396, 'completed'), 'stream_r32': (0.0, 'completed')}
+pod_r16 completed {'rms': 0.03874126621550348, 'max': 0.0737916300892082, 'last_period_mean': 0.06254613307271496} 
+pod_r24 completed {'rms': 0.019023104902893898, 'max': 0.035263171953558395, 'last_period_mean': 0.030227946133642186} 
+pod_r32 completed {'rms': 0.00575895105582097, 'max': 0.0063855216189144855, 'last_period_mean': 0.006203205849518169} 
+bank_r32 completed {'rms': 0.005761293389474695, 'max': 0.006369135152372027, 'last_period_mean': 0.006187465623525644} 
+bank_p24 completed {'rms': 0.018935371505149984, 'max': 0.035051946244395074, 'last_period_mean': 0.030057724300244847} 
+bank_p16 completed {'rms': 0.038688789064726066, 'max': 0.07365609426876765, 'last_period_mean': 0.062441310867624895} 
+stream_r32 completed {'rms': 0.005797509223970375, 'max': 0.006373885320232599, 'last_period_mean': 0.006174585812208844} 
+stream_p24 completed {'rms': 0.01942237668259283, 'max': 0.036150027922363874, 'last_period_mean': 0.030942382382760005} 
+stream_p16 completed {'rms': 0.039276659547864516, 'max': 0.07503843318355717, 'last_period_mean': 0.06355098638753538} 
+drift results/DRIFT-rom-re85-dt0.00125.json {'bank_p16': (0.04445089280400792, 'completed'), 'bank_p24': (0.02222544640200396, 'completed'), 'bank_r32': (0.0, 'completed'), 'pod_r16': (0.04445089280400792, 'completed'), 'pod_r24': (0.02222544640200396, 'completed'), 'pod_r32': (0.0, 'completed'), 'stream_p16': (0.04445089280400792, 'completed'), 'stream_p24': (0.02222544640200396, 'completed'), 'stream_r32': (0.0, 'completed')}
+pod_r16 completed {'rms': 0.041638816423305816, 'max': 0.07959138776002488, 'last_period_mean': 0.06763213569426643} 
+pod_r24 completed {'rms': 0.02176357115649001, 'max': 0.040558393437594466, 'last_period_mean': 0.03487275616618819} 
+pod_r32 completed {'rms': 0.007790794156830885, 'max': 0.010397526812489333, 'last_period_mean': 0.009817804779693106} 
+bank_r32 completed {'rms': 0.007763628228809169, 'max': 0.010316951200455095, 'last_period_mean': 0.009753218476277359} 
+bank_p24 completed {'rms': 0.021675235532848117, 'max': 0.04035224732049249, 'last_period_mean': 0.03470545625081754} 
+bank_p16 completed {'rms': 0.04158542616766449, 'max': 0.07945699006856585, 'last_period_mean': 0.06752734412332721} 
+stream_r32 completed {'rms': 0.007703996150334631, 'max': 0.010128342843900868, 'last_period_mean': 0.009586133844545945} 
+stream_p24 completed {'rms': 0.02215643957818408, 'max': 0.04143851824704838, 'last_period_mean': 0.03557998446501962} 
+stream_p16 completed {'rms': 0.042173553741355486, 'max': 0.08083064077988282, 'last_period_mean': 0.0686314083747107} 
+drift results/DRIFT-rom-re85-dt0.0025.json {'bank_p16': (0.05185937493800924, 'completed'), 'bank_p24': (0.02222544640200396, 'completed'), 'bank_r32': (0.0, 'completed'), 'pod_r16': (0.05185937493800924, 'completed'), 'pod_r24': (0.02222544640200396, 'completed'), 'pod_r32': (0.0, 'completed'), 'stream_p16': (0.05185937493800924, 'completed'), 'stream_p24': (0.02222544640200396, 'completed'), 'stream_r32': (0.0, 'completed')}
+pod_r16 completed {'rms': 0.019995524326502433, 'max': 0.024307140577540975, 'last_period_mean': 0.02307488396369182} 
+pod_r24 completed {'rms': 0.013503186638162702, 'max': 0.021498643511388207, 'last_period_mean': 0.019814547604468557} 
+pod_r32 completed {'rms': 0.005924536550973808, 'max': 0.007878913667143463, 'last_period_mean': 0.007378195974139039} 
+bank_r32 completed {'rms': 0.005970293399247148, 'max': 0.007968038375239727, 'last_period_mean': 0.007455873347730503} 
+bank_p24 completed {'rms': 0.013558557683086642, 'max': 0.021593534261053846, 'last_period_mean': 0.019902117781556483} 
+bank_p16 completed {'rms': 0.0200033887915164, 'max': 0.024337797226469296, 'last_period_mean': 0.023095338311493192} 
+stream_r32 completed {'rms': 0.005962329678809253, 'max': 0.007477729669570903, 'last_period_mean': 0.007092711307426264} 
+stream_p24 completed {'rms': 0.01351539316665817, 'max': 0.021365985597123105, 'last_period_mean': 0.01972899550979979} 
+stream_p16 completed {'rms': 0.02018335358243596, 'max': 0.02463832960396651, 'last_period_mean': 0.023382228308226158} 
+drift results/DRIFT-rom-re115-dt0.0003125.json {'bank_p16': (0.007645480134946765, 'completed'), 'bank_p24': (0.01529096026989353, 'completed'), 'bank_r32': (0.0, 'completed'), 'pod_r16': (0.007645480134946765, 'completed'), 'pod_r24': (0.01529096026989353, 'completed'), 'pod_r32': (0.0, 'completed'), 'stream_p16': (0.007645480134946765, 'completed'), 'stream_p24': (0.01529096026989353, 'completed'), 'stream_r32': (0.0, 'completed')}
+pod_r16 completed {'rms': 0.02008830017960269, 'max': 0.02453304865009089, 'last_period_mean': 0.02328048036287924} 
+pod_r24 completed {'rms': 0.013703508099161215, 'max': 0.021893265853026526, 'last_period_mean': 0.020170544612664033} 
+pod_r32 completed {'rms': 0.0060554577426661085, 'max': 0.008200186678623564, 'last_period_mean': 0.007657133868413345} 
+bank_r32 completed {'rms': 0.006103793678843422, 'max': 0.008294399809462524, 'last_period_mean': 0.007738703032145875} 
+bank_p24 completed {'rms': 0.013759196026209128, 'max': 0.0219882851856743, 'last_period_mean': 0.020258254251733603} 
+bank_p16 completed {'rms': 0.020097133380410474, 'max': 0.024565754145387326, 'last_period_mean': 0.023302704056737067} 
+stream_r32 completed {'rms': 0.00608143279816871, 'max': 0.0077839354235755675, 'last_period_mean': 0.007353054250013251} 
+stream_p24 completed {'rms': 0.013714922788815975, 'max': 0.021760131050070162, 'last_period_mean': 0.020084352708629745} 
+stream_p16 completed {'rms': 0.020276749375956225, 'max': 0.024862475802120983, 'last_period_mean': 0.02358678143422447} 
+drift results/DRIFT-rom-re115-dt0.000625.json {'bank_p16': (0.007645480134946765, 'completed'), 'bank_p24': (0.01529096026989353, 'completed'), 'bank_r32': (0.0, 'completed'), 'pod_r16': (0.007645480134946765, 'completed'), 'pod_r24': (0.01529096026989353, 'completed'), 'pod_r32': (0.0, 'completed'), 'stream_p16': (0.007645480134946765, 'completed'), 'stream_p24': (0.01529096026989353, 'completed'), 'stream_r32': (0.0, 'completed')}
+pod_r16 completed {'rms': 0.02053815434896474, 'max': 0.025588331034681746, 'last_period_mean': 0.024238499279676987} 
+pod_r24 completed {'rms': 0.014550454881587984, 'max': 0.023519039662003024, 'last_period_mean': 0.021639159953981094} 
+pod_r32 completed {'rms': 0.006772175725593676, 'max': 0.009800421473350389, 'last_period_mean': 0.009056978865995397} 
+bank_r32 completed {'rms': 0.006828852886845957, 'max': 0.009917417314728748, 'last_period_mean': 0.009150163694228252} 
+bank_p24 completed {'rms': 0.01460719722353383, 'max': 0.023614437537727736, 'last_period_mean': 0.021727287980888903} 
+bank_p16 completed {'rms': 0.02055066188010664, 'max': 0.02562861190212516, 'last_period_mean': 0.02426727676143432} 
+stream_r32 completed {'rms': 0.006754652910261339, 'max': 0.009325144412219186, 'last_period_mean': 0.008698890083887335} 
+stream_p24 completed {'rms': 0.014558767740162631, 'max': 0.023384290164735578, 'last_period_mean': 0.02155064772920021} 
+stream_p16 completed {'rms': 0.02072819582987445, 'max': 0.025909399111325098, 'last_period_mean': 0.02453927204366131} 
+drift results/DRIFT-rom-re115-dt0.00125.json {'bank_p16': (0.007645480134946765, 'completed'), 'bank_p24': (0.01529096026989353, 'completed'), 'bank_r32': (0.007645480134946765, 'completed'), 'pod_r16': (0.007645480134946765, 'completed'), 'pod_r24': (0.01529096026989353, 'completed'), 'pod_r32': (0.007645480134946765, 'completed'), 'stream_p16': (0.007645480134946765, 'completed'), 'stream_p24': (0.01529096026989353, 'completed'), 'stream_r32': (0.007645480134946765, 'completed')}
+pod_r16 completed {'rms': 0.023215745721303402, 'max': 0.03136790439057651, 'last_period_mean': 0.029458648064937833} 
+pod_r24 completed {'rms': 0.018429620366852806, 'max': 0.03046364388625411, 'last_period_mean': 0.02794251225348015} 
+pod_r32 completed {'rms': 0.011426217355159857, 'max': 0.018531822179741038, 'last_period_mean': 0.016893096436698448} 
+bank_r32 completed {'rms': 0.011495329570955152, 'max': 0.018663074823876996, 'last_period_mean': 0.01700231512630793} 
+bank_p24 completed {'rms': 0.018488090512994604, 'max': 0.030558906161496504, 'last_period_mean': 0.028030879457293517} 
+bank_p16 completed {'rms': 0.023239075681031743, 'max': 0.031427668185214835, 'last_period_mean': 0.02950455848634862} 
+stream_r32 completed {'rms': 0.011316445657943975, 'max': 0.017993334150918052, 'last_period_mean': 0.01647828428340504} 
+stream_p24 completed {'rms': 0.01842840745934482, 'max': 0.030328298128789618, 'last_period_mean': 0.02784954064741628} 
+stream_p16 completed {'rms': 0.0234012168254098, 'max': 0.031646190609815696, 'last_period_mean': 0.029725936099530188} 
+drift results/DRIFT-rom-re115-dt0.0025.json {'bank_p16': (0.01529096026989353, 'completed'), 'bank_p24': (0.01529096026989353, 'completed'), 'bank_r32': (0.007645480134946765, 'completed'), 'pod_r16': (0.01529096026989353, 'completed'), 'pod_r24': (0.01529096026989353, 'completed'), 'pod_r32': (0.007645480134946765, 'completed'), 'stream_p16': (0.01529096026989353, 'completed'), 'stream_p24': (0.01529096026989353, 'completed'), 'stream_r32': (0.007645480134946765, 'completed')}
+pod_r16 completed {'rms': 0.029904517068075256, 'max': 0.06629114536934952, 'last_period_mean': 0.06217135213506915} 
+pod_r24 completed {'rms': 0.018372999961363216, 'max': 0.03341863131718309, 'last_period_mean': 0.032308182137786856} 
+pod_r32 completed {'rms': 0.0023488044628966255, 'max': 0.0036320609803924503, 'last_period_mean': 0.003462318134706821} 
+bank_r32 completed {'rms': 0.0023409703395566575, 'max': 0.0035363768843773304, 'last_period_mean': 0.003370993717937447} 
+bank_p24 completed {'rms': 0.01851775742488452, 'max': 0.03366639291375684, 'last_period_mean': 0.032556741328111254} 
+bank_p16 completed {'rms': 0.02981237819265713, 'max': 0.06607502770337433, 'last_period_mean': 0.06196040416244923} 
+stream_r32 completed {'rms': 0.0031697128318952986, 'max': 0.005364571744835164, 'last_period_mean': 0.005118280340263415} 
+stream_p24 completed {'rms': 0.018416242572512433, 'max': 0.033427254905390405, 'last_period_mean': 0.03231458429707203} 
+stream_p16 completed {'rms': 0.03056657853178291, 'max': 0.06788043106439001, 'last_period_mean': 0.06364826765905786} 
+drift results/DRIFT-rom-re95L-dt0.0003125.json {'bank_p16': (0.03752988929730552, 'completed'), 'bank_p24': (-0.02251793357838331, 'completed'), 'bank_r32': (0.0, 'completed'), 'pod_r16': (0.03752988929730552, 'completed'), 'pod_r24': (-0.02251793357838331, 'completed'), 'pod_r32': (0.0, 'completed'), 'stream_p16': (0.03752988929730552, 'completed'), 'stream_p24': (-0.02251793357838331, 'completed'), 'stream_r32': (0.0, 'completed')}
+pod_r16 completed {'rms': 0.03065567000944135, 'max': 0.06782123559806987, 'last_period_mean': 0.063640392813506} 
+pod_r24 completed {'rms': 0.017646654566020267, 'max': 0.03206413701778484, 'last_period_mean': 0.031001670056504085} 
+pod_r32 completed {'rms': 0.0020932373971552483, 'max': 0.002899402063087373, 'last_period_mean': 0.0027379810529261158} 
+bank_r32 completed {'rms': 0.002109821464888935, 'max': 0.002832153402841576, 'last_period_mean': 0.0026751686738721732} 
+bank_p24 completed {'rms': 0.017790792681521325, 'max': 0.03231091355674058, 'last_period_mean': 0.031249255929435144} 
+bank_p16 completed {'rms': 0.030562430795386543, 'max': 0.06760451973449488, 'last_period_mean': 0.06342882152274003} 
+stream_r32 completed {'rms': 0.002841275566170139, 'max': 0.00454186276523675, 'last_period_mean': 0.004320895041389446} 
+stream_p24 completed {'rms': 0.017688650237673884, 'max': 0.03206668661242557, 'last_period_mean': 0.0310023153924846} 
+stream_p16 completed {'rms': 0.03132099461632519, 'max': 0.06941766624534096, 'last_period_mean': 0.06512372328973272} 
+drift results/DRIFT-rom-re95L-dt0.000625.json {'bank_p16': (0.03752988929730552, 'completed'), 'bank_p24': (-0.02251793357838331, 'completed'), 'bank_r32': (0.0, 'completed'), 'pod_r16': (0.03752988929730552, 'completed'), 'pod_r24': (-0.02251793357838331, 'completed'), 'pod_r32': (0.0, 'completed'), 'stream_p16': (0.03752988929730552, 'completed'), 'stream_p24': (-0.02251793357838331, 'completed'), 'stream_r32': (0.0, 'completed')}

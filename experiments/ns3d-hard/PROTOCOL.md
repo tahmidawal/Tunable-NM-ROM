@@ -327,3 +327,10 @@ directories fresh_s0b, fresh_s1b; node pax106 excluded in the scheduler request 
 gate is not changed. Errors are deterministic and must reproduce; both the failed-gate and
 the rerun timings are reported, and if a rerun fails the gate again it is reported as
 failed with no further rerun.
+
+OUTCOME of the timing reruns (2026-11-12, 04:15 EST). fresh_s0b (job 7145062, pax105):
+status final, all gates passed at the first attempt; errors equal the first run to 8e-9.
+fresh_s1b (job 7145063, pax049): failed-gates again at 64^3 and 96^3 (3 attempts each),
+passed at 128^3 on attempt 2; errors equal the first run to 3e-9. The violator is again
+only the rk4 32^3 x5 solver sentinel (in-block 1.34-1.39x; ROM sentinels <= 1.085). No
+further rerun. Replicate 1 timings at 64^3/96^3 are reported as gate-failed measurements.

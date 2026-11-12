@@ -1,0 +1,103 @@
+{
+ "family": "B",
+ "mesh": 64,
+ "sources": [
+  "results/rdev_s0_64/romdev.json"
+ ],
+ "parent": "results/romdevB_64/frozen.json",
+ "arms": {
+  "r64_head": {
+   "kind": "head",
+   "rank": 64,
+   "k": 8,
+   "width": 256,
+   "M": 1168,
+   "steps": 20,
+   "iters": 3,
+   "dev_worst": 0.01395332916759692,
+   "dev_median": 0.003891435434073309
+  },
+  "r64_head_fast": {
+   "kind": "head",
+   "rank": 64,
+   "k": 8,
+   "width": 256,
+   "M": 292,
+   "steps": 10,
+   "iters": 3,
+   "dev_worst": 0.01526365205704997,
+   "dev_median": 0.00608544166758474
+  },
+  "r64_span": {
+   "kind": "span",
+   "rank": 64,
+   "M": 2336,
+   "steps": 20,
+   "iters": 3,
+   "dev_worst": 0.06910987463338934,
+   "dev_median": 0.026287253181908155
+  },
+  "r96_head": {
+   "kind": "head",
+   "rank": 96,
+   "k": 8,
+   "width": 256,
+   "M": 584,
+   "steps": 20,
+   "iters": 3,
+   "dev_worst": 0.008541547119365887,
+   "dev_median": 0.0018720678186051934
+  },
+  "r96_head_fast": {
+   "kind": "head",
+   "rank": 96,
+   "k": 8,
+   "width": 256,
+   "M": 584,
+   "steps": 10,
+   "iters": 3,
+   "dev_worst": 0.009517350070348492,
+   "dev_median": 0.003457691903720628
+  },
+  "r96_span": {
+   "kind": "span",
+   "rank": 96,
+   "M": 2336,
+   "steps": 10,
+   "iters": 3,
+   "dev_worst": 0.1058979098071474,
+   "dev_median": 0.06065635938456647
+  },
+  "r128_head": {
+   "kind": "head",
+   "rank": 128,
+   "k": 8,
+   "width": 256,
+   "M": 584,
+   "steps": 40,
+   "iters": 3,
+   "dev_worst": 0.0067140372821164465,
+   "dev_median": 0.0012035374823026468
+  },
+  "r128_head_fast": {
+   "kind": "head",
+   "rank": 128,
+   "k": 8,
+   "width": 256,
+   "M": 584,
+   "steps": 20,
+   "iters": 3,
+   "dev_worst": 0.0069748321042485285,
+   "dev_median": 0.001231724759253283
+  },
+  "r128_span": {
+   "kind": "span",
+   "rank": 128,
+   "M": 2336,
+   "steps": 10,
+   "iters": 3,
+   "dev_worst": 0.18191384740970645,
+   "dev_median": 0.08374898902249824
+  }
+ }
+}

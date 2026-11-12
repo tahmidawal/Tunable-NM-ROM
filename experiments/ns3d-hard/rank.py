@@ -83,6 +83,9 @@ def cmd_rdev(a):
     if a.frozen:
         frozen = json.loads((Path(a.frozen) / f"frozen_{n}.json").read_text())["arms"]
         need = sorted({(c["rank"], c["k"], c["width"]) for c in frozen.values() if c["kind"] == "head"})
+        if a.only_ranks:
+            frozen = {k: c for k, c in frozen.items() if c["rank"] in ints(a.only_ranks)}
+            need = sorted({(c["rank"], c["k"], c["width"]) for c in frozen.values() if c["kind"] == "head"})
         ranks = sorted({c["rank"] for c in frozen.values()})
     else:
         ranks = ints(a.ranks)
@@ -274,19 +277,27 @@ def cmd_cmp(a):
         raise RuntimeError("ladder shards do not cover the cohort")
     headdirs = dict(zip(meshes, a.heads.split(",")))
     pdirs = dict(zip(meshes, a.parent_romdev.split(","))) if a.parent_bank else {}
+    hidirs = dict(zip(meshes, a.heads_hi.split(","))) if a.bank_hi else {}
 
     def build(n, T):
         fz = json.loads((Path(a.frozen) / f"frozen_{n}.json").read_text())
         G, ops = P.load_rom(a.bank, n)
-        arms = RankArms(n, T, G, ops); del G, ops
+        lo = RankArms(n, T, G, ops); rlo = int(G.shape[1]); del G, ops
+        hi = None
+        if a.bank_hi:          # A6: ranks above the first bank's rank come from a second, larger bank
+            G, ops = P.load_rom(a.bank_hi, n)
+            hi = RankArms(n, T, G, ops); del G, ops
         calls = {}
         for name, cfg in fz["arms"].items():
             r = cfg["rank"]
             if r == 64 and a.parent_bank: continue
+            if r > rlo and hi is None:
+                raise RuntimeError(f"arm {name} needs rank {r} > bank rank {rlo} and no --bank-hi")
+            arms, hdir = (lo, headdirs[n]) if r <= rlo else (hi, hidirs[n])
             if cfg["kind"] == "head":
                 tag = (r, cfg["k"], cfg["width"])
                 if tag not in arms.heads:
-                    arms.add_head(tag, r, load_head(Path(headdirs[n]) / "output" / head_file(*tag)))
+                    arms.add_head(tag, r, load_head(Path(hdir) / "output" / head_file(*tag)))
                 calls[name] = (arms.head(tag, cfg["M"], cfg["steps"], cfg["iters"]), cfg)
             else:
                 calls[name] = (arms.span(r, cfg["M"], cfg["steps"], cfg["iters"]), cfg)
@@ -328,7 +339,7 @@ def main():
     p.add_argument("--head-steps", type=int, default=HEAD["steps"]); p.add_argument("--head-seed", type=int, default=HEAD["seed"])
     p.add_argument("--modes", default="584,1168,2336"); p.add_argument("--grid", default="10:3,20:3,40:3,80:3,20:5,40:5")
     p.add_argument("--no-span", action="store_true"); p.add_argument("--frozen", default=None)
-    p.add_argument("--heads-from", default=None)
+    p.add_argument("--heads-from", default=None); p.add_argument("--only-ranks", default=None)
     p = sub.add_parser("ladder"); common(p); p.add_argument("--cohort", required=True)
     p.add_argument("--start", type=int, default=0); p.add_argument("--count", type=int, default=0)
     p.add_argument("--blocks", required=True)
@@ -340,6 +351,7 @@ def main():
     p.add_argument("--timing-cases", default="0,1,2"); p.add_argument("--shortlist", type=int, default=4)
     p.add_argument("--gate", type=float, default=1.10); p.add_argument("--gate-block", type=float, default=1.25)
     p.add_argument("--sentinels", default="r64_head,r128_head")
+    p.add_argument("--bank-hi", default=None); p.add_argument("--heads-hi", default=None)
     a = ap.parse_args()
     log(f"backend={jax.default_backend()} devices={jax.devices()} args={vars(a)}")
     dict(rdev=cmd_rdev, ladder=cmd_ladder, cmp=cmd_cmp)[a.cmd](a)

@@ -261,3 +261,30 @@ independent replicates, (C) one confirmation on a fresh cohort that nothing has 
    code, same ladder files). Rerun only for a technical failure with identical code/inputs.
 7. Reported whatever happens: dev and fresh tables per mesh and arm, replicate spread,
    failures, job ids, offline cost from the scheduler's accounting.
+
+A6 (2026-11-11, 19:45 EST; written before any rank-192 bank, head, floor or rollout exists).
+Known (replicate 0, dev cohort only; results/rdev_s0_{64,96,128}/romdev.json, jobs 7141854,
+7141858, 7141859): dev projection floors (worst) 0.79-0.81 % at rank 96 and 0.61-0.62 % at
+rank 128; head floors within 1.08x of them (contingency of A5.1 not triggered at any mesh or
+rank); selected head rollouts 0.85-0.87 % (rank 96) and 0.66-0.71 % (rank 128), i.e. at the
+bank floor. The A5.3 goal "clearly below 0.7 %" therefore cannot be met by any setting at
+rank <= 128: the limit is the bank, not the head, the step or the test count. The linear
+span control does not roll out stably at these ranks (best dev worst 10.6-18.5 %, growing
+with the step count); it stays in the tables as the pre-registered control. No comparison
+against the solver ladder has been run yet; nothing on the fresh cohort has been read.
+The A5 selections for ranks 64/96/128 (frozen_rank/frozen_{64,96,128}.json as produced by
+freeze_rank.py from the three files above) stand and are not revisited.
+Added arm, same rules: rank 192.
+1. Per replicate a rank-192 centred POD bank from the same 128 bank trajectories (unchanged
+   bank stage, M_max = 2336), head data against it, heads k in {8, 16} (width 256, 100k
+   steps), rank-matched span control, the A5.1 contingency, the A5.2 dev grid and selection
+   rule, all unchanged. Arms r192_head, r192_head_fast (if different), r192_span are added
+   to the frozen files; ranks 96/128 keep using the rank-128 bank and their trained heads.
+2. Replicates 1, 2: rank-192 bank and heads at the frozen (k, width, M, steps, sweeps), no
+   selection, as A5.5. Fresh cohort: r192 arms join the single compare job of each
+   replicate (A5.6); sentinels unchanged.
+3. Rank 192 is reported whatever its outcome (including a failure of the bank stage, an
+   unstable rollout, or a solve-only ratio below 1). No further rank is added after this.
+4. A dev comparison of the A5 arms against the dev ladder may run before the rank-192
+   selection (it performs no selection); the dev comparison handed to the fresh-cohort jobs
+   as the A4 timing reference is the one that contains all frozen arms.

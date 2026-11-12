@@ -343,10 +343,41 @@ def cmd_finalise(a):
     finalise(p, meta, a, out, rep); rep["status"] = "final"; jdump(out / "coordbank.json", rep); log("DONE")
 
 
+def build_tensor_blocked(G, n, ids, block=32):
+    """ns3d_rom.build_tensor with the bank kept on the host and the j index processed in
+    blocks (same formula; needed for rank 96 at 128^3, where the one-shot version runs out
+    of GPU memory). pipeline.build_ops validates the result against a dense projection."""
+    import ns3d_rom as R
+    F = R.F; rank = G.shape[1]; geom = F.geometry(n)
+    indices = jnp.asarray(np.asarray([x["wave"] for x in ids], dtype=int) % n)
+    pol = jnp.asarray([x["polarization"] for x in ids]); cosine = jnp.asarray([x["kind"] == "cos" for x in ids])
+    curl = jax.jit(lambda u: F.ifft(1j * F.cross(geom[0], F.fft(u))))
+
+    @jax.jit
+    def column(fields, one_omega):
+        spectra = F.fft(jax.vmap(lambda u: F.cross(u, one_omega))(fields))
+        sel = spectra[:, :, indices[:, 0], indices[:, 1], indices[:, 2]]
+        v = jnp.einsum("rcm,mc->rm", sel, pol)
+        return (np.sqrt(2 * n ** 3) * jnp.where(cosine[None, :], v.real, -v.imag)).T
+
+    out = np.empty((len(ids), rank, rank))
+    for j0 in range(0, rank, block):
+        fields = jnp.asarray(np.ascontiguousarray(G[:, j0:j0 + block].T).reshape(-1, 3, n, n, n))
+        for k in range(rank):
+            om = curl(jnp.asarray(np.ascontiguousarray(G[:, k]).reshape(3, n, n, n)))
+            out[:, j0:j0 + block, k] = np.asarray(column(fields, om))
+        del fields
+    return out
+
+
 def cmd_ops(a):
     """Weak operators for a finalised bank; G files are copied so that this directory is a
     complete bank directory for pipeline.load_rom."""
     out = Path(a.out); out.mkdir(parents=True, exist_ok=True); rep = dict(bank=a.bank, modes=a.modes, meshes={})
+    if a.blocked:
+        import ns3d_rom as R
+        R.build_tensor = lambda G, n, ids, reverse=False: build_tensor_blocked(np.asarray(G), n, ids)
+        rep["tensor"] = "blocked"
     for n in P.ints(a.meshes):
         t0 = time.time(); G = np.load(Path(a.bank) / "output" / f"G_{n}.npy")
         np.save(out / f"G_{n}.npy", G)
@@ -397,6 +428,7 @@ def main():
     q = sub.add_parser("finalise"); fin(q); q.add_argument("--params", required=True)
     q = sub.add_parser("ops"); q.add_argument("--out", required=True); q.add_argument("--bank", required=True)
     q.add_argument("--meshes", default="64,96,128"); q.add_argument("--modes", type=int, default=2336)
+    q.add_argument("--blocked", action="store_true")
     q = sub.add_parser("selfcheck")
     a = ap.parse_args()
     log(f"backend={jax.default_backend()} args={vars(a)}")

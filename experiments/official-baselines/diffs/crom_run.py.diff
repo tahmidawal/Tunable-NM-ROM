@@ -1,0 +1,29 @@
+--- /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-12-official-baselines/experiments/official-baselines/ext/CROM_offline_training/run.py	2026-11-12 18:39:14.756936386 -0500
++++ run_ours.py	2026-11-12 18:49:21.449811830 -0500
+@@ -6,7 +6,7 @@
+ import os
+ import copy
+ 
+-from simulation import SimulationDataModule
++from ours_data import OursDataModule as SimulationDataModule   # ADAPTER: our pool instead of per-frame h5 files
+ from cromnet import CROMnet
+ from callbacks import *
+ 
+@@ -144,7 +144,7 @@
+ 
+             data_path = args.d
+ 
+-            dm = SimulationDataModule(data_path, args.batch_size, num_workers=64)
++            dm = SimulationDataModule(data_path, args.batch_size, num_workers=8)   # ADAPTER: 8 CPUs per job
+             data_format, example_input_array = dm.get_dataFormat()
+             preprop_params = dm.get_dataParams()
+ 
+@@ -168,7 +168,7 @@
+ 
+             net = CROMnet.load_from_checkpoint(weight_path, loaded_from=weight_path)
+ 
+-            dm = SimulationDataModule(net.data_format['data_path'], net.batch_size, num_workers=64)
++            dm = SimulationDataModule(net.data_format['data_path'], net.batch_size, num_workers=8)   # ADAPTER
+ 
+         else:
+             exit('Enter weight path')

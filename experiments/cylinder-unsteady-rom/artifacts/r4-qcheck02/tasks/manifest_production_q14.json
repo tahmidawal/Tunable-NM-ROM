@@ -1,0 +1,8 @@
+{"mesh_path": "inputs/admitted_mesh.vol.bin", "mesh_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+ "probe_points": [[0.15, 0.2], [0.25, 0.2]], "center": [0.2, 0.2], "velocity_order": 4, "quadrature_order": 14,
+ "purpose": "G5 production (DESIGN-G5 3, G5-A3): train 90/100/110, development 95, held-out 105 (projected only with --allow-heldout in R5)",
+ "cases": [{"name": "re90", "split": "train", "run_dir": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1-record-re90/results/record_re90_p4", "stage": "record", "Re": 90},
+           {"name": "re100", "split": "train", "run_dir": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1-record-re100/results/record_re100_p4", "stage": "record", "Re": 100},
+           {"name": "re110", "split": "train", "run_dir": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1-record-re110/results/record_re110_p4", "stage": "record", "Re": 110},
+           {"name": "re95", "split": "dev", "run_dir": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1-record-re95/results/record_re95_p4", "stage": "record", "Re": 95},
+           {"name": "re105", "split": "heldout", "run_dir": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1-record-re105/results/record_re105_p4", "stage": "record", "Re": 105}]}

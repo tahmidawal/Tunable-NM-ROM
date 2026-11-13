@@ -1,0 +1,457 @@
+{
+  "export": "results/export",
+  "export_manifest_sha256": "d4b46a3d305ffe9bc82f3d6685b7668d8f57dea13747d1aa38d61795d15d6e39",
+  "trained_bank_sha256": "39942eda6f0b0b39155bd8803a4aa17d6ac6964c8048e542f2e61e2f857b52e7",
+  "case": "re115",
+  "Re": 115,
+  "nu": 0.0008695652173913044,
+  "dt": 0.000625,
+  "steps": 2720,
+  "reference_cycles": {
+    "CD_max": 3.204365210537531,
+    "CL_max": 1.203271417925443,
+    "CL_min": -1.2407528339203904,
+    "St": 0.30581920539962404,
+    "dp_at_t0_plus_half_period": 2.523656349482539,
+    "period": 0.3269905821310637,
+    "cycles": 4
+  },
+  "targets": {
+    "e_u_rms": 0.01,
+    "e_u_max": 0.03,
+    "e_p_rms": 0.02,
+    "St_rel": 0.01,
+    "CD_max_rel": 0.02,
+    "CL_max_abs": 0.02
+  },
+  "arms": {
+    "stream_r32": {
+      "spec": {
+        "name": "stream_r32",
+        "kind": "bank",
+        "r": 32,
+        "key": "trained"
+      },
+      "floor": {
+        "velocity_basis_only": {
+          "median": 0.0034508091520478157,
+          "max": 0.0037162692741690966
+        },
+        "velocity_with_supremizers": {
+          "median": 0.003448778568399764,
+          "max": 0.003715679838994176
+        },
+        "pressure": {
+          "median": 0.0008738884229151548,
+          "max": 0.001082045062688906
+        }
+      },
+      "velocity_dimension": 64,
+      "pressure_dimension": 32,
+      "total_unknowns": 96,
+      "retained": 64,
+      "raw": 64,
+      "orthonormality_defect": 3.885780586188048e-15,
+      "rollout_seconds": 6.742452612146735,
+      "initial": {
+        "continuity_defect": 0.0028975061723807366,
+        "continuity_scale": 5.127039904436663e-15,
+        "characteristic_scaled_defect": 0.0003064221435360143,
+        "initial_acceleration_norm": 6.883383772945553,
+        "relative_continuity_defect": 565142114433.9819,
+        "flag": "large_initial_defect_reported"
+      },
+      "newton_iterations": {
+        "median": 2.0,
+        "max": 8
+      },
+      "force": {
+        "CD_maxabs_rel": 0.00882724882416184,
+        "CL_maxabs": 0.042285072510357846
+      },
+      "cycles": {
+        "CD_max": 3.196818801010196,
+        "CL_max": 1.1874860099095044,
+        "CL_min": -1.2267429852885967,
+        "St": 0.30565782134936675,
+        "dp_at_t0_plus_half_period": 2.517411029862583,
+        "period": 0.327163302117107,
+        "cycles": 4
+      },
+      "cycle_errors": {
+        "St_rel": 0.0005277106454004388,
+        "CD_max_rel": 0.0023550404000514348,
+        "CL_max_abs": 0.01578540801593853,
+        "dp_rel": 0.002474710798574551
+      },
+      "e_u": {
+        "rms": 0.00608143279816871,
+        "max": 0.0077839354235755675,
+        "last_period_mean": 0.007353054250013251
+      },
+      "e_p": {
+        "rms": 0.002845992803178495,
+        "max": 0.004520077905348679,
+        "last_period_mean": 0.003980383178087048,
+        "rms_excluding_t0_supplemental": 0.0028476620677438296
+      },
+      "energy_balance_residual": {
+        "median": 0.0012236025242929136,
+        "max": 0.0031890545428133418,
+        "count": 170
+      },
+      "divergence": {
+        "median": 0.00019271312033823721,
+        "max": 0.0003697768373629339
+      },
+      "mass": {
+        "max": 1.758486491678321e-05
+      },
+      "phase_aligned": {
+        "lag_saves": 0,
+        "lag_seconds": 0.0,
+        "lift_rms_at_lag": 0.02499637338025662,
+        "e_u_rms": 0.0068726149846428455,
+        "e_p_rms": 0.003582116364511491
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.00608143279816871,
+          "target": 0.01,
+          "met": true,
+          "reference_uncertainty": 0.0004889610975298165,
+          "resolved": true,
+          "classification": "resolved under the linear-propagation estimate"
+        },
+        "e_u_max": {
+          "value": 0.0077839354235755675,
+          "target": 0.03,
+          "met": true,
+          "reference_uncertainty": 0.0004889610975298165,
+          "resolved": true,
+          "classification": "resolved under the linear-propagation estimate"
+        },
+        "e_p_rms": {
+          "value": 0.002845992803178495,
+          "target": 0.02,
+          "met": true,
+          "reference_uncertainty": 0.00043671175405816015,
+          "resolved": true,
+          "classification": "resolved under the linear-propagation estimate"
+        },
+        "St_rel": {
+          "value": 0.0005277106454004388,
+          "target": 0.01,
+          "met": true,
+          "reference_uncertainty": 1.6120791840923768e-05,
+          "resolved": true,
+          "classification": "resolved under the linear-propagation estimate"
+        },
+        "CD_max_rel": {
+          "value": 0.0023550404000514348,
+          "target": 0.02,
+          "met": true,
+          "reference_uncertainty": 1.3937901467244487e-05,
+          "resolved": true,
+          "classification": "resolved under the linear-propagation estimate"
+        },
+        "CL_max_abs": {
+          "value": 0.01578540801593853,
+          "target": 0.02,
+          "met": true,
+          "reference_uncertainty": 0.00010747433917712712,
+          "resolved": true,
+          "classification": "resolved under the linear-propagation estimate"
+        }
+      },
+      "status": "completed"
+    },
+    "stream_p24": {
+      "spec": {
+        "name": "stream_p24",
+        "kind": "bank",
+        "r": 24,
+        "key": "trained"
+      },
+      "floor": {
+        "velocity_basis_only": {
+          "median": 0.006396806761251798,
+          "max": 0.006920768157672444
+        },
+        "velocity_with_supremizers": {
+          "median": 0.00637971544079031,
+          "max": 0.00691740651854586
+        },
+        "pressure": {
+          "median": 0.0022506106434647057,
+          "max": 0.002873808489961588
+        }
+      },
+      "velocity_dimension": 48,
+      "pressure_dimension": 24,
+      "total_unknowns": 72,
+      "retained": 48,
+      "raw": 48,
+      "orthonormality_defect": 3.774758283725532e-15,
+      "rollout_seconds": 3.2776669459417462,
+      "initial": {
+        "continuity_defect": 0.011924144502089545,
+        "continuity_scale": 4.00985787692291e-15,
+        "characteristic_scaled_defect": 0.0012610229972905612,
+        "initial_acceleration_norm": 6.883214898993878,
+        "relative_continuity_defect": 2973707514850.8535,
+        "flag": "large_initial_defect_reported"
+      },
+      "newton_iterations": {
+        "median": 2.0,
+        "max": 8
+      },
+      "force": {
+        "CD_maxabs_rel": 0.022104535747901576,
+        "CL_maxabs": 0.13321749866008514
+      },
+      "cycles": {
+        "CD_max": 3.196892018156425,
+        "CL_max": 1.169885443808624,
+        "CL_min": -1.2136017099613705,
+        "St": 0.304974937978038,
+        "dp_at_t0_plus_half_period": 2.5177682529677345,
+        "period": 0.3278960071138055,
+        "cycles": 4
+      },
+      "cycle_errors": {
+        "St_rel": 0.0027606749565738404,
+        "CD_max_rel": 0.0023321912110800236,
+        "CL_max_abs": 0.033385974116818984,
+        "dp_rel": 0.0023331609773302076
+      },
+      "e_u": {
+        "rms": 0.013714922788815975,
+        "max": 0.021760131050070162,
+        "last_period_mean": 0.020084352708629745
+      },
+      "e_p": {
+        "rms": 0.00716395314369463,
+        "max": 0.01176877704334964,
+        "last_period_mean": 0.010455693720282084,
+        "rms_excluding_t0_supplemental": 0.007167661951830697
+      },
+      "energy_balance_residual": {
+        "median": 0.0014551320472195855,
+        "max": 0.003270731848708044,
+        "count": 170
+      },
+      "divergence": {
+        "median": 0.00019271312033823724,
+        "max": 0.0013369720365116753
+      },
+      "mass": {
+        "max": 0.0007035554016948259
+      },
+      "phase_aligned": {
+        "lag_saves": -2,
+        "lag_seconds": -0.0049999999999954525,
+        "lift_rms_at_lag": 0.03188197547414631,
+        "e_u_rms": 0.01872737212502469,
+        "e_p_rms": 0.009660909096410134
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.013714922788815975,
+          "target": 0.01,
+          "met": false,
+          "reference_uncertainty": 0.0004889610975298165,
+          "resolved": true,
+          "classification": "resolved under the linear-propagation estimate"
+        },
+        "e_u_max": {
+          "value": 0.021760131050070162,
+          "target": 0.03,
+          "met": true,
+          "reference_uncertainty": 0.0004889610975298165,
+          "resolved": true,
+          "classification": "resolved under the linear-propagation estimate"
+        },
+        "e_p_rms": {
+          "value": 0.00716395314369463,
+          "target": 0.02,
+          "met": true,
+          "reference_uncertainty": 0.00043671175405816015,
+          "resolved": true,
+          "classification": "resolved under the linear-propagation estimate"
+        },
+        "St_rel": {
+          "value": 0.0027606749565738404,
+          "target": 0.01,
+          "met": true,
+          "reference_uncertainty": 1.6120791840923768e-05,
+          "resolved": true,
+          "classification": "resolved under the linear-propagation estimate"
+        },
+        "CD_max_rel": {
+          "value": 0.0023321912110800236,
+          "target": 0.02,
+          "met": true,
+          "reference_uncertainty": 1.3937901467244487e-05,
+          "resolved": true,
+          "classification": "resolved under the linear-propagation estimate"
+        },
+        "CL_max_abs": {
+          "value": 0.033385974116818984,
+          "target": 0.02,
+          "met": false,
+          "reference_uncertainty": 0.00010747433917712712,
+          "resolved": true,
+          "classification": "resolved under the linear-propagation estimate"
+        }
+      },
+      "status": "completed"
+    },
+    "stream_p16": {
+      "spec": {
+        "name": "stream_p16",
+        "kind": "bank",
+        "r": 16,
+        "key": "trained"
+      },
+      "floor": {
+        "velocity_basis_only": {
+          "median": 0.010561398512221903,
+          "max": 0.0126191314798558
+        },
+        "velocity_with_supremizers": {
+          "median": 0.010557284664624076,
+          "max": 0.012618244298845447
+        },
+        "pressure": {
+          "median": 0.004000429888355908,
+          "max": 0.0045419561796401576
+        }
+      },
+      "velocity_dimension": 32,
+      "pressure_dimension": 16,
+      "total_unknowns": 48,
+      "retained": 32,
+      "raw": 32,
+      "orthonormality_defect": 3.3306690738754696e-15,
+      "rollout_seconds": 1.560022964142263,
+      "initial": {
+        "continuity_defect": 0.00600030960158017,
+        "continuity_scale": 3.740385274502674e-15,
+        "characteristic_scaled_defect": 0.0006345552418565565,
+        "initial_acceleration_norm": 6.825816372906334,
+        "relative_continuity_defect": 1604195600512.8318,
+        "flag": "large_initial_defect_reported"
+      },
+      "newton_iterations": {
+        "median": 2.0,
+        "max": 8
+      },
+      "force": {
+        "CD_maxabs_rel": 0.016996099319577736,
+        "CL_maxabs": 0.06965831270739631
+      },
+      "cycles": {
+        "CD_max": 3.2114290850203284,
+        "CL_max": 1.1851871218296766,
+        "CL_min": -1.231589396050444,
+        "St": 0.305314610821923,
+        "dp_at_t0_plus_half_period": 2.5334031644105797,
+        "period": 0.3275316672337478,
+        "cycles": 4
+      },
+      "cycle_errors": {
+        "St_rel": 0.0016499767470183981,
+        "CD_max_rel": 0.002204453618322852,
+        "CL_max_abs": 0.01808429609576634,
+        "dp_rel": 0.003862179939847748
+      },
+      "e_u": {
+        "rms": 0.020276749375956225,
+        "max": 0.024862475802120983,
+        "last_period_mean": 0.02358678143422447
+      },
+      "e_p": {
+        "rms": 0.008526331498965343,
+        "max": 0.011253436251435314,
+        "last_period_mean": 0.010027066901066778,
+        "rms_excluding_t0_supplemental": 0.008530579722812827
+      },
+      "energy_balance_residual": {
+        "median": 0.0028262760757804765,
+        "max": 0.009530797729350527,
+        "count": 170
+      },
+      "divergence": {
+        "median": 0.00019271312033823724,
+        "max": 0.0006949237061827837
+      },
+      "mass": {
+        "max": 0.0006466286697202929
+      },
+      "phase_aligned": {
+        "lag_saves": -1,
+        "lag_seconds": -0.0024999999999977263,
+        "lift_rms_at_lag": 0.011119317337262881,
+        "e_u_rms": 0.01958825869977008,
+        "e_p_rms": 0.007391185239827092
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.020276749375956225,
+          "target": 0.01,
+          "met": false,
+          "reference_uncertainty": 0.0004889610975298165,
+          "resolved": true,
+          "classification": "resolved under the linear-propagation estimate"
+        },
+        "e_u_max": {
+          "value": 0.024862475802120983,
+          "target": 0.03,
+          "met": true,
+          "reference_uncertainty": 0.0004889610975298165,
+          "resolved": true,
+          "classification": "resolved under the linear-propagation estimate"
+        },
+        "e_p_rms": {
+          "value": 0.008526331498965343,
+          "target": 0.02,
+          "met": true,
+          "reference_uncertainty": 0.00043671175405816015,
+          "resolved": true,
+          "classification": "resolved under the linear-propagation estimate"
+        },
+        "St_rel": {
+          "value": 0.0016499767470183981,
+          "target": 0.01,
+          "met": true,
+          "reference_uncertainty": 1.6120791840923768e-05,
+          "resolved": true,
+          "classification": "resolved under the linear-propagation estimate"
+        },
+        "CD_max_rel": {
+          "value": 0.002204453618322852,
+          "target": 0.02,
+          "met": true,
+          "reference_uncertainty": 1.3937901467244487e-05,
+          "resolved": true,
+          "classification": "resolved under the linear-propagation estimate"
+        },
+        "CL_max_abs": {
+          "value": 0.01808429609576634,
+          "target": 0.02,
+          "met": true,
+          "reference_uncertainty": 0.00010747433917712712,
+          "resolved": true,
+          "classification": "resolved under the linear-propagation estimate"
+        }
+      },
+      "status": "completed"
+    }
+  },
+  "peak_rss_bytes": 20422594560,
+  "uncertainty_source": {
+    "file": "inputs/R1DE.json",
+    "kind": "heuristic estimate (linear propagation), not a bound"
+  }
+}

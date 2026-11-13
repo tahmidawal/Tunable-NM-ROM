@@ -1,0 +1,124 @@
+rom_export.py: OK
+rom_core.py: OK
+rom_r2.py: OK
+rom_r4.py: OK
+cycles.py: OK
+install_deps.py: OK
+vendor/geometry.py: OK
+vendor/accuracy_v2/__init__.py: OK
+vendor/accuracy_v2/spatial_bank.py: OK
+vendor/accuracy_v2/fast_spatial_bank.py: OK
+vendor/accuracy_v2/residual_head_bank.py: OK
+vendor/dependencies.py: OK
+vendor/DEPENDENCIES.json: OK
+inputs/run09_bank.npz: OK
+inputs/admitted_mesh.vol.bin: OK
+cluster/run.sh: OK
+tasks/smoke_export.sh: OK
+tasks/manifest_smoke.json: OK
+6484ea9c667009a75d0457fe062be3412055c807
+jax_backend=gpu
+jax_x64=True
+cpu_model=Intel(R) Xeon(R) Gold 6448Y
+name, uuid
+NVIDIA L40S, GPU-61739d8b-6642-d2ee-2950-8de03e832755
+pax020
+{"wheel": "ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl", "sha256": "4e02591fe98a1068b4f7ca094aec36844da1f6ddf826088b060e5a8e7780efff"}
+{"wheel": "netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", "sha256": "d8118835e2aec5739ee5755d61e866505313d92e3d4c6b947be7835f9fbf5122"}
+{"wheel": "netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", "sha256": "db71d77f56f79c0768489e76dde8febdeb25b95777986587a5d09575fa112f94"}
+{"wheel": "ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl", "sha256": "8d3266615c7b099e78c5891a41971c6bffe5d6014d13d736cef0cc119d1ca141"}
+Processing ./wheels/ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+Processing ./wheels/ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl
+Installing collected packages: ngsolve-openblas, ngsolve, netgen-occt, netgen-mesher
+
+Successfully installed netgen-mesher-6.2.2608 netgen-occt-7.8.1 ngsolve-6.2.2608 ngsolve-openblas-0.3.33
+{"prefix_layout_verified": true, "occt_libraries": 47, "site_packages": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rom-smoke02/deps/lib/python3.13/site-packages"}
+ngsolve 6.2.2608 jax gpu
+{
+  "started": 1793756834.8976684,
+  "manifest_sha256": "269da52ffce9e1107f79ecfbf25f3d412f1453ccbc905c61be69abd46bdd08da",
+  "finished": 1793756910.677894,
+  "elapsed_seconds": 75.78022575378418,
+  "peak_rss_bytes": 3719573504,
+  "quadrature_points": 761508,
+  "files": {
+{
+ "frozen_bank_r4": [
+  {
+   "median": 0.11386769988644176,
+   "max": 3.2581846153134455,
+   "min": 0.08232583054939707,
+   "count": 81
+  },
+  false
+ ],
+ "pod_r2": [
+  {
+   "median": 0.019681544764032492,
+   "max": 0.0728025479558844,
+   "min": 0.004700460598956807,
+   "count": 81
+  },
+  false
+ ],
+ "pod_r4": [
+  {
+   "median": 0.0060601840343389324,
+   "max": 0.02592119845056607,
+   "min": 0.0023978445536456403,
+   "count": 81
+  },
+  false
+ ],
+ "pod_r8": [
+  {
+   "median": 0.0009760925359328816,
+   "max": 0.00629972644566643,
+   "min": 0.0003718151875003497,
+   "count": 81
+  },
+  true
+ ],
+ "pod_r12": [
+  {
+   "median": 0.0001930867795514013,
+   "max": 0.0013919597572008666,
+   "min": 9.324957500391482e-05,
+   "count": 81
+  },
+  true
+ ],
+ "pod_r16": [
+  {
+   "median": 4.296276458074615e-05,
+   "max": 0.00033133643769067895,
+   "min": 3.2491933877837174e-05,
+   "count": 81
+  },
+  true
+ ],
+ "pod_r20": [
+  {
+   "median": 3.03228293192614e-05,
+   "max": 6.798617818225498e-05,
+   "min": 1.6438583993928778e-05,
+   "count": 81
+  },
+  true
+ ],
+ "pod_r24": [
+  {
+   "median": 2.8746324587601353e-05,
+   "max": 4.186154737190958e-05,
+   "min": 1.4185397144128773e-05,
+   "count": 81
+  },
+  true
+ ]
+}
+R3 required: True rank 8
+pod_r8 completed {'rms': 0.7541962022980402, 'max': 0.802771112793099, 'last_period_mean': 0.8018161831831365} 
+frozen_bank_r4 completed {'rms': 0.7128120212452592, 'max': 3.169336598141984, 'last_period_mean': 0.1240678626296986} 
+task_completed

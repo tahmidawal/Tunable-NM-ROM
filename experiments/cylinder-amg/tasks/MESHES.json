@@ -1,0 +1,44 @@
+{
+  "m0": {
+    "path": "inputs/admitted_mesh.vol.bin",
+    "sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+    "elements": 21153,
+    "vertices": 10895,
+    "curve_order": 4,
+    "boundaries": [
+      "inlet",
+      "obstacle",
+      "outlet",
+      "wall_bottom",
+      "wall_top"
+    ],
+    "unknowns": {
+      "p2": 96781,
+      "p3": 235231
+    },
+    "area": 0.8941460183660477,
+    "maxh": 0.01,
+    "obstacle_h": 0.0025
+  },
+  "c4": {
+    "path": "/cluster/tufts/paralab/tawal01/cyl-amg-20261113/meshes/c4.vol.bin",
+    "sha256": "bd2f8d421b133886c46465ebd8cd76d725ed1b1febbeafdda66c062beb874c0e",
+    "elements": 1480,
+    "vertices": 819,
+    "curve_order": 4,
+    "boundaries": [
+      "inlet",
+      "obstacle",
+      "outlet",
+      "wall_bottom",
+      "wall_top"
+    ],
+    "unknowns": {
+      "p2": 7055,
+      "p3": 16912
+    },
+    "area": 0.8941460183458493,
+    "maxh": 0.04,
+    "obstacle_h": 0.01
+  }
+}

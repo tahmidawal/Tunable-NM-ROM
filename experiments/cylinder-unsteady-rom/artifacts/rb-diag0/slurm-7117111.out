@@ -1,0 +1,100 @@
+inputs/EXPORT-SHA256SUMS: OK
+inputs/R3-SHA256SUMS: OK
+inputs/R1DE.json: OK
+rom_frames.py: OK
+rom_export.py: OK
+rom_project.py: OK
+rom_qcheck.py: OK
+rom_r5.py: OK
+vendor/ref/transient.py: OK
+vendor/ref/cycles.py: OK
+vendor/ref/vendor/scalars.py: OK
+vendor/ref/vendor/oriented_normals.py: OK
+rom_core.py: OK
+rom_r2.py: OK
+rom_r4.py: OK
+bank_train.py: OK
+bank_train2.py: OK
+bank_diag.py: OK
+cycles.py: OK
+install_deps.py: OK
+vendor/geometry.py: OK
+vendor/accuracy_v2/__init__.py: OK
+vendor/accuracy_v2/spatial_bank.py: OK
+vendor/accuracy_v2/fast_spatial_bank.py: OK
+vendor/accuracy_v2/residual_head_bank.py: OK
+vendor/dependencies.py: OK
+vendor/DEPENDENCIES.json: OK
+inputs/run09_bank.npz: OK
+inputs/admitted_mesh.vol.bin: OK
+cluster/run.sh: OK
+tasks/rb_diag0.sh: OK
+tasks/rb_common.sh: OK
+tasks/manifest_production.json: OK
+872139e39abde934e940eb04d5b4f6fc3370aa38
+jax_backend=gpu
+jax_x64=True
+cpu_model=Intel(R) Xeon(R) Gold 6448Y
+name, uuid
+NVIDIA L40S, GPU-086ad0ab-cb4f-981c-958e-2c05f0b4e341
+pax023
+{"wheel": "ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl", "sha256": "4e02591fe98a1068b4f7ca094aec36844da1f6ddf826088b060e5a8e7780efff"}
+{"wheel": "netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", "sha256": "d8118835e2aec5739ee5755d61e866505313d92e3d4c6b947be7835f9fbf5122"}
+{"wheel": "netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", "sha256": "db71d77f56f79c0768489e76dde8febdeb25b95777986587a5d09575fa112f94"}
+{"wheel": "ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl", "sha256": "8d3266615c7b099e78c5891a41971c6bffe5d6014d13d736cef0cc119d1ca141"}
+Processing ./wheels/ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+Processing ./wheels/ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl
+Installing collected packages: ngsolve-openblas, ngsolve, netgen-occt, netgen-mesher
+
+Successfully installed netgen-mesher-6.2.2608 netgen-occt-7.8.1 ngsolve-6.2.2608 ngsolve-openblas-0.3.33
+{"prefix_layout_verified": true, "occt_libraries": 47, "site_packages": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-diag0/deps/lib/python3.13/site-packages"}
+ngsolve 6.2.2608 jax gpu
+/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r3-train01/results/proj/proj_re95_trained.npz: OK
+/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r3-train01/results/train/trained_bank_eval.npz: OK
+/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r3-train01/results/train/trained_bank_params.npz: OK
+{
+ "static_span_miss": 0.0007442611942281305,
+ "dev": {
+  "bank": {
+   "floor_basis_only_median": 0.008326854083971517,
+   "floor_with_supremizers_median": 0.008233540950678606,
+   "floor_with_supremizers_rms": 0.008200401515947463,
+   "rollout_e_u_rms": 0.014491282137444404,
+   "rollout_e_u_max": 0.021213610735649688,
+   "rollout_divergence_median": 0.042339424132457656,
+   "e_u_at_quarters": [
+    0.007687668394356389,
+    0.01221610988705704,
+    0.013374483601308905,
+    0.016455058136634518,
+    0.021213610735649688
+   ],
+   "frames_relative_error": {
+    "projection": 0.00826667879003123,
+    "rollout": 0.01511395573491703
+   }
+  },
+  "pod": {
+   "floor_basis_only_median": 0.0048299466164865,
+   "floor_with_supremizers_median": 0.004828853262398542,
+   "floor_with_supremizers_rms": 0.004850899834154659,
+   "rollout_e_u_rms": 0.009487389729523654,
+   "rollout_e_u_max": 0.011885670536855302,
+   "rollout_divergence_median": 0.0002419806798928834,
+   "e_u_at_quarters": [
+    0.00512229530329532,
+    0.008863860412957732,
+    0.009521335791882109,
+    0.0102995527841545,
+    0.011885670536855302
+   ],
+   "frames_relative_error": {
+    "projection": 0.004854696798669385,
+    "rollout": 0.009747265837339194
+   }
+  }
+ }
+}
+task_completed

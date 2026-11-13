@@ -1,0 +1,198 @@
+{
+  "case": "dev_smoke",
+  "rule": {
+    "median_max": 0.005,
+    "max_max": 0.01,
+    "metric": "velocity_basis_only"
+  },
+  "arms": {
+    "frozen_bank_r4": {
+      "velocity_basis_only": {
+        "median": 0.11386769988644176,
+        "max": 3.2581846153134455,
+        "min": 0.08232583054939707,
+        "count": 81
+      },
+      "velocity_with_supremizers": {
+        "median": 0.06430266651471747,
+        "max": 1.3652233699484422,
+        "min": 0.050691182680564585,
+        "count": 81
+      },
+      "pressure": {
+        "median": 0.006233442322084377,
+        "max": 0.01460944133406934,
+        "min": 0.001276798969971835,
+        "count": 81
+      },
+      "passes_floor": false,
+      "retained_dimension": 8,
+      "raw_dimension": 8
+    },
+    "pod_r2": {
+      "velocity_basis_only": {
+        "median": 0.019681544764032492,
+        "max": 0.0728025479558844,
+        "min": 0.004700460598956807,
+        "count": 81
+      },
+      "velocity_with_supremizers": {
+        "median": 0.019659328663115577,
+        "max": 0.07274960170370277,
+        "min": 0.004699878581646493,
+        "count": 81
+      },
+      "pressure": {
+        "median": 0.1178947589760285,
+        "max": 0.16454915523587524,
+        "min": 0.004080348790806202,
+        "count": 81
+      },
+      "passes_floor": false,
+      "retained_dimension": 4,
+      "raw_dimension": 4
+    },
+    "pod_r4": {
+      "velocity_basis_only": {
+        "median": 0.0060601840343389324,
+        "max": 0.02592119845056607,
+        "min": 0.0023978445536456403,
+        "count": 81
+      },
+      "velocity_with_supremizers": {
+        "median": 0.006056222499740841,
+        "max": 0.025905423678673933,
+        "min": 0.002396983285959368,
+        "count": 81
+      },
+      "pressure": {
+        "median": 0.006233442322084377,
+        "max": 0.01460944133406934,
+        "min": 0.001276798969971835,
+        "count": 81
+      },
+      "passes_floor": false,
+      "retained_dimension": 8,
+      "raw_dimension": 8
+    },
+    "pod_r8": {
+      "velocity_basis_only": {
+        "median": 0.0009760925359328816,
+        "max": 0.00629972644566643,
+        "min": 0.0003718151875003497,
+        "count": 81
+      },
+      "velocity_with_supremizers": {
+        "median": 0.0009725418740271817,
+        "max": 0.006288936575987152,
+        "min": 0.000371460297921798,
+        "count": 81
+      },
+      "pressure": {
+        "median": 0.0005213629875732774,
+        "max": 0.0024355669722886048,
+        "min": 0.00016052032419215084,
+        "count": 81
+      },
+      "passes_floor": true,
+      "retained_dimension": 16,
+      "raw_dimension": 16
+    },
+    "pod_r12": {
+      "velocity_basis_only": {
+        "median": 0.0001930867795514013,
+        "max": 0.0013919597572008666,
+        "min": 9.324957500391482e-05,
+        "count": 81
+      },
+      "velocity_with_supremizers": {
+        "median": 0.00019295310135426035,
+        "max": 0.0013901170136680198,
+        "min": 9.300528651133326e-05,
+        "count": 81
+      },
+      "pressure": {
+        "median": 0.00014559812802545342,
+        "max": 0.00029124114255349367,
+        "min": 4.7072684799859125e-05,
+        "count": 81
+      },
+      "passes_floor": true,
+      "retained_dimension": 24,
+      "raw_dimension": 24
+    },
+    "pod_r16": {
+      "velocity_basis_only": {
+        "median": 4.296276458074615e-05,
+        "max": 0.00033133643769067895,
+        "min": 3.2491933877837174e-05,
+        "count": 81
+      },
+      "velocity_with_supremizers": {
+        "median": 4.2802676670073985e-05,
+        "max": 0.0003311583974018844,
+        "min": 3.236476229078942e-05,
+        "count": 81
+      },
+      "pressure": {
+        "median": 2.013386043948418e-05,
+        "max": 5.7411580506150734e-05,
+        "min": 0.0,
+        "count": 81
+      },
+      "passes_floor": true,
+      "retained_dimension": 32,
+      "raw_dimension": 32
+    },
+    "pod_r20": {
+      "velocity_basis_only": {
+        "median": 3.03228293192614e-05,
+        "max": 6.798617818225498e-05,
+        "min": 1.6438583993928778e-05,
+        "count": 81
+      },
+      "velocity_with_supremizers": {
+        "median": 3.0070383413990036e-05,
+        "max": 6.788318101317441e-05,
+        "min": 1.6044299881592805e-05,
+        "count": 81
+      },
+      "pressure": {
+        "median": 1.0165891487646775e-05,
+        "max": 1.7072730112047282e-05,
+        "min": 0.0,
+        "count": 81
+      },
+      "passes_floor": true,
+      "retained_dimension": 40,
+      "raw_dimension": 40
+    },
+    "pod_r24": {
+      "velocity_basis_only": {
+        "median": 2.8746324587601353e-05,
+        "max": 4.186154737190958e-05,
+        "min": 1.4185397144128773e-05,
+        "count": 81
+      },
+      "velocity_with_supremizers": {
+        "median": 2.8007069278885645e-05,
+        "max": 3.892112985721991e-05,
+        "min": 1.35289869028608e-05,
+        "count": 81
+      },
+      "pressure": {
+        "median": 8.109765450554647e-06,
+        "max": 1.284151850551309e-05,
+        "min": 0.0,
+        "count": 81
+      },
+      "passes_floor": true,
+      "retained_dimension": 48,
+      "raw_dimension": 48
+    }
+  },
+  "frozen_bank_adequate": false,
+  "R3_required": true,
+  "R3_rank": 8,
+  "R3_rank_reason": "smallest POD rank meeting the floor"
+}

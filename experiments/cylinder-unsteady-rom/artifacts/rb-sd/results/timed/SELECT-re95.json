@@ -1,0 +1,107 @@
+{
+  "case": "re95",
+  "rule": "1 cheapest completed entries meeting all six targets",
+  "passing_ranked": [
+    {
+      "name": "c2_p2_dt300_frozen_oseen_K30",
+      "entry": [
+        "c2",
+        2,
+        300,
+        "frozen_oseen",
+        30
+      ],
+      "status": "completed",
+      "ndof": 25303,
+      "targets_met": 6,
+      "warm_seconds_median": 39.94122164323926,
+      "warm_seconds_min": 38.17335475143045,
+      "warm_seconds_max": 51.17920245602727,
+      "e_u_rms": 0.008705260849288772,
+      "error": null
+    },
+    {
+      "name": "c4_p3_dt300_frozen_oseen_K30",
+      "entry": [
+        "c4",
+        3,
+        300,
+        "frozen_oseen",
+        30
+      ],
+      "status": "completed",
+      "ndof": 16912,
+      "targets_met": 6,
+      "warm_seconds_median": 42.09125223942101,
+      "warm_seconds_min": 35.47623394615948,
+      "warm_seconds_max": 44.262423873879015,
+      "e_u_rms": 0.008307561013130826,
+      "error": null
+    }
+  ],
+  "chosen": [
+    [
+      "c2",
+      2,
+      300,
+      "frozen_oseen",
+      30
+    ]
+  ],
+  "cheapest": {
+    "name": "c2_p2_dt300_frozen_oseen_K30",
+    "entry": [
+      "c2",
+      2,
+      300,
+      "frozen_oseen",
+      30
+    ],
+    "status": "completed",
+    "ndof": 25303,
+    "targets_met": 6,
+    "warm_seconds_median": 39.94122164323926,
+    "warm_seconds_min": 38.17335475143045,
+    "warm_seconds_max": 51.17920245602727,
+    "e_u_rms": 0.008705260849288772,
+    "error": null
+  },
+  "entries": [
+    {
+      "name": "c2_p2_dt300_frozen_oseen_K30",
+      "entry": [
+        "c2",
+        2,
+        300,
+        "frozen_oseen",
+        30
+      ],
+      "status": "completed",
+      "ndof": 25303,
+      "targets_met": 6,
+      "warm_seconds_median": 39.94122164323926,
+      "warm_seconds_min": 38.17335475143045,
+      "warm_seconds_max": 51.17920245602727,
+      "e_u_rms": 0.008705260849288772,
+      "error": null
+    },
+    {
+      "name": "c4_p3_dt300_frozen_oseen_K30",
+      "entry": [
+        "c4",
+        3,
+        300,
+        "frozen_oseen",
+        30
+      ],
+      "status": "completed",
+      "ndof": 16912,
+      "targets_met": 6,
+      "warm_seconds_median": 42.09125223942101,
+      "warm_seconds_min": 35.47623394615948,
+      "warm_seconds_max": 44.262423873879015,
+      "e_u_rms": 0.008307561013130826,
+      "error": null
+    }
+  ]
+}

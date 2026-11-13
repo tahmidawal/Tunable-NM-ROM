@@ -1,0 +1,74 @@
+inputs/EXPORT-SHA256SUMS: OK
+inputs/R3-SHA256SUMS: OK
+inputs/R1DE.json: OK
+rom_frames.py: OK
+rom_export.py: OK
+rom_project.py: OK
+rom_qcheck.py: OK
+rom_r5.py: OK
+vendor/ref/transient.py: OK
+vendor/ref/cycles.py: OK
+vendor/ref/vendor/scalars.py: OK
+vendor/ref/vendor/oriented_normals.py: OK
+rom_core.py: OK
+rom_r2.py: OK
+rom_r4.py: OK
+bank_train.py: OK
+bank_train2.py: OK
+bank_diag.py: OK
+fe_ladder.py: OK
+rom_time.py: OK
+cycles.py: OK
+install_deps.py: OK
+vendor/geometry.py: OK
+vendor/accuracy_v2/__init__.py: OK
+vendor/accuracy_v2/spatial_bank.py: OK
+vendor/accuracy_v2/fast_spatial_bank.py: OK
+vendor/accuracy_v2/residual_head_bank.py: OK
+vendor/dependencies.py: OK
+vendor/DEPENDENCIES.json: OK
+inputs/run09_bank.npz: OK
+inputs/admitted_mesh.vol.bin: OK
+cluster/run.sh: OK
+tasks/rb_dev2b.sh: OK
+tasks/rb_common.sh: OK
+tasks/manifest_production.json: OK
+231f6b255f8497f3517b9525a233542699867119
+jax_backend=gpu
+jax_x64=True
+cpu_model=Intel(R) Xeon(R) Platinum 8480+
+name, uuid
+NVIDIA H100 PCIe, GPU-67432612-9218-18d2-0eab-06c24b0c78f6
+pax063
+{"wheel": "ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl", "sha256": "4e02591fe98a1068b4f7ca094aec36844da1f6ddf826088b060e5a8e7780efff"}
+{"wheel": "netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", "sha256": "d8118835e2aec5739ee5755d61e866505313d92e3d4c6b947be7835f9fbf5122"}
+{"wheel": "netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", "sha256": "db71d77f56f79c0768489e76dde8febdeb25b95777986587a5d09575fa112f94"}
+{"wheel": "ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl", "sha256": "8d3266615c7b099e78c5891a41971c6bffe5d6014d13d736cef0cc119d1ca141"}
+Processing ./wheels/ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+Processing ./wheels/ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl
+Installing collected packages: ngsolve-openblas, ngsolve, netgen-occt, netgen-mesher
+
+Successfully installed netgen-mesher-6.2.2608 netgen-occt-7.8.1 ngsolve-6.2.2608 ngsolve-openblas-0.3.33
+{"prefix_layout_verified": true, "occt_libraries": 47, "site_packages": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-dev2b/deps/lib/python3.13/site-packages"}
+ngsolve 6.2.2608 jax gpu
+pod_r16 completed {'rms': 0.009556228298484458, 'max': 0.012083082960517466, 'last_period_mean': 0.011472926770848043} 
+pod_r24 completed {'rms': 0.005574619802729596, 'max': 0.009292688896107123, 'last_period_mean': 0.008241936434309781} 
+pod_r32 completed {'rms': 0.0018690390780195317, 'max': 0.0021210884115545336, 'last_period_mean': 0.0019502831280371695} 
+bank_r32 completed {'rms': 0.0019169740497832692, 'max': 0.0021681262737567744, 'last_period_mean': 0.002003007325229951} 
+bank_p24 completed {'rms': 0.0056170992535422475, 'max': 0.00936433155942387, 'last_period_mean': 0.008305550801185283} 
+bank_p16 completed {'rms': 0.009571386037840007, 'max': 0.012089488557396715, 'last_period_mean': 0.011485164318516707} 
+pod_r16 completed {'rms': 0.009902220314640654, 'max': 0.013018530878702653, 'last_period_mean': 0.01218301307629669} 
+pod_r24 completed {'rms': 0.004993166834082359, 'max': 0.007918959139278623, 'last_period_mean': 0.007061370111514029} 
+pod_r32 completed {'rms': 0.002296780935990752, 'max': 0.0030003320378719773, 'last_period_mean': 0.0027915220124090354} 
+bank_r32 completed {'rms': 0.0023463097542974483, 'max': 0.003056461936427987, 'last_period_mean': 0.0028496485013332806} 
+bank_p24 completed {'rms': 0.005034664699852961, 'max': 0.007988016478401694, 'last_period_mean': 0.007122923579502738} 
+bank_p16 completed {'rms': 0.009915028993150067, 'max': 0.013018040176233803, 'last_period_mean': 0.012189444632508956} 
+pod_r16 completed {'rms': 0.01223888397750319, 'max': 0.018312999505233293, 'last_period_mean': 0.01651262365854658} 
+pod_r24 completed {'rms': 0.004640533642420758, 'max': 0.005319212278944471, 'last_period_mean': 0.0046549983759191565} 
+pod_r32 completed {'rms': 0.006430732220817327, 'max': 0.010280704634369104, 'last_period_mean': 0.00940073497446547} 
+bank_r32 completed {'rms': 0.006464965030654165, 'max': 0.010327250262010887, 'last_period_mean': 0.009445820152319798} 
+bank_p24 completed {'rms': 0.004659680607602458, 'max': 0.00533594407673689, 'last_period_mean': 0.004672058751213048} 
+bank_p16 completed {'rms': 0.01224326334198896, 'max': 0.018294561215616508, 'last_period_mean': 0.01650240592763334} 
+task_completed

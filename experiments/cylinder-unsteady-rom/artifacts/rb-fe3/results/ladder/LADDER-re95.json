@@ -1,0 +1,56 @@
+{
+  "case": "re95",
+  "Re": 95,
+  "window": {
+    "t_start": 17.45000000000225,
+    "duration": 1.7
+  },
+  "reference": {
+    "run": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1-record-re95/results/record_re95_p4",
+    "velocity_order": 4,
+    "dt": 0.0003125,
+    "ndof": 437140,
+    "refactor_every": 40,
+    "record_stage_wall_seconds": 8725.920302036218,
+    "cycles": {
+      "CD_max": 3.243052843969901,
+      "CL_max": 0.9162771453687487,
+      "CL_min": -0.9501134799316288,
+      "St": 0.3002380634599061,
+      "dp_at_t0_plus_half_period": 2.473340004452295,
+      "period": 0.3330690281186852,
+      "cycles": 4
+    }
+  },
+  "targets": {
+    "e_u_rms": 0.01,
+    "e_u_max": 0.03,
+    "e_p_rms": 0.02,
+    "St_rel": 0.01,
+    "CD_max_rel": 0.02,
+    "CL_max_abs": 0.02
+  },
+  "threads": 16,
+  "entries": {
+    "p2_dt400_K80": {
+      "velocity_order": 2,
+      "pressure_order": 1,
+      "dt_inverse": 400,
+      "refactor_every": 80,
+      "frozen_lag_seconds": 0.2,
+      "status": "failed",
+      "error": "ArithmeticError('instability')",
+      "traceback": "Traceback (most recent call last):\n  File \"/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-fe3/fe_ladder.py\", line 153, in main\n    s.run()\n    ~~~~~^^\n  File \"/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-fe3/vendor/ref/transient.py\", line 474, in run\n    self._stages(c, x, t, sbdf, steady_start, rows, walls, diag_rows, stage_records, states, buf, flush, persist, t_wall0)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-fe3/vendor/ref/transient.py\", line 552, in _stages\n    stage_records.append(rec); persist('failed'); raise ArithmeticError('instability')\n                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nArithmeticError: instability\n"
+    },
+    "p2_dt400_K160": {
+      "velocity_order": 2,
+      "pressure_order": 1,
+      "dt_inverse": 400,
+      "refactor_every": 160,
+      "frozen_lag_seconds": 0.4,
+      "status": "failed",
+      "error": "ArithmeticError('instability')",
+      "traceback": "Traceback (most recent call last):\n  File \"/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-fe3/fe_ladder.py\", line 153, in main\n    s.run()\n    ~~~~~^^\n  File \"/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-fe3/vendor/ref/transient.py\", line 474, in run\n    self._stages(c, x, t, sbdf, steady_start, rows, walls, diag_rows, stage_records, states, buf, flush, persist, t_wall0)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-fe3/vendor/ref/transient.py\", line 552, in _stages\n    stage_records.append(rec); persist('failed'); raise ArithmeticError('instability')\n                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nArithmeticError: instability\n"
+    }
+  }
+}

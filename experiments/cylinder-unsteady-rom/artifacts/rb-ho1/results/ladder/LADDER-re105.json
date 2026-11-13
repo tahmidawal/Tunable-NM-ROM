@@ -1,0 +1,506 @@
+{
+  "case": "re105",
+  "Re": 105,
+  "window": {
+    "t_start": 17.45000000000225,
+    "duration": 1.7
+  },
+  "reference": {
+    "run": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1-record-re105/results/record_re105_p4",
+    "velocity_order": 4,
+    "dt": 0.0003125,
+    "ndof": 437140,
+    "refactor_every": 40,
+    "record_stage_wall_seconds": 8452.585040125996,
+    "cycles": {
+      "CD_max": 3.21653349515328,
+      "CL_max": 1.0587206958787827,
+      "CL_min": -1.0943969764284769,
+      "St": 0.30328064610663374,
+      "dp_at_t0_plus_half_period": 2.4951820908133784,
+      "period": 0.3297276014384396,
+      "cycles": 4
+    }
+  },
+  "targets": {
+    "e_u_rms": 0.01,
+    "e_u_max": 0.03,
+    "e_p_rms": 0.02,
+    "St_rel": 0.01,
+    "CD_max_rel": 0.02,
+    "CL_max_abs": 0.02
+  },
+  "threads": 16,
+  "entries": {
+    "p2_dt200_K2": {
+      "velocity_order": 2,
+      "pressure_order": 1,
+      "dt_inverse": 200,
+      "refactor_every": 2,
+      "frozen_lag_seconds": 0.01,
+      "ndof": 96781,
+      "timing": [
+        {
+          "warm_seconds": 231.2203526319936,
+          "construct_seconds": 1.5618191147223115,
+          "setup_seconds": 0.0031874440610408783,
+          "steps": 340,
+          "lu_refreshes": 172,
+          "timers": {
+            "conv_apply": 5.6665998585522175,
+            "factor": 166.6627798061818,
+            "solve": 54.540940701030195,
+            "observe": 2.896142065525055,
+            "diagnostics": 0.0
+          }
+        }
+      ],
+      "warm_seconds_median": 231.2203526319936,
+      "warm_seconds_min": 231.2203526319936,
+      "warm_seconds_max": 231.2203526319936,
+      "force": {
+        "CD_maxabs_rel": 0.006476076921074575,
+        "CL_maxabs": 0.151724402446311
+      },
+      "cycles": {
+        "CD_max": 3.2267630702581385,
+        "CL_max": 1.0800575079529267,
+        "CL_min": -1.1194277833529258,
+        "St": 0.30468246531229803,
+        "dp_at_t0_plus_half_period": 2.501886023103154,
+        "period": 0.32821072340349033,
+        "cycles": 4
+      },
+      "cycle_errors": {
+        "St_rel": 0.004622184843181219,
+        "CD_max_rel": 0.00318031045542437,
+        "CL_max_abs": 0.02133681207414395
+      },
+      "e_u": {
+        "rms": 0.01829999844785037,
+        "max": 0.026396422934058927,
+        "at_start": 0.00023492764053740687,
+        "saves": 341
+      },
+      "e_p": {
+        "rms": 0.009888643654618515,
+        "max": 0.015024589777192506,
+        "at_start": 0.0005841585726015317
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.01829999844785037,
+          "target": 0.01,
+          "met": false
+        },
+        "e_u_max": {
+          "value": 0.026396422934058927,
+          "target": 0.03,
+          "met": true
+        },
+        "e_p_rms": {
+          "value": 0.009888643654618515,
+          "target": 0.02,
+          "met": true
+        },
+        "St_rel": {
+          "value": 0.004622184843181219,
+          "target": 0.01,
+          "met": true
+        },
+        "CD_max_rel": {
+          "value": 0.00318031045542437,
+          "target": 0.02,
+          "met": true
+        },
+        "CL_max_abs": {
+          "value": 0.02133681207414395,
+          "target": 0.02,
+          "met": false
+        }
+      },
+      "targets_met": 4,
+      "status": "completed"
+    },
+    "p2_dt200_K20": {
+      "velocity_order": 2,
+      "pressure_order": 1,
+      "dt_inverse": 200,
+      "refactor_every": 20,
+      "frozen_lag_seconds": 0.1,
+      "status": "failed",
+      "error": "ArithmeticError('instability')",
+      "traceback": "Traceback (most recent call last):\n  File \"/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-ho1/fe_ladder.py\", line 153, in main\n    s.run()\n    ~~~~~^^\n  File \"/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-ho1/vendor/ref/transient.py\", line 474, in run\n    self._stages(c, x, t, sbdf, steady_start, rows, walls, diag_rows, stage_records, states, buf, flush, persist, t_wall0)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-ho1/vendor/ref/transient.py\", line 552, in _stages\n    stage_records.append(rec); persist('failed'); raise ArithmeticError('instability')\n                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nArithmeticError: instability\n"
+    },
+    "p2_dt400_K20": {
+      "velocity_order": 2,
+      "pressure_order": 1,
+      "dt_inverse": 400,
+      "refactor_every": 20,
+      "frozen_lag_seconds": 0.05,
+      "ndof": 96781,
+      "timing": [
+        {
+          "warm_seconds": 139.97421233635396,
+          "construct_seconds": 1.4179736441001296,
+          "setup_seconds": 0.003099118359386921,
+          "steps": 680,
+          "lu_refreshes": 35,
+          "timers": {
+            "conv_apply": 2.319964649155736,
+            "factor": 33.7425056071952,
+            "solve": 98.57925864681602,
+            "observe": 3.266703335568309,
+            "diagnostics": 0.0
+          }
+        }
+      ],
+      "warm_seconds_median": 139.97421233635396,
+      "warm_seconds_min": 139.97421233635396,
+      "warm_seconds_max": 139.97421233635396,
+      "force": {
+        "CD_maxabs_rel": 0.001641637776182782,
+        "CL_maxabs": 0.04068475319049408
+      },
+      "cycles": {
+        "CD_max": 3.218932476117231,
+        "CL_max": 1.0639394702087166,
+        "CL_min": -1.1020052385552412,
+        "St": 0.303666016090226,
+        "dp_at_t0_plus_half_period": 2.4970576240602576,
+        "period": 0.3293091607931604,
+        "cycles": 4
+      },
+      "cycle_errors": {
+        "St_rel": 0.0012706712035186563,
+        "CD_max_rel": 0.0007458280684986252,
+        "CL_max_abs": 0.005218774329933895
+      },
+      "e_u": {
+        "rms": 0.005165338579214088,
+        "max": 0.0074525484562929884,
+        "at_start": 0.00023492764053740687,
+        "saves": 681
+      },
+      "e_p": {
+        "rms": 0.002847518926882569,
+        "max": 0.004282492587053758,
+        "at_start": 0.0005841585726015317
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.005165338579214088,
+          "target": 0.01,
+          "met": true
+        },
+        "e_u_max": {
+          "value": 0.0074525484562929884,
+          "target": 0.03,
+          "met": true
+        },
+        "e_p_rms": {
+          "value": 0.002847518926882569,
+          "target": 0.02,
+          "met": true
+        },
+        "St_rel": {
+          "value": 0.0012706712035186563,
+          "target": 0.01,
+          "met": true
+        },
+        "CD_max_rel": {
+          "value": 0.0007458280684986252,
+          "target": 0.02,
+          "met": true
+        },
+        "CL_max_abs": {
+          "value": 0.005218774329933895,
+          "target": 0.02,
+          "met": true
+        }
+      },
+      "targets_met": 6,
+      "status": "completed"
+    },
+    "p2_dt400_K40": {
+      "velocity_order": 2,
+      "pressure_order": 1,
+      "dt_inverse": 400,
+      "refactor_every": 40,
+      "frozen_lag_seconds": 0.1,
+      "ndof": 96781,
+      "timing": [
+        {
+          "warm_seconds": 126.20297246798873,
+          "construct_seconds": 1.387885071337223,
+          "setup_seconds": 0.004363183863461018,
+          "steps": 680,
+          "lu_refreshes": 18,
+          "timers": {
+            "conv_apply": 1.8464585794135928,
+            "factor": 17.431840600445867,
+            "solve": 101.84236652217805,
+            "observe": 3.081071107648313,
+            "diagnostics": 0.0
+          }
+        }
+      ],
+      "warm_seconds_median": 126.20297246798873,
+      "warm_seconds_min": 126.20297246798873,
+      "warm_seconds_max": 126.20297246798873,
+      "force": {
+        "CD_maxabs_rel": 0.0019342609409424831,
+        "CL_maxabs": 0.044046117254768646
+      },
+      "cycles": {
+        "CD_max": 3.21960806981419,
+        "CL_max": 1.0655562785009478,
+        "CL_min": -1.1037718004388883,
+        "St": 0.3037071369270202,
+        "dp_at_t0_plus_half_period": 2.497534740729159,
+        "period": 0.32926457447057533,
+        "cycles": 4
+      },
+      "cycle_errors": {
+        "St_rel": 0.001406257952367089,
+        "CD_max_rel": 0.0009558658927516305,
+        "CL_max_abs": 0.006835582622165104
+      },
+      "e_u": {
+        "rms": 0.005689638552363654,
+        "max": 0.008302736317602168,
+        "at_start": 0.00023492764053740687,
+        "saves": 681
+      },
+      "e_p": {
+        "rms": 0.0031566589010037587,
+        "max": 0.004721123740177048,
+        "at_start": 0.0005841585726015317
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.005689638552363654,
+          "target": 0.01,
+          "met": true
+        },
+        "e_u_max": {
+          "value": 0.008302736317602168,
+          "target": 0.03,
+          "met": true
+        },
+        "e_p_rms": {
+          "value": 0.0031566589010037587,
+          "target": 0.02,
+          "met": true
+        },
+        "St_rel": {
+          "value": 0.001406257952367089,
+          "target": 0.01,
+          "met": true
+        },
+        "CD_max_rel": {
+          "value": 0.0009558658927516305,
+          "target": 0.02,
+          "met": true
+        },
+        "CL_max_abs": {
+          "value": 0.006835582622165104,
+          "target": 0.02,
+          "met": true
+        }
+      },
+      "targets_met": 6,
+      "status": "completed"
+    },
+    "p2_dt400_K80": {
+      "velocity_order": 2,
+      "pressure_order": 1,
+      "dt_inverse": 400,
+      "refactor_every": 80,
+      "frozen_lag_seconds": 0.2,
+      "status": "failed",
+      "error": "ArithmeticError('instability')",
+      "traceback": "Traceback (most recent call last):\n  File \"/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-ho1/fe_ladder.py\", line 153, in main\n    s.run()\n    ~~~~~^^\n  File \"/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-ho1/vendor/ref/transient.py\", line 474, in run\n    self._stages(c, x, t, sbdf, steady_start, rows, walls, diag_rows, stage_records, states, buf, flush, persist, t_wall0)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-ho1/vendor/ref/transient.py\", line 552, in _stages\n    stage_records.append(rec); persist('failed'); raise ArithmeticError('instability')\n                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nArithmeticError: instability\n"
+    },
+    "p2_dt800_K40": {
+      "velocity_order": 2,
+      "pressure_order": 1,
+      "dt_inverse": 800,
+      "refactor_every": 40,
+      "frozen_lag_seconds": 0.05,
+      "ndof": 96781,
+      "timing": [
+        {
+          "warm_seconds": 248.56781329400837,
+          "construct_seconds": 1.3797116437926888,
+          "setup_seconds": 0.002910720184445381,
+          "steps": 1360,
+          "lu_refreshes": 35,
+          "timers": {
+            "conv_apply": 3.5084674758836627,
+            "factor": 33.92282582540065,
+            "solve": 201.02694133855402,
+            "observe": 6.0699463142082095,
+            "diagnostics": 0.0
+          }
+        }
+      ],
+      "warm_seconds_median": 248.56781329400837,
+      "warm_seconds_min": 248.56781329400837,
+      "warm_seconds_max": 248.56781329400837,
+      "force": {
+        "CD_maxabs_rel": 0.001614408913315998,
+        "CL_maxabs": 0.006481595366165743
+      },
+      "cycles": {
+        "CD_max": 3.2162047132454346,
+        "CL_max": 1.0575492430019349,
+        "CL_min": -1.095072061311506,
+        "St": 0.30334244010263756,
+        "dp_at_t0_plus_half_period": 2.4951435224323126,
+        "period": 0.3296604326662731,
+        "cycles": 4
+      },
+      "cycle_errors": {
+        "St_rel": 0.00020375186084932307,
+        "CD_max_rel": 0.000102216223876001,
+        "CL_max_abs": 0.0011714528768478338
+      },
+      "e_u": {
+        "rms": 0.001154452211491787,
+        "max": 0.0014633732362561058,
+        "at_start": 0.00023492764053740687,
+        "saves": 681
+      },
+      "e_p": {
+        "rms": 0.0008104691642517372,
+        "max": 0.0009959624195901222,
+        "at_start": 0.0005841585726015317
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.001154452211491787,
+          "target": 0.01,
+          "met": true
+        },
+        "e_u_max": {
+          "value": 0.0014633732362561058,
+          "target": 0.03,
+          "met": true
+        },
+        "e_p_rms": {
+          "value": 0.0008104691642517372,
+          "target": 0.02,
+          "met": true
+        },
+        "St_rel": {
+          "value": 0.00020375186084932307,
+          "target": 0.01,
+          "met": true
+        },
+        "CD_max_rel": {
+          "value": 0.000102216223876001,
+          "target": 0.02,
+          "met": true
+        },
+        "CL_max_abs": {
+          "value": 0.0011714528768478338,
+          "target": 0.02,
+          "met": true
+        }
+      },
+      "targets_met": 6,
+      "status": "completed"
+    },
+    "p2_dt800_K80": {
+      "velocity_order": 2,
+      "pressure_order": 1,
+      "dt_inverse": 800,
+      "refactor_every": 80,
+      "frozen_lag_seconds": 0.1,
+      "ndof": 96781,
+      "timing": [
+        {
+          "warm_seconds": 223.8172526312992,
+          "construct_seconds": 1.4025694811716676,
+          "setup_seconds": 0.0028938613831996918,
+          "steps": 1360,
+          "lu_refreshes": 18,
+          "timers": {
+            "conv_apply": 3.056535811163485,
+            "factor": 17.360684002749622,
+            "solve": 193.7210478130728,
+            "observe": 5.737977213226259,
+            "diagnostics": 0.0
+          }
+        }
+      ],
+      "warm_seconds_median": 223.8172526312992,
+      "warm_seconds_min": 223.8172526312992,
+      "warm_seconds_max": 223.8172526312992,
+      "force": {
+        "CD_maxabs_rel": 0.0016144089133153078,
+        "CL_maxabs": 0.007303801675754756
+      },
+      "cycles": {
+        "CD_max": 3.2163447890610124,
+        "CL_max": 1.0578854341764043,
+        "CL_min": -1.0953871606809396,
+        "St": 0.30335353025701606,
+        "dp_at_t0_plus_half_period": 2.4952511778008803,
+        "period": 0.32964838166863686,
+        "cycles": 4
+      },
+      "cycle_errors": {
+        "St_rel": 0.00024031916087611756,
+        "CD_max_rel": 5.8667535267934874e-05,
+        "CL_max_abs": 0.0008352617023783537
+      },
+      "e_u": {
+        "rms": 0.0012773846763109759,
+        "max": 0.0016729627235882152,
+        "at_start": 0.00023492764053740687,
+        "saves": 681
+      },
+      "e_p": {
+        "rms": 0.0008643273837630479,
+        "max": 0.00108927238872667,
+        "at_start": 0.0005841585726015317
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.0012773846763109759,
+          "target": 0.01,
+          "met": true
+        },
+        "e_u_max": {
+          "value": 0.0016729627235882152,
+          "target": 0.03,
+          "met": true
+        },
+        "e_p_rms": {
+          "value": 0.0008643273837630479,
+          "target": 0.02,
+          "met": true
+        },
+        "St_rel": {
+          "value": 0.00024031916087611756,
+          "target": 0.01,
+          "met": true
+        },
+        "CD_max_rel": {
+          "value": 5.8667535267934874e-05,
+          "target": 0.02,
+          "met": true
+        },
+        "CL_max_abs": {
+          "value": 0.0008352617023783537,
+          "target": 0.02,
+          "met": true
+        }
+      },
+      "targets_met": 6,
+      "status": "completed"
+    }
+  }
+}

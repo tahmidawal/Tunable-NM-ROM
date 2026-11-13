@@ -1,0 +1,62 @@
+inputs/EXPORT-SHA256SUMS: OK
+inputs/R3-SHA256SUMS: OK
+inputs/R1DE.json: OK
+rom_frames.py: OK
+rom_export.py: OK
+rom_project.py: OK
+rom_qcheck.py: OK
+rom_r5.py: OK
+vendor/ref/transient.py: OK
+vendor/ref/cycles.py: OK
+vendor/ref/vendor/scalars.py: OK
+vendor/ref/vendor/oriented_normals.py: OK
+rom_core.py: OK
+rom_r2.py: OK
+rom_r4.py: OK
+bank_train.py: OK
+bank_train2.py: OK
+bank_diag.py: OK
+fe_ladder.py: OK
+cycles.py: OK
+install_deps.py: OK
+vendor/geometry.py: OK
+vendor/accuracy_v2/__init__.py: OK
+vendor/accuracy_v2/spatial_bank.py: OK
+vendor/accuracy_v2/fast_spatial_bank.py: OK
+vendor/accuracy_v2/residual_head_bank.py: OK
+vendor/dependencies.py: OK
+vendor/DEPENDENCIES.json: OK
+inputs/run09_bank.npz: OK
+inputs/admitted_mesh.vol.bin: OK
+cluster/run.sh: OK
+tasks/rb_fe1.sh: OK
+tasks/rb_common.sh: OK
+tasks/manifest_production.json: OK
+05ef60cbd72686f543cbcdd482536c1902420d06
+jax_backend=gpu
+jax_x64=True
+cpu_model=Intel(R) Xeon(R) Gold 6448Y
+name, uuid
+NVIDIA L40S, GPU-b971e295-9fa8-5e1f-0059-ba3cb4d0d17a
+pax025
+{"wheel": "ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl", "sha256": "4e02591fe98a1068b4f7ca094aec36844da1f6ddf826088b060e5a8e7780efff"}
+{"wheel": "netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", "sha256": "d8118835e2aec5739ee5755d61e866505313d92e3d4c6b947be7835f9fbf5122"}
+{"wheel": "netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", "sha256": "db71d77f56f79c0768489e76dde8febdeb25b95777986587a5d09575fa112f94"}
+{"wheel": "ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl", "sha256": "8d3266615c7b099e78c5891a41971c6bffe5d6014d13d736cef0cc119d1ca141"}
+Processing ./wheels/ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+Processing ./wheels/ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl
+Installing collected packages: ngsolve-openblas, ngsolve, netgen-occt, netgen-mesher
+
+Successfully installed netgen-mesher-6.2.2608 netgen-occt-7.8.1 ngsolve-6.2.2608 ngsolve-openblas-0.3.33
+{"prefix_layout_verified": true, "occt_libraries": 47, "site_packages": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-fe1/deps/lib/python3.13/site-packages"}
+ngsolve 6.2.2608 jax gpu
+{"scalar_return_contract": {"label": "normal_P0_constant", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "oriented_normal_moment", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "normal_geometry_volume", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "probe", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+p2_dt200_K2 completed 96781 274.8136684028432 {'rms': 0.016233719692213888, 'max': 0.021843235877926654, 'at_start': 0.0002095465395225405, 'saves': 341} {'rms': 0.008307789261717071, 'max': 0.011634834224866069, 'at_start': 0.0005402565469824351} {'St_rel': 0.004220210006819614, 'CD_max_rel': 0.0028010957907081795, 'CL_max_abs': 0.022117201601967507} 4 
+p2_dt400_K5 completed 96781 301.7375954426825 {'rms': 0.004334718173613621, 'max': 0.005744512927282134, 'at_start': 0.0002095465395225405, 'saves': 681} {'rms': 0.0022114161425441877, 'max': 0.003052790352828307, 'at_start': 0.0005402565469824351} {'St_rel': 0.0010686582272734977, 'CD_max_rel': 0.0004986801946785463, 'CL_max_abs': 0.003853495750882563} 6 
+p2_dt800_K10 completed 96781 407.9045137455687 {'rms': 0.0010116466635982015, 'max': 0.0011817781886042363, 'at_start': 0.0002095465395225405, 'saves': 681} {'rms': 0.0007065455375116841, 'max': 0.0008764010783719782, 'at_start': 0.0005402565469824351} {'St_rel': 0.0001889882895119709, 'CD_max_rel': 5.1952421923765335e-05, 'CL_max_abs': 0.0006846581676945851} 6 
+p3_dt200_K2 completed 235231 807.8313440624624 {'rms': 0.01642676576326363, 'max': 0.02236014610835747, 'at_start': 2.4994183822457186e-05, 'saves': 341} {'rms': 0.008454302290476058, 'max': 0.011940215942029625, 'at_start': 4.211528687616481e-05} {'St_rel': 0.004327639880708572, 'CD_max_rel': 0.003006163528473681, 'CL_max_abs': 0.02420452101171333} 4 

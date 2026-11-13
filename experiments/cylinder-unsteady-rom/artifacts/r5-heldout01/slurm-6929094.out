@@ -1,0 +1,117 @@
+inputs/EXPORT-SHA256SUMS: OK
+inputs/R3-SHA256SUMS: OK
+inputs/R1DE.json: OK
+rom_frames.py: OK
+rom_export.py: OK
+rom_project.py: OK
+rom_qcheck.py: OK
+rom_r5.py: OK
+vendor/ref/transient.py: OK
+vendor/ref/cycles.py: OK
+vendor/ref/vendor/scalars.py: OK
+vendor/ref/vendor/oriented_normals.py: OK
+rom_core.py: OK
+rom_r2.py: OK
+rom_r4.py: OK
+bank_train.py: OK
+cycles.py: OK
+install_deps.py: OK
+vendor/geometry.py: OK
+vendor/accuracy_v2/__init__.py: OK
+vendor/accuracy_v2/spatial_bank.py: OK
+vendor/accuracy_v2/fast_spatial_bank.py: OK
+vendor/accuracy_v2/residual_head_bank.py: OK
+vendor/dependencies.py: OK
+vendor/DEPENDENCIES.json: OK
+inputs/run09_bank.npz: OK
+inputs/admitted_mesh.vol.bin: OK
+cluster/run.sh: OK
+tasks/r5_heldout.sh: OK
+tasks/manifest_production.json: OK
+e8b8cd6efddd63165a547f8d0739badb1bed2780
+jax_backend=gpu
+jax_x64=True
+cpu_model=Intel(R) Xeon(R) Gold 6226R CPU @ 2.90GHz
+name, uuid
+NVIDIA A100-PCIE-40GB, GPU-a840f593-3e39-4ee0-681d-f3898b49b09b
+pax051
+{"wheel": "ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl", "sha256": "4e02591fe98a1068b4f7ca094aec36844da1f6ddf826088b060e5a8e7780efff"}
+{"wheel": "netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", "sha256": "d8118835e2aec5739ee5755d61e866505313d92e3d4c6b947be7835f9fbf5122"}
+{"wheel": "netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", "sha256": "db71d77f56f79c0768489e76dde8febdeb25b95777986587a5d09575fa112f94"}
+{"wheel": "ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl", "sha256": "8d3266615c7b099e78c5891a41971c6bffe5d6014d13d736cef0cc119d1ca141"}
+Processing ./wheels/ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+Processing ./wheels/ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl
+Installing collected packages: ngsolve-openblas, ngsolve, netgen-occt, netgen-mesher
+
+Successfully installed netgen-mesher-6.2.2608 netgen-occt-7.8.1 ngsolve-6.2.2608 ngsolve-openblas-0.3.33
+{"prefix_layout_verified": true, "occt_libraries": 47, "site_packages": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r5-heldout01/deps/lib/python3.13/site-packages"}
+ngsolve 6.2.2608 jax gpu
+/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r2-export01/results/export/basis.npz: OK
+/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r2-export01/results/export/pod.npz: OK
+/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r2-export01/results/export/quadrature.npz: OK
+/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r3-train01/results/proj/proj_re95_trained.npz: OK
+/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r3-train01/results/train/trained_bank_eval.npz: OK
+/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r3-train01/results/train/trained_bank_params.npz: OK
+pod_r8 completed {'rms': 0.027674107976512263, 'max': 0.034485902055705196, 'last_period_mean': 0.032248961139811516} 
+pod_r16 completed {'rms': 0.008467420097528634, 'max': 0.010863005493177773, 'last_period_mean': 0.010086575624128567} 
+pod_r24 completed {'rms': 0.0034733865382144753, 'max': 0.004662645838924835, 'last_period_mean': 0.0043269797083432615} 
+frozen_bank_r4 completed {'rms': 0.3026558216292361, 'max': 0.3162251263731757, 'last_period_mean': 0.3071359047740096} 
+bank_r16 completed {'rms': 0.01099993086228171, 'max': 0.012203819466297979, 'last_period_mean': 0.011459857690925014} 
+{"scalar_return_contract": {"label": "normal_P0_constant", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "oriented_normal_moment", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "normal_geometry_volume", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "probe", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{
+ "fe_warm_median_s": 647.1997443828732,
+ "fe_cold_median_s": 649.2807578574866,
+ "rom": {
+  "pod_r8": {
+   "warm_median_s": 0.14590526651591063,
+   "cold_median_s": 8.51466878503561,
+   "reconstruction_median_s": 3.451162764802575,
+   "warm_speedup_vs_fe_warm": 4435.753142003942,
+   "accuracy_e_u_max": 0.02376391852060781
+  },
+  "pod_r16": {
+   "warm_median_s": 0.27732121758162975,
+   "cold_median_s": 20.126089598052204,
+   "reconstruction_median_s": 4.255360871553421,
+   "warm_speedup_vs_fe_warm": 2333.7548782843105,
+   "accuracy_e_u_max": 0.007131163467330158
+  },
+  "pod_r24": {
+   "warm_median_s": 0.5388541910797358,
+   "cold_median_s": 35.637665789574385,
+   "reconstruction_median_s": 5.1846116585657,
+   "warm_speedup_vs_fe_warm": 1201.0665502778008,
+   "accuracy_e_u_max": 0.002503296527903523
+  },
+  "frozen_bank_r4": {
+   "warm_median_s": 0.07936262153089046,
+   "cold_median_s": 4.051019167527556,
+   "reconstruction_median_s": 3.2119639022275805,
+   "warm_speedup_vs_fe_warm": 8154.969328110746,
+   "accuracy_e_u_max": 0.27857506514120783
+  },
+  "bank_r16": {
+   "warm_median_s": 0.2816746085882187,
+   "cold_median_s": 18.47682375833392,
+   "reconstruction_median_s": 4.252826642245054,
+   "warm_speedup_vs_fe_warm": 2297.685785831755,
+   "accuracy_e_u_max": 0.010583867654657532
+  }
+ },
+ "checksums_identical_across_reps": {
+  "fe": false,
+  "pod_r8": true,
+  "pod_r16": true,
+  "pod_r24": true,
+  "frozen_bank_r4": true,
+  "bank_r16": true
+ },
+ "scope": "speed versus the production reference configuration only (no accuracy-matched FOM ladder)"
+}
+{'order12': {'norm_BL': 3.7403831858234506e-15, 'norm_B': 3.4899786199715965, 'norm_KL': 88.9543165924403}, 'order14': {'norm_BL': 3.737023638779162e-15, 'norm_B': 3.489978619971531, 'norm_KL': 88.95431659243839}}
+task_completed

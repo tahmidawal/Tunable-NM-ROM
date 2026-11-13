@@ -1,0 +1,99 @@
+{
+  "status": "completed",
+  "stages": [
+    {
+      "name": "ladder",
+      "dt": 0.0033333333333333335,
+      "t_start": 17.45000000000225,
+      "planned_steps": 510,
+      "until_periodic": false,
+      "status": "completed",
+      "steps": 510,
+      "t_end": 19.150000000002517,
+      "periodic_reached": false,
+      "cycles": [
+        {
+          "t0": 17.613251084081465,
+          "t1": 17.945784448488766,
+          "period": 0.3325333644073005,
+          "St": 0.30072170405588505,
+          "CD_max": 3.248222595103729,
+          "CD_min": 3.192765724285559,
+          "CL_max": 0.9252816797368737,
+          "CL_min": -0.9625138041442413,
+          "CD_max_sample": 3.2482223375896573,
+          "CL_max_sample": 0.9251940702591558,
+          "dp_at_t0_plus_half_period": 2.471211810251165,
+          "dp_1996_t0_at_CLmax_plus_half_period": 2.473445417140722
+        },
+        {
+          "t0": 17.945784448488766,
+          "t1": 18.27807540784798,
+          "period": 0.33229095935921293,
+          "St": 0.30094107944687737,
+          "CD_max": 3.250441561982838,
+          "CD_min": 3.194927060762032,
+          "CL_max": 0.9300099578821441,
+          "CL_min": -0.9650947832428262,
+          "CD_max_sample": 3.250413721944592,
+          "CL_max_sample": 0.929578208614197,
+          "dp_at_t0_plus_half_period": 2.4726566235396383,
+          "dp_1996_t0_at_CLmax_plus_half_period": 2.4737102477413964
+        },
+        {
+          "t0": 18.27807540784798,
+          "t1": 18.610609465556056,
+          "period": 0.3325340577080773,
+          "St": 0.30072107708073414,
+          "CD_max": 3.2507178303726185,
+          "CD_min": 3.19518317135724,
+          "CL_max": 0.9325399287970942,
+          "CL_min": -0.9672738816106095,
+          "CD_max_sample": 3.2506647485147955,
+          "CL_max_sample": 0.9324231846712356,
+          "dp_at_t0_plus_half_period": 2.4732118914397483,
+          "dp_1996_t0_at_CLmax_plus_half_period": 2.474342452116638
+        },
+        {
+          "t0": 18.610609465556056,
+          "t1": 18.943091813551433,
+          "period": 0.3324823479953771,
+          "St": 0.3007678470839914,
+          "CD_max": 3.2514228799269973,
+          "CD_min": 3.1955994348272134,
+          "CL_max": 0.9334572928361533,
+          "CL_min": -0.9684811674247285,
+          "CD_max_sample": 3.251407028581749,
+          "CL_max_sample": 0.9334542254632896,
+          "dp_at_t0_plus_half_period": 2.473185965577638,
+          "dp_1996_t0_at_CLmax_plus_half_period": 2.474518718222061
+        }
+      ],
+      "wall_seconds": 48.69472367037088,
+      "seconds_per_step": 0.09547985070293732
+    }
+  ],
+  "states": [],
+  "snapshots": [
+    {
+      "file": "snapshots_0000.npz",
+      "sha256": "442df3b4432edf37927f5a6501dda5c143a27af9de10ee928ec0b003a1aa90ef",
+      "count": 171
+    }
+  ],
+  "linear_checks_count": 21,
+  "linear_checks_max": 3.523664215909521e-16,
+  "factorizations": 18,
+  "timers_seconds": {
+    "conv_apply": 20.34785600658506,
+    "factor": 4.00175245013088,
+    "solve": 11.89124253951013,
+    "observe": 10.810570388101041,
+    "diagnostics": 0.0
+  },
+  "setup_seconds": 0.0015553627163171768,
+  "interpolation": null,
+  "layout_sha256": "d4181e4f26d5bdc9c8a136d78f37af215f3ec6f2ed5adb2a9a5d9ab206e619c6",
+  "ndof": 16912,
+  "elapsed_seconds": 48.86958373617381
+}

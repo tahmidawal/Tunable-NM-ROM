@@ -1,0 +1,586 @@
+{
+  "case": "re95",
+  "Re": 95,
+  "window": {
+    "t_start": 17.45000000000225,
+    "duration": 1.7
+  },
+  "reference": {
+    "run": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1-record-re95/results/record_re95_p4",
+    "velocity_order": 4,
+    "dt": 0.0003125,
+    "ndof": 437140,
+    "refactor_every": 40,
+    "record_stage_wall_seconds": 8725.920302036218,
+    "cycles": {
+      "CD_max": 3.243052843969901,
+      "CL_max": 0.9162771453687487,
+      "CL_min": -0.9501134799316288,
+      "St": 0.3002380634599061,
+      "dp_at_t0_plus_half_period": 2.473340004452295,
+      "period": 0.3330690281186852,
+      "cycles": 4
+    }
+  },
+  "targets": {
+    "e_u_rms": 0.01,
+    "e_u_max": 0.03,
+    "e_p_rms": 0.02,
+    "St_rel": 0.01,
+    "CD_max_rel": 0.02,
+    "CL_max_abs": 0.02
+  },
+  "threads": 16,
+  "entries": {
+    "p2_dt200_K2": {
+      "velocity_order": 2,
+      "pressure_order": 1,
+      "dt_inverse": 200,
+      "refactor_every": 2,
+      "frozen_lag_seconds": 0.01,
+      "ndof": 96781,
+      "timing": [
+        {
+          "warm_seconds": 228.38455074466765,
+          "construct_seconds": 1.8034524945542216,
+          "setup_seconds": 0.003370862454175949,
+          "steps": 340,
+          "lu_refreshes": 172,
+          "timers": {
+            "conv_apply": 3.8420113837346435,
+            "factor": 159.62141911499202,
+            "solve": 61.18522416893393,
+            "observe": 1.9191167503595352,
+            "diagnostics": 0.0
+          }
+        }
+      ],
+      "warm_seconds_median": 228.38455074466765,
+      "warm_seconds_min": 228.38455074466765,
+      "warm_seconds_max": 228.38455074466765,
+      "force": {
+        "CD_maxabs_rel": 0.005170078110464173,
+        "CL_maxabs": 0.11052290787353719
+      },
+      "cycles": {
+        "CD_max": 3.2521369456401867,
+        "CL_max": 0.938394346970718,
+        "CL_min": -0.9752486998366573,
+        "St": 0.30150513113974853,
+        "dp_at_t0_plus_half_period": 2.4791222212985446,
+        "period": 0.3316693359415144,
+        "cycles": 4
+      },
+      "cycle_errors": {
+        "St_rel": 0.004220210006822202,
+        "CD_max_rel": 0.002801095790707358,
+        "CL_max_abs": 0.022117201601969283
+      },
+      "e_u": {
+        "rms": 0.016233719692213808,
+        "max": 0.02184323587792655,
+        "at_start": 0.0002095465395225405,
+        "saves": 341
+      },
+      "e_p": {
+        "rms": 0.008307789261716995,
+        "max": 0.011634834224892771,
+        "at_start": 0.0005402565469824351
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.016233719692213808,
+          "target": 0.01,
+          "met": false
+        },
+        "e_u_max": {
+          "value": 0.02184323587792655,
+          "target": 0.03,
+          "met": true
+        },
+        "e_p_rms": {
+          "value": 0.008307789261716995,
+          "target": 0.02,
+          "met": true
+        },
+        "St_rel": {
+          "value": 0.004220210006822202,
+          "target": 0.01,
+          "met": true
+        },
+        "CD_max_rel": {
+          "value": 0.002801095790707358,
+          "target": 0.02,
+          "met": true
+        },
+        "CL_max_abs": {
+          "value": 0.022117201601969283,
+          "target": 0.02,
+          "met": false
+        }
+      },
+      "targets_met": 4,
+      "status": "completed"
+    },
+    "p2_dt200_K20": {
+      "velocity_order": 2,
+      "pressure_order": 1,
+      "dt_inverse": 200,
+      "refactor_every": 20,
+      "frozen_lag_seconds": 0.1,
+      "ndof": 96781,
+      "timing": [
+        {
+          "warm_seconds": 77.09641299489886,
+          "construct_seconds": 1.9144141618162394,
+          "setup_seconds": 0.003888607956469059,
+          "steps": 340,
+          "lu_refreshes": 18,
+          "timers": {
+            "conv_apply": 1.1023577181622386,
+            "factor": 16.727823675610125,
+            "solve": 54.75399836804718,
+            "observe": 1.7086516050621867,
+            "diagnostics": 0.0
+          }
+        }
+      ],
+      "warm_seconds_median": 77.09641299489886,
+      "warm_seconds_min": 77.09641299489886,
+      "warm_seconds_max": 77.09641299489886,
+      "force": {
+        "CD_maxabs_rel": 0.007542858315476831,
+        "CL_maxabs": 0.14078887886744695
+      },
+      "cycles": {
+        "CD_max": 3.256978056640108,
+        "CL_max": 0.9515322627240984,
+        "CL_min": -0.9906103851079445,
+        "St": 0.3017974005408511,
+        "dp_at_t0_plus_half_period": 2.482581170009359,
+        "period": 0.33134836334276674,
+        "cycles": 4
+      },
+      "cycle_errors": {
+        "St_rel": 0.005193668860554722,
+        "CD_max_rel": 0.004293859317186009,
+        "CL_max_abs": 0.0352551173553497
+      },
+      "e_u": {
+        "rms": 0.01920929511510009,
+        "max": 0.029973908608909482,
+        "at_start": 0.0002095465395225405,
+        "saves": 341
+      },
+      "e_p": {
+        "rms": 0.010284458177764381,
+        "max": 0.014653194966798976,
+        "at_start": 0.0005402565469824351
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.01920929511510009,
+          "target": 0.01,
+          "met": false
+        },
+        "e_u_max": {
+          "value": 0.029973908608909482,
+          "target": 0.03,
+          "met": true
+        },
+        "e_p_rms": {
+          "value": 0.010284458177764381,
+          "target": 0.02,
+          "met": true
+        },
+        "St_rel": {
+          "value": 0.005193668860554722,
+          "target": 0.01,
+          "met": true
+        },
+        "CD_max_rel": {
+          "value": 0.004293859317186009,
+          "target": 0.02,
+          "met": true
+        },
+        "CL_max_abs": {
+          "value": 0.0352551173553497,
+          "target": 0.02,
+          "met": false
+        }
+      },
+      "targets_met": 4,
+      "status": "completed"
+    },
+    "p2_dt400_K20": {
+      "velocity_order": 2,
+      "pressure_order": 1,
+      "dt_inverse": 400,
+      "refactor_every": 20,
+      "frozen_lag_seconds": 0.05,
+      "ndof": 96781,
+      "timing": [
+        {
+          "warm_seconds": 151.38240574672818,
+          "construct_seconds": 1.8754320750012994,
+          "setup_seconds": 0.0030283434316515923,
+          "steps": 680,
+          "lu_refreshes": 35,
+          "timers": {
+            "conv_apply": 2.2083728965371847,
+            "factor": 32.45355655066669,
+            "solve": 108.93960168212652,
+            "observe": 3.431815702468157,
+            "diagnostics": 0.0
+          }
+        }
+      ],
+      "warm_seconds_median": 151.38240574672818,
+      "warm_seconds_min": 151.38240574672818,
+      "warm_seconds_max": 151.38240574672818,
+      "force": {
+        "CD_maxabs_rel": 0.0013491840435462886,
+        "CL_maxabs": 0.029471881739391526
+      },
+      "cycles": {
+        "CD_max": 3.245147091837074,
+        "CL_max": 0.9216451367775107,
+        "CL_min": -0.9569826275428581,
+        "St": 0.3005862451038276,
+        "dp_at_t0_plus_half_period": 2.474909475170381,
+        "period": 0.3326832239564066,
+        "cycles": 4
+      },
+      "cycle_errors": {
+        "St_rel": 0.0011596852174873256,
+        "CD_max_rel": 0.0006457643362386376,
+        "CL_max_abs": 0.005367991408761985
+      },
+      "e_u": {
+        "rms": 0.004572547430040284,
+        "max": 0.006336459862561299,
+        "at_start": 0.0002095465395225405,
+        "saves": 681
+      },
+      "e_p": {
+        "rms": 0.0024084135202006337,
+        "max": 0.003333785237882635,
+        "at_start": 0.0005402565469824351
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.004572547430040284,
+          "target": 0.01,
+          "met": true
+        },
+        "e_u_max": {
+          "value": 0.006336459862561299,
+          "target": 0.03,
+          "met": true
+        },
+        "e_p_rms": {
+          "value": 0.0024084135202006337,
+          "target": 0.02,
+          "met": true
+        },
+        "St_rel": {
+          "value": 0.0011596852174873256,
+          "target": 0.01,
+          "met": true
+        },
+        "CD_max_rel": {
+          "value": 0.0006457643362386376,
+          "target": 0.02,
+          "met": true
+        },
+        "CL_max_abs": {
+          "value": 0.005367991408761985,
+          "target": 0.02,
+          "met": true
+        }
+      },
+      "targets_met": 6,
+      "status": "completed"
+    },
+    "p2_dt400_K40": {
+      "velocity_order": 2,
+      "pressure_order": 1,
+      "dt_inverse": 400,
+      "refactor_every": 40,
+      "frozen_lag_seconds": 0.1,
+      "ndof": 96781,
+      "timing": [
+        {
+          "warm_seconds": 135.34958684723824,
+          "construct_seconds": 1.8228189032524824,
+          "setup_seconds": 0.003539241850376129,
+          "steps": 680,
+          "lu_refreshes": 18,
+          "timers": {
+            "conv_apply": 1.950207163579762,
+            "factor": 16.880277816206217,
+            "solve": 107.1030076155439,
+            "observe": 3.464831124059856,
+            "diagnostics": 0.0
+          }
+        }
+      ],
+      "warm_seconds_median": 135.34958684723824,
+      "warm_seconds_min": 135.34958684723824,
+      "warm_seconds_max": 135.34958684723824,
+      "force": {
+        "CD_maxabs_rel": 0.0015028214903493875,
+        "CL_maxabs": 0.03192450198515712
+      },
+      "cycles": {
+        "CD_max": 3.24551705175032,
+        "CL_max": 0.9225550040198183,
+        "CL_min": -0.9581017327018975,
+        "St": 0.3006164888534649,
+        "dp_at_t0_plus_half_period": 2.475200809250513,
+        "period": 0.3326497574995795,
+        "cycles": 4
+      },
+      "cycle_errors": {
+        "St_rel": 0.001260417780470221,
+        "CD_max_rel": 0.0007598420065836469,
+        "CL_max_abs": 0.006277858651069557
+      },
+      "e_u": {
+        "rms": 0.004960833651844224,
+        "max": 0.007058229037468163,
+        "at_start": 0.0002095465395225405,
+        "saves": 681
+      },
+      "e_p": {
+        "rms": 0.0026293276577183033,
+        "max": 0.0036589279044298285,
+        "at_start": 0.0005402565469824351
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.004960833651844224,
+          "target": 0.01,
+          "met": true
+        },
+        "e_u_max": {
+          "value": 0.007058229037468163,
+          "target": 0.03,
+          "met": true
+        },
+        "e_p_rms": {
+          "value": 0.0026293276577183033,
+          "target": 0.02,
+          "met": true
+        },
+        "St_rel": {
+          "value": 0.001260417780470221,
+          "target": 0.01,
+          "met": true
+        },
+        "CD_max_rel": {
+          "value": 0.0007598420065836469,
+          "target": 0.02,
+          "met": true
+        },
+        "CL_max_abs": {
+          "value": 0.006277858651069557,
+          "target": 0.02,
+          "met": true
+        }
+      },
+      "targets_met": 6,
+      "status": "completed"
+    },
+    "p2_dt400_K80": {
+      "velocity_order": 2,
+      "pressure_order": 1,
+      "dt_inverse": 400,
+      "refactor_every": 80,
+      "frozen_lag_seconds": 0.2,
+      "status": "failed",
+      "error": "ArithmeticError('instability')",
+      "traceback": "Traceback (most recent call last):\n  File \"/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-devt/fe_ladder.py\", line 153, in main\n    s.run()\n    ~~~~~^^\n  File \"/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-devt/vendor/ref/transient.py\", line 474, in run\n    self._stages(c, x, t, sbdf, steady_start, rows, walls, diag_rows, stage_records, states, buf, flush, persist, t_wall0)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/rb-devt/vendor/ref/transient.py\", line 552, in _stages\n    stage_records.append(rec); persist('failed'); raise ArithmeticError('instability')\n                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nArithmeticError: instability\n"
+    },
+    "p2_dt800_K40": {
+      "velocity_order": 2,
+      "pressure_order": 1,
+      "dt_inverse": 800,
+      "refactor_every": 40,
+      "frozen_lag_seconds": 0.05,
+      "ndof": 96781,
+      "timing": [
+        {
+          "warm_seconds": 268.4735379628837,
+          "construct_seconds": 1.7910228250548244,
+          "setup_seconds": 0.0035895835608243942,
+          "steps": 1360,
+          "lu_refreshes": 35,
+          "timers": {
+            "conv_apply": 3.9015961829572916,
+            "factor": 32.77954952698201,
+            "solve": 215.5686242170632,
+            "observe": 7.043008824810386,
+            "diagnostics": 0.0
+          }
+        }
+      ],
+      "warm_seconds_median": 268.4735379628837,
+      "warm_seconds_min": 268.4735379628837,
+      "warm_seconds_max": 268.4735379628837,
+      "force": {
+        "CD_maxabs_rel": 0.001360155862531813,
+        "CL_maxabs": 0.004674717911305151
+      },
+      "cycles": {
+        "CD_max": 3.242986111258217,
+        "CL_max": 0.9159508855325633,
+        "CL_min": -0.9507833711874387,
+        "St": 0.300301030500341,
+        "dp_at_t0_plus_half_period": 2.473435722966415,
+        "period": 0.33299919035809467,
+        "cycles": 4
+      },
+      "cycle_errors": {
+        "St_rel": 0.00020972370960989486,
+        "CD_max_rel": 2.0577127445886807e-05,
+        "CL_max_abs": 0.0003262598361853941
+      },
+      "e_u": {
+        "rms": 0.0010483633566736644,
+        "max": 0.0012881699453822079,
+        "at_start": 0.0002095465395225405,
+        "saves": 681
+      },
+      "e_p": {
+        "rms": 0.0007303139998263013,
+        "max": 0.0008764010783766843,
+        "at_start": 0.0005402565469824351
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.0010483633566736644,
+          "target": 0.01,
+          "met": true
+        },
+        "e_u_max": {
+          "value": 0.0012881699453822079,
+          "target": 0.03,
+          "met": true
+        },
+        "e_p_rms": {
+          "value": 0.0007303139998263013,
+          "target": 0.02,
+          "met": true
+        },
+        "St_rel": {
+          "value": 0.00020972370960989486,
+          "target": 0.01,
+          "met": true
+        },
+        "CD_max_rel": {
+          "value": 2.0577127445886807e-05,
+          "target": 0.02,
+          "met": true
+        },
+        "CL_max_abs": {
+          "value": 0.0003262598361853941,
+          "target": 0.02,
+          "met": true
+        }
+      },
+      "targets_met": 6,
+      "status": "completed"
+    },
+    "p2_dt800_K80": {
+      "velocity_order": 2,
+      "pressure_order": 1,
+      "dt_inverse": 800,
+      "refactor_every": 80,
+      "frozen_lag_seconds": 0.1,
+      "ndof": 96781,
+      "timing": [
+        {
+          "warm_seconds": 250.56226702593267,
+          "construct_seconds": 1.6701544942334294,
+          "setup_seconds": 0.0035996390506625175,
+          "steps": 1360,
+          "lu_refreshes": 18,
+          "timers": {
+            "conv_apply": 3.3090265160426497,
+            "factor": 16.781140331178904,
+            "solve": 213.7857653889805,
+            "observe": 7.022546571679413,
+            "diagnostics": 0.0
+          }
+        }
+      ],
+      "warm_seconds_median": 250.56226702593267,
+      "warm_seconds_min": 250.56226702593267,
+      "warm_seconds_max": 250.56226702593267,
+      "force": {
+        "CD_maxabs_rel": 0.0013601558625352362,
+        "CL_maxabs": 0.005256972917587893
+      },
+      "cycles": {
+        "CD_max": 3.243057077094752,
+        "CL_max": 0.9161429367447178,
+        "CL_min": -0.9509728707808256,
+        "St": 0.30030921135650684,
+        "dp_at_t0_plus_half_period": 2.473500596717558,
+        "period": 0.33299011921637156,
+        "cycles": 4
+      },
+      "cycle_errors": {
+        "St_rel": 0.00023697160773298434,
+        "CD_max_rel": 1.305290124693802e-06,
+        "CL_max_abs": 0.00013420862403090705
+      },
+      "e_u": {
+        "rms": 0.0011375265509215955,
+        "max": 0.0014572727744884045,
+        "at_start": 0.0002095465395225405,
+        "saves": 681
+      },
+      "e_p": {
+        "rms": 0.0007667527048442861,
+        "max": 0.000897899777801447,
+        "at_start": 0.0005402565469824351
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.0011375265509215955,
+          "target": 0.01,
+          "met": true
+        },
+        "e_u_max": {
+          "value": 0.0014572727744884045,
+          "target": 0.03,
+          "met": true
+        },
+        "e_p_rms": {
+          "value": 0.0007667527048442861,
+          "target": 0.02,
+          "met": true
+        },
+        "St_rel": {
+          "value": 0.00023697160773298434,
+          "target": 0.01,
+          "met": true
+        },
+        "CD_max_rel": {
+          "value": 1.305290124693802e-06,
+          "target": 0.02,
+          "met": true
+        },
+        "CL_max_abs": {
+          "value": 0.00013420862403090705,
+          "target": 0.02,
+          "met": true
+        }
+      },
+      "targets_met": 6,
+      "status": "completed"
+    }
+  }
+}

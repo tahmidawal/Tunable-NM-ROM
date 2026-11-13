@@ -1,0 +1,149 @@
+{
+  "case": "dev_smoke",
+  "Re": 100,
+  "nu": 0.001,
+  "dt": 0.00125,
+  "steps": 160,
+  "reference_cycles": {
+    "CD_max": 5.352418411025519,
+    "CL_max": -0.0024994337439234082,
+    "CL_min": -0.017571043780287243,
+    "St": 2.6850567307017976,
+    "dp_at_t0_plus_half_period": 2.7365652928233946,
+    "period": 0.04706109151573437,
+    "cycles": 3
+  },
+  "targets": {
+    "e_u_rms": 0.01,
+    "e_u_max": 0.03,
+    "e_p_rms": 0.02,
+    "St_rel": 0.01,
+    "CD_max_rel": 0.02,
+    "CL_max_abs": 0.02
+  },
+  "arms": {
+    "pod_r8": {
+      "spec": {
+        "name": "pod_r8",
+        "kind": "pod",
+        "r": 8
+      },
+      "dimension": 16,
+      "pressure_dimension": 8,
+      "retained": 16,
+      "raw": 16,
+      "rollout_seconds": 0.030858016572892666,
+      "newton_iterations": {
+        "median": 1.0,
+        "max": 2
+      },
+      "force": {
+        "CD_maxabs_rel": 0.9836696591327252,
+        "CL_maxabs": 0.020012810618386785
+      },
+      "cycles": {
+        "CD_max": 0.18275790340360878,
+        "CL_max": 0.00030183999044128414,
+        "CL_min": 0.00011271466977017658,
+        "St": 0.9958009101558095,
+        "dp_at_t0_plus_half_period": 0.08518595995714659,
+        "period": 0.10042167965517661,
+        "cycles": 1
+      },
+      "cycle_errors": {
+        "St_rel": 0.6291322642201548,
+        "CD_max_rel": 0.9658550790746958,
+        "CL_max_abs": 0.0028012737343646923,
+        "dp_rel": 0.9688712123257042
+      },
+      "e_u": {
+        "rms": 0.7541962022980402,
+        "max": 0.802771112793099,
+        "last_period_mean": 0.8018161831831365
+      },
+      "e_p": {
+        "rms": 11.525600299785886,
+        "max": 32.692413762281305,
+        "last_period_mean": 0.31732610086433705
+      },
+      "divergence": {
+        "median": 0.0024918949483347225,
+        "max": 0.0025889644076727285
+      },
+      "mass": {
+        "max": 0.8059671132672187
+      },
+      "phase_aligned": {
+        "lag_saves": -7,
+        "lag_seconds": -0.0175,
+        "lift_rms_at_lag": 0.016266166145603066,
+        "e_u_rms": 0.750034713110183,
+        "e_p_rms": 12.057987052380108
+      },
+      "targets_met": {
+        "e_u_rms": false,
+        "e_u_max": false,
+        "e_p_rms": false,
+        "St_rel": false,
+        "CD_max_rel": false,
+        "CL_max_abs": true
+      },
+      "status": "completed"
+    },
+    "frozen_bank_r4": {
+      "spec": {
+        "name": "frozen_bank_r4",
+        "kind": "bank",
+        "r": 4,
+        "key": "frozen"
+      },
+      "dimension": 8,
+      "pressure_dimension": 4,
+      "retained": 8,
+      "raw": 8,
+      "rollout_seconds": 0.03026722837239504,
+      "newton_iterations": {
+        "median": 2.0,
+        "max": 3
+      },
+      "force": {
+        "CD_maxabs_rel": 9.994714064385942,
+        "CL_maxabs": 0.04076430341775108
+      },
+      "cycles": null,
+      "e_u": {
+        "rms": 0.7128120212452592,
+        "max": 3.169336598141984,
+        "last_period_mean": 0.1240678626296986
+      },
+      "e_p": {
+        "rms": 43.20862766764097,
+        "max": 374.91312072799917,
+        "last_period_mean": 0.21714974024059247
+      },
+      "divergence": {
+        "median": 0.0019360635794040473,
+        "max": 0.10090855460141726
+      },
+      "mass": {
+        "max": 0.6372303312644885
+      },
+      "phase_aligned": {
+        "lag_saves": -7,
+        "lag_seconds": -0.0175,
+        "lift_rms_at_lag": 0.005481566330204777,
+        "e_u_rms": 0.8204805168839692,
+        "e_p_rms": 12.019124742713522
+      },
+      "targets_met": {
+        "e_u_rms": false,
+        "e_u_max": false,
+        "e_p_rms": false,
+        "St_rel": false,
+        "CD_max_rel": false,
+        "CL_max_abs": false
+      },
+      "status": "completed"
+    }
+  }
+}

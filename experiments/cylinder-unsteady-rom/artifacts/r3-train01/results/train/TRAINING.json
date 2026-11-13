@@ -1,0 +1,200 @@
+{
+  "rank": 16,
+  "steps": {
+    "adam": 4000,
+    "lbfgs": 300,
+    "child": 1000,
+    "child_seconds": 2700
+  },
+  "points": 1036497,
+  "obstacle_points": 805,
+  "singular_values": [
+    9.0187258247584,
+    8.902030336212157,
+    1.622775610961899,
+    1.5984487670138305,
+    1.129741061256815,
+    1.1249322247796798,
+    0.8189613827140166,
+    0.7501965656363588,
+    0.7240179911124371,
+    0.3187239811055065,
+    0.3174804808358831,
+    0.3034177670545394,
+    0.2783892373638566,
+    0.2368387887590783,
+    0.23632865115179996,
+    0.18480726963549418
+  ],
+  "mode_weights": [
+    0.1779140967538148,
+    0.17675931218114907,
+    0.07546872344576995,
+    0.07490091591656711,
+    0.06296906212367206,
+    0.06283490268986192,
+    0.05361292225177338,
+    0.05131275158341484,
+    0.05040950664267555,
+    0.0334460734131197,
+    0.03338076479327724,
+    0.0326330955012549,
+    0.03125820165545444,
+    0.028831297246590993,
+    0.02880023000117471,
+    0.02546814380042929
+  ],
+  "export_files": {
+    "basis.npz": "f289528842bbca3ab98e599427081a9dc3662c0974a566034f8ddf726b813ddb",
+    "pod.npz": "56c74a805618fe5c13d6ff795aa4125d15fce791401a9e891da7abde0485bf80",
+    "proj_re95.npz": "27c1efb39af3da662370448d733f35712dd3696f00b0e5d9b4ae3c6d0b8c6383",
+    "quadrature.npz": "6040d8e474b0e5c2df1cd50f0bc3396be611dcdadec6d302b33331d62023f964"
+  },
+  "history": [
+    {
+      "phase": "adam",
+      "step": 200,
+      "objective": 0.7946750790764191,
+      "seconds": 17.844538688659668
+    },
+    {
+      "phase": "adam",
+      "step": 400,
+      "objective": 0.3947827202684351,
+      "seconds": 19.88506007194519
+    },
+    {
+      "phase": "adam",
+      "step": 600,
+      "objective": 0.2444448914337026,
+      "seconds": 21.938348293304443
+    },
+    {
+      "phase": "adam",
+      "step": 800,
+      "objective": 0.16598023963277342,
+      "seconds": 23.984312534332275
+    },
+    {
+      "phase": "adam",
+      "step": 1000,
+      "objective": 0.12332338832837783,
+      "seconds": 26.05099868774414
+    },
+    {
+      "phase": "adam",
+      "step": 1200,
+      "objective": 0.0982298749070717,
+      "seconds": 28.096490621566772
+    },
+    {
+      "phase": "adam",
+      "step": 1400,
+      "objective": 0.08219313840928409,
+      "seconds": 30.14162850379944
+    },
+    {
+      "phase": "adam",
+      "step": 1600,
+      "objective": 0.0714102709428052,
+      "seconds": 32.190258741378784
+    },
+    {
+      "phase": "adam",
+      "step": 1800,
+      "objective": 0.06377636799175943,
+      "seconds": 34.23322367668152
+    },
+    {
+      "phase": "adam",
+      "step": 2000,
+      "objective": 0.05818080743879945,
+      "seconds": 36.284752368927
+    },
+    {
+      "phase": "adam",
+      "step": 2200,
+      "objective": 0.053948184486782826,
+      "seconds": 38.33232259750366
+    },
+    {
+      "phase": "adam",
+      "step": 2400,
+      "objective": 0.050698299707742735,
+      "seconds": 40.3721661567688
+    },
+    {
+      "phase": "adam",
+      "step": 2600,
+      "objective": 0.04815613608433919,
+      "seconds": 42.42518329620361
+    },
+    {
+      "phase": "adam",
+      "step": 2800,
+      "objective": 0.04619136593155301,
+      "seconds": 44.46406579017639
+    },
+    {
+      "phase": "adam",
+      "step": 3000,
+      "objective": 0.044640055722425395,
+      "seconds": 46.53497910499573
+    },
+    {
+      "phase": "adam",
+      "step": 3200,
+      "objective": 0.04340769753700524,
+      "seconds": 48.57272434234619
+    },
+    {
+      "phase": "adam",
+      "step": 3400,
+      "objective": 0.04244230933995608,
+      "seconds": 50.62418866157532
+    },
+    {
+      "phase": "adam",
+      "step": 3600,
+      "objective": 0.04166454909933432,
+      "seconds": 52.66633892059326
+    },
+    {
+      "phase": "adam",
+      "step": 3800,
+      "objective": 0.04101490048709791,
+      "seconds": 54.71209406852722
+    },
+    {
+      "phase": "adam",
+      "step": 4000,
+      "objective": 0.04041874188454609,
+      "seconds": 56.7550265789032
+    }
+  ],
+  "parent": {
+    "lbfgs_iterations": 300,
+    "lbfgs_message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+    "selected": "lbfgs",
+    "objective": 0.02170598327911686,
+    "seconds": 234.37433075904846
+  },
+  "child": {
+    "iterations": 1000,
+    "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+    "evaluations": 1065,
+    "objective": 0.1636704392351491,
+    "seconds": 1741.3921346664429
+  },
+  "outputs": {
+    "trained_bank_eval.npz": "9f001e0f1787b65dada285f6157c0daf909ec307008cacae3d42570779f02842",
+    "trained_bank_params.npz": "c0b4e9b04cbdfa984e19b4eb9812f444c6f91b45e172efc25c1555da3cd69bdf"
+  },
+  "runtime": {
+    "jax": "0.10.2",
+    "backend": "gpu",
+    "devices": [
+      "NVIDIA RTX PRO 6000 Blackwell Server Edition"
+    ]
+  }
+}

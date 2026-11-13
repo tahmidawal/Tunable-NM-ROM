@@ -1,0 +1,37 @@
+{
+  "status": "aborted: ArithmeticError('instability')",
+  "stages": [
+    {
+      "name": "ladder",
+      "dt": 0.00125,
+      "t_start": 17.45000000000225,
+      "planned_steps": 1360,
+      "until_periodic": false,
+      "status": "nonfinite_or_energy_blowup",
+      "steps": 38
+    }
+  ],
+  "states": [],
+  "snapshots": [
+    {
+      "file": "snapshots_0000.npz",
+      "sha256": "36fb3f80afbca89397fc599099b29a011ca388473bffe90ee7b6fc15c7dfcff0",
+      "count": 19
+    }
+  ],
+  "linear_checks_count": 2,
+  "linear_checks_max": 3.409329902430437e-16,
+  "factorizations": 2,
+  "timers_seconds": {
+    "conv_apply": 0.6181900231167674,
+    "factor": 0.0,
+    "solve": 2.6232907939702272,
+    "observe": 1.5671276757493615,
+    "diagnostics": 0.0
+  },
+  "setup_seconds": 0.0019360324367880821,
+  "interpolation": null,
+  "layout_sha256": "8df010e19396cc0c1ad541ff4d3b543fde521e7d1ad0aafd7611a854cede238c",
+  "ndof": 32630,
+  "elapsed_seconds": 4.975879896432161
+}

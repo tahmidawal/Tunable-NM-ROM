@@ -332,6 +332,7 @@ def main():
     ap.add_argument("--cases", type=int, default=128)
     ap.add_argument("--no-rematch", action="store_true"); ap.add_argument("--no-cohort", action="store_true")
     ap.add_argument("--smoke", action="store_true"); ap.add_argument("--rom-rfft", action="store_true")
+    ap.add_argument("--rematch-only", action="store_true")
     a = ap.parse_args()
     if jax.default_backend() != "gpu" and not a.smoke:
         raise RuntimeError("need a GPU backend")
@@ -453,7 +454,7 @@ def main():
                 if key[1] not in u0ms:
                     u0ms[key[1]] = jnp.concatenate([P.spec_resample(u0S[q:q + 16], key[1]) for q in range(0, B, 16)])
         try:
-            for name in arms:
+            for name in (arms if not a.rematch_only else []):
                 R_ = rom[name]; e2e_b, enc_b, lat_b, dec_b = R_["parts"]
                 vm = jax.vmap(R_["run"], in_axes=(0, 0) + (None,) * 10)
                 build(calls, rep, B, f"ROM_VMAP|{name}", vm, [u0n, nuB], list(R_["full"]), B)
@@ -472,7 +473,7 @@ def main():
                 if rom_only:      # informational large batch: never chunked
                     for kk in [x for x in calls if x.endswith(name) and calls[x].chunked]:
                         del calls[kk]
-            if not rom_only:
+            if not rom_only and not a.rematch_only:
                 for key in solver_keys:
                     scheme, m, s = key; tag = f"{scheme}|{m}|{s}"
                     u0m = u0ms[m]
@@ -569,12 +570,13 @@ def main():
         # ---- re-match sensitivity at B = 32
         if B == 32 and not a.no_rematch:
             rc = {}
+            rin = {m: jnp.concatenate([P.spec_resample(u0S[q:q + 8], m) for q in range(0, B, 8)])
+                   for m in sorted({k_[1] for k_ in rematch_keys})}       # all inputs before any compile
             for key in rematch_keys:
-                scheme, m, s = key; tag = f"{scheme}|{m}|{s}"; u0m = P.spec_resample(u0S, m)
+                scheme, m, s = key; tag = f"{scheme}|{m}|{s}"
                 for var in ("vmap", "rfft"):
                     fn, geom = solver(key, var)
-                    build(rc, rep, B, f"SOLVE_{var.upper()}|{tag}", jax.vmap(fn, in_axes=(0, 0, None)), [u0m, nuB], [geom], B)
-                del u0m
+                    build(rc, rep, B, f"SOLVE_{var.upper()}|{tag}", jax.vmap(fn, in_axes=(0, 0, None)), [rin[m], nuB], [geom], B)
             try:
                 smp = time_block(rc, a.reps_large, seed=77)
                 for nm, v in smp.items():
@@ -584,7 +586,7 @@ def main():
                     log(f"rematch B=32 {nm}: {med:.2f} ms")
             except Exception as e:
                 rep["failures"].append(f"rematch failed: {type(e).__name__}: {str(e)[:300]}"); log(rep["failures"][-1])
-            del rc; gc.collect(); dump()
+            del rc, rin; gc.collect(); dump()
         del u0n, nuB, u0S; gc.collect()
     rep["dropped_from_timing"] = DROPPED
     rep["status"] = "final" if not rep["failures"] and not DROPPED else "with-failures"

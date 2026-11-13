@@ -6,6 +6,7 @@ Protocol: `PROTOCOL.md`.  Times are medians over the timed repeats (warm-up call
 - GPU: ['NVIDIA H200, 143771 MiB, 575.57.08']; host ['pax009', 'pax010', 'pax011']; jobs ['7175077', '7175101', '7175105']
 - cuDSS ['1.0.0'] (wheel nvidia-cudss-cu12 1.0.0.35), AmgX commit ['91a8413ef267b1c32aff4014c02820e1c5897ac2'], CuPy ['14.2.0'], NumPy 2.5.0, SciPy 1.18.0; 16 CPU threads for the cuDSS reordering
 - Right-hand side: all ones.  Matrix assembly and upload are not in any time.
+- Timing-noise caveat: AmgX solve times on the small matrices are bimodal across the timed repeats (the same solve takes either of two durations that differ by up to about 6x); the tables give median (min-max), the comparisons use the median as fixed in the protocol. Large sizes are stable.
 
 ## poisson 2D
 
@@ -23,15 +24,15 @@ Protocol: `PROTOCOL.md`.  Times are medians over the timed repeats (warm-up call
 
 | n | tol | AmgX config | setup | solve | iterations | rel. residual | CG solve | CG iterations |
 |---|---|---|---|---|---|---|---|---|
-| 256 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 6.51 | 13.9 | 35 | 7.4e-07 | 82.1 | 420 |
-| 256 | 1e-10 | PCG_CLASSICAL_V_JACOBI | 7.11 | 13.9 | 53 | 7.9e-11 | 105 | 540 |
-| 512 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 9.22 | 27.2 | 38 | 7.7e-07 | 161 | 830 |
-| 512 | 1e-10 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 13.8 | 28.4 | 33 | 6.5e-11 | - | - |
-| 1024 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 18.3 | 23.9 | 41 | 6.5e-07 | 325 | 1680 |
-| 1024 | 1e-10 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 26.7 | 46.8 | 34 | 1.0e-10 | - | - |
-| 2048 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 60.6 | 48.4 | 42 | 6.8e-07 | 1410 | 3380 |
+| 256 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 6.51 (6.43-6.67) | 13.9 (8.91-14) | 35 | 7.4e-07 | 82.1 | 420 |
+| 256 | 1e-10 | PCG_CLASSICAL_V_JACOBI | 7.11 (6.47-7.24) | 13.9 (13.8-29.8) | 53 | 7.9e-11 | 105 | 540 |
+| 512 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 9.22 (9.17-9.39) | 27.2 (27.1-42.6) | 38 | 7.7e-07 | 161 | 830 |
+| 512 | 1e-10 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 13.8 (13.8-14) | 28.4 (28.4-28.5) | 33 | 6.5e-11 | - | - |
+| 1024 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 18.3 (18.1-30.4) | 23.9 (23.8-59.4) | 41 | 6.5e-07 | 325 | 1680 |
+| 1024 | 1e-10 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 26.7 (26.7-26.7) | 46.8 (46.7-46.9) | 34 | 1.0e-10 | - | - |
+| 2048 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 60.6 (47.7-84.5) | 48.4 (48.2-53.8) | 42 | 6.8e-07 | 1410 | 3380 |
 | 2048 | 1e-10 | none reached tol | - | - | - | - | - | - |
-| 4096 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 171 | 140 | 43 | 8.8e-07 | 9714 | 6820 |
+| 4096 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 171 (170-171) | 140 (140-140) | 43 | 8.8e-07 | 9714 | 6820 |
 | 4096 | 1e-10 | none reached tol | - | - | - | - | - | - |
 
 ### Next to the reduced model (one solve per query)
@@ -60,16 +61,16 @@ Protocol: `PROTOCOL.md`.  Times are medians over the timed repeats (warm-up call
 
 | n | tol | AmgX config | setup | solve | iterations | rel. residual | CG solve | CG iterations |
 |---|---|---|---|---|---|---|---|---|
-| 64 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 9.92 | 8.85 | 25 | 8.5e-07 | 25.5 | 130 |
-| 64 | 1e-10 | PCG_CLASSICAL_V_JACOBI | 9.91 | 13.1 | 39 | 7.4e-11 | 37.1 | 190 |
-| 96 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 16.5 | 16.1 | 27 | 6.6e-07 | 39.2 | 200 |
-| 96 | 1e-10 | PCG_CLASSICAL_V_JACOBI | 16.5 | 24.3 | 41 | 8.5e-11 | 54.5 | 280 |
-| 128 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 47.1 | 23.2 | 28 | 8.3e-07 | 68 | 270 |
-| 128 | 1e-10 | PCG_CLASSICAL_V_JACOBI | 30.2 | 35.8 | 43 | 9.0e-11 | 90.5 | 360 |
-| 192 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 78.3 | 56.3 | 29 | 6.4e-07 | 287 | 400 |
-| 192 | 1e-10 | PCG_CLASSICAL_V_JACOBI | 78.3 | 85.3 | 44 | 6.6e-11 | 387 | 540 |
-| 256 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 176 | 115 | 29 | 9.9e-07 | 830 | 530 |
-| 256 | 1e-10 | PCG_CLASSICAL_V_JACOBI | 176 | 179 | 45 | 6.2e-11 | 1127 | 720 |
+| 64 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 9.92 (9.28-16.1) | 8.85 (8.46-21.3) | 25 | 8.5e-07 | 25.5 | 130 |
+| 64 | 1e-10 | PCG_CLASSICAL_V_JACOBI | 9.91 (9.9-9.93) | 13.1 (13.1-13.3) | 39 | 7.4e-11 | 37.1 | 190 |
+| 96 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 16.5 (16.5-19.6) | 16.1 (16.1-29.1) | 27 | 6.6e-07 | 39.2 | 200 |
+| 96 | 1e-10 | PCG_CLASSICAL_V_JACOBI | 16.5 (16.5-16.5) | 24.3 (24.2-24.3) | 41 | 8.5e-11 | 54.5 | 280 |
+| 128 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 47.1 (29.4-54) | 23.2 (23.1-43.2) | 28 | 8.3e-07 | 68 | 270 |
+| 128 | 1e-10 | PCG_CLASSICAL_V_JACOBI | 30.2 (30.1-48) | 35.8 (35.7-50.7) | 43 | 9.0e-11 | 90.5 | 360 |
+| 192 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 78.3 (77.9-78.6) | 56.3 (56.2-56.3) | 29 | 6.4e-07 | 287 | 400 |
+| 192 | 1e-10 | PCG_CLASSICAL_V_JACOBI | 78.3 (78-78.7) | 85.3 (85.2-85.3) | 44 | 6.6e-11 | 387 | 540 |
+| 256 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 176 (176-177) | 115 (115-116) | 29 | 9.9e-07 | 830 | 530 |
+| 256 | 1e-10 | PCG_CLASSICAL_V_JACOBI | 176 (176-177) | 179 (179-179) | 45 | 6.2e-11 | 1127 | 720 |
 
 ### Next to the reduced model (one solve per query)
 
@@ -97,16 +98,16 @@ Protocol: `PROTOCOL.md`.  Times are medians over the timed repeats (warm-up call
 
 | n | tol | AmgX config | setup | solve | iterations | rel. residual | CG solve | CG iterations |
 |---|---|---|---|---|---|---|---|---|
-| 256 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 6.53 | 4.11 | 16 | 4.6e-07 | 16 | 80 |
-| 256 | 1e-10 | PCG_AGGREGATION_JACOBI | 8.15 | 10.7 | 18 | 8.3e-11 | 27.5 | 140 |
-| 512 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 9.11 | 12.9 | 21 | 8.3e-07 | 33.6 | 170 |
-| 512 | 1e-10 | PCG_CLASSICAL_V_JACOBI | 9.08 | 25.9 | 35 | 7.1e-11 | 52.8 | 270 |
-| 1024 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 17.3 | 15.6 | 27 | 7.3e-07 | 66.9 | 340 |
-| 1024 | 1e-10 | PCG_CLASSICAL_V_JACOBI | 17.3 | 24.8 | 43 | 7.6e-11 | 107 | 550 |
-| 2048 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 49.4 | 35 | 30 | 7.5e-07 | 287 | 690 |
-| 2048 | 1e-10 | PCG_CLASSICAL_V_JACOBI | 49.3 | 55.9 | 48 | 7.2e-11 | 462 | 1110 |
-| 4096 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 170 | 107 | 33 | 6.7e-07 | 1992 | 1400 |
-| 4096 | 1e-10 | PCG_CLASSICAL_V_JACOBI | 170 | 166 | 51 | 7.1e-11 | 3186 | 2240 |
+| 256 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 6.53 (6.43-6.7) | 4.11 (4.08-4.13) | 16 | 4.6e-07 | 16 | 80 |
+| 256 | 1e-10 | PCG_AGGREGATION_JACOBI | 8.15 (8.13-8.18) | 10.7 (10.7-10.7) | 18 | 8.3e-11 | 27.5 | 140 |
+| 512 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 9.11 (9.08-9.33) | 12.9 (7.82-20.5) | 21 | 8.3e-07 | 33.6 | 170 |
+| 512 | 1e-10 | PCG_CLASSICAL_V_JACOBI | 9.08 (9.07-9.1) | 25.9 (12.9-25.9) | 35 | 7.1e-11 | 52.8 | 270 |
+| 1024 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 17.3 (17.3-19.7) | 15.6 (15.6-15.7) | 27 | 7.3e-07 | 66.9 | 340 |
+| 1024 | 1e-10 | PCG_CLASSICAL_V_JACOBI | 17.3 (17.3-17.4) | 24.8 (24.7-24.8) | 43 | 7.6e-11 | 107 | 550 |
+| 2048 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 49.4 (49.2-49.8) | 35 (34.9-35.1) | 30 | 7.5e-07 | 287 | 690 |
+| 2048 | 1e-10 | PCG_CLASSICAL_V_JACOBI | 49.3 (49.1-49.7) | 55.9 (55.8-56) | 48 | 7.2e-11 | 462 | 1110 |
+| 4096 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 170 (170-176) | 107 (107-107) | 33 | 6.7e-07 | 1992 | 1400 |
+| 4096 | 1e-10 | PCG_CLASSICAL_V_JACOBI | 170 (170-170) | 166 (165-166) | 51 | 7.1e-11 | 3186 | 2240 |
 
 ### Next to the reduced model (20 linear solves per trajectory: arithmetic estimate, not a measured end-to-end solver)
 
@@ -134,16 +135,16 @@ Protocol: `PROTOCOL.md`.  Times are medians over the timed repeats (warm-up call
 
 | n | tol | AmgX config | setup | solve | iterations | rel. residual | CG solve | CG iterations |
 |---|---|---|---|---|---|---|---|---|
-| 64 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 9.18 | 15.7 | 8 | 7.7e-07 | 6.21 | 30 |
-| 64 | 1e-10 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 10.9 | 7.18 | 13 | 3.9e-11 | 8.08 | 40 |
-| 96 | 1e-06 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 23.9 | 7.5 | 9 | 7.1e-07 | 8.28 | 40 |
-| 96 | 1e-10 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 23.8 | 13.6 | 15 | 9.2e-11 | 12 | 60 |
-| 128 | 1e-06 | PCG_AGGREGATION_JACOBI | 26 | 16.4 | 7 | 7.8e-07 | 12.9 | 50 |
-| 128 | 1e-10 | PCG_CLASSICAL_V_JACOBI | 29.6 | 16.4 | 19 | 3.4e-11 | 20.5 | 80 |
-| 192 | 1e-06 | PCG_AGGREGATION_JACOBI | 39.9 | 47.3 | 9 | 7.3e-07 | 57.3 | 80 |
-| 192 | 1e-10 | PCG_CLASSICAL_V_JACOBI | 78.6 | 44.3 | 23 | 5.7e-11 | 85.8 | 120 |
-| 256 | 1e-06 | PCG_AGGREGATION_JACOBI | 78.3 | 168 | 16 | 4.9e-07 | 157 | 100 |
-| 256 | 1e-10 | PCG_CLASSICAL_V_JACOBI | 179 | 101 | 26 | 7.3e-11 | 267 | 170 |
+| 64 | 1e-06 | PCG_CLASSICAL_V_JACOBI | 9.18 (9.11-9.37) | 15.7 (2.71-15.8) | 8 | 7.7e-07 | 6.21 | 30 |
+| 64 | 1e-10 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 10.9 (10.9-11.1) | 7.18 (7.16-7.2) | 13 | 3.9e-11 | 8.08 | 40 |
+| 96 | 1e-06 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 23.9 (23.8-36.8) | 7.5 (7.47-20.4) | 9 | 7.1e-07 | 8.28 | 40 |
+| 96 | 1e-10 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 23.8 (23.8-23.8) | 13.6 (13.5-13.7) | 15 | 9.2e-11 | 12 | 60 |
+| 128 | 1e-06 | PCG_AGGREGATION_JACOBI | 26 (25.9-27.6) | 16.4 (16.3-16.4) | 7 | 7.8e-07 | 12.9 | 50 |
+| 128 | 1e-10 | PCG_CLASSICAL_V_JACOBI | 29.6 (29.5-29.8) | 16.4 (16.3-16.4) | 19 | 3.4e-11 | 20.5 | 80 |
+| 192 | 1e-06 | PCG_AGGREGATION_JACOBI | 39.9 (39.8-40.4) | 47.3 (47.1-47.4) | 9 | 7.3e-07 | 57.3 | 80 |
+| 192 | 1e-10 | PCG_CLASSICAL_V_JACOBI | 78.6 (78.3-80.2) | 44.3 (44.2-44.5) | 23 | 5.7e-11 | 85.8 | 120 |
+| 256 | 1e-06 | PCG_AGGREGATION_JACOBI | 78.3 (77.8-78.5) | 168 (168-168) | 16 | 4.9e-07 | 157 | 100 |
+| 256 | 1e-10 | PCG_CLASSICAL_V_JACOBI | 179 (177-206) | 101 (101-101) | 26 | 7.3e-11 | 267 | 170 |
 
 ### Next to the reduced model (20 linear solves per trajectory: arithmetic estimate, not a measured end-to-end solver)
 
@@ -171,16 +172,16 @@ Protocol: `PROTOCOL.md`.  Times are medians over the timed repeats (warm-up call
 
 | n | tol | AmgX config | setup | solve | iterations | rel. residual | CG solve | CG iterations |
 |---|---|---|---|---|---|---|---|---|
-| 256 | 1e-06 | FGMRES_AGGREGATION_JACOBI | 7.19 | 3.88 | 7 | 8.1e-07 | - | - |
-| 256 | 1e-10 | PBICGSTAB_CLASSICAL_JACOBI | 7.7 | 6.05 | 9 | 5.4e-11 | - | - |
-| 512 | 1e-06 | PBICGSTAB_CLASSICAL_JACOBI | 10.9 | 5.85 | 6 | 9.3e-07 | - | - |
-| 512 | 1e-10 | PBICGSTAB_CLASSICAL_JACOBI | 10.9 | 9.63 | 10 | 6.8e-11 | - | - |
-| 1024 | 1e-06 | FGMRES_AGGREGATION_JACOBI | 11.5 | 17.8 | 14 | 9.5e-07 | - | - |
-| 1024 | 1e-10 | PBICGSTAB_CLASSICAL_JACOBI | 20.9 | 16.8 | 11 | 5.0e-11 | - | - |
-| 2048 | 1e-06 | PBICGSTAB_CLASSICAL_JACOBI | 53.5 | 22.3 | 7 | 3.7e-07 | - | - |
-| 2048 | 1e-10 | PBICGSTAB_CLASSICAL_JACOBI | 53.5 | 35.7 | 11 | 4.1e-11 | - | - |
-| 4096 | 1e-06 | PBICGSTAB_CLASSICAL_JACOBI | 193 | 66.9 | 7 | 5.2e-07 | - | - |
-| 4096 | 1e-10 | PBICGSTAB_CLASSICAL_JACOBI | 193 | 102 | 10 | 4.3e-11 | - | - |
+| 256 | 1e-06 | FGMRES_AGGREGATION_JACOBI | 7.19 (7.16-7.38) | 3.88 (3.83-3.95) | 7 | 8.1e-07 | - | - |
+| 256 | 1e-10 | PBICGSTAB_CLASSICAL_JACOBI | 7.7 (7.69-7.72) | 6.05 (6.04-6.06) | 9 | 5.4e-11 | - | - |
+| 512 | 1e-06 | PBICGSTAB_CLASSICAL_JACOBI | 10.9 (10.9-10.9) | 5.85 (5.83-5.86) | 6 | 9.3e-07 | - | - |
+| 512 | 1e-10 | PBICGSTAB_CLASSICAL_JACOBI | 10.9 (10.9-10.9) | 9.63 (9.62-9.67) | 10 | 6.8e-11 | - | - |
+| 1024 | 1e-06 | FGMRES_AGGREGATION_JACOBI | 11.5 (11.5-14.1) | 17.8 (17.7-17.8) | 14 | 9.5e-07 | - | - |
+| 1024 | 1e-10 | PBICGSTAB_CLASSICAL_JACOBI | 20.9 (20.7-21.5) | 16.8 (16.7-16.8) | 11 | 5.0e-11 | - | - |
+| 2048 | 1e-06 | PBICGSTAB_CLASSICAL_JACOBI | 53.5 (53.5-53.9) | 22.3 (22.3-22.4) | 7 | 3.7e-07 | - | - |
+| 2048 | 1e-10 | PBICGSTAB_CLASSICAL_JACOBI | 53.5 (53.5-54) | 35.7 (35.7-35.9) | 11 | 4.1e-11 | - | - |
+| 4096 | 1e-06 | PBICGSTAB_CLASSICAL_JACOBI | 193 (193-194) | 66.9 (66.8-66.9) | 7 | 5.2e-07 | - | - |
+| 4096 | 1e-10 | PBICGSTAB_CLASSICAL_JACOBI | 193 (193-194) | 102 (102-102) | 10 | 4.3e-11 | - | - |
 
 ### Next to the reduced model (50 linear solves per trajectory: arithmetic estimate, not a measured end-to-end solver)
 
@@ -206,12 +207,12 @@ Protocol: `PROTOCOL.md`.  Times are medians over the timed repeats (warm-up call
 
 | n | tol | AmgX config | setup | solve | iterations | rel. residual | CG solve | CG iterations |
 |---|---|---|---|---|---|---|---|---|
-| 64 | 1e-06 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 9.02 | 1.99 | 5 | 6.7e-07 | - | - |
-| 64 | 1e-10 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 9.02 | 3.91 | 9 | 5.4e-11 | - | - |
-| 96 | 1e-06 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 22.1 | 5.27 | 7 | 1.5e-07 | - | - |
-| 96 | 1e-10 | FGMRES_AGGREGATION_JACOBI | 13.6 | 11.9 | 9 | 4.6e-11 | - | - |
-| 128 | 1e-06 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 45.2 | 9.94 | 8 | 1.7e-07 | - | - |
-| 128 | 1e-10 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 45.1 | 17.8 | 13 | 3.1e-11 | - | - |
+| 64 | 1e-06 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 9.02 (8.99-11) | 1.99 (1.98-2) | 5 | 6.7e-07 | - | - |
+| 64 | 1e-10 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 9.02 (8.99-9.2) | 3.91 (3.89-4.88) | 9 | 5.4e-11 | - | - |
+| 96 | 1e-06 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 22.1 (22.1-22.1) | 5.27 (5.22-5.28) | 7 | 1.5e-07 | - | - |
+| 96 | 1e-10 | FGMRES_AGGREGATION_JACOBI | 13.6 (13.4-26.5) | 11.9 (11.6-26.5) | 9 | 4.6e-11 | - | - |
+| 128 | 1e-06 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 45.2 (45.2-45.3) | 9.94 (9.93-9.97) | 8 | 1.7e-07 | - | - |
+| 128 | 1e-10 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 45.1 (45-45.3) | 17.8 (17.8-17.8) | 13 | 3.1e-11 | - | - |
 
 ### Next to the reduced model (50 linear solves per trajectory: arithmetic estimate, not a measured end-to-end solver)
 
@@ -558,187 +559,187 @@ For heat and Burgers the solver column is the arithmetic estimate defined in PRO
 
 | problem | n | config | tol | setup | solve | iterations | status | rel. residual (external) | reached tol | peak device GiB |
 |---|---|---|---|---|---|---|---|---|---|---|
-| burgers 2D | 256 | FGMRES_AGGREGATION_JACOBI | 1e-06 | 7.19 | 3.88 | 7 | SUCCESS | 8.1e-07 | True | 0.06 |
-| burgers 2D | 256 | FGMRES_AGGREGATION_JACOBI | 1e-10 | 7.48 | 8.97 | 14 | SUCCESS | 3.7e-11 | True | 0.00 |
-| burgers 2D | 256 | PBICGSTAB_CLASSICAL_JACOBI | 1e-06 | 7.71 | 3.81 | 6 | SUCCESS | 4.2e-07 | True | 0.35 |
-| burgers 2D | 256 | PBICGSTAB_CLASSICAL_JACOBI | 1e-10 | 7.7 | 6.05 | 9 | SUCCESS | 5.4e-11 | True | 0.34 |
-| burgers 2D | 256 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 7.88 | 4.32 | 10 | SUCCESS | 3.4e-07 | True | 0.14 |
-| burgers 2D | 256 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 7.89 | 8.71 | 17 | SUCCESS | 3.0e-11 | True | 0.14 |
-| burgers 2D | 256 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-06 | 6.9 | 430 | 3 | SUCCESS | 5.8e-07 | True | 0.34 |
-| burgers 2D | 256 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-10 | 6.94 | 722 | 5 | SUCCESS | 4.7e-11 | True | 0.34 |
-| burgers 2D | 512 | FGMRES_AGGREGATION_JACOBI | 1e-06 | 9.3 | 8.82 | 10 | SUCCESS | 8.3e-07 | True | 0.20 |
-| burgers 2D | 512 | FGMRES_AGGREGATION_JACOBI | 1e-10 | 9.31 | 18 | 20 | SUCCESS | 9.7e-11 | True | 0.14 |
-| burgers 2D | 512 | PBICGSTAB_CLASSICAL_JACOBI | 1e-06 | 10.9 | 5.85 | 6 | SUCCESS | 9.3e-07 | True | 0.35 |
-| burgers 2D | 512 | PBICGSTAB_CLASSICAL_JACOBI | 1e-10 | 10.9 | 9.63 | 10 | SUCCESS | 6.8e-11 | True | 0.34 |
-| burgers 2D | 512 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 10.9 | 6.27 | 12 | SUCCESS | 6.7e-07 | True | 0.14 |
-| burgers 2D | 512 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 10.9 | 13.1 | 21 | SUCCESS | 5.6e-11 | True | 0.14 |
-| burgers 2D | 512 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-06 | 8.87 | 1226 | 4 | SUCCESS | 8.9e-07 | True | 0.49 |
-| burgers 2D | 512 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-10 | 8.92 | 2272 | 8 | SUCCESS | 6.7e-11 | True | 0.49 |
-| burgers 2D | 1024 | FGMRES_AGGREGATION_JACOBI | 1e-06 | 11.5 | 17.8 | 14 | SUCCESS | 9.5e-07 | True | 0.34 |
-| burgers 2D | 1024 | FGMRES_AGGREGATION_JACOBI | 1e-10 | 11.5 | 37.3 | 25 | SUCCESS | 9.5e-11 | True | 0.47 |
-| burgers 2D | 1024 | PBICGSTAB_CLASSICAL_JACOBI | 1e-06 | 20.9 | 10.5 | 7 | SUCCESS | 4.5e-07 | True | 0.69 |
-| burgers 2D | 1024 | PBICGSTAB_CLASSICAL_JACOBI | 1e-10 | 20.9 | 16.8 | 11 | SUCCESS | 5.0e-11 | True | 0.68 |
-| burgers 2D | 1024 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 23.5 | 12.8 | 14 | SUCCESS | 7.6e-07 | True | 0.28 |
-| burgers 2D | 1024 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 23.6 | 26.3 | 24 | SUCCESS | 5.8e-11 | True | 0.38 |
-| burgers 2D | 1024 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-06 | 10.9 | 2480 | 4 | SUCCESS | 7.5e-07 | True | 0.66 |
-| burgers 2D | 1024 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-10 | 10.9 | 4957 | 8 | SUCCESS | 7.8e-11 | True | 0.66 |
-| burgers 2D | 2048 | FGMRES_AGGREGATION_JACOBI | 1e-06 | 23 | 62.8 | 20 | SUCCESS | 8.7e-07 | True | 2.40 |
-| burgers 2D | 2048 | FGMRES_AGGREGATION_JACOBI | 1e-10 | 22.9 | 123 | 36 | SUCCESS | 8.3e-11 | True | 3.25 |
-| burgers 2D | 2048 | PBICGSTAB_CLASSICAL_JACOBI | 1e-06 | 53.5 | 22.3 | 7 | SUCCESS | 3.7e-07 | True | 2.35 |
-| burgers 2D | 2048 | PBICGSTAB_CLASSICAL_JACOBI | 1e-10 | 53.5 | 35.7 | 11 | SUCCESS | 4.1e-11 | True | 2.35 |
-| burgers 2D | 2048 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 71.9 | 37.9 | 16 | SUCCESS | 5.3e-07 | True | 1.83 |
-| burgers 2D | 2048 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 71.9 | 70 | 26 | SUCCESS | 6.8e-11 | True | 2.53 |
-| burgers 2D | 2048 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-06 | 22.5 | 17388 | 7 | SUCCESS | 5.5e-07 | True | 1.57 |
-| burgers 2D | 2048 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-10 | 22.4 | 29449 | 11 | SUCCESS | 9.6e-11 | True | 1.57 |
-| burgers 2D | 4096 | FGMRES_AGGREGATION_JACOBI | 1e-06 | 64.4 | 297 | 29 | SUCCESS | 9.9e-07 | True | 12.97 |
-| burgers 2D | 4096 | FGMRES_AGGREGATION_JACOBI | 1e-10 | 65.7 | 510 | 53 | SUCCESS | 9.3e-11 | True | 13.74 |
-| burgers 2D | 4096 | PBICGSTAB_CLASSICAL_JACOBI | 1e-06 | 193 | 66.9 | 7 | SUCCESS | 5.2e-07 | True | 9.37 |
-| burgers 2D | 4096 | PBICGSTAB_CLASSICAL_JACOBI | 1e-10 | 193 | 102 | 10 | SUCCESS | 4.3e-11 | True | 9.37 |
-| burgers 2D | 4096 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 256 | 116 | 17 | SUCCESS | 7.4e-07 | True | 8.53 |
-| burgers 2D | 4096 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 257 | 219 | 28 | SUCCESS | 6.8e-11 | True | 11.58 |
-| burgers 2D | 4096 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-06 | 63.1 | 122886 | 13 | SUCCESS | 6.9e-07 | True | 6.04 |
-| burgers 2D | 4096 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-10 | 63.2 | 211356 | 20 | SUCCESS | 9.9e-11 | True | 6.04 |
-| burgers 3D | 64 | FGMRES_AGGREGATION_JACOBI | 1e-06 | 9.69 | 2.52 | 3 | SUCCESS | 7.0e-07 | True | 0.20 |
-| burgers 3D | 64 | FGMRES_AGGREGATION_JACOBI | 1e-10 | 9.62 | 17.9 | 7 | SUCCESS | 1.0e-10 | True | 0.14 |
-| burgers 3D | 64 | PBICGSTAB_CLASSICAL_JACOBI | 1e-06 | 35.8 | 19.4 | 3 | SUCCESS | 2.1e-07 | True | 1.09 |
-| burgers 3D | 64 | PBICGSTAB_CLASSICAL_JACOBI | 1e-10 | 37.7 | 20.7 | 5 | SUCCESS | 1.8e-11 | True | 1.08 |
-| burgers 3D | 64 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 9.02 | 1.99 | 5 | SUCCESS | 6.7e-07 | True | 0.14 |
-| burgers 3D | 64 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 9.02 | 3.91 | 9 | SUCCESS | 5.4e-11 | True | 0.14 |
-| burgers 3D | 64 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-06 | 8.88 | 492 | 2 | SUCCESS | 6.1e-08 | True | 0.50 |
-| burgers 3D | 64 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-10 | 8.97 | 756 | 3 | SUCCESS | 2.0e-11 | True | 0.50 |
-| burgers 3D | 96 | FGMRES_AGGREGATION_JACOBI | 1e-06 | 26.8 | 6.55 | 5 | SUCCESS | 1.5e-07 | True | 0.42 |
-| burgers 3D | 96 | FGMRES_AGGREGATION_JACOBI | 1e-10 | 13.6 | 11.9 | 9 | SUCCESS | 4.6e-11 | True | 0.34 |
-| burgers 3D | 96 | PBICGSTAB_CLASSICAL_JACOBI | 1e-06 | 103 | 12.8 | 4 | SUCCESS | 8.8e-07 | True | 2.49 |
-| burgers 3D | 96 | PBICGSTAB_CLASSICAL_JACOBI | 1e-10 | 67.6 | 21.6 | 6 | SUCCESS | 6.2e-11 | True | 2.49 |
-| burgers 3D | 96 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 22.1 | 5.27 | 7 | SUCCESS | 1.5e-07 | True | 0.28 |
-| burgers 3D | 96 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 22.1 | 8.76 | 11 | SUCCESS | 5.6e-11 | True | 0.28 |
-| burgers 3D | 96 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-06 | 13.3 | 2381 | 2 | SUCCESS | 5.6e-08 | True | 0.72 |
-| burgers 3D | 96 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-10 | 13.4 | 4168 | 4 | SUCCESS | 1.2e-11 | True | 0.70 |
-| burgers 3D | 128 | FGMRES_AGGREGATION_JACOBI | 1e-06 | 33 | 24.5 | 6 | SUCCESS | 3.5e-07 | True | 0.77 |
-| burgers 3D | 128 | FGMRES_AGGREGATION_JACOBI | 1e-10 | 33 | 49.3 | 11 | SUCCESS | 9.4e-11 | True | 0.87 |
-| burgers 3D | 128 | PBICGSTAB_CLASSICAL_JACOBI | 1e-06 | 167 | 22.2 | 5 | SUCCESS | 1.5e-07 | True | 3.68 |
-| burgers 3D | 128 | PBICGSTAB_CLASSICAL_JACOBI | 1e-10 | 170 | 34.1 | 7 | SUCCESS | 4.1e-11 | True | 3.68 |
-| burgers 3D | 128 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 45.2 | 9.94 | 8 | SUCCESS | 1.7e-07 | True | 0.58 |
-| burgers 3D | 128 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 45.1 | 17.8 | 13 | SUCCESS | 3.1e-11 | True | 0.76 |
-| burgers 3D | 128 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-06 | 19.3 | 5913 | 3 | SUCCESS | 1.3e-07 | True | 1.17 |
-| burgers 3D | 128 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-10 | 19.9 | 10629 | 4 | SUCCESS | 9.5e-11 | True | 1.03 |
-| heat 2D | 256 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 6.53 | 4.11 | 16 | SUCCESS | 4.6e-07 | True | 0.55 |
-| heat 2D | 256 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 6.46 | 19.5 | 26 | SUCCESS | 6.0e-11 | True | 0.48 |
-| heat 2D | 256 | PCG_AGGREGATION_JACOBI | 1e-06 | 8.18 | 6.7 | 11 | SUCCESS | 2.4e-07 | True | 0.00 |
-| heat 2D | 256 | PCG_AGGREGATION_JACOBI | 1e-10 | 8.15 | 10.7 | 18 | SUCCESS | 8.3e-11 | True | 0.00 |
-| heat 2D | 256 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 8.68 | 5.86 | 13 | SUCCESS | 4.0e-07 | True | 0.14 |
-| heat 2D | 256 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 8.69 | 11 | 21 | SUCCESS | 6.9e-11 | True | 0.14 |
-| heat 2D | 512 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 9.11 | 12.9 | 21 | SUCCESS | 8.3e-07 | True | 0.62 |
-| heat 2D | 512 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 9.08 | 25.9 | 35 | SUCCESS | 7.1e-11 | True | 0.62 |
-| heat 2D | 512 | PCG_AGGREGATION_JACOBI | 1e-06 | 9.14 | 49.9 | 30 | SUCCESS | 7.8e-07 | True | 0.06 |
-| heat 2D | 512 | PCG_AGGREGATION_JACOBI | 1e-10 | 9.15 | 829 | 1000 | NOT_CONVERGED | 6.2e-08 | False | 0.00 |
-| heat 2D | 512 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 12.2 | 21.9 | 15 | SUCCESS | 4.7e-07 | True | 0.14 |
-| heat 2D | 512 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 12.2 | 43.7 | 25 | SUCCESS | 4.2e-11 | True | 0.14 |
-| heat 2D | 1024 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 17.3 | 15.6 | 27 | SUCCESS | 7.3e-07 | True | 0.76 |
-| heat 2D | 1024 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 17.3 | 24.8 | 43 | SUCCESS | 7.6e-11 | True | 0.76 |
-| heat 2D | 1024 | PCG_AGGREGATION_JACOBI | 1e-06 | 13.2 | 1349 | 1000 | NOT_CONVERGED | 2.4e-04 | False | 0.34 |
-| heat 2D | 1024 | PCG_AGGREGATION_JACOBI | 1e-10 | 13.2 | 1347 | 1000 | NOT_CONVERGED | 2.4e-04 | False | 0.28 |
-| heat 2D | 1024 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 24.8 | 16.8 | 17 | SUCCESS | 4.1e-07 | True | 0.28 |
-| heat 2D | 1024 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 24.8 | 32.1 | 27 | SUCCESS | 5.3e-11 | True | 0.43 |
-| heat 2D | 2048 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 49.4 | 35 | 30 | SUCCESS | 7.5e-07 | True | 1.29 |
-| heat 2D | 2048 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 49.3 | 55.9 | 48 | SUCCESS | 7.2e-11 | True | 1.29 |
-| heat 2D | 2048 | PCG_AGGREGATION_JACOBI | 1e-06 | 24.7 | 2954 | 1000 | NOT_CONVERGED | 1.2e-03 | False | 1.01 |
-| heat 2D | 2048 | PCG_AGGREGATION_JACOBI | 1e-10 | 24.7 | 2954 | 1000 | NOT_CONVERGED | 1.2e-03 | False | 0.95 |
-| heat 2D | 2048 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 72.4 | 44.3 | 18 | SUCCESS | 5.5e-07 | True | 1.97 |
-| heat 2D | 2048 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 72.4 | 78 | 28 | SUCCESS | 8.7e-11 | True | 2.67 |
-| heat 2D | 4096 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 170 | 107 | 33 | SUCCESS | 6.7e-07 | True | 4.80 |
-| heat 2D | 4096 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 170 | 166 | 51 | SUCCESS | 7.1e-11 | True | 4.79 |
-| heat 2D | 4096 | PCG_AGGREGATION_JACOBI | 1e-06 | 66.1 | 8449 | 1000 | NOT_CONVERGED | 5.7e-03 | False | 4.78 |
-| heat 2D | 4096 | PCG_AGGREGATION_JACOBI | 1e-10 | 66.1 | 8454 | 1000 | NOT_CONVERGED | 5.7e-03 | False | 4.72 |
-| heat 2D | 4096 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 258 | 134 | 19 | SUCCESS | 6.3e-07 | True | 9.08 |
-| heat 2D | 4096 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 258 | 242 | 30 | SUCCESS | 6.1e-11 | True | 12.13 |
-| heat 3D | 64 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 9.18 | 15.7 | 8 | SUCCESS | 7.7e-07 | True | 0.69 |
-| heat 3D | 64 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 9.13 | 17.6 | 14 | SUCCESS | 3.3e-11 | True | 0.62 |
-| heat 3D | 64 | PCG_AGGREGATION_JACOBI | 1e-06 | 10.6 | 18.6 | 6 | SUCCESS | 2.2e-07 | True | 0.14 |
-| heat 3D | 64 | PCG_AGGREGATION_JACOBI | 1e-10 | 10.7 | 19.2 | 10 | SUCCESS | 3.6e-11 | True | 0.14 |
-| heat 3D | 64 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 10.9 | 16.9 | 8 | SUCCESS | 2.9e-07 | True | 0.14 |
-| heat 3D | 64 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 10.9 | 7.18 | 13 | SUCCESS | 3.9e-11 | True | 0.14 |
-| heat 3D | 96 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 29.5 | 5.62 | 10 | SUCCESS | 4.3e-07 | True | 0.82 |
-| heat 3D | 96 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 29.5 | 21.9 | 16 | SUCCESS | 9.1e-11 | True | 0.76 |
-| heat 3D | 96 | PCG_AGGREGATION_JACOBI | 1e-06 | 26.9 | 8.66 | 6 | SUCCESS | 8.6e-07 | True | 0.29 |
-| heat 3D | 96 | PCG_AGGREGATION_JACOBI | 1e-10 | 26.8 | 28.4 | 11 | SUCCESS | 7.4e-11 | True | 0.29 |
-| heat 3D | 96 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 23.9 | 7.5 | 9 | SUCCESS | 7.1e-07 | True | 0.28 |
-| heat 3D | 96 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 23.8 | 13.6 | 15 | SUCCESS | 9.2e-11 | True | 0.28 |
-| heat 3D | 128 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 50.2 | 22.2 | 11 | SUCCESS | 8.2e-07 | True | 1.04 |
-| heat 3D | 128 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 29.6 | 16.4 | 19 | SUCCESS | 3.4e-11 | True | 1.04 |
-| heat 3D | 128 | PCG_AGGREGATION_JACOBI | 1e-06 | 26 | 16.4 | 7 | SUCCESS | 7.8e-07 | True | 0.73 |
-| heat 3D | 128 | PCG_AGGREGATION_JACOBI | 1e-10 | 25.9 | 30 | 13 | SUCCESS | 2.4e-11 | True | 0.67 |
-| heat 3D | 128 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 47.4 | 13.9 | 10 | SUCCESS | 6.7e-07 | True | 0.63 |
-| heat 3D | 128 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 47.4 | 26.4 | 17 | SUCCESS | 5.0e-11 | True | 0.88 |
-| heat 3D | 192 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 78.5 | 27 | 14 | SUCCESS | 6.0e-07 | True | 2.49 |
-| heat 3D | 192 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 78.6 | 44.3 | 23 | SUCCESS | 5.7e-11 | True | 2.49 |
-| heat 3D | 192 | PCG_AGGREGATION_JACOBI | 1e-06 | 39.9 | 47.3 | 9 | SUCCESS | 7.3e-07 | True | 2.39 |
-| heat 3D | 192 | PCG_AGGREGATION_JACOBI | 1e-10 | 39.8 | 83.6 | 16 | SUCCESS | 7.8e-11 | True | 2.33 |
-| heat 3D | 192 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 140 | 38.6 | 11 | SUCCESS | 8.8e-07 | True | 3.15 |
-| heat 3D | 192 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 140 | 73.4 | 19 | SUCCESS | 4.0e-11 | True | 4.09 |
-| heat 3D | 256 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 196 | 62 | 16 | SUCCESS | 6.4e-07 | True | 5.34 |
-| heat 3D | 256 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 179 | 101 | 26 | SUCCESS | 7.3e-11 | True | 5.33 |
-| heat 3D | 256 | PCG_AGGREGATION_JACOBI | 1e-06 | 78.3 | 168 | 16 | SUCCESS | 4.9e-07 | True | 5.90 |
-| heat 3D | 256 | PCG_AGGREGATION_JACOBI | 1e-10 | 78.1 | 859 | 82 | SUCCESS | 9.2e-11 | True | 5.84 |
-| heat 3D | 256 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 325 | 87.7 | 12 | SUCCESS | 6.7e-07 | True | 7.77 |
-| heat 3D | 256 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 325 | 160 | 20 | SUCCESS | 5.1e-11 | True | 9.99 |
-| poisson 2D | 256 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 6.51 | 13.9 | 35 | SUCCESS | 7.4e-07 | True | 0.49 |
-| poisson 2D | 256 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 7.11 | 13.9 | 53 | SUCCESS | 7.9e-11 | True | 0.48 |
-| poisson 2D | 256 | PCG_AGGREGATION_JACOBI | 1e-06 | 8.18 | 39.4 | 67 | SUCCESS | 9.9e-07 | True | 0.06 |
-| poisson 2D | 256 | PCG_AGGREGATION_JACOBI | 1e-10 | 8.18 | 63.9 | 109 | SUCCESS | 8.5e-11 | True | 0.00 |
-| poisson 2D | 256 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 10.4 | 12.2 | 21 | SUCCESS | 5.6e-07 | True | 0.14 |
-| poisson 2D | 256 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 10.4 | 21.2 | 31 | SUCCESS | 9.5e-11 | True | 0.14 |
-| poisson 2D | 512 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 9.22 | 27.2 | 38 | SUCCESS | 7.7e-07 | True | 0.62 |
-| poisson 2D | 512 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 9.22 | 47.2 | 57 | SUCCESS | 7.8e-11 | True | 0.62 |
-| poisson 2D | 512 | PCG_AGGREGATION_JACOBI | 1e-06 | 9.48 | 124 | 104 | SUCCESS | 9.3e-07 | True | 0.06 |
-| poisson 2D | 512 | PCG_AGGREGATION_JACOBI | 1e-10 | 9.46 | 157 | 162 | SUCCESS | 1.0e-10 | False | 0.00 |
-| poisson 2D | 512 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 26.8 | 29 | 22 | SUCCESS | 6.8e-07 | True | 0.14 |
-| poisson 2D | 512 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 13.8 | 28.4 | 33 | SUCCESS | 6.5e-11 | True | 0.14 |
-| poisson 2D | 1024 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 18.3 | 23.9 | 41 | SUCCESS | 6.5e-07 | True | 0.82 |
-| poisson 2D | 1024 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 18.1 | 34.8 | 60 | SUCCESS | 1.2e-10 | False | 0.76 |
-| poisson 2D | 1024 | PCG_AGGREGATION_JACOBI | 1e-06 | 13.3 | 211 | 152 | SUCCESS | 8.9e-07 | True | 0.28 |
-| poisson 2D | 1024 | PCG_AGGREGATION_JACOBI | 1e-10 | 13.3 | 327 | 235 | SUCCESS | 1.7e-10 | False | 0.28 |
-| poisson 2D | 1024 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 26.7 | 26.8 | 23 | SUCCESS | 6.4e-07 | True | 0.36 |
-| poisson 2D | 1024 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 26.7 | 46.8 | 34 | SUCCESS | 1.0e-10 | True | 0.57 |
-| poisson 2D | 2048 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 60.6 | 48.4 | 42 | SUCCESS | 6.8e-07 | True | 1.29 |
-| poisson 2D | 2048 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 47.9 | 70 | 61 | SUCCESS | 3.1e-10 | False | 1.29 |
-| poisson 2D | 2048 | PCG_AGGREGATION_JACOBI | 1e-06 | 24.1 | 861 | 289 | SUCCESS | 8.9e-07 | True | 1.01 |
-| poisson 2D | 2048 | PCG_AGGREGATION_JACOBI | 1e-10 | 24.1 | 1553 | 522 | SUCCESS | 8.6e-10 | False | 0.95 |
-| poisson 2D | 2048 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 74.7 | 64.4 | 24 | SUCCESS | 5.8e-07 | True | 2.39 |
-| poisson 2D | 2048 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 74.8 | 106 | 35 | SUCCESS | 2.4e-10 | False | 3.16 |
-| poisson 2D | 4096 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 171 | 140 | 43 | SUCCESS | 8.8e-07 | True | 4.86 |
-| poisson 2D | 4096 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 170 | 205 | 63 | SUCCESS | 1.2e-09 | False | 4.79 |
-| poisson 2D | 4096 | PCG_AGGREGATION_JACOBI | 1e-06 | 66.2 | 3362 | 397 | SUCCESS | 9.5e-07 | True | 4.72 |
-| poisson 2D | 4096 | PCG_AGGREGATION_JACOBI | 1e-10 | 66.4 | 7913 | 935 | SUCCESS | 4.4e-09 | False | 4.72 |
-| poisson 2D | 4096 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 266 | 191 | 25 | SUCCESS | 4.5e-07 | True | 10.75 |
-| poisson 2D | 4096 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 266 | 312 | 36 | SUCCESS | 9.2e-10 | False | 13.80 |
-| poisson 3D | 64 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 9.92 | 8.85 | 25 | SUCCESS | 8.5e-07 | True | 0.69 |
-| poisson 3D | 64 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 9.91 | 13.1 | 39 | SUCCESS | 7.4e-11 | True | 0.62 |
-| poisson 3D | 64 | PCG_AGGREGATION_JACOBI | 1e-06 | 11.4 | 26.4 | 28 | SUCCESS | 8.1e-07 | True | 0.14 |
-| poisson 3D | 64 | PCG_AGGREGATION_JACOBI | 1e-10 | 11.5 | 47.7 | 51 | SUCCESS | 8.1e-11 | True | 0.14 |
-| poisson 3D | 64 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 15.4 | 13 | 17 | SUCCESS | 4.8e-07 | True | 0.14 |
-| poisson 3D | 64 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 15.4 | 23.1 | 26 | SUCCESS | 5.7e-11 | True | 0.14 |
-| poisson 3D | 96 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 16.5 | 16.1 | 27 | SUCCESS | 6.6e-07 | True | 0.76 |
-| poisson 3D | 96 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 16.5 | 24.3 | 41 | SUCCESS | 8.5e-11 | True | 0.76 |
-| poisson 3D | 96 | PCG_AGGREGATION_JACOBI | 1e-06 | 14.1 | 67.1 | 47 | SUCCESS | 8.1e-07 | True | 0.36 |
-| poisson 3D | 96 | PCG_AGGREGATION_JACOBI | 1e-10 | 14.1 | 141 | 99 | SUCCESS | 9.4e-11 | True | 0.29 |
-| poisson 3D | 96 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 28.3 | 19.5 | 18 | SUCCESS | 5.0e-07 | True | 0.28 |
-| poisson 3D | 96 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 28.3 | 33.4 | 27 | SUCCESS | 8.1e-11 | True | 0.36 |
-| poisson 3D | 128 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 47.1 | 23.2 | 28 | SUCCESS | 8.3e-07 | True | 1.04 |
-| poisson 3D | 128 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 30.2 | 35.8 | 43 | SUCCESS | 9.0e-11 | True | 1.04 |
-| poisson 3D | 128 | PCG_AGGREGATION_JACOBI | 1e-06 | 51.6 | 122 | 48 | SUCCESS | 7.4e-07 | True | 0.73 |
-| poisson 3D | 128 | PCG_AGGREGATION_JACOBI | 1e-10 | 26 | 196 | 86 | SUCCESS | 8.0e-11 | True | 0.67 |
-| poisson 3D | 128 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 53.4 | 31.1 | 18 | SUCCESS | 9.2e-07 | True | 0.91 |
-| poisson 3D | 128 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 52.4 | 52.6 | 28 | SUCCESS | 7.4e-11 | True | 1.27 |
-| poisson 3D | 192 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 78.3 | 56.3 | 29 | SUCCESS | 6.4e-07 | True | 2.49 |
-| poisson 3D | 192 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 78.3 | 85.3 | 44 | SUCCESS | 6.6e-11 | True | 2.49 |
-| poisson 3D | 192 | PCG_AGGREGATION_JACOBI | 1e-06 | 40.6 | 308 | 59 | SUCCESS | 7.6e-07 | True | 2.39 |
-| poisson 3D | 192 | PCG_AGGREGATION_JACOBI | 1e-10 | 40.2 | 495 | 95 | SUCCESS | 9.7e-11 | True | 2.34 |
-| poisson 3D | 192 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 151 | 82.4 | 20 | SUCCESS | 4.8e-07 | True | 4.21 |
-| poisson 3D | 192 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 151 | 138 | 30 | SUCCESS | 5.7e-11 | True | 5.38 |
-| poisson 3D | 256 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 176 | 115 | 29 | SUCCESS | 9.9e-07 | True | 5.34 |
-| poisson 3D | 256 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 176 | 179 | 45 | SUCCESS | 6.2e-11 | True | 5.33 |
-| poisson 3D | 256 | PCG_AGGREGATION_JACOBI | 1e-06 | 78.6 | 740 | 71 | SUCCESS | 8.3e-07 | True | 5.92 |
-| poisson 3D | 256 | PCG_AGGREGATION_JACOBI | 1e-10 | 78.3 | 1178 | 113 | SUCCESS | 8.5e-11 | True | 5.86 |
-| poisson 3D | 256 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 341 | 172 | 21 | SUCCESS | 5.1e-07 | True | 10.26 |
-| poisson 3D | 256 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 341 | 283 | 31 | SUCCESS | 8.6e-11 | True | 13.04 |
+| burgers 2D | 256 | FGMRES_AGGREGATION_JACOBI | 1e-06 | 7.19 (7.16-7.38) | 3.88 (3.83-3.95) | 7 | SUCCESS | 8.1e-07 | True | 0.06 |
+| burgers 2D | 256 | FGMRES_AGGREGATION_JACOBI | 1e-10 | 7.48 (7.06-7.64) | 8.97 (8.58-9.06) | 14 | SUCCESS | 3.7e-11 | True | 0.00 |
+| burgers 2D | 256 | PBICGSTAB_CLASSICAL_JACOBI | 1e-06 | 7.71 (7.69-7.72) | 3.81 (3.79-3.82) | 6 | SUCCESS | 4.2e-07 | True | 0.35 |
+| burgers 2D | 256 | PBICGSTAB_CLASSICAL_JACOBI | 1e-10 | 7.7 (7.69-7.72) | 6.05 (6.04-6.06) | 9 | SUCCESS | 5.4e-11 | True | 0.34 |
+| burgers 2D | 256 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 7.88 (7.84-8.08) | 4.32 (4.31-4.34) | 10 | SUCCESS | 3.4e-07 | True | 0.14 |
+| burgers 2D | 256 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 7.89 (7.88-8.06) | 8.71 (8.67-8.74) | 17 | SUCCESS | 3.0e-11 | True | 0.14 |
+| burgers 2D | 256 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-06 | 6.9 (6.86-7) | 430 (429-431) | 3 | SUCCESS | 5.8e-07 | True | 0.34 |
+| burgers 2D | 256 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-10 | 6.94 (6.91-7.19) | 722 (720-862) | 5 | SUCCESS | 4.7e-11 | True | 0.34 |
+| burgers 2D | 512 | FGMRES_AGGREGATION_JACOBI | 1e-06 | 9.3 (9.26-9.35) | 8.82 (7.95-20.8) | 10 | SUCCESS | 8.3e-07 | True | 0.20 |
+| burgers 2D | 512 | FGMRES_AGGREGATION_JACOBI | 1e-10 | 9.31 (9.26-9.34) | 18 (16.9-18.6) | 20 | SUCCESS | 9.7e-11 | True | 0.14 |
+| burgers 2D | 512 | PBICGSTAB_CLASSICAL_JACOBI | 1e-06 | 10.9 (10.9-10.9) | 5.85 (5.83-5.86) | 6 | SUCCESS | 9.3e-07 | True | 0.35 |
+| burgers 2D | 512 | PBICGSTAB_CLASSICAL_JACOBI | 1e-10 | 10.9 (10.9-10.9) | 9.63 (9.62-9.67) | 10 | SUCCESS | 6.8e-11 | True | 0.34 |
+| burgers 2D | 512 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 10.9 (10.9-10.9) | 6.27 (6.26-6.28) | 12 | SUCCESS | 6.7e-07 | True | 0.14 |
+| burgers 2D | 512 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 10.9 (10.8-11) | 13.1 (13.1-13.2) | 21 | SUCCESS | 5.6e-11 | True | 0.14 |
+| burgers 2D | 512 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-06 | 8.87 (8.83-9.06) | 1226 (1073-1233) | 4 | SUCCESS | 8.9e-07 | True | 0.49 |
+| burgers 2D | 512 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-10 | 8.92 (8.88-9.01) | 2272 (2142-2287) | 8 | SUCCESS | 6.7e-11 | True | 0.49 |
+| burgers 2D | 1024 | FGMRES_AGGREGATION_JACOBI | 1e-06 | 11.5 (11.5-14.1) | 17.8 (17.7-17.8) | 14 | SUCCESS | 9.5e-07 | True | 0.34 |
+| burgers 2D | 1024 | FGMRES_AGGREGATION_JACOBI | 1e-10 | 11.5 (11.4-26.5) | 37.3 (37.1-39.4) | 25 | SUCCESS | 9.5e-11 | True | 0.47 |
+| burgers 2D | 1024 | PBICGSTAB_CLASSICAL_JACOBI | 1e-06 | 20.9 (20.7-21.4) | 10.5 (10.5-10.5) | 7 | SUCCESS | 4.5e-07 | True | 0.69 |
+| burgers 2D | 1024 | PBICGSTAB_CLASSICAL_JACOBI | 1e-10 | 20.9 (20.7-21.5) | 16.8 (16.7-16.8) | 11 | SUCCESS | 5.0e-11 | True | 0.68 |
+| burgers 2D | 1024 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 23.5 (23.5-23.6) | 12.8 (12.8-12.8) | 14 | SUCCESS | 7.6e-07 | True | 0.28 |
+| burgers 2D | 1024 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 23.6 (23.5-23.6) | 26.3 (26.3-26.5) | 24 | SUCCESS | 5.8e-11 | True | 0.38 |
+| burgers 2D | 1024 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-06 | 10.9 (10.9-11) | 2480 (2477-2492) | 4 | SUCCESS | 7.5e-07 | True | 0.66 |
+| burgers 2D | 1024 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-10 | 10.9 (10.9-10.9) | 4957 (4336-4969) | 8 | SUCCESS | 7.8e-11 | True | 0.66 |
+| burgers 2D | 2048 | FGMRES_AGGREGATION_JACOBI | 1e-06 | 23 (22.9-25.3) | 62.8 (62.8-67.5) | 20 | SUCCESS | 8.7e-07 | True | 2.40 |
+| burgers 2D | 2048 | FGMRES_AGGREGATION_JACOBI | 1e-10 | 22.9 (22.9-23.2) | 123 (123-124) | 36 | SUCCESS | 8.3e-11 | True | 3.25 |
+| burgers 2D | 2048 | PBICGSTAB_CLASSICAL_JACOBI | 1e-06 | 53.5 (53.5-53.9) | 22.3 (22.3-22.4) | 7 | SUCCESS | 3.7e-07 | True | 2.35 |
+| burgers 2D | 2048 | PBICGSTAB_CLASSICAL_JACOBI | 1e-10 | 53.5 (53.5-54) | 35.7 (35.7-35.9) | 11 | SUCCESS | 4.1e-11 | True | 2.35 |
+| burgers 2D | 2048 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 71.9 (71.7-72.5) | 37.9 (37.7-38) | 16 | SUCCESS | 5.3e-07 | True | 1.83 |
+| burgers 2D | 2048 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 71.9 (71.8-72.5) | 70 (69.9-70.1) | 26 | SUCCESS | 6.8e-11 | True | 2.53 |
+| burgers 2D | 2048 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-06 | 22.5 (22.4-23) | 17388 (17308-17429) | 7 | SUCCESS | 5.5e-07 | True | 1.57 |
+| burgers 2D | 2048 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-10 | 22.4 (22.4-23) | 29449 (29333-30664) | 11 | SUCCESS | 9.6e-11 | True | 1.57 |
+| burgers 2D | 4096 | FGMRES_AGGREGATION_JACOBI | 1e-06 | 64.4 (63.8-65.5) | 297 (285-298) | 29 | SUCCESS | 9.9e-07 | True | 12.97 |
+| burgers 2D | 4096 | FGMRES_AGGREGATION_JACOBI | 1e-10 | 65.7 (64.8-66.5) | 510 (509-518) | 53 | SUCCESS | 9.3e-11 | True | 13.74 |
+| burgers 2D | 4096 | PBICGSTAB_CLASSICAL_JACOBI | 1e-06 | 193 (193-194) | 66.9 (66.8-66.9) | 7 | SUCCESS | 5.2e-07 | True | 9.37 |
+| burgers 2D | 4096 | PBICGSTAB_CLASSICAL_JACOBI | 1e-10 | 193 (193-194) | 102 (102-102) | 10 | SUCCESS | 4.3e-11 | True | 9.37 |
+| burgers 2D | 4096 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 256 (256-257) | 116 (115-116) | 17 | SUCCESS | 7.4e-07 | True | 8.53 |
+| burgers 2D | 4096 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 257 (256-257) | 219 (218-219) | 28 | SUCCESS | 6.8e-11 | True | 11.58 |
+| burgers 2D | 4096 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-06 | 63.1 (63.1-63.6) | 122886 (122252-131861) | 13 | SUCCESS | 6.9e-07 | True | 6.04 |
+| burgers 2D | 4096 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-10 | 63.2 (62.9-63.6) | 211356 (187825-216990) | 20 | SUCCESS | 9.9e-11 | True | 6.04 |
+| burgers 3D | 64 | FGMRES_AGGREGATION_JACOBI | 1e-06 | 9.69 (9.54-25.4) | 2.52 (2.48-2.57) | 3 | SUCCESS | 7.0e-07 | True | 0.20 |
+| burgers 3D | 64 | FGMRES_AGGREGATION_JACOBI | 1e-10 | 9.62 (9.52-9.67) | 17.9 (17.8-18.7) | 7 | SUCCESS | 1.0e-10 | True | 0.14 |
+| burgers 3D | 64 | PBICGSTAB_CLASSICAL_JACOBI | 1e-06 | 35.8 (23.1-35.9) | 19.4 (6.55-19.4) | 3 | SUCCESS | 2.1e-07 | True | 1.09 |
+| burgers 3D | 64 | PBICGSTAB_CLASSICAL_JACOBI | 1e-10 | 37.7 (23.1-38.2) | 20.7 (10.8-23.7) | 5 | SUCCESS | 1.8e-11 | True | 1.08 |
+| burgers 3D | 64 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 9.02 (8.99-11) | 1.99 (1.98-2) | 5 | SUCCESS | 6.7e-07 | True | 0.14 |
+| burgers 3D | 64 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 9.02 (8.99-9.2) | 3.91 (3.89-4.88) | 9 | SUCCESS | 5.4e-11 | True | 0.14 |
+| burgers 3D | 64 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-06 | 8.88 (8.8-9.01) | 492 (456-496) | 2 | SUCCESS | 6.1e-08 | True | 0.50 |
+| burgers 3D | 64 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-10 | 8.97 (8.87-9.06) | 756 (753-819) | 3 | SUCCESS | 2.0e-11 | True | 0.50 |
+| burgers 3D | 96 | FGMRES_AGGREGATION_JACOBI | 1e-06 | 26.8 (26.6-27.4) | 6.55 (6.36-6.66) | 5 | SUCCESS | 1.5e-07 | True | 0.42 |
+| burgers 3D | 96 | FGMRES_AGGREGATION_JACOBI | 1e-10 | 13.6 (13.4-26.5) | 11.9 (11.6-26.5) | 9 | SUCCESS | 4.6e-11 | True | 0.34 |
+| burgers 3D | 96 | PBICGSTAB_CLASSICAL_JACOBI | 1e-06 | 103 (67.5-109) | 12.8 (12.7-12.8) | 4 | SUCCESS | 8.8e-07 | True | 2.49 |
+| burgers 3D | 96 | PBICGSTAB_CLASSICAL_JACOBI | 1e-10 | 67.6 (67.5-67.8) | 21.6 (21.6-21.7) | 6 | SUCCESS | 6.2e-11 | True | 2.49 |
+| burgers 3D | 96 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 22.1 (22.1-22.1) | 5.27 (5.22-5.28) | 7 | SUCCESS | 1.5e-07 | True | 0.28 |
+| burgers 3D | 96 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 22.1 (22.1-22.3) | 8.76 (8.75-8.83) | 11 | SUCCESS | 5.6e-11 | True | 0.28 |
+| burgers 3D | 96 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-06 | 13.3 (13.2-13.3) | 2381 (2379-2391) | 2 | SUCCESS | 5.6e-08 | True | 0.72 |
+| burgers 3D | 96 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-10 | 13.4 (13.3-13.4) | 4168 (4147-4192) | 4 | SUCCESS | 1.2e-11 | True | 0.70 |
+| burgers 3D | 128 | FGMRES_AGGREGATION_JACOBI | 1e-06 | 33 (32.9-33.9) | 24.5 (24.4-24.9) | 6 | SUCCESS | 3.5e-07 | True | 0.77 |
+| burgers 3D | 128 | FGMRES_AGGREGATION_JACOBI | 1e-10 | 33 (32.8-34.3) | 49.3 (48.3-49.4) | 11 | SUCCESS | 9.4e-11 | True | 0.87 |
+| burgers 3D | 128 | PBICGSTAB_CLASSICAL_JACOBI | 1e-06 | 167 (163-170) | 22.2 (22.1-22.2) | 5 | SUCCESS | 1.5e-07 | True | 3.68 |
+| burgers 3D | 128 | PBICGSTAB_CLASSICAL_JACOBI | 1e-10 | 170 (132-175) | 34.1 (34-34.2) | 7 | SUCCESS | 4.1e-11 | True | 3.68 |
+| burgers 3D | 128 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 45.2 (45.2-45.3) | 9.94 (9.93-9.97) | 8 | SUCCESS | 1.7e-07 | True | 0.58 |
+| burgers 3D | 128 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 45.1 (45-45.3) | 17.8 (17.8-17.8) | 13 | SUCCESS | 3.1e-11 | True | 0.76 |
+| burgers 3D | 128 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-06 | 19.3 (19.3-19.8) | 5913 (5902-5939) | 3 | SUCCESS | 1.3e-07 | True | 1.17 |
+| burgers 3D | 128 | PBICGSTAB_AGGREGATION_W_JACOBI | 1e-10 | 19.9 (19.7-131) | 10629 (9413-10658) | 4 | SUCCESS | 9.5e-11 | True | 1.03 |
+| heat 2D | 256 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 6.53 (6.43-6.7) | 4.11 (4.08-4.13) | 16 | SUCCESS | 4.6e-07 | True | 0.55 |
+| heat 2D | 256 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 6.46 (6.45-6.63) | 19.5 (14.9-19.5) | 26 | SUCCESS | 6.0e-11 | True | 0.48 |
+| heat 2D | 256 | PCG_AGGREGATION_JACOBI | 1e-06 | 8.18 (8.15-8.2) | 6.7 (6.67-6.7) | 11 | SUCCESS | 2.4e-07 | True | 0.00 |
+| heat 2D | 256 | PCG_AGGREGATION_JACOBI | 1e-10 | 8.15 (8.13-8.18) | 10.7 (10.7-10.7) | 18 | SUCCESS | 8.3e-11 | True | 0.00 |
+| heat 2D | 256 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 8.68 (8.63-11.3) | 5.86 (5.85-7.37) | 13 | SUCCESS | 4.0e-07 | True | 0.14 |
+| heat 2D | 256 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 8.69 (8.66-10.3) | 11 (11-14.2) | 21 | SUCCESS | 6.9e-11 | True | 0.14 |
+| heat 2D | 512 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 9.11 (9.08-9.33) | 12.9 (7.82-20.5) | 21 | SUCCESS | 8.3e-07 | True | 0.62 |
+| heat 2D | 512 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 9.08 (9.07-9.1) | 25.9 (12.9-25.9) | 35 | SUCCESS | 7.1e-11 | True | 0.62 |
+| heat 2D | 512 | PCG_AGGREGATION_JACOBI | 1e-06 | 9.14 (9.09-9.18) | 49.9 (49.8-50) | 30 | SUCCESS | 7.8e-07 | True | 0.06 |
+| heat 2D | 512 | PCG_AGGREGATION_JACOBI | 1e-10 | 9.15 (9.12-9.38) | 829 (788-843) | 1000 | NOT_CONVERGED | 6.2e-08 | False | 0.00 |
+| heat 2D | 512 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 12.2 (12.2-25.4) | 21.9 (8.89-21.9) | 15 | SUCCESS | 4.7e-07 | True | 0.14 |
+| heat 2D | 512 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 12.2 (12.2-12.4) | 43.7 (30.8-43.8) | 25 | SUCCESS | 4.2e-11 | True | 0.14 |
+| heat 2D | 1024 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 17.3 (17.3-19.7) | 15.6 (15.6-15.7) | 27 | SUCCESS | 7.3e-07 | True | 0.76 |
+| heat 2D | 1024 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 17.3 (17.3-17.4) | 24.8 (24.7-24.8) | 43 | SUCCESS | 7.6e-11 | True | 0.76 |
+| heat 2D | 1024 | PCG_AGGREGATION_JACOBI | 1e-06 | 13.2 (13.2-13.3) | 1349 (1346-1350) | 1000 | NOT_CONVERGED | 2.4e-04 | False | 0.34 |
+| heat 2D | 1024 | PCG_AGGREGATION_JACOBI | 1e-10 | 13.2 (13.2-14.3) | 1347 (1346-1350) | 1000 | NOT_CONVERGED | 2.4e-04 | False | 0.28 |
+| heat 2D | 1024 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 24.8 (24.8-24.8) | 16.8 (16.7-16.8) | 17 | SUCCESS | 4.1e-07 | True | 0.28 |
+| heat 2D | 1024 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 24.8 (24.7-24.8) | 32.1 (31.8-32.2) | 27 | SUCCESS | 5.3e-11 | True | 0.43 |
+| heat 2D | 2048 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 49.4 (49.2-49.8) | 35 (34.9-35.1) | 30 | SUCCESS | 7.5e-07 | True | 1.29 |
+| heat 2D | 2048 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 49.3 (49.1-49.7) | 55.9 (55.8-56) | 48 | SUCCESS | 7.2e-11 | True | 1.29 |
+| heat 2D | 2048 | PCG_AGGREGATION_JACOBI | 1e-06 | 24.7 (24.7-25) | 2954 (2953-2954) | 1000 | NOT_CONVERGED | 1.2e-03 | False | 1.01 |
+| heat 2D | 2048 | PCG_AGGREGATION_JACOBI | 1e-10 | 24.7 (24.7-24.8) | 2954 (2950-2954) | 1000 | NOT_CONVERGED | 1.2e-03 | False | 0.95 |
+| heat 2D | 2048 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 72.4 (72.2-72.8) | 44.3 (44.2-45.9) | 18 | SUCCESS | 5.5e-07 | True | 1.97 |
+| heat 2D | 2048 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 72.4 (72.2-72.9) | 78 (77.9-79.2) | 28 | SUCCESS | 8.7e-11 | True | 2.67 |
+| heat 2D | 4096 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 170 (170-176) | 107 (107-107) | 33 | SUCCESS | 6.7e-07 | True | 4.80 |
+| heat 2D | 4096 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 170 (170-170) | 166 (165-166) | 51 | SUCCESS | 7.1e-11 | True | 4.79 |
+| heat 2D | 4096 | PCG_AGGREGATION_JACOBI | 1e-06 | 66.1 (66-66.7) | 8449 (8448-8453) | 1000 | NOT_CONVERGED | 5.7e-03 | False | 4.78 |
+| heat 2D | 4096 | PCG_AGGREGATION_JACOBI | 1e-10 | 66.1 (65.9-66.8) | 8454 (8454-8455) | 1000 | NOT_CONVERGED | 5.7e-03 | False | 4.72 |
+| heat 2D | 4096 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 258 (257-260) | 134 (134-134) | 19 | SUCCESS | 6.3e-07 | True | 9.08 |
+| heat 2D | 4096 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 258 (257-272) | 242 (241-265) | 30 | SUCCESS | 6.1e-11 | True | 12.13 |
+| heat 3D | 64 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 9.18 (9.11-9.37) | 15.7 (2.71-15.8) | 8 | SUCCESS | 7.7e-07 | True | 0.69 |
+| heat 3D | 64 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 9.13 (9.11-9.14) | 17.6 (17.6-17.7) | 14 | SUCCESS | 3.3e-11 | True | 0.62 |
+| heat 3D | 64 | PCG_AGGREGATION_JACOBI | 1e-06 | 10.6 (10.5-10.7) | 18.6 (18.5-18.8) | 6 | SUCCESS | 2.2e-07 | True | 0.14 |
+| heat 3D | 64 | PCG_AGGREGATION_JACOBI | 1e-10 | 10.7 (10.7-15.7) | 19.2 (9.3-19.3) | 10 | SUCCESS | 3.6e-11 | True | 0.14 |
+| heat 3D | 64 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 10.9 (10.8-11.1) | 16.9 (3.98-17) | 8 | SUCCESS | 2.9e-07 | True | 0.14 |
+| heat 3D | 64 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 10.9 (10.9-11.1) | 7.18 (7.16-7.2) | 13 | SUCCESS | 3.9e-11 | True | 0.14 |
+| heat 3D | 96 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 29.5 (29.4-29.7) | 5.62 (5.6-5.73) | 10 | SUCCESS | 4.3e-07 | True | 0.82 |
+| heat 3D | 96 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 29.5 (29.4-29.5) | 21.9 (21.8-21.9) | 16 | SUCCESS | 9.1e-11 | True | 0.76 |
+| heat 3D | 96 | PCG_AGGREGATION_JACOBI | 1e-06 | 26.9 (26.9-27) | 8.66 (8.64-8.68) | 6 | SUCCESS | 8.6e-07 | True | 0.29 |
+| heat 3D | 96 | PCG_AGGREGATION_JACOBI | 1e-10 | 26.8 (13.9-26.9) | 28.4 (15.6-30) | 11 | SUCCESS | 7.4e-11 | True | 0.29 |
+| heat 3D | 96 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 23.9 (23.8-36.8) | 7.5 (7.47-20.4) | 9 | SUCCESS | 7.1e-07 | True | 0.28 |
+| heat 3D | 96 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 23.8 (23.8-23.8) | 13.6 (13.5-13.7) | 15 | SUCCESS | 9.2e-11 | True | 0.28 |
+| heat 3D | 128 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 50.2 (34.5-55.2) | 22.2 (9.55-22.4) | 11 | SUCCESS | 8.2e-07 | True | 1.04 |
+| heat 3D | 128 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 29.6 (29.5-29.8) | 16.4 (16.3-16.4) | 19 | SUCCESS | 3.4e-11 | True | 1.04 |
+| heat 3D | 128 | PCG_AGGREGATION_JACOBI | 1e-06 | 26 (25.9-27.6) | 16.4 (16.3-16.4) | 7 | SUCCESS | 7.8e-07 | True | 0.73 |
+| heat 3D | 128 | PCG_AGGREGATION_JACOBI | 1e-10 | 25.9 (25.9-25.9) | 30 (30-30) | 13 | SUCCESS | 2.4e-11 | True | 0.67 |
+| heat 3D | 128 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 47.4 (47.4-47.6) | 13.9 (13.9-14.2) | 10 | SUCCESS | 6.7e-07 | True | 0.63 |
+| heat 3D | 128 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 47.4 (47.3-47.6) | 26.4 (26.4-26.4) | 17 | SUCCESS | 5.0e-11 | True | 0.88 |
+| heat 3D | 192 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 78.5 (78.3-79.9) | 27 (27-27.1) | 14 | SUCCESS | 6.0e-07 | True | 2.49 |
+| heat 3D | 192 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 78.6 (78.3-80.2) | 44.3 (44.2-44.5) | 23 | SUCCESS | 5.7e-11 | True | 2.49 |
+| heat 3D | 192 | PCG_AGGREGATION_JACOBI | 1e-06 | 39.9 (39.8-40.4) | 47.3 (47.1-47.4) | 9 | SUCCESS | 7.3e-07 | True | 2.39 |
+| heat 3D | 192 | PCG_AGGREGATION_JACOBI | 1e-10 | 39.8 (39.7-49) | 83.6 (83.3-83.6) | 16 | SUCCESS | 7.8e-11 | True | 2.33 |
+| heat 3D | 192 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 140 (139-141) | 38.6 (38.5-38.6) | 11 | SUCCESS | 8.8e-07 | True | 3.15 |
+| heat 3D | 192 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 140 (139-140) | 73.4 (73.4-73.7) | 19 | SUCCESS | 4.0e-11 | True | 4.09 |
+| heat 3D | 256 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 196 (177-206) | 62 (61.9-62.1) | 16 | SUCCESS | 6.4e-07 | True | 5.34 |
+| heat 3D | 256 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 179 (177-206) | 101 (101-101) | 26 | SUCCESS | 7.3e-11 | True | 5.33 |
+| heat 3D | 256 | PCG_AGGREGATION_JACOBI | 1e-06 | 78.3 (77.8-78.5) | 168 (168-168) | 16 | SUCCESS | 4.9e-07 | True | 5.90 |
+| heat 3D | 256 | PCG_AGGREGATION_JACOBI | 1e-10 | 78.1 (77.9-78.8) | 859 (859-860) | 82 | SUCCESS | 9.2e-11 | True | 5.84 |
+| heat 3D | 256 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 325 (323-326) | 87.7 (87.3-87.8) | 12 | SUCCESS | 6.7e-07 | True | 7.77 |
+| heat 3D | 256 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 325 (324-326) | 160 (160-165) | 20 | SUCCESS | 5.1e-11 | True | 9.99 |
+| poisson 2D | 256 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 6.51 (6.43-6.67) | 13.9 (8.91-14) | 35 | SUCCESS | 7.4e-07 | True | 0.49 |
+| poisson 2D | 256 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 7.11 (6.47-7.24) | 13.9 (13.8-29.8) | 53 | SUCCESS | 7.9e-11 | True | 0.48 |
+| poisson 2D | 256 | PCG_AGGREGATION_JACOBI | 1e-06 | 8.18 (8.15-8.23) | 39.4 (39.4-39.4) | 67 | SUCCESS | 9.9e-07 | True | 0.06 |
+| poisson 2D | 256 | PCG_AGGREGATION_JACOBI | 1e-10 | 8.18 (8.16-8.22) | 63.9 (63.9-71.4) | 109 | SUCCESS | 8.5e-11 | True | 0.00 |
+| poisson 2D | 256 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 10.4 (10.4-11.9) | 12.2 (12.1-12.3) | 21 | SUCCESS | 5.6e-07 | True | 0.14 |
+| poisson 2D | 256 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 10.4 (10.4-10.6) | 21.2 (21.1-21.3) | 31 | SUCCESS | 9.5e-11 | True | 0.14 |
+| poisson 2D | 512 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 9.22 (9.17-9.39) | 27.2 (27.1-42.6) | 38 | SUCCESS | 7.7e-07 | True | 0.62 |
+| poisson 2D | 512 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 9.22 (9.2-9.22) | 47.2 (47.1-47.2) | 57 | SUCCESS | 7.8e-11 | True | 0.62 |
+| poisson 2D | 512 | PCG_AGGREGATION_JACOBI | 1e-06 | 9.48 (9.46-10.3) | 124 (114-128) | 104 | SUCCESS | 9.3e-07 | True | 0.06 |
+| poisson 2D | 512 | PCG_AGGREGATION_JACOBI | 1e-10 | 9.46 (9.44-9.48) | 157 (136-170) | 162 | SUCCESS | 1.0e-10 | False | 0.00 |
+| poisson 2D | 512 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 26.8 (13.8-26.8) | 29 (16-29) | 22 | SUCCESS | 6.8e-07 | True | 0.14 |
+| poisson 2D | 512 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 13.8 (13.8-14) | 28.4 (28.4-28.5) | 33 | SUCCESS | 6.5e-11 | True | 0.14 |
+| poisson 2D | 1024 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 18.3 (18.1-30.4) | 23.9 (23.8-59.4) | 41 | SUCCESS | 6.5e-07 | True | 0.82 |
+| poisson 2D | 1024 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 18.1 (18.1-18.2) | 34.8 (34.8-35.1) | 60 | SUCCESS | 1.2e-10 | False | 0.76 |
+| poisson 2D | 1024 | PCG_AGGREGATION_JACOBI | 1e-06 | 13.3 (13.3-13.4) | 211 (211-211) | 152 | SUCCESS | 8.9e-07 | True | 0.28 |
+| poisson 2D | 1024 | PCG_AGGREGATION_JACOBI | 1e-10 | 13.3 (13.3-26.3) | 327 (326-339) | 235 | SUCCESS | 1.7e-10 | False | 0.28 |
+| poisson 2D | 1024 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 26.7 (26.7-26.8) | 26.8 (26.8-26.8) | 23 | SUCCESS | 6.4e-07 | True | 0.36 |
+| poisson 2D | 1024 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 26.7 (26.7-26.7) | 46.8 (46.7-46.9) | 34 | SUCCESS | 1.0e-10 | True | 0.57 |
+| poisson 2D | 2048 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 60.6 (47.7-84.5) | 48.4 (48.2-53.8) | 42 | SUCCESS | 6.8e-07 | True | 1.29 |
+| poisson 2D | 2048 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 47.9 (47.8-48.4) | 70 (69.9-70.3) | 61 | SUCCESS | 3.1e-10 | False | 1.29 |
+| poisson 2D | 2048 | PCG_AGGREGATION_JACOBI | 1e-06 | 24.1 (24-24.3) | 861 (860-861) | 289 | SUCCESS | 8.9e-07 | True | 1.01 |
+| poisson 2D | 2048 | PCG_AGGREGATION_JACOBI | 1e-10 | 24.1 (24.1-24.3) | 1553 (1550-1553) | 522 | SUCCESS | 8.6e-10 | False | 0.95 |
+| poisson 2D | 2048 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 74.7 (74.5-75.1) | 64.4 (64.3-66.1) | 24 | SUCCESS | 5.8e-07 | True | 2.39 |
+| poisson 2D | 2048 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 74.8 (74.6-75.2) | 106 (106-109) | 35 | SUCCESS | 2.4e-10 | False | 3.16 |
+| poisson 2D | 4096 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 171 (170-171) | 140 (140-140) | 43 | SUCCESS | 8.8e-07 | True | 4.86 |
+| poisson 2D | 4096 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 170 (170-172) | 205 (204-205) | 63 | SUCCESS | 1.2e-09 | False | 4.79 |
+| poisson 2D | 4096 | PCG_AGGREGATION_JACOBI | 1e-06 | 66.2 (66.1-66.8) | 3362 (3361-3364) | 397 | SUCCESS | 9.5e-07 | True | 4.72 |
+| poisson 2D | 4096 | PCG_AGGREGATION_JACOBI | 1e-10 | 66.4 (66.2-66.8) | 7913 (7913-7918) | 935 | SUCCESS | 4.4e-09 | False | 4.72 |
+| poisson 2D | 4096 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 266 (265-268) | 191 (190-209) | 25 | SUCCESS | 4.5e-07 | True | 10.75 |
+| poisson 2D | 4096 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 266 (266-268) | 312 (310-312) | 36 | SUCCESS | 9.2e-10 | False | 13.80 |
+| poisson 3D | 64 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 9.92 (9.28-16.1) | 8.85 (8.46-21.3) | 25 | SUCCESS | 8.5e-07 | True | 0.69 |
+| poisson 3D | 64 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 9.91 (9.9-9.93) | 13.1 (13.1-13.3) | 39 | SUCCESS | 7.4e-11 | True | 0.62 |
+| poisson 3D | 64 | PCG_AGGREGATION_JACOBI | 1e-06 | 11.4 (11.4-11.5) | 26.4 (26.3-26.4) | 28 | SUCCESS | 8.1e-07 | True | 0.14 |
+| poisson 3D | 64 | PCG_AGGREGATION_JACOBI | 1e-10 | 11.5 (11.4-11.5) | 47.7 (47.6-47.8) | 51 | SUCCESS | 8.1e-11 | True | 0.14 |
+| poisson 3D | 64 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 15.4 (15.4-16.5) | 13 (13-13.6) | 17 | SUCCESS | 4.8e-07 | True | 0.14 |
+| poisson 3D | 64 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 15.4 (15.4-15.5) | 23.1 (23.1-23.2) | 26 | SUCCESS | 5.7e-11 | True | 0.14 |
+| poisson 3D | 96 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 16.5 (16.5-19.6) | 16.1 (16.1-29.1) | 27 | SUCCESS | 6.6e-07 | True | 0.76 |
+| poisson 3D | 96 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 16.5 (16.5-16.5) | 24.3 (24.2-24.3) | 41 | SUCCESS | 8.5e-11 | True | 0.76 |
+| poisson 3D | 96 | PCG_AGGREGATION_JACOBI | 1e-06 | 14.1 (14-14.2) | 67.1 (66.8-67.2) | 47 | SUCCESS | 8.1e-07 | True | 0.36 |
+| poisson 3D | 96 | PCG_AGGREGATION_JACOBI | 1e-10 | 14.1 (14-14.1) | 141 (141-141) | 99 | SUCCESS | 9.4e-11 | True | 0.29 |
+| poisson 3D | 96 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 28.3 (28.3-28.3) | 19.5 (19.4-19.5) | 18 | SUCCESS | 5.0e-07 | True | 0.28 |
+| poisson 3D | 96 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 28.3 (28.3-28.3) | 33.4 (33.2-33.5) | 27 | SUCCESS | 8.1e-11 | True | 0.36 |
+| poisson 3D | 128 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 47.1 (29.4-54) | 23.2 (23.1-43.2) | 28 | SUCCESS | 8.3e-07 | True | 1.04 |
+| poisson 3D | 128 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 30.2 (30.1-48) | 35.8 (35.7-50.7) | 43 | SUCCESS | 9.0e-11 | True | 1.04 |
+| poisson 3D | 128 | PCG_AGGREGATION_JACOBI | 1e-06 | 51.6 (26.8-52.6) | 122 (111-126) | 48 | SUCCESS | 7.4e-07 | True | 0.73 |
+| poisson 3D | 128 | PCG_AGGREGATION_JACOBI | 1e-10 | 26 (25.9-26) | 196 (196-196) | 86 | SUCCESS | 8.0e-11 | True | 0.67 |
+| poisson 3D | 128 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 53.4 (52.7-86.3) | 31.1 (30.5-34.3) | 18 | SUCCESS | 9.2e-07 | True | 0.91 |
+| poisson 3D | 128 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 52.4 (52.4-52.6) | 52.6 (52.6-52.6) | 28 | SUCCESS | 7.4e-11 | True | 1.27 |
+| poisson 3D | 192 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 78.3 (77.9-78.6) | 56.3 (56.2-56.3) | 29 | SUCCESS | 6.4e-07 | True | 2.49 |
+| poisson 3D | 192 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 78.3 (78-78.7) | 85.3 (85.2-85.3) | 44 | SUCCESS | 6.6e-11 | True | 2.49 |
+| poisson 3D | 192 | PCG_AGGREGATION_JACOBI | 1e-06 | 40.6 (40.5-41.2) | 308 (308-309) | 59 | SUCCESS | 7.6e-07 | True | 2.39 |
+| poisson 3D | 192 | PCG_AGGREGATION_JACOBI | 1e-10 | 40.2 (40.2-40.6) | 495 (495-496) | 95 | SUCCESS | 9.7e-11 | True | 2.34 |
+| poisson 3D | 192 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 151 (151-151) | 82.4 (82.3-82.4) | 20 | SUCCESS | 4.8e-07 | True | 4.21 |
+| poisson 3D | 192 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 151 (151-151) | 138 (137-138) | 30 | SUCCESS | 5.7e-11 | True | 5.38 |
+| poisson 3D | 256 | PCG_CLASSICAL_V_JACOBI | 1e-06 | 176 (176-177) | 115 (115-116) | 29 | SUCCESS | 9.9e-07 | True | 5.34 |
+| poisson 3D | 256 | PCG_CLASSICAL_V_JACOBI | 1e-10 | 176 (176-177) | 179 (179-179) | 45 | SUCCESS | 6.2e-11 | True | 5.33 |
+| poisson 3D | 256 | PCG_AGGREGATION_JACOBI | 1e-06 | 78.6 (78.5-78.9) | 740 (740-740) | 71 | SUCCESS | 8.3e-07 | True | 5.92 |
+| poisson 3D | 256 | PCG_AGGREGATION_JACOBI | 1e-10 | 78.3 (77.9-81.2) | 1178 (1177-1178) | 113 | SUCCESS | 8.5e-11 | True | 5.86 |
+| poisson 3D | 256 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-06 | 341 (341-343) | 172 (172-173) | 21 | SUCCESS | 5.1e-07 | True | 10.26 |
+| poisson 3D | 256 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS | 1e-10 | 341 (341-344) | 283 (282-285) | 31 | SUCCESS | 8.6e-11 | True | 13.04 |

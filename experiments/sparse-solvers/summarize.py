@@ -39,6 +39,10 @@ def rng(d, k):
         return '-'
 
 
+def mm(st):
+    return f"{ms(st['median'])} ({ms(st['min'])}-{ms(st['max'])})"
+
+
 def amgx_best(d, tol):
     """Protocol headline: smallest median setup+solve among configs whose external residual <= tol."""
     best = None
@@ -82,7 +86,9 @@ P(f"- GPU: {sorted({d.get('gpu') for d in R.values()})}; host {sorted({d.get('ho
 P(f"- cuDSS {sorted({d.get('cudss_version') for d in R.values() if d['solver'] == 'cudss'})} (wheel nvidia-cudss-cu12 1.0.0.35), "
   f"AmgX commit {sorted({d.get('amgx_commit') for d in R.values() if d['solver'] == 'amgx'})}, CuPy {sorted({d.get('cupy') for d in R.values() if d.get('cupy')})}, "
   f"NumPy {g.get('numpy')}, SciPy {g.get('scipy')}; 16 CPU threads for the cuDSS reordering")
-P('- Right-hand side: all ones.  Matrix assembly and upload are not in any time.\n')
+P('- Right-hand side: all ones.  Matrix assembly and upload are not in any time.')
+P('- Timing-noise caveat: AmgX solve times on the small matrices are bimodal across the timed repeats (the same solve takes either of two durations that differ by up to about 6x); '
+  'the tables give median (min-max), the comparisons use the median as fixed in the protocol. Large sizes are stable.\n')
 
 fails, beats, expo = [], [], []
 for (p, dm) in keys:
@@ -129,7 +135,7 @@ for (p, dm) in keys:
             if spd and dc and dc.get('results', {}).get(f'{tol:g}') and not c:
                 fails.append(f'CG {p} {dm}D n={n} tol {tol:g}: did not reach the tolerance')
             P(f"| {n} | {tol:g} | {b['config'][:-5] if b else 'none reached tol' if da else 'not run'} | "
-              f"{ms(b['setup_s']['median']) if b else '-'} | {ms(b['solve_s']['median']) if b else '-'} | {b['iterations'][-1] if b else '-'} | "
+              f"{mm(b['setup_s']) if b else '-'} | {mm(b['solve_s']) if b else '-'} | {b['iterations'][-1] if b else '-'} | "
               f"{'-' if not b else format(b['relres_max'], '.1e')} | {ms(c['solve_s']['median']) if c else '-'} | {c['iterations'][-1] if c else '-'} |")
     P('')
 
@@ -231,7 +237,7 @@ for (p, dm, n, s), d in sorted(R.items(), key=lambda kv: (kv[0][0], kv[0][1], kv
         if not v.get('setup_s'):
             P(f"| {p} {dm}D | {n} | {v['config'][:-5]} | {v['tol']:g} | - | - | - | {v.get('status')} at {v.get('failed_stage')} | - | - | - |")
             continue
-        P(f"| {p} {dm}D | {n} | {v['config'][:-5]} | {v['tol']:g} | {ms(v['setup_s']['median'])} | {ms(v['solve_s']['median'])} | {v['iterations'][-1]} | "
+        P(f"| {p} {dm}D | {n} | {v['config'][:-5]} | {v['tol']:g} | {mm(v['setup_s'])} | {mm(v['solve_s'])} | {v['iterations'][-1]} | "
           f"{v['solve_status'][-1]} | {v['relres_max'] if 'relres_max' in v else max(v['relres']):.1e} | {v.get('reached_tol')} | {v.get('peak_device_bytes', 0) / 2**30:.2f} |")
 out = Path(sys.argv[2]) if len(sys.argv) > 2 else here / f'RESULTS-{tag.name}.md'
 out.write_text('\n'.join(L) + '\n')

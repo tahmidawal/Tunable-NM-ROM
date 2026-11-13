@@ -9,7 +9,10 @@ from batched import jax, jnp, F, HR, H, P
 
 rng = np.random.default_rng(0)
 n, R, k, M, steps, iters = 16, 12, 4, 40, 10, 3
-G = np.linalg.qr(rng.standard_normal((3 * n ** 3, R)))[0]
+# band-limited bank (|k| < n/2, as every real bank: built from truncated fields)
+_raw = rng.standard_normal((R, 3, n, n, n))
+_bl = np.real(np.fft.ifftn(np.fft.fftn(_raw, axes=(-3, -2, -1)) * np.asarray(H.keep_mask(n)), axes=(-3, -2, -1)))
+G = np.linalg.qr(_bl.reshape(R, -1).T)[0]
 A = rng.standard_normal((M, R)); T = 1e-2 * rng.standard_normal((M, R, R))
 lam = np.abs(rng.standard_normal(M)) * 10; Dd = 1e-1 * rng.standard_normal((3, M, R))
 p = dict(W1=0.3 * rng.standard_normal((k, 32)), b1=np.zeros(32), W2=0.1 * rng.standard_normal((32, 32)),
@@ -41,3 +44,11 @@ for m in (24, 32):
         r1 = jax.jit(jax.vmap(f1, in_axes=(0, 0, None)))(u, jnp.asarray(par[:, -1]), BT.geometry_r(m))
         r2 = jax.jit(jax.vmap(f0, in_axes=(0, 0, None)))(u, jnp.asarray(par[:, -1]), F.geometry(m))
         print(m, scheme, "rfft vs ref", BT.relmax(r1, r0), " vmap vs ref", BT.relmax(r2, r0))
+
+# rfft shift vs complex shift
+f = jnp.asarray(H.truncate_field(jnp.asarray(np.stack([H.initial(48, q, fam) for q in par[:1]])[0]), 32))
+off = jnp.asarray([3.7, -1.2, 10.4])
+print("rfft shift vs complex shift", BT.relmax(BT.shift_field_r(f, off), BT.SR.shift_field(f, off)))
+e2r = BT.make_rom_parts(dt, steps, steps // 5, n, R, k, iters, 1e-6, 12, rfft_shift=True)[0]
+gotr = jax.jit(e2r)(u0s, nus, args[0], *args[1:], p, Hc, Hn, Z)
+print("rom sharedR vs ref", BT.relmax(gotr, ref))

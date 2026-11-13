@@ -1,0 +1,107 @@
+host=pax007 source_commit=7c8644350add485554a437cb536c260fe8ad25a9 job=7161724
+NVIDIA A100 80GB PCIe, GPU-aafad47a-9358-af08-cda9-1eacee35afea, 81920 MiB
+jax_backend=gpu
+mesh 128: 128 cases loaded (59s)
+B=1: 27 callables compiled (109s); chunked: 
+B=1 ROM_VMAP|r96_head: 40.96 ms (24.4/s, 40.96 s per 1000)
+B=1 ROM_SHARED|r96_head: 26.45 ms (37.8/s, 26.45 s per 1000)
+B=1 ROM_ENC|r96_head: 5.55 ms (180.3/s, 5.55 s per 1000)
+B=1 ROM_LAT|r96_head: 11.24 ms (88.9/s, 11.24 s per 1000)
+B=1 ROM_DEC|r96_head: 10.70 ms (93.5/s, 10.70 s per 1000)
+B=1 ROM_VMAP|r128_head_fast: 48.16 ms (20.8/s, 48.16 s per 1000)
+B=1 ROM_SHARED|r128_head_fast: 29.78 ms (33.6/s, 29.78 s per 1000)
+B=1 ROM_ENC|r128_head_fast: 6.35 ms (157.6/s, 6.35 s per 1000)
+B=1 ROM_LAT|r128_head_fast: 12.17 ms (82.2/s, 12.17 s per 1000)
+B=1 ROM_DEC|r128_head_fast: 11.65 ms (85.8/s, 11.65 s per 1000)
+B=1 ROM_VMAP|r192_head_fast: 64.32 ms (15.5/s, 64.32 s per 1000)
+B=1 ROM_SHARED|r192_head_fast: 37.00 ms (27.0/s, 37.00 s per 1000)
+B=1 ROM_ENC|r192_head_fast: 7.95 ms (125.8/s, 7.95 s per 1000)
+B=1 ROM_LAT|r192_head_fast: 15.99 ms (62.6/s, 15.99 s per 1000)
+B=1 ROM_DEC|r192_head_fast: 13.45 ms (74.4/s, 13.45 s per 1000)
+B=1 SOLVE_VMAP|cnab2|108|120: 284.44 ms (3.5/s, 284.44 s per 1000)
+B=1 E2E_VMAP|cnab2|108|120: 289.99 ms (3.4/s, 289.99 s per 1000)
+B=1 SOLVE_RFFT|cnab2|108|120: 224.25 ms (4.5/s, 224.25 s per 1000)
+B=1 E2E_RFFT|cnab2|108|120: 231.87 ms (4.3/s, 231.87 s per 1000)
+B=1 SOLVE_VMAP|rk4|108|30: 281.90 ms (3.5/s, 281.90 s per 1000)
+B=1 E2E_VMAP|rk4|108|30: 287.74 ms (3.5/s, 287.74 s per 1000)
+B=1 SOLVE_RFFT|rk4|108|30: 209.53 ms (4.8/s, 209.53 s per 1000)
+B=1 E2E_RFFT|rk4|108|30: 216.32 ms (4.6/s, 216.32 s per 1000)
+B=1 SOLVE_VMAP|rk4|112|30: 317.93 ms (3.1/s, 317.93 s per 1000)
+B=1 E2E_VMAP|rk4|112|30: 326.11 ms (3.1/s, 326.11 s per 1000)
+B=1 SOLVE_RFFT|rk4|112|30: 241.17 ms (4.1/s, 241.17 s per 1000)
+B=1 E2E_RFFT|rk4|112|30: 247.72 ms (4.0/s, 247.72 s per 1000)
+B=1 agreement: ROM_VMAP|r96_head:7.639920501637189e-16, ROM_SHARED|r96_head:1.4006520919668178e-15, ROM_VMAP|r128_head_fast:7.639524368941612e-16, ROM_SHARED|r128_head_fast:2.1008692014589433e-15, ROM_VMAP|r192_head_fast:1.6551507143267709e-15, ROM_SHARED|r192_head_fast:2.2917471429139906e-15, SOLVE_VMAP|cnab2|108|120:0.0, E2E_VMAP|cnab2|108|120:0.0, SOLVE_RFFT|cnab2|108|120:5.086581769354931e-16, E2E_RFFT|cnab2|108|120:5.092632816984869e-16, SOLVE_VMAP|rk4|108|30:0.0, E2E_VMAP|rk4|108|30:0.0, SOLVE_RFFT|rk4|108|30:5.086581769354931e-16, E2E_RFFT|rk4|108|30:5.092632816984869e-16, SOLVE_VMAP|rk4|112|30:0.0, E2E_VMAP|rk4|112|30:0.0, SOLVE_RFFT|rk4|112|30:7.64885229191873e-16, E2E_RFFT|rk4|112|30:8.91210742972351e-16
+B=8: 27 callables compiled (202s); chunked: 
+B=8 ROM_VMAP|r96_head: 117.11 ms (68.3/s, 14.64 s per 1000)
+B=8 ROM_SHARED|r96_head: 87.45 ms (91.5/s, 10.93 s per 1000)
+B=8 ROM_ENC|r96_head: 14.61 ms (547.5/s, 1.83 s per 1000)
+B=8 ROM_LAT|r96_head: 11.83 ms (676.2/s, 1.48 s per 1000)
+B=8 ROM_DEC|r96_head: 62.87 ms (127.2/s, 7.86 s per 1000)
+B=8 ROM_VMAP|r128_head_fast: 133.21 ms (60.1/s, 16.65 s per 1000)
+B=8 ROM_SHARED|r128_head_fast: 92.11 ms (86.9/s, 11.51 s per 1000)
+B=8 ROM_ENC|r128_head_fast: 15.62 ms (512.0/s, 1.95 s per 1000)
+B=8 ROM_LAT|r128_head_fast: 13.55 ms (590.5/s, 1.69 s per 1000)
+B=8 ROM_DEC|r128_head_fast: 65.09 ms (122.9/s, 8.14 s per 1000)
+B=8 ROM_VMAP|r192_head_fast: 173.16 ms (46.2/s, 21.65 s per 1000)
+B=8 ROM_SHARED|r192_head_fast: 103.12 ms (77.6/s, 12.89 s per 1000)
+B=8 ROM_ENC|r192_head_fast: 17.16 ms (466.3/s, 2.14 s per 1000)
+B=8 ROM_LAT|r192_head_fast: 18.45 ms (433.7/s, 2.31 s per 1000)
+B=8 ROM_DEC|r192_head_fast: 68.28 ms (117.2/s, 8.54 s per 1000)
+B=8 SOLVE_VMAP|cnab2|108|120: 2827.97 ms (2.8/s, 353.50 s per 1000)
+B=8 E2E_VMAP|cnab2|108|120: 2877.31 ms (2.8/s, 359.66 s per 1000)
+B=8 SOLVE_RFFT|cnab2|108|120: 1422.58 ms (5.6/s, 177.82 s per 1000)
+B=8 E2E_RFFT|cnab2|108|120: 1469.22 ms (5.4/s, 183.65 s per 1000)
+B=8 SOLVE_VMAP|rk4|108|30: 2890.69 ms (2.8/s, 361.34 s per 1000)
+B=8 E2E_VMAP|rk4|108|30: 2956.12 ms (2.7/s, 369.52 s per 1000)
+B=8 SOLVE_RFFT|rk4|108|30: 1361.91 ms (5.9/s, 170.24 s per 1000)
+B=8 E2E_RFFT|rk4|108|30: 1412.20 ms (5.7/s, 176.53 s per 1000)
+B=8 SOLVE_VMAP|rk4|112|30: 3271.09 ms (2.4/s, 408.89 s per 1000)
+B=8 E2E_VMAP|rk4|112|30: 3338.60 ms (2.4/s, 417.33 s per 1000)
+B=8 SOLVE_RFFT|rk4|112|30: 1586.68 ms (5.0/s, 198.33 s per 1000)
+B=8 E2E_RFFT|rk4|112|30: 1636.50 ms (4.9/s, 204.56 s per 1000)
+B=8 agreement: ROM_VMAP|r96_head:5.019408627902412e-15, ROM_SHARED|r96_head:5.674114101107074e-15, ROM_VMAP|r128_head_fast:4.164027659094225e-15, ROM_SHARED|r128_head_fast:4.3458629280503045e-15, ROM_VMAP|r192_head_fast:5.163661644391742e-15, ROM_SHARED|r192_head_fast:6.69094184907099e-15, SOLVE_VMAP|cnab2|108|120:4.611376910925217e-16, E2E_VMAP|cnab2|108|120:5.818326783875996e-16, SOLVE_RFFT|cnab2|108|120:4.867133226953043e-16, E2E_RFFT|cnab2|108|120:6.131902628353803e-16, SOLVE_VMAP|rk4|108|30:4.611376910925217e-16, E2E_VMAP|rk4|108|30:5.818326783875996e-16, SOLVE_RFFT|rk4|108|30:7.300699840429565e-16, E2E_RFFT|rk4|108|30:9.70335539581822e-16, SOLVE_VMAP|rk4|112|30:7.287645334179941e-15, E2E_VMAP|rk4|112|30:7.702038345430705e-15, SOLVE_RFFT|rk4|112|30:2.817889529216244e-14, E2E_RFFT|rk4|112|30:2.874619036011145e-14
+B=32: 27 callables compiled (602s); chunked: ROM_SHARED|r96_head:16, ROM_DEC|r96_head:16, ROM_SHARED|r128_head_fast:16, ROM_DEC|r128_head_fast:16, ROM_SHARED|r192_head_fast:16, ROM_DEC|r192_head_fast:16, E2E_VMAP|cnab2|108|120:16, E2E_RFFT|cnab2|108|120:16, E2E_VMAP|rk4|108|30:16, E2E_RFFT|rk4|108|30:16, E2E_VMAP|rk4|112|30:16, E2E_RFFT|rk4|112|30:16
+B=32 ROM_VMAP|r96_head: 382.87 ms (83.6/s, 11.96 s per 1000)
+B=32 ROM_SHARED|r96_head: 331.83 ms (96.4/s, 10.37 s per 1000) chunk 16
+B=32 ROM_ENC|r96_head: 44.94 ms (712.1/s, 1.40 s per 1000)
+B=32 ROM_LAT|r96_head: 20.91 ms (1530.1/s, 0.65 s per 1000)
+B=32 ROM_DEC|r96_head: 258.21 ms (123.9/s, 8.07 s per 1000) chunk 16
+B=32 ROM_VMAP|r128_head_fast: 428.22 ms (74.7/s, 13.38 s per 1000)
+B=32 ROM_SHARED|r128_head_fast: 345.87 ms (92.5/s, 10.81 s per 1000) chunk 16
+B=32 ROM_ENC|r128_head_fast: 45.96 ms (696.3/s, 1.44 s per 1000)
+B=32 ROM_LAT|r128_head_fast: 24.83 ms (1288.7/s, 0.78 s per 1000)
+B=32 ROM_DEC|r128_head_fast: 264.88 ms (120.8/s, 8.28 s per 1000) chunk 16
+B=32 ROM_VMAP|r192_head_fast: 549.39 ms (58.2/s, 17.17 s per 1000)
+B=32 ROM_SHARED|r192_head_fast: 370.86 ms (86.3/s, 11.59 s per 1000) chunk 16
+B=32 ROM_ENC|r192_head_fast: 48.21 ms (663.7/s, 1.51 s per 1000)
+B=32 ROM_LAT|r192_head_fast: 34.52 ms (927.1/s, 1.08 s per 1000)
+B=32 ROM_DEC|r192_head_fast: 273.22 ms (117.1/s, 8.54 s per 1000) chunk 16
+B=32 SOLVE_VMAP|cnab2|108|120: 11925.77 ms (2.7/s, 372.68 s per 1000)
+B=32 E2E_VMAP|cnab2|108|120: 11619.85 ms (2.8/s, 363.12 s per 1000) chunk 16
+B=32 SOLVE_RFFT|cnab2|108|120: 5763.81 ms (5.6/s, 180.12 s per 1000)
+B=32 E2E_RFFT|cnab2|108|120: 5720.55 ms (5.6/s, 178.77 s per 1000) chunk 16
+B=32 SOLVE_VMAP|rk4|108|30: 11922.58 ms (2.7/s, 372.58 s per 1000)
+B=32 E2E_VMAP|rk4|108|30: 12203.41 ms (2.6/s, 381.36 s per 1000) chunk 16
+B=32 SOLVE_RFFT|rk4|108|30: 5601.54 ms (5.7/s, 175.05 s per 1000)
+B=32 E2E_RFFT|rk4|108|30: 5789.10 ms (5.5/s, 180.91 s per 1000) chunk 16
+B=32 SOLVE_VMAP|rk4|112|30: 13472.13 ms (2.4/s, 421.00 s per 1000)
+B=32 E2E_VMAP|rk4|112|30: 13781.94 ms (2.3/s, 430.69 s per 1000) chunk 16
+B=32 SOLVE_RFFT|rk4|112|30: 6430.15 ms (5.0/s, 200.94 s per 1000)
+B=32 E2E_RFFT|rk4|112|30: 6751.60 ms (4.7/s, 210.99 s per 1000) chunk 16
+cohort ROM_VMAP|r96_head: {'max_abs_err_diff': 1.4563003580825296e-15, 'worst': 0.0061599523493513055, 'fresh_worst': 0.006159952349350631, 'ok': True}
+cohort ROM_SHARED|r96_head: {'max_abs_err_diff': 2.3999899290139126e-15, 'worst': 0.006159952349350683, 'fresh_worst': 0.006159952349350631, 'ok': True}
+cohort ROM_VMAP|r128_head_fast: {'max_abs_err_diff': 2.0951122781109888e-15, 'worst': 0.0058627588097014075, 'fresh_worst': 0.005862758809701094, 'ok': True}
+cohort ROM_SHARED|r128_head_fast: {'max_abs_err_diff': 2.9689792291343053e-15, 'worst': 0.005862758809701451, 'fresh_worst': 0.005862758809701094, 'ok': True}
+cohort ROM_VMAP|r192_head_fast: {'max_abs_err_diff': 2.3991225672759242e-15, 'worst': 0.004548814362692743, 'fresh_worst': 0.004548814362691385, 'ok': True}
+cohort ROM_SHARED|r192_head_fast: {'max_abs_err_diff': 1.964574336543734e-15, 'worst': 0.004548814362692138, 'fresh_worst': 0.004548814362691385, 'ok': True}
+cohort E2E_VMAP|cnab2|108|120: {'max_abs_err_diff': 4.2257630771327936e-13, 'worst': 0.006015601537747349, 'ladder_worst': 0.0060156015377488, 'ok': True}
+cohort E2E_RFFT|cnab2|108|120: {'max_abs_err_diff': 4.2255928573917134e-13, 'worst': 0.006015601537747344, 'ladder_worst': 0.0060156015377488, 'ok': True}
+cohort E2E_VMAP|rk4|108|30: {'max_abs_err_diff': 3.091733263176945e-12, 'worst': 0.005836924211590665, 'ladder_worst': 0.005836924211592684, 'ok': True}
+cohort E2E_RFFT|rk4|108|30: {'max_abs_err_diff': 3.09173404922352e-12, 'worst': 0.005836924211590666, 'ladder_worst': 0.005836924211592684, 'ok': True}
+cohort E2E_VMAP|rk4|112|30: {'max_abs_err_diff': 2.8997601574706072e-12, 'worst': 0.0045335060477801606, 'ladder_worst': 0.004533506047801055, 'ok': True}
+cohort E2E_RFFT|rk4|112|30: {'max_abs_err_diff': 2.8997316971635795e-12, 'worst': 0.004533506047780157, 'ladder_worst': 0.004533506047801055, 'ok': True}
+B=128: build failed: JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.18 = f64[6291456,768]{0,1} fusion(%basis.1, %loop_add_fusion.11), kind=kCustom, calls=%gemm_fusion_dot.18_computation, metadata={op_name="jit(e2e_b)/vmap()/dot_general" stack_frame_id=220}, backend_config={"operation_queue_id":"0","fusion_backend
+B=128: 1 callables compiled (2192s); chunked: ROM_VMAP|r96_head:16
+B=128: timing failed: RuntimeError: ROM_VMAP|r96_head: cannot shrink below 1
+B=128 agreement: ROM_VMAP|r96_head:JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 6.00GiB. [tf-allocator-allocation-error=''] [executable_name='jit_squeeze']
+RUN_EXIT=1

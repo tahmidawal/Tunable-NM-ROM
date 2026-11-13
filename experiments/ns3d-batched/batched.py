@@ -20,13 +20,26 @@ AXES = (-3, -2, -1)
 
 # ----------------------------------------------------------------- ROM, shared operator --
 
-def make_rom_parts(dt, nsteps, out_every, n, R, k, iters, damping, ic_iters):
+def shift_field_r(field, offset_samples):
+    """SR.shift_field with real-to-complex FFTs (same phases; the last axis is half-spectrum)."""
+    n = field.shape[-1]
+    spec = jnp.fft.rfftn(field, axes=AXES)
+    modes = jnp.fft.fftfreq(n) * n; rmodes = jnp.fft.rfftfreq(n) * n
+    for axis in range(3):
+        mm = rmodes if axis == 2 else modes
+        shape = [1, 1, 1]; shape[axis] = mm.shape[0]
+        spec = spec * jnp.exp(-2j * jnp.pi * mm * (offset_samples[axis] / n)).reshape((1, *shape))
+    return jnp.fft.irfftn(spec, s=(n, n, n), axes=AXES)
+
+
+def make_rom_parts(dt, nsteps, out_every, n, R, k, iters, damping, ic_iters, rfft_shift=False):
     """The unchanged head query (head_rom.make_head_run, q = 0, frame free, extrapolate),
     split into encode / latent / decode, with ONE rearrangement: the viscosity-dependent
     preconditioner division of the quadratic operator is applied after the contraction,
     so the operator (T + T^T) is shared by all queries of a batch."""
     code_fit = HR.make_code_fit(k, ic_iters)
     C0 = jnp.zeros((R, 0))
+    shift = shift_field_r if rfft_shift else SR.shift_field
 
     def prepare(nu, A, lam, Dd):                 # SR.make_frozen_step.prepare without `sym`
         pre = 1.0 + 0.5 * dt * nu * lam
@@ -59,7 +72,7 @@ def make_rom_parts(dt, nsteps, out_every, n, R, k, iters, damping, ic_iters):
 
     def encode(u0, basis, p, Hcand, Hnorm, Zcand):
         c0 = SR.grid_centroid(u0)
-        a0 = basis.T @ SR.shift_field(u0, -c0 * n).ravel()
+        a0 = basis.T @ shift(u0, -c0 * n).ravel()
         idx = jnp.argmin(Hnorm - 2 * (Hcand @ a0))
         z0, y0 = code_fit(p, Zcand[idx], a0, C0)
         return jnp.concatenate((z0, y0, jnp.zeros(3))), c0
@@ -82,7 +95,7 @@ def make_rom_parts(dt, nsteps, out_every, n, R, k, iters, damping, ic_iters):
         Wall = jnp.concatenate((w0[None], W)); call = jnp.concatenate((c0[None], cs))
         coef = HR.head_apply(p, Wall[:, :k])                         # (6, R)
         fields = (basis @ coef.T).T.reshape(-1, 3, n, n, n)
-        return jax.vmap(lambda f, c: SR.shift_field(f, c * n))(fields, call)
+        return jax.vmap(lambda f, c: shift(f, c * n))(fields, call)
 
     sym = lambda T: T + jnp.swapaxes(T, 1, 2)
 
@@ -318,7 +331,7 @@ def main():
     ap.add_argument("--reps-small", type=int, default=5); ap.add_argument("--reps-large", type=int, default=3)
     ap.add_argument("--cases", type=int, default=128)
     ap.add_argument("--no-rematch", action="store_true"); ap.add_argument("--no-cohort", action="store_true")
-    ap.add_argument("--smoke", action="store_true")
+    ap.add_argument("--smoke", action="store_true"); ap.add_argument("--rom-rfft", action="store_true")
     a = ap.parse_args()
     if jax.default_backend() != "gpu" and not a.smoke:
         raise RuntimeError("need a GPU backend")
@@ -378,8 +391,10 @@ def main():
                                damping=HEAD["damping"], ic_iters=HEAD["ic_iters"])
         Gp = ar.prefix(r); A_, T_, lam_, Dd_ = ar.sliced(r, cfg["M"]); C = jnp.zeros((r, 0))
         parts = make_rom_parts(T / steps, steps, steps // 5, n, r, k, it, HEAD["damping"], HEAD["ic_iters"])
+        parts_r = make_rom_parts(T / steps, steps, steps // 5, n, r, k, it, HEAD["damping"], HEAD["ic_iters"],
+                                 rfft_shift=True)
         rom[name] = dict(cfg=cfg, run=run, full=(Gp, A_, T_, lam_, Dd_, p, C, Hc, Hn, Z),
-                         parts=parts, G=Gp, A=A_, T=T_, lam=lam_, Dd=Dd_, p=p, Hc=Hc, Hn=Hn, Z=Z)
+                         parts=parts, parts_r=parts_r, G=Gp, A=A_, T=T_, lam=lam_, Dd=Dd_, p=p, Hc=Hc, Hn=Hn, Z=Z)
         ent = mc["arms"][name]
         rep["arms"][name] = dict(config=cfg, fresh_worst=ent["stats"]["evolved_worst"],
                                  fresh_median=ent["stats"]["evolved_median"], fresh_ms_batch1=ent["ms"]["median_ms"],
@@ -444,6 +459,8 @@ def main():
                 build(calls, rep, B, f"ROM_VMAP|{name}", vm, [u0n, nuB], list(R_["full"]), B)
                 sh = (R_["G"], R_["A"], R_["T"], R_["lam"], R_["Dd"], R_["p"], R_["Hc"], R_["Hn"], R_["Z"])
                 build(calls, rep, B, f"ROM_SHARED|{name}", e2e_b, [u0n, nuB], list(sh), B)
+                if a.rom_rfft:     # amendment A2 (exploratory): shift transforms with real FFTs
+                    build(calls, rep, B, f"ROM_SHAREDR|{name}", R_["parts_r"][0], [u0n, nuB], list(sh), B)
                 ce = build(calls, rep, B, f"ROM_ENC|{name}", enc_b, [u0n], [R_["G"], R_["p"], R_["Hc"], R_["Hn"], R_["Z"]], B)
                 if ce is not None:
                     w0s, c0s = ce.full_output()
@@ -520,7 +537,7 @@ def main():
             rowof = {(r["scheme"], r["n"], r["steps"]): r for r in ladder}
             for nm, c in calls.items():
                 kind, which = nm.split("|", 1)
-                if kind not in ("ROM_VMAP", "ROM_SHARED", "E2E_VMAP", "E2E_RFFT"): continue
+                if kind not in ("ROM_VMAP", "ROM_SHARED", "ROM_SHAREDR", "E2E_VMAP", "E2E_RFFT"): continue
                 errs = np.zeros((ncases, 6))
                 for s0 in range(0, ncases, 32):
                     ids = np.arange(s0, min(s0 + 32, ncases))

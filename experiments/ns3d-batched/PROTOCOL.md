@@ -110,3 +110,17 @@ A1 (2026-11-13, 01:50 EST, before any batched timing). The cluster queue is satu
 starts first; every ratio is still formed within one job on one GPU, and the GPU model is
 reported per mesh. Wall times are not compared across meshes run on different GPU models.
 make_table.py builds the tables from the job JSONs.
+
+A2 (2026-11-13, 01:50 EST; written after the B <= 32 results at 64^3 and 128^3 were seen,
+so everything under A2 is EXPLORATORY and reported separately from the pre-registered
+headline). At 128^3 the batched ROM is dominated by reconstruction (decode ~80 % of the
+end-to-end time), whose centring shifts use complex FFTs, while the solver was given a
+real-FFT variant (`fom_rfft`). For symmetry an exploratory ROM variant `rom_shared_r` is
+added: `rom_shared` with the encode/decode centring shifts done by `rfftn`/`irfftn`
+(identical phases; exact for the band-limited bank fields). It must pass the same Section-4
+agreement checks. It runs in supplementary jobs (m64r, m128r) that also re-time the
+pre-registered variants and the solver at B = 32 and 128 in the same job, so its ratios are
+within-job. Also: m128 7161724 failed at B = 128 (compile-time GEMM autotuning ran out of
+device memory) after completing B = 1, 8, 32; the code now halves the chunk on a compile
+failure (2185a3c21) and the B = 128 point is supplied by job m128c (B = 32 repeated in the
+same job, plus the B = 32 re-match that also failed in 7161724).

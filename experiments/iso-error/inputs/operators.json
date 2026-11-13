@@ -1,0 +1,20 @@
+{
+ "read_at": "2026-11-13 11:50 EST",
+ "sources": {
+  "S1": "scratchpad/nmrom/push/burgers-ops-status.md (file dated 2026-11-11 17:44), line 66",
+  "S2": "scratchpad/nmrom/push/operator-scaling-status.md (file dated 2026-11-13 09:23), lines 68 and 71",
+  "T1": "experiments/burgers-ops-matched/reports/tables.md @ 6357834e4, Table 1 (job 7138314, A100 80GB, test64, 4,608 training trajectories), lines 14-24"
+ },
+ "note": "Operators with a test64 evaluation and protocol timing whose median is at or below 0.25 %. Per-seed rows (T1) are the detail behind the summary line S1. No operator in either status file has a test64 median below 0.189 %.",
+ "test_evaluated": [
+  {"name": "FNO F0 seed 1 (paper architecture; seeds 0 and 2 give 0.220 % and 0.233 %)", "median": 0.195, "worst": 0.435, "ms": 4.06, "cite": "T1 line 16; S1"},
+  {"name": "FNO F0 seed 0", "median": 0.22, "worst": 0.477, "ms": 4.06, "cite": "T1 line 15; S1"},
+  {"name": "FNO F0 seed 2", "median": 0.233, "worst": 0.492, "ms": 4.06, "cite": "T1 line 17; S1"},
+  {"name": "FNO F1", "median": 0.199, "worst": 0.463, "ms": 4.27, "cite": "T1 line 18"},
+  {"name": "FNO F2 (the selected FNO)", "median": 0.189, "worst": 0.483, "ms": 6.60, "cite": "T1 line 19; S1"},
+  {"name": "U-Net U0 seed 0", "median": 0.213, "worst": 0.453, "ms": 7.40, "cite": "T1 line 22; S1"},
+  {"name": "U-Net U0 seed 1", "median": 0.224, "worst": 0.502, "ms": 7.41, "cite": "T1 line 23; S1"},
+  {"name": "U-Net U0 seed 2", "median": 0.203, "worst": 0.506, "ms": 7.38, "cite": "T1 line 24; S1"}
+ ],
+ "best_validation_only": "best so far: 0.0730 % validation mean, about 0.065 % validation median, FNO Fw128m64L4 on 36,864 trajectories, 400k steps; no test evaluation [S2 line 68]"
+}

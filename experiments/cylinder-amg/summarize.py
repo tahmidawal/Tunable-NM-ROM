@@ -103,12 +103,16 @@ def main():
     out = {'dev': rows, 'lu_identical_across_dev_jobs': lu_consistent, 'selected': sel,
            'record_lu_seconds_re105': RECORD_LU_SECONDS}
     if a.heldout:
-        ho = load(a.heldout, 're105')
-        hrows = {n: row(recs[0]) for n, recs in ho.items()}
-        table(hrows, 'Held-out Re 105 (5 timed repetitions each, one allocation)')
-        lu_med = [r['wall_median'] for n, r in hrows.items() if n.startswith('lu') and r['wall_median']]
-        ratio = {n: r['wall_median'] / min(lu_med) for n, r in hrows.items() if r['wall_median'] and lu_med}
-        print('\nwall / paired LU (faster LU block):', {n: round(v, 3) for n, v in ratio.items()})
+        hrows, ratio = {}, {}
+        for d in a.heldout:
+            alloc = Path(d).name
+            ho = load([d], 're105')
+            rows_d = {f'{n} [{alloc}]': row(recs[0]) for n, recs in ho.items()}
+            table(rows_d, f'Held-out Re 105, allocation {alloc} (5 timed repetitions each)')
+            lu_med = [r['wall_median'] for n, r in rows_d.items() if n.startswith('lu') and r['wall_median']]
+            rat = {n: r['wall_median'] / min(lu_med) for n, r in rows_d.items() if r['wall_median'] and lu_med}
+            print(f'\nwall / paired LU of {alloc} (faster LU block):', {n: round(v, 3) for n, v in rat.items()})
+            hrows.update(rows_d); ratio.update(rat)
         print('wall minus (factor/setup + solve) timers, i.e. the part no linear solver can remove:',
               {n: round(r['outside_linear_solver_median'], 2) for n, r in hrows.items() if r['wall_median']})
         print('wall / record 42.25 s:', {n: round(r['wall_median'] / RECORD_LU_SECONDS, 3) for n, r in hrows.items() if r['wall_median']})

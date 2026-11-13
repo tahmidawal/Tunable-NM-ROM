@@ -1,7 +1,9 @@
 Dear Area Chair,
 
-We would like to distinguish the broad motivation question raised in reviewer iMp8's W1 from the paper-specific methodological and empirical assessment. The availability of fast full-order solvers is a reason to require strong comparisons; it does not by itself establish that reduced models have no useful role.
+We would like to highlight the new evidence addressing the motivation and solver-comparison concerns. Our intended use is repeated PDE queries within a parameterised family, with an accuracy–cost choice from one trained reduced model.
 
-Our contribution is a learned low-dimensional representation with query-time accuracy–cost choices, while retaining a projected PDE solve for each query. The intended use is repeated simulation within a parameterised family. The revised manuscript addresses the specific baseline and evaluation concerns through accuracy-matched numerical solvers, matched-data operator error comparisons, fresh test cases and independently trained models.
+In the revised manuscript, the fast width-192 Navier–Stokes head achieves 5.1–10.2× speedups over the fastest accuracy-matched configuration from a 450-entry GPU pseudo-spectral solver ladder (Table 1; Appendix E.1). Figure G.3 also shows that increasing the Burgers 2D resolution from 256² to 4096² leaves reduced-solve time essentially unchanged at fixed reduced settings on an H200 GPU.
 
-In particular, Table 1 provides measured advantages over the tested accuracy-matched GPU solver on the stated Navier–Stokes family. We also report transform-solver wins, offline amortisation costs and the limits of mesh-independent reduced computation. We respectfully ask that the assessment distinguish the general motivation question from this narrower contribution and revised evidence.
+These results demonstrate the value of the reduced model in the tested regimes. We distinguish reduced-solve cost from mesh-dependent input/output costs and report cases where classical solvers remain faster. The revised evidence supports our contribution of query-time accuracy–cost control for repeated PDE solves.
+
+We are also running GPU cuDSS and AmgX single-solve benchmarks and will report those results as soon as they are available.

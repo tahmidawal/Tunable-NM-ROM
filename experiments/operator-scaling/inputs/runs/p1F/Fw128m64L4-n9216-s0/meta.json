@@ -1,0 +1,38 @@
+{
+ "arm": "Fw128m64L4",
+ "config": {
+  "family": "fno",
+  "width": 128,
+  "modes": 64,
+  "layers": 4,
+  "lr": 0.001
+ },
+ "rung": 9216,
+ "data_device": "cpu",
+ "extra_dir": "../data/extra",
+ "seed": 0,
+ "train_cases": 8960,
+ "validation_cases": 256,
+ "train_layout": "P[0:4352] ++ X[0:4608]",
+ "validation_layout": "P[4352:4608]",
+ "normalization": {
+  "u_mean": 0.12620497189713395,
+  "u_std": 0.27864477948557936,
+  "nu_mean": 0.0391823835670948,
+  "nu_std": 0.02503773383796215,
+  "scale": 0.2431437668598022
+ },
+ "real_parameters": 277025413,
+ "gpu": "NVIDIA H200",
+ "job_id": "7157811",
+ "node": "pax009",
+ "torch": "2.11.0+cu128",
+ "eval_every": 500,
+ "plateau_patience": 6,
+ "stop_patience": 20,
+ "threshold": 0.001,
+ "min_lr": 1e-05,
+ "batch": 8,
+ "test_cohort_seen": false,
+ "continuation": null
+}

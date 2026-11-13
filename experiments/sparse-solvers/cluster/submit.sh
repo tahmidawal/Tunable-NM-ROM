@@ -9,8 +9,9 @@ DIR=$NS/jobs/$ATTEMPT
 [ -z "$(git status --porcelain -- . ":!ledger")" ] || { echo "uncommitted changes; commit first"; exit 2; }
 COMMIT=$(git rev-parse HEAD)
 FILES=(bench.py matrices.py cluster/run_gpu.sh "$TASKS")
+# lane cap raised from 3 to 8 by the coordinator, Fri 13 Nov 12:59 EST
 mine=$(ssh tufts-login "squeue -u \$USER -h -p gpu -o '%j'" | grep -c '^ss_' || true)
-[ "$mine" -lt 3 ] || { echo "already $mine GPU jobs of this lane queued or running"; exit 6; }
+[ "$mine" -lt 8 ] || { echo "already $mine GPU jobs of this lane queued or running"; exit 6; }
 ssh tufts-login "test ! -e $DIR && mkdir -p $DIR" || { echo "attempt directory exists: $DIR"; exit 4; }
 tar -cf - "${FILES[@]}" | ssh tufts-login "cd $DIR && tar -xf - && echo $COMMIT > SOURCE_COMMIT.txt && sha256sum ${FILES[*]} > SOURCE-SHA256SUMS"
 [ "$(sha256sum "${FILES[@]}")" = "$(ssh tufts-login "cd $DIR && cat SOURCE-SHA256SUMS")" ] || { echo "staged checksum mismatch"; exit 3; }

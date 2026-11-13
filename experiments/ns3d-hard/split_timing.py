@@ -135,6 +135,23 @@ def to_device(G, chunk=16):
     return jax.block_until_ready(out)
 
 
+def time_block(callables, reps, burn, seed, keep=lambda name: False):
+    """pipeline.time_block2 with identical timing logic; keeps the last output only for `keep` names
+    (holding every stage's last output exhausts device memory at 256^3)."""
+    rng = np.random.default_rng(seed); names = list(callables)
+    for name in names:
+        for _ in range(burn):
+            jax.block_until_ready(callables[name]())
+    samples = {name: [] for name in names}; last = {}
+    for _ in range(reps):
+        for name in rng.permutation(names):
+            t0 = time.perf_counter(); v = callables[name](); jax.block_until_ready(v)
+            samples[name].append((time.perf_counter() - t0) * 1e3)
+            if keep(name): last[name] = v
+            del v
+    return samples, last
+
+
 def bank_of(rank):
     return "r64" if rank == 64 else ("r128" if rank <= 128 else "r192")
 
@@ -227,6 +244,8 @@ def cmd_split(a):
         cols = {b: Rb[b] + sum(r for r in rs if r < Rb[b]) for b, rs in need.items()}
         total = sum(cols.values()) * 3 * n ** 3 * 8
         groups = [sorted(need)] if (limit == 0 or total <= a.budget * limit) else [[b] for b in sorted(need)]
+        if n in (ints(a.rank_groups) if a.rank_groups else []):   # one block per arm rank (bank prefix only)
+            groups = [[f"{b}:{r}"] for b in sorted(need) for r in sorted(need[b])]
         mrep["groups"] = groups; mrep["basis_bytes"] = int(total)
         log(f"mesh {n}: basis bytes {total / 1e9:.1f} GB, limit {limit / 1e9:.1f} GB, groups {groups}")
         up = jax.jit(lambda u: spec_resample(u, n))
@@ -235,7 +254,8 @@ def cmd_split(a):
         for grp in groups:
             # ---- build arms of this group
             arms_by_bank = {}
-            for b in grp:
+            for ge in grp:
+                b, rr = (ge.split(":")[0], int(ge.split(":")[1])) if ":" in ge else (ge, None)
                 if native:
                     G, ops = P.load_rom(banks[b], n)
                 else:
@@ -249,14 +269,17 @@ def cmd_split(a):
                         mrep.setdefault("operators", {})[b] = f"assembled at {n} (asm)"
                     orth = float(np.max(np.abs(G.T @ G - np.eye(G.shape[1]))))
                     mrep.setdefault("resampled_orthonormality", {})[b] = orth
+                if rr is not None:
+                    G = G[:, :rr]
                 Gd = to_device(G); del G; gc.collect()
-                arms_by_bank[b] = RK.RankArms(n, T, Gd, ops); del Gd, ops; gc.collect()
+                arms_by_bank[ge] = RK.RankArms(n, T, Gd, ops); del Gd, ops; gc.collect()
             scale = 1.0 if native else (n / SRC) ** 1.5
             calls, parts = {}, {}
             for name in arm_names:
                 cfg = cfgs[name]; b = bank_of(cfg["rank"])
-                if b not in grp: continue
-                arms = arms_by_bank[b]; r, k = cfg["rank"], cfg["k"]
+                ge = b if b in grp else (f"{b}:{cfg['rank']}" if f"{b}:{cfg['rank']}" in grp else None)
+                if ge is None: continue
+                arms = arms_by_bank[ge]; r, k = cfg["rank"], cfg["k"]
                 tag = (r, k, cfg["width"])
                 if tag not in arms.heads:
                     d = Path(heads[b][hm]) / "output"
@@ -351,9 +374,9 @@ def cmd_split(a):
                     while time.perf_counter() - t0 < 2.0:
                         warm = warm @ warm * 1e-3 + 1e-3
                     jax.block_until_ready(warm)
-                    s0, _ = time_block2(sent, a.reps, 2, 1)
-                    samples, last = time_block2(cl, a.reps, 2, 1000 + c)
-                    s1, _ = time_block2(sent, a.reps, 1, 5)
+                    s0, _ = time_block(sent, a.reps, 2, 1)
+                    samples, last = time_block(cl, a.reps, 2, 1000 + c, keep=lambda x: x.startswith("FOM"))
+                    s1, _ = time_block(sent, a.reps, 1, 5)
                     g = {}
                     for x in sent:
                         b_, i_, e_ = np.median(s0[x]), np.median(samples[x]), np.median(s1[x])
@@ -391,6 +414,9 @@ def cmd_split(a):
                 mrep["arms"][name]["ms_detail"] = {s: pooled[f"{s}|{name}"] for s in ("FULL", "ENC", "FIT", "SOLVE", "DEC", "DECB") if f"{s}|{name}" in pooled}
                 log(f"mesh {n} {name}: " + " ".join(f"{s} {v:.2f}" for s, v in st.items()))
             dump()
+            # drop every reference to this group's device arrays before the next group loads its bank
+            arms = pr = Gr = A_ = T_ = lam_ = Dd_ = p = Z = Hc = Hn = sent = cl = last = None
+            full = sp = sb = W = Cs = a0 = c0 = w0 = None
             del calls, parts, arms_by_bank; gc.collect()
         del truth; gc.collect()
     rep["status"] = "final" if not rep["failures"] else "failed-gates-or-checks"
@@ -415,7 +441,7 @@ def main():
     p.add_argument("--timing-cases", default="0,16,32,48,64,80,96,112")
     p.add_argument("--gate", type=float, default=1.10); p.add_argument("--gate-block", type=float, default=1.25)
     p.add_argument("--sentinels", default="r64_head,r128_head"); p.add_argument("--budget", type=float, default=0.6)
-    p.add_argument("--decb-max", type=int, default=100000)
+    p.add_argument("--decb-max", type=int, default=100000); p.add_argument("--rank-groups", default="")
     p.add_argument("--asm-meshes", default=""); p.add_argument("--scaled-meshes", default="")
     p.add_argument("--modes", type=int, default=2336); p.add_argument("--tchunk", type=int, default=8)
     a = ap.parse_args()

@@ -423,3 +423,15 @@ T2 note 3 (2026-11-13, ~03:08 EST). split_h200b (job 7162161) finished 192^3 (al
 blocks passed the gate at the first attempt) and crashed at 256^3 compiling DECB (XLA
 autotuning of the 6 x 3n^3 batched gemm failed; DECB is the optional extra, not part of FULL).
 Rerun split_h200c: 256^3 only, DECB not timed at 256^3, everything else unchanged.
+T2 note 4 (2026-11-13, ~03:25 EST). split_h200c (job 7162483) passed the 256^3 accuracy/agreement
+checks of the r96/r128 arms and then ran out of GPU memory inside the timing block (the timing
+helper kept the last output of every callable: ~2.4 GB each at 256^3). Technical fix: the
+timing loop (identical logic, copied from pipeline.time_block2) keeps only the solver outputs
+needed for the solver error check, and at 256^3 each arm rank is its own block (bank prefix
+loaded alone). Rerun split_h200d: 256^3 only.
+T2 note 5 (2026-11-13, ~03:30 EST). split_a100b (job 7162452, A100) finished the 192^3 block of the
+r96/r128 arms (gate passed at attempt 1) and ran out of memory loading the rank-192 bank: the
+previous block's device arrays were still referenced by loop variables. Fix: all references
+dropped at the end of each block. split_h200d (job 7162578) was cancelled seconds after start
+for the same reason. Reruns: split_a100c (192^3, arms r64_head, r192_head, r192_head_fast only;
+the r96/r128 block of split_a100b stands) and split_h200e (256^3, one block per rank).

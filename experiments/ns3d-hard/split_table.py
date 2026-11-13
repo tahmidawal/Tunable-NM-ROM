@@ -9,13 +9,30 @@ from pathlib import Path
 ARMS = ["r64_head", "r96_head", "r128_head", "r128_head_fast", "r192_head", "r192_head_fast"]
 
 
+def load(spec):
+    """One split.json, or several joined by '+' (meshes with timings merged, in order; per-job metadata listed)."""
+    parts = spec.split("+"); ds = [json.loads(Path(q).read_text()) for q in parts]
+    d = dict(ds[0]); d["meshes"] = {}; d["failures"] = []
+    for q, x in zip(parts, ds):
+        for m, mr in x["meshes"].items():
+            if any("ms" in a for a in mr["arms"].values()):
+                d["meshes"][m] = dict(mr, job=x.get("job_id"))
+        d["failures"] += [f"[{x.get('job_id')}] {f}" for f in x.get("failures", [])]
+    d["label"] = " + ".join(f"{Path(q).parent.name if Path(q).parent.name != 'output' else Path(q).parent.parent.name} "
+                            f"(job {x.get('job_id')}, {x.get('gpu', '').split(',')[0]}, {x.get('host')}, "
+                            f"meshes {','.join(m for m in x['meshes'] if any('ms' in a for a in x['meshes'][m]['arms'].values()))})"
+                            for q, x in zip(parts, ds))
+    if "asm" not in d:
+        d["asm"] = next((x["asm"] for x in ds if x.get("asm")), None)
+    return d
+
+
 def split_tables(paths):
     out = []
     for p in paths:
-        d = json.loads(Path(p).read_text())
+        d = load(p)
         meshes = [m for m in d["meshes"] if any("ms" in a for a in d["meshes"][m]["arms"].values())]
-        out.append(f"### {Path(p).parent.parent.name}: job {d.get('job_id')}, {d.get('gpu', '').split(',')[0]}, "
-                   f"host {d.get('host')}, status {d.get('status')}\n")
+        out.append(f"### {d['label']}\n")
         if d.get("failures"):
             out.append("Failures: " + "; ".join(d["failures"]) + "\n")
         gates = []
@@ -41,15 +58,20 @@ def split_tables(paths):
                            f"{s['FOM_any_solve'] / s['FULL']:.2f} | {s['FOM_any_solve'] / s['SOLVE']:.2f} |")
                 solves[m] = s["SOLVE"]; fulls[m] = s["FULL"]
             if solves:
+                byc = {}
+                for m in solves:
+                    c = d["meshes"][m]["arms"][arm]["config"]; byc.setdefault((c["M"], c["steps"]), []).append(solves[m])
+                within = max(max(v) / min(v) for v in byc.values())
+                groups = "; ".join(f"M{k[0]} s{k[1]}: {len(v)} meshes" for k, v in byc.items())
                 same_cfg = len({(d["meshes"][m]["arms"][arm]["config"]["M"], d["meshes"][m]["arms"][arm]["config"]["steps"])
                                 for m in solves}) == 1
                 flat.append(f"| {arm} | {'yes' if same_cfg else 'no'} | {min(solves.values()):.2f} | {max(solves.values()):.2f} | "
-                            f"{max(solves.values()) / min(solves.values()):.3f} | "
+                            f"{max(solves.values()) / min(solves.values()):.3f} | {within:.3f} ({groups}) | "
                             f"{max(fulls.values()) / min(fulls.values()):.2f} | {fulls[meshes[-1]] / fulls[meshes[0]]:.2f} |")
         out.append("\n`*` = mesh above the bank meshes (128^3 bank resampled, 128^3 heads and settings).\n")
-        out.append(f"| arm | same (M, steps) at every mesh | SOLVE min ms | SOLVE max ms | SOLVE max/min | FULL max/min | "
+        out.append(f"| arm | same (M, steps) at every mesh | SOLVE min ms | SOLVE max ms | SOLVE max/min | SOLVE max/min at identical (M, steps) | FULL max/min | "
                    f"FULL {meshes[-1]}/{meshes[0]} |")
-        out.append("|---|---|---|---|---|---|---|")
+        out.append("|---|---|---|---|---|---|---|---|")
         out += flat
         chk = []
         for m in meshes:

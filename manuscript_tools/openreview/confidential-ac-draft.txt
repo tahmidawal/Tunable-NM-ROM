@@ -1,0 +1,7 @@
+Dear Area Chair,
+
+We would like to distinguish the broad motivation question raised in reviewer iMp8's W1 from the paper-specific methodological and empirical assessment. The availability of fast full-order solvers is a reason to require strong comparisons; it does not by itself establish that reduced models have no useful role.
+
+Our contribution is a learned low-dimensional representation with query-time accuracy–cost choices, while retaining a projected PDE solve for each query. The intended use is repeated simulation within a parameterised family. The revised manuscript addresses the specific baseline and evaluation concerns through accuracy-matched numerical solvers, matched-data operator error comparisons, fresh test cases and independently trained models.
+
+In particular, Table 1 provides measured advantages over the tested accuracy-matched GPU solver on the stated Navier–Stokes family. We also report transform-solver wins, offline amortisation costs and the limits of mesh-independent reduced computation. We respectfully ask that the assessment distinguish the general motivation question from this narrower contribution and revised evidence.

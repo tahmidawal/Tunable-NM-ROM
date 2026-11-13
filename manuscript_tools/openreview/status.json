@@ -7,7 +7,7 @@
   "live_pdf_byte_matches_uploaded": true,
   "pdf_sha256": "73beeb9434d1b8869cc69824ee5307fd8dcb3354fc864f197e3d55ffa1b0a1b7",
   "pages": 38,
-  "reviewer_replies_submitted": false,
+  "reviewer_replies_submitted": true,
   "draft_counts": {
     "reply-1dYR": {
       "characters": 3281,
@@ -18,16 +18,15 @@
       "words": 337
     },
     "reply-iMp8": {
-      "characters": 4619,
-      "words": 646
+      "characters": 4579,
+      "words": 648
     }
   },
   "draft_source": "https://docs.google.com/document/d/138Azs3DYoGh9eFw_3vgN1NlDGkYzV9fHX9kRvrrsp-k/edit",
   "note": "PDF and abstract submission completed before the subsequent user instruction to draft only. No reviewer comments submitted. The form offers Submit/Cancel and no persistent Save Draft; local copies are retained.",
   "draft_forms_open": {
-    "1dYR": "3",
-    "iMp8": "4",
-    "8ZEF": "5"
+    "iMp8_edit": "4",
+    "confidential_ac": "7"
   },
   "draft_previews_verified": true,
   "forum_reply_count_unchanged": 3,
@@ -35,7 +34,7 @@
   "tldr_limitation": "Existing OpenReview TL;DR retains original speed claims; Rebuttal Revision exposes title, abstract, PDF and supplementary material only. No TL;DR edit or further submission attempted after draft-only instruction.",
   "latest_solver_argument_update": {
     "date": "2026-11-13",
-    "scope": "iMp8 W1 only; GPU evidence only",
+    "scope": "Entire rebuttal draft, summaries and AC note; CPU solver timings and speedups removed",
     "google_doc_updated": true,
     "cpu_cylinder_amg_speed_paragraph_removed": true,
     "burgers_gpu_flat_cost_plot_explicit": true,
@@ -44,10 +43,34 @@
     "published_note_date": "13 Nov 2026, 14:27",
     "published_note_includes_earlier_cpu_paragraph": true,
     "published_note_not_created_or_changed_by_this_agent": true,
-    "latest_observed_forum_reply_count": 4,
-    "manuscript_scope_question_pending": true,
+    "latest_observed_forum_reply_count": 6,
+    "manuscript_scope_question_pending": false,
     "manuscript_changed_or_resubmitted": false,
-    "proof": "gpu-only-unsent-edit.png"
+    "proof": "gpu-only-unsent-edit.png",
+    "pending_gpu_benchmarks_wording": "We are running GPU cuDSS and AmgX single-solve benchmarks and will report the results as soon as they are available.",
+    "no_benchmarks_launched_or_changed_by_this_agent": true
   },
-  "reviewer_replies_submitted_by_this_agent": false
+  "reviewer_replies_submitted_by_this_agent": false,
+  "user_confirmed_original_replies_submitted": true,
+  "confidential_ac_draft": {
+    "tab_id": "7",
+    "submitted": false,
+    "characters": 1163,
+    "readers": [
+      "Program Chairs (mandatory)",
+      "Senior Area Chairs (mandatory)",
+      "Area Chairs",
+      "Authors"
+    ],
+    "everyone_selected": false,
+    "reviewers_selected": false,
+    "file": "confidential-ac-draft.txt"
+  },
+  "rebuttal_pdf_layout_verified": {
+    "file": "gpu-only-asap-rebuttal.pdf",
+    "cylinder_table_page": 11,
+    "confidential_note_page": 12,
+    "cpu_mentions": 0,
+    "sha256": "7a27ad9d1b30e74cb4dcfa4512cba5427c645c86261a7bbc3b6f2f2e33c8e107"
+  }
 }

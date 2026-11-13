@@ -11,7 +11,7 @@ Our Navier–Stokes head is 3.3–11.7× faster than the fastest accuracy-matche
 Figure G.3 demonstrates the scaling advantage on a GPU: increasing the Burgers 2D resolution from 256² to 4096², a 256-fold increase in grid points, leaves reduced-solve time essentially unchanged at fixed bank width and solver settings on one H200. Input projection and full-field output remain mesh-dependent; our flat-cost claim concerns the reduced solve.
 
 
-We retain the measured limits: transforms win on box Poisson/3D heat, and input/output cost removes a consistent full-query advantage at 256³. We will report the pending cuDSS/AmgX single-solve results by tomorrow (14 November), separately from complete PDE-query comparisons.
+We retain the measured limits: transforms win on box Poisson/3D heat, and input/output cost removes a consistent full-query advantage at 256³. We are running GPU cuDSS and AmgX single-solve benchmarks and will report the results as soon as they are available, separately from complete PDE-query comparisons.
 
 **W2. Contribution**
 
@@ -23,7 +23,7 @@ Mesh independence concerns the learned representation and reduced online computa
 
 **W4. Evaluation size and timing variability**
 
-Our main revised evaluation uses 128 fresh cases and three independently trained models (Table 1). Appendix C.4 reports timing spread; Table 2 gives five-repeat cylinder ranges. Speedups use the two seeds passing timing checks. The third seed's accuracy remains included, with its failed timing gate disclosed in Appendix E.1. Exploratory cohorts and failed retrains are labelled.
+Our main revised evaluation uses 128 fresh cases and three independently trained models (Table 1). Appendix C.4 reports GPU timing spread. Speedups use the two seeds passing timing checks. The third seed's accuracy remains included, with its failed timing gate disclosed in Appendix E.1. Exploratory cohorts and failed retrains are labelled.
 
 **W5. Solution plots and presentation**
 
@@ -31,7 +31,7 @@ We added a main-text head-versus-span comparison (Figure 2). Appendix G supplies
 
 **Q1. Total cost and break-even**
 
-We target repeated queries within one parameterised family. Appendix C.2, Table C.4 reports offline costs and break-even counts: about 1,800 queries for cylinder and 43,000 for Navier–Stokes at 128³. GPU-hours and CPU node-seconds are distinguished; missing data-generation costs are identified. Against transforms, box Poisson never breaks even, and heat 2D needs about 370,000 queries.
+We target repeated queries within one parameterised family. Appendix C.2, Table C.4 reports offline costs and break-even counts: about 43,000 queries for Navier–Stokes at 128³. Missing data-generation costs are identified. Against transforms, box Poisson never breaks even, and heat 2D needs about 370,000 queries.
 
 **Q2. Basis loss and exact coefficient solves**
 
@@ -43,5 +43,5 @@ We demonstrate cylinder flow using smooth boundary-distance factors and an inflo
 
 **Q4. FFT/multigrid comparisons and visualisations**
 
-See W1 for the numerical-solver comparisons and W5 for visualisations. We will report the pending GPU sparse-solver results by tomorrow (14 November).
+See W1 for the GPU numerical-solver comparisons and W5 for visualisations. We are running GPU cuDSS and AmgX single-solve benchmarks and will report the results as soon as they are available.
 

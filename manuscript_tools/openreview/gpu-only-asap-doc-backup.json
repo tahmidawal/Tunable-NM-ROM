@@ -1,0 +1,812 @@
+{
+  "document_url": "https://docs.google.com/document/d/138Azs3DYoGh9eFw_3vgN1NlDGkYzV9fHX9kRvrrsp-k",
+  "revision": "AHj4eMQSf5B2o5CGR4bMRWqKGXG1sVjKaESGye8X92fq6X-6sYFJxNs_MSRqy4FPuzJDVuJig1uc4uc94lC55dL7rlCESsRm2Tj9rITaEQ",
+  "paragraphs": [
+    {
+      "start": 1,
+      "text": "Reviewer 1dYR\n"
+    },
+    {
+      "start": 15,
+      "text": "Review by Reviewer 1dYR\n"
+    },
+    {
+      "start": 39,
+      "text": "Paper Summary\n"
+    },
+    {
+      "start": 53,
+      "text": "This paper proposes a reduced-order model for PDEs. It learns a spatial bank and a small nonlinear head, then solves the projected PDE residual at query time. The bank is ordered after training, so users can change its width or choose between the nonlinear head and the linear span to adjust accuracy and speed.\n"
+    },
+    {
+      "start": 365,
+      "text": "Presentation: 3: Clear and easy to follow.\n"
+    },
+    {
+      "start": 408,
+      "text": "Informativeness: 2: I learned something interesting or useful.\n"
+    },
+    {
+      "start": 471,
+      "text": "Soundness: 2: I have minor or fixable concerns about the paper’s soundness.\n"
+    },
+    {
+      "start": 547,
+      "text": "Critical Strengths\n"
+    },
+    {
+      "start": 566,
+      "text": "The separation of the spatial bank and the head makes linear terms easy to precompute and reduces the online cost.\n"
+    },
+    {
+      "start": 681,
+      "text": "Choosing different bank widths without retraining is useful. The paper also reports failed settings and limitations clearly.\n"
+    },
+    {
+      "start": 806,
+      "text": "Critical Weaknesses\n"
+    },
+    {
+      "start": 826,
+      "text": "PCA ordering, operator precomputation and empirical quadrature are existing techniques. The paper does not directly compare with CROM or CoLoRA, although it identifies neural-field ROMs as its closest relatives. The gain over these methods is therefore unclear.\n"
+    },
+    {
+      "start": 1088,
+      "text": "The neural operator comparison is not well controlled. Appendix B states that Burgers operators use 128 training trajectories, while the proposed bank and head use 576 and 4608. The operators also have a 3000-second training limit; the heat FNO only completes 6-7 epochs at high resolutions (Table B.3). These differences make the accuracy comparison difficult to interpret.\n"
+    },
+    {
+      "start": 1463,
+      "text": "The reported speedups depend on the selected full-order solvers. Poisson and three-dimensional heat use unpreconditioned CG comparators. Also, Table 1 compares both model settings with a solver chosen to match the accurate setting. The fast setting therefore needs a separate comparison at a similar error level.\n"
+    },
+    {
+      "start": 1776,
+      "text": "Most headline results use the linear span. The nonlinear head works well on Navier-Stokes, but its bank is a POD basis, and both bank and head are built separately for each mesh (Appendix A.5). These results do not clearly establish the combined benefit of the nonlinear head and the mesh-independent coordinate bank.\n"
+    },
+    {
+      "start": 2094,
+      "text": "Questions For Authors\n"
+    },
+    {
+      "start": 2116,
+      "text": "Could the authors compare the neural operators using the same training trajectories and allow enough training to check whether the accuracy gap remains?\n"
+    },
+    {
+      "start": 2269,
+      "text": "How much speedup remains against a stronger full-order solver when each model setting is compared at a similar error level?\n"
+    },
+    {
+      "start": 2393,
+      "text": "Could the authors compare with a neural-field ROM and separate the gains from the coordinate bank, nonlinear head and hyper-reduction?\n"
+    },
+    {
+      "start": 2528,
+      "text": "Flag For Ethics Review: No\n"
+    },
+    {
+      "start": 2555,
+      "text": "Rating: 2: Weak rejection\n"
+    },
+    {
+      "start": 2581,
+      "text": "Confidence: 3: I am familiar with this topic and its relevant literature.\n"
+    },
+    {
+      "start": 2655,
+      "text": " \n"
+    },
+    {
+      "start": 2657,
+      "text": " \n"
+    },
+    {
+      "start": 2659,
+      "text": " \n"
+    },
+    {
+      "start": 2661,
+      "text": "Reply to Reviewer 1dYR\n"
+    },
+    {
+      "start": 2684,
+      "text": "Thank you for your review. We have added the comparisons and ablations you requested and address the concerns and questions you raised below.\n"
+    },
+    {
+      "start": 2826,
+      "text": "W1. Contribution and neural-field baselines\n"
+    },
+    {
+      "start": 2870,
+      "text": "Our contribution is the bank/head factorisation: exact precomputed linear terms, a nonlinear constraint on bank coefficients, and nested widths from one training run. PCA ordering and quadrature are established techniques. We now compare with same-data re-implementations of CROM and CoLoRA (Table 4; Appendix F.1). Our head has 4–5.5× lower worst-case error and 16–87× faster queries than CROM, although CROM's accurate setting has lower median error. CoLoRA has lower worst-case error; our span has lower median error at slightly lower cost. CoLoRA receives initial-condition parameters; ours receives a field.\n"
+    },
+    {
+      "start": 3483,
+      "text": "W2. Matched training data and budgets\n"
+    },
+    {
+      "start": 3521,
+      "text": "We retrained FNO and U-Net on the same 4,608 trajectories, allowing up to 8.1 hours. We compare prediction errors here: our Burgers median error is 7–9× lower, while operators have lower worst-case error (Table 4; Appendix F.2). This is an accuracy-only comparison with direct prediction models; our online method solves the projected PDE. Most runs reached their time limit before convergence, so the results are budget-limited.\n"
+    },
+    {
+      "start": 3951,
+      "text": "W3. Stronger, accuracy-matched solvers\n"
+    },
+    {
+      "start": 3990,
+      "text": "We now match each setting to its own error. The fast width-192 head reaches 0.35–0.48 % worst-case error at 5.1–10.2× over the fastest equal-accuracy pseudo-spectral Navier–Stokes solver from 450 configurations (Table 1; Appendix E.1). Errors cover three models and 128 fresh cases; speedups use the two seeds passing timing checks. Section 5.3 and Appendix C.3 also disclose transform-solver wins on box Poisson/heat 3D and the original Navier–Stokes family's lack of consistent advantage after mesh coarsening.\n"
+    },
+    {
+      "start": 4503,
+      "text": "W4. Coordinate bank and nonlinear head\n"
+    },
+    {
+      "start": 4542,
+      "text": "Table 1 and Figure 2 use per-mesh POD banks. We separately test one coordinate-network bank across meshes: it matches POD at 64³/96³ but trails at 128³ (Table E.1). The earlier cohort and fallback selection after missing the preset rank-64 transfer tolerance are disclosed. Interpolated POD transfers equally well on periodic boxes, so we remove the claim that POD must be rebuilt per mesh.\n"
+    },
+    {
+      "start": 4933,
+      "text": "Q1. Does the operator accuracy gap remain with matched training?\n"
+    },
+    {
+      "start": 4998,
+      "text": "The accuracy result is mixed, as reported under W2: our median error is lower, while the operators have lower worst-case error. Further operator training is running; we will report the updated error comparison by tomorrow (14 November).\n"
+    },
+    {
+      "start": 5235,
+      "text": "Q2. How much speedup survives stronger solvers?\n"
+    },
+    {
+      "start": 5283,
+      "text": "The new Navier–Stokes result is given under W3. Table 3 and Appendix C.3 report the corrected original comparisons, including cases where stronger solvers win.\n"
+    },
+    {
+      "start": 5443,
+      "text": "Q3. What does each component contribute?\n"
+    },
+    {
+      "start": 5484,
+      "text": "We added the neural-field comparisons in W1 and component ablations in Table F.3. At 16 Burgers coordinates, the head gives 2.56 % error versus 56.9 % for a linear closure and 31.8 % for a quadratic one. Sparse nonlinear evaluation reduces time at unchanged error. Appendix F.3 separates these gains from the coordinate bank's mesh-transfer role.\n"
+    },
+    {
+      "start": 5831,
+      "text": " \n"
+    },
+    {
+      "start": 5833,
+      "text": " \n"
+    },
+    {
+      "start": 5835,
+      "text": " \n"
+    },
+    {
+      "start": 5837,
+      "text": "Reviewer iMp8\n"
+    },
+    {
+      "start": 5851,
+      "text": "Review by Reviewer iMp8\n"
+    },
+    {
+      "start": 5875,
+      "text": "Paper Summary\n"
+    },
+    {
+      "start": 5889,
+      "text": "The paper proposes a reduced-order model for PDEs. The solution is a sum of R basis functions (small coordinate networks times a boundary factor) with coefficients from a small head network. After training, the basis is reordered by PCA so that the first R′ functions give a cheaper and less accurate model. At query time, the coefficients are found by minimizing the PDE residual, using precomputed linear terms and empirical quadrature. Tests on Poisson, heat, Burgers and 3D Navier–Stokes report speedups up to 27.5× (nonlinear) and over 100× (linear).\n"
+    },
+    {
+      "start": 6445,
+      "text": "Presentation: 3: Clear and easy to follow.\n"
+    },
+    {
+      "start": 6488,
+      "text": "Informativeness: 1: I learned little or nothing new from this paper.\n"
+    },
+    {
+      "start": 6557,
+      "text": "Soundness: 1: I have significant concerns about the paper’s soundness that do not appear easy to address.\n"
+    },
+    {
+      "start": 6663,
+      "text": "Critical Strengths\n"
+    },
+    {
+      "start": 6682,
+      "text": "Clear cost model: space and latent code are separated, so linear terms can be precomputed.\n"
+    },
+    {
+      "start": 6773,
+      "text": "Timing setup is described in detail, with named baselines.\n"
+    },
+    {
+      "start": 6832,
+      "text": "Limitations are partly acknowledged.\n"
+    },
+    {
+      "start": 6869,
+      "text": "Critical Weaknesses\n"
+    },
+    {
+      "start": 6889,
+      "text": "Weak motivation. The test problems (Poisson, heat, Burgers on a square or cube) are cheap to solve. Modern GPU solvers (FFT, multigrid, GPU finite elements) solve them in milliseconds to seconds with batch (cudss) and can generate thousands of samples in seconds to minutes. There is no point in solving these benchmarks and stressing speed nowadays.\n"
+    },
+    {
+      "start": 7240,
+      "text": "Limited novelty. All parts are known. Neural-field ROMs, hard Dirichlet enforcement.\n"
+    },
+    {
+      "start": 7325,
+      "text": "Mesh independence is overstated. For Navier–Stokes, the basis and head are rebuilt for each mesh. For other problems, there is still a per-mesh setup cost (up to 869 s).\n"
+    },
+    {
+      "start": 7495,
+      "text": "Small and weak evaluation. Test sets are small (6–64 cases), and timings have no spread.\n"
+    },
+    {
+      "start": 7584,
+      "text": "Poor presentation. The main text has one figure (a pipeline diagram). There are no solution plots, error maps, failure cases, or learned basis plots.\n"
+    },
+    {
+      "start": 7734,
+      "text": "Questions For Authors\n"
+    },
+    {
+      "start": 7756,
+      "text": "What is the total cost (data, training, setup), and how many queries are needed to break even?\n"
+    },
+    {
+      "start": 7851,
+      "text": "How is the basis loss defined, and are coefficients solved exactly at each step?\n"
+    },
+    {
+      "start": 7932,
+      "text": "Can it handle other boundary conditions and complex geometry without a hand-made boundary factor?\n"
+    },
+    {
+      "start": 8030,
+      "text": "Please compare with FFT/multigrid GPU solvers and show solution visualizations.\n"
+    },
+    {
+      "start": 8110,
+      "text": "Flag For Ethics Review: No\n"
+    },
+    {
+      "start": 8137,
+      "text": "Rating: 1: Clear rejection\n"
+    },
+    {
+      "start": 8164,
+      "text": "Confidence: 2: I have broad familiarity with this field but little or no direct research experience on this topic.\n"
+    },
+    {
+      "start": 8279,
+      "text": " \n"
+    },
+    {
+      "start": 8281,
+      "text": " \n"
+    },
+    {
+      "start": 8283,
+      "text": " \n"
+    },
+    {
+      "start": 8285,
+      "text": "Reply to Reviewer iMp8\n"
+    },
+    {
+      "start": 8308,
+      "text": "Thank you for your review. We have strengthened the solver comparisons, clarified the scope and cost of the method, and added the requested visual evidence.\n"
+    },
+    {
+      "start": 8465,
+      "text": "W1. Motivation and comparisons with modern solvers\n"
+    },
+    {
+      "start": 8516,
+      "text": "We disagree that fast GPU solvers remove the motivation for reduced models. Our target is repeated PDE queries after offline training and assembly, with query-time accuracy–cost control. We compare against accuracy-matched GPU solvers and distinguish reduced-solve cost from full-query cost.\n"
+    },
+    {
+      "start": 8808,
+      "text": "Our Navier–Stokes head is 3.3–11.7× faster than the fastest accuracy-matched solver from a 450-entry GPU pseudo-spectral ladder; the fast width-192 setting gives 5.1–10.2× (Table 1; Appendix E.1). Incompressibility already uses modewise projection, so there is no sparse pressure system for multigrid or cuDSS to accelerate. Batching both codes gives 17× at 128³ and 75× at 64³ for batch 128, including our input/output work.\n"
+    },
+    {
+      "start": 9234,
+      "text": "Figure G.3 demonstrates the scaling advantage on a GPU: increasing the Burgers 2D resolution from 256² to 4096², a 256-fold increase in grid points, leaves reduced-solve time essentially unchanged at fixed bank width and solver settings on one H200. Input projection and full-field output remain mesh-dependent; our flat-cost claim concerns the reduced solve.\n"
+    },
+    {
+      "start": 9594,
+      "text": "We retain the measured limits: transforms win on box Poisson/3D heat, and input/output cost removes a consistent full-query advantage at 256³. We are running GPU cuDSS and AmgX single-solve benchmarks and will report the results as soon as they are available, separately from complete PDE-query comparisons.\n"
+    },
+    {
+      "start": 9902,
+      "text": "W2. Contribution\n"
+    },
+    {
+      "start": 9919,
+      "text": "The contribution is a physics-based reduced model with a query-time accuracy–cost ladder from one training run. Bank/head factorisation makes linear terms exact precomputed matrices and constrains online dynamics within the bank span. Figure 2 and Table F.3 isolate the head's benefit; Table 4 compares neural-field baselines. Sections 3 and 5.5 distinguish the contribution from established PCA ordering and quadrature.\n"
+    },
+    {
+      "start": 10340,
+      "text": "W3. Mesh independence and setup\n"
+    },
+    {
+      "start": 10372,
+      "text": "Mesh independence concerns the learned representation and reduced online computation. Per-mesh operator assembly is an explicit offline cost. Table E.1 demonstrates one coordinate bank across meshes, including unchanged-head reuse. Table 1 uses per-mesh POD and is labelled accordingly. Interpolated POD also transfers on periodic boxes; our claim does not require rebuilding POD on every mesh.\n"
+    },
+    {
+      "start": 10767,
+      "text": "W4. Evaluation size and timing variability\n"
+    },
+    {
+      "start": 10810,
+      "text": "Our main revised evaluation uses 128 fresh cases and three independently trained models (Table 1). Appendix C.4 reports GPU timing spread. Speedups use the two seeds passing timing checks. The third seed's accuracy remains included, with its failed timing gate disclosed in Appendix E.1. Exploratory cohorts and failed retrains are labelled.\n"
+    },
+    {
+      "start": 11152,
+      "text": "W5. Solution plots and presentation\n"
+    },
+    {
+      "start": 11188,
+      "text": "We added a main-text head-versus-span comparison (Figure 2). Appendix G supplies solution fields, error maps, learned bases, failure cases, mesh scaling and break-even curves.\n"
+    },
+    {
+      "start": 11364,
+      "text": "Q1. Total cost and break-even\n"
+    },
+    {
+      "start": 11394,
+      "text": "We target repeated queries within one parameterised family. Appendix C.2, Table C.4 reports offline costs and break-even counts: about 43,000 queries for Navier–Stokes at 128³. Missing data-generation costs are identified. Against transforms, box Poisson never breaks even, and heat 2D needs about 370,000 queries.\n"
+    },
+    {
+      "start": 11709,
+      "text": "Q2. Basis loss and exact coefficient solves\n"
+    },
+    {
+      "start": 11753,
+      "text": "We give the losses and weights in Appendix C.1, Eqs. (20)–(23) and Table C.3. Only heat 3D and Burgers 3D eliminate coefficients at every training step through thin QR. Heat 3D uses a weighted POD-mode mean and a snapshot-minibatch tail term. Other banks jointly train coefficients or latent codes, with the stated least-squares resets/phases. After freezing the bank, ordering coefficients and head targets are exact least-squares fits; online coefficients come from the projected PDE solve.\n"
+    },
+    {
+      "start": 12246,
+      "text": "Q3. Geometry and boundary conditions\n"
+    },
+    {
+      "start": 12283,
+      "text": "We demonstrate cylinder flow using smooth boundary-distance factors and an inflow lift in a Galerkin rollout (Appendix E.2). Automatic handling of arbitrary geometry and Neumann/Robin conditions remains untested.\n"
+    },
+    {
+      "start": 12496,
+      "text": "Q4. FFT/multigrid comparisons and visualisations\n"
+    },
+    {
+      "start": 12545,
+      "text": "See W1 for the GPU numerical-solver comparisons and W5 for visualisations. We are running GPU cuDSS and AmgX single-solve benchmarks and will report the results as soon as they are available.\n"
+    },
+    {
+      "start": 12737,
+      "text": " \n"
+    },
+    {
+      "start": 12739,
+      "text": " \n"
+    },
+    {
+      "start": 12741,
+      "text": " \n"
+    },
+    {
+      "start": 12743,
+      "text": "Reviewer 8ZEF\n"
+    },
+    {
+      "start": 12757,
+      "text": "Review by Reviewer 8ZEF\n"
+    },
+    {
+      "start": 12781,
+      "text": "Paper Summary\n"
+    },
+    {
+      "start": 12795,
+      "text": "This paper proposes a runtime-tunable reduced-order modeling framework for efficient PDE solving. It combines a learned coordinate-based spatial bank with linear-span and nonlinear-manifold representations, using matrix-free Petrov–Galerkin projection for efficient online solving. The ordered spatial bank allows users to adjust the accuracy–efficiency trade-off without retraining. Experiments on Poisson, heat, Burgers, and Navier–Stokes equations demonstrate promising accuracy and speedups over full-order solvers and existing learning-based approaches.\n"
+    },
+    {
+      "start": 13354,
+      "text": "Presentation: 2: Generally understandable, but requires substantial effort in places.\n"
+    },
+    {
+      "start": 13440,
+      "text": "Informativeness: 2: I learned something interesting or useful.\n"
+    },
+    {
+      "start": 13503,
+      "text": "Soundness: 3: I have no substantive concerns about the paper’s soundness.\n"
+    },
+    {
+      "start": 13577,
+      "text": "Critical Strengths\n"
+    },
+    {
+      "start": 13596,
+      "text": "Practical and flexible design. The ability to switch between linear-span and nonlinear-manifold representations and adjust the basis width at inference time is useful. The integration of coordinate-based spatial banks, precomputation, and hyper-reduction makes the framework computationally efficient.\n"
+    },
+    {
+      "start": 13898,
+      "text": "Strong empirical results. The experiments cover multiple PDE families and resolutions, demonstrating substantial speedups and encouraging cross-resolution performance. The comparisons with both conventional ROMs and neural operators provide useful evidence of the method's practical value.\n"
+    },
+    {
+      "start": 14188,
+      "text": "Critical Weaknesses\n"
+    },
+    {
+      "start": 14208,
+      "text": "Limited diversity of nonlinear evaluations. Although the paper includes Burgers and Navier–Stokes equations, the most accurate configurations for several tasks use the linear-span representation. Additional challenging nonlinear PDE benchmarks would help establish when the nonlinear-manifold component provides substantial benefits and how broadly the framework generalizes.\n"
+    },
+    {
+      "start": 14584,
+      "text": "Some limitations in baseline comparisons. The reported speedups depend on the selected full-order solvers, and the neural operator comparisons use different training data sizes and computational budgets in some settings. More closely matched comparisons would strengthen the empirical conclusions.\n"
+    },
+    {
+      "start": 14882,
+      "text": "Questions For Authors\n"
+    },
+    {
+      "start": 14904,
+      "text": "Could the authors provide additional experiments on more challenging nonlinear PDEs, particularly problems with stronger nonlinear dynamics, to further demonstrate the benefits of the nonlinear-manifold representation?\n"
+    },
+    {
+      "start": 15123,
+      "text": "Could the authors further clarify when the nonlinear head is preferable to the linear span, and whether its advantages extend beyond the current Navier–Stokes setting?\n"
+    },
+    {
+      "start": 15291,
+      "text": "How might the reported speedups change when compared with more optimized full-order solvers or neural operators trained under more closely matched budgets?\n"
+    },
+    {
+      "start": 15447,
+      "text": "Minor Suggestion: The paper is generally well organized and easy to follow. However, Figure 1 could be more visually polished, with a cleaner layout, more consistent typography, and clearer separation between offline training and online inference. This would further improve the presentation.\n"
+    },
+    {
+      "start": 15740,
+      "text": "Flag For Ethics Review: No\n"
+    },
+    {
+      "start": 15767,
+      "text": "Rating: 3: Weak acceptance\n"
+    },
+    {
+      "start": 15794,
+      "text": "Confidence: 3: I am familiar with this topic and its relevant literature.\n"
+    },
+    {
+      "start": 15868,
+      "text": " \n"
+    },
+    {
+      "start": 15870,
+      "text": " \n"
+    },
+    {
+      "start": 15872,
+      "text": " \n"
+    },
+    {
+      "start": 15874,
+      "text": "Reply to Reviewer 8ZEF\n"
+    },
+    {
+      "start": 15897,
+      "text": "Thank you for your constructive review. We have added nonlinear benchmarks, matched comparisons and clearer figures in response to your suggestions.\n"
+    },
+    {
+      "start": 16046,
+      "text": "W1. Diversity of nonlinear evaluations\n"
+    },
+    {
+      "start": 16085,
+      "text": "We added interacting-vortex Navier–Stokes with sharper initial data and lower viscosity (§5.1, Table 1), and unsteady cylinder flow (§5.2, Table 2). The fast Navier–Stokes head stays below 0.5 % worst-case error at 5.1–10.2× over its matched solver, while the same bank's linear span fails. The cylinder demonstrates non-box geometry and query-time width choices; it uses linear-span Galerkin and does not establish an additional nonlinear-head advantage.\n"
+    },
+    {
+      "start": 16541,
+      "text": "W2. Fairness of the comparisons\n"
+    },
+    {
+      "start": 16573,
+      "text": "We separate the comparisons: numerical solvers are matched to each setting's accuracy (§5.3), while neural operators are compared by prediction error under the reported training budgets. With the same 4,608 Burgers trajectories, our median error is 7–9× lower; operators have lower worst-case error (Table 4; Appendix F.2). The budgets do not establish convergence. Transform solvers win on box Poisson/3D heat.\n"
+    },
+    {
+      "start": 16985,
+      "text": "Q1. Additional challenging nonlinear experiments\n"
+    },
+    {
+      "start": 17034,
+      "text": "The added benchmarks are described under W1. Cylinder widths 24/32 retain all six targets over a window three times longer; extrapolation outside the training band remains limited (Table E.2). We state these limits alongside the results.\n"
+    },
+    {
+      "start": 17272,
+      "text": "Q2. When is the nonlinear head preferable?\n"
+    },
+    {
+      "start": 17315,
+      "text": "The head helps when few unknowns are affordable and a linear span fails (Figure 2). At 16 Burgers coordinates, errors are 2.56 % for the head, 56.9 % for a linear closure and 31.8 % for a quadratic one (Table F.3). A wider span can be faster; §5.5 explains this choice.\n"
+    },
+    {
+      "start": 17585,
+      "text": "Q3. Stronger solvers and matched neural operators\n"
+    },
+    {
+      "start": 17635,
+      "text": "W2 summarises the corrected comparison. For cylinder flow, FNO meets all targets on the standard window, but no tested operator does on the longer window or outside the training band (Table F.2). Further operator error comparisons are running; we will report them by tomorrow (14 November).\n"
+    },
+    {
+      "start": 17926,
+      "text": "Minor suggestion. Figure 1\n"
+    },
+    {
+      "start": 17953,
+      "text": "We redrew Figure 1 to separate offline training and online inference, with a cleaner layout and consistent typography.\n"
+    },
+    {
+      "start": 18072,
+      "text": " \n"
+    },
+    {
+      "start": 18074,
+      "text": " \n"
+    },
+    {
+      "start": 18076,
+      "text": " \n"
+    },
+    {
+      "start": 18078,
+      "text": "General response\n"
+    },
+    {
+      "start": 18095,
+      "text": "Part 1 of 2\n"
+    },
+    {
+      "start": 18107,
+      "text": "We thank the reviewers. We added more demanding nonlinear problems, accuracy-matched GPU numerical solvers and matched-data operator error comparisons. The key results follow; references are to the revised manuscript. We are running GPU cuDSS and AmgX single-solve benchmarks and will report the results as soon as they are available. Further operator-accuracy results will be reported by tomorrow (14 November).\n"
+    },
+    {
+      "start": 18520,
+      "text": "Table G1 (revised Table 1; §5.1, Appendix E.1). Navier–Stokes with sharper vortices and lower viscosity: 128 fresh cases, three independently trained models, per-mesh POD banks. Each setting faces the fastest equally accurate configuration from a 450-entry solver ladder.\n"
+    },
+    {
+      "start": 19609,
+      "text": "The fast width-192 head stays below 0.5 % on every mesh/seed at 5.1–10.2×. Errors cover three seeds; speedups use the two passing timing checks. Times are solve-only. Appendix E.1 and Table C.7 give selection, timing spread and the failed timing gate.\n"
+    },
+    {
+      "start": 19861,
+      "text": "A separate, earlier cohort tests one coordinate network across meshes (Table E.1): it matches POD at 64³/96³ but trails at 128³. The table reports fallback-selection caveats and unchanged-head reuse; interpolated POD transfers equally well.\n"
+    },
+    {
+      "start": 20102,
+      "text": "Table G3 (Figure G.3). Burgers 2D reduced-solve cost at fixed width, using a later off-mesh solver with the frozen bank; six development cases and three repeats on one H200. Output reconstruction is charged separately.\n"
+    },
+    {
+      "start": 20622,
+      "text": "Reduced evolution is flat across these meshes; this variant remains slower than the best matched solver at 4096² (0.05–0.71×). Navier–Stokes likewise has flat reduced-solve cost, but input/output work grows; its full query has no consistent speed advantage over the matched solver at 256³ (Appendix E.1).\n"
+    },
+    {
+      "start": 20927,
+      "text": "Part 2 of 2\n"
+    },
+    {
+      "start": 20939,
+      "text": "Table G2 (revised Table 2; §5.2, Appendix E.2). Cylinder accuracy: model on a P2/P1 mesh with 96,781 unknowns; truth from a separate P4/P3 reference at step 1/3200. Train Re 90/100/110, development 95, held-out 105.\n"
+    },
+    {
+      "start": 21155,
+      "text": "\n"
+    },
+    {
+      "start": 21332,
+      "text": "Galerkin with an inflow lift, matched in accuracy by equal-width POD. Widths 24/32 retain all six targets over a three-times-longer window; out-of-band Re 80/120 remain failures (Table E.2).\n"
+    },
+    {
+      "start": 21523,
+      "text": "Table G4 (Appendix E.1). Batched Navier–Stokes: fast width-192 head versus its matched pseudo-spectral solver, both batched on the same GPU; batched outputs reproduce the single-query code. Ratio = solver time / our time per query.\n"
+    },
+    {
+      "start": 21991,
+      "text": "Our timings include input projection and all output fields. The 96³, batch-128 cell uses an H200; other cells use an A100. Each ratio compares codes within one job, separate from G1.\n"
+    },
+    {
+      "start": 22174,
+      "text": "Corrections and scope. Section 5.3 and Appendix C.3 give the corrected original comparisons: own-error matching, stronger solvers and transform-solver wins. Table 4 and Appendix F disclose the mixed neural-field/operator results and budget limits; PCA ordering and quadrature are established techniques. We retain the implementation corrections in Appendices A/C.\n"
+    },
+    {
+      "start": 22538,
+      "text": "The supported claim is query-time accuracy–cost choice from one trained model, with a head that helps when small linear spans fail. Table 1 demonstrates speedups over the tested accuracy-matched GPU solver on the Navier–Stokes family; it does not establish universal superiority or mesh-flat full-query cost.\n"
+    },
+    {
+      "start": 22847,
+      "text": "\n"
+    },
+    {
+      "start": 22848,
+      "text": "Draft confidential note to the Area Chair\n"
+    },
+    {
+      "start": 22890,
+      "text": "For a separate AC-only comment; not part of the public reviewer replies.\n"
+    },
+    {
+      "start": 22963,
+      "text": "Dear Area Chair,\n"
+    },
+    {
+      "start": 22980,
+      "text": "We would like to distinguish the broad motivation question raised in reviewer iMp8's W1 from the paper-specific methodological and empirical assessment. The availability of fast full-order solvers is a reason to require strong comparisons; it does not by itself establish that reduced models have no useful role.\n"
+    },
+    {
+      "start": 23293,
+      "text": "Our contribution is a learned low-dimensional representation with query-time accuracy–cost choices, while retaining a projected PDE solve for each query. The intended use is repeated simulation within a parameterised family. The revised manuscript addresses the specific baseline and evaluation concerns through accuracy-matched numerical solvers, matched-data operator error comparisons, fresh test cases and independently trained models.\n"
+    },
+    {
+      "start": 23733,
+      "text": "In particular, Table 1 provides measured advantages over the tested accuracy-matched GPU solver on the stated Navier–Stokes family. We also report transform-solver wins, offline amortisation costs and the limits of mesh-independent reduced computation. We respectfully ask that the assessment distinguish the general motivation question from this narrower contribution and revised evidence.\n"
+    },
+    {
+      "start": 24124,
+      "text": "\n"
+    }
+  ],
+  "tables": [
+    {
+      "start": 18792,
+      "rows": [
+        [
+          "Head on per-mesh POD width\n",
+          "Worst-case error, three seeds (64³ / 96³ / 128³)\n",
+          "Median error\n",
+          "Time (64³ / 96³ / 128³)\n",
+          "Matched speedup\n"
+        ],
+        [
+          "64\n",
+          "1.17–1.36 / 1.45–1.61 / 1.43–1.69 %\n",
+          "0.34–0.54 %\n",
+          "16 / 17 / 31 ms\n",
+          "6.9 / 6.4–6.5 / 3.6–3.7×\n"
+        ],
+        [
+          "96\n",
+          "0.58–0.75 / 0.64–0.78 / 0.62–0.82 %\n",
+          "0.17–0.19 %\n",
+          "17 / 26 / 43 ms\n",
+          "9.4–11.7 / 7.6–9.5 / 4.7–6.9×\n"
+        ],
+        [
+          "128\n",
+          "0.42–0.60 / 0.43–0.62 / 0.45–0.64 %\n",
+          "0.10–0.12 %\n",
+          "31 / 48 / 62 ms\n",
+          "6.3–6.5 / 5.2–7.0 / 4.0–5.3×\n"
+        ],
+        [
+          "128, fast\n",
+          "0.49–0.67 / 0.52–0.68 / 0.47–0.69 %\n",
+          "0.12–0.14 %\n",
+          "19 / 31 / 51 ms\n",
+          "9.4–10.4 / 8.0–10.9 / 4.9–6.1×\n"
+        ],
+        [
+          "192\n",
+          "0.28–0.39 / 0.35–0.41 / 0.35–0.42 %\n",
+          "0.06–0.08 %\n",
+          "52 / 67 / 121 ms\n",
+          "3.9–5.9 / 5.9–6.2 / 3.3–3.4×\n"
+        ],
+        [
+          "192, fast\n",
+          "0.35–0.48 / 0.39–0.47 / 0.43–0.47 %\n",
+          "0.09–0.11 %\n",
+          "25 / 40 / 68 ms\n",
+          "8.0–10.2 / 8.3–10.0 / 5.1×\n"
+        ],
+        [
+          "Linear span, same banks\n",
+          "7.7–70 %\n",
+          "—\n",
+          "—\n",
+          "0.04–0.56×\n"
+        ]
+      ]
+    },
+    {
+      "start": 20321,
+      "rows": [
+        [
+          "Width\n",
+          "Evolution, 256² / 1024² / 4096²\n",
+          "Mean iterations\n",
+          "Six-field reconstruction\n"
+        ],
+        [
+          "128\n",
+          "22.1 / 22.0 / 21.1 ms\n",
+          "51.8 / 51.7 / 51.7\n",
+          "0.13 / 0.40 / 5.7 ms\n"
+        ],
+        [
+          "256\n",
+          "51.7 / 51.6 / 51.8 ms\n",
+          "53.8 / 54.2 / 54.2\n",
+          "0.15 / 0.67 / 10.0 ms\n"
+        ],
+        [
+          "384\n",
+          "87.8 / 86.6 / 88.3 ms\n",
+          "54.3 / 54.3 / 54.3\n",
+          "0.18 / 0.95 / 14.3 ms\n"
+        ]
+      ]
+    },
+    {
+      "start": 21156,
+      "rows": [
+        [
+          "One trained bank\n",
+          "Velocity error\n"
+        ],
+        [
+          "Cheapest passing finite-element run\n",
+          "9.4e-3\n"
+        ],
+        [
+          "Width 32, step 1/400\n",
+          "7.0e-3\n"
+        ],
+        [
+          "Width 24, step 1/400\n",
+          "5.5e-3\n"
+        ],
+        [
+          "Width 16, step 1/800\n",
+          "8.3e-3\n"
+        ]
+      ]
+    },
+    {
+      "start": 21755,
+      "rows": [
+        [
+          "Mesh\n",
+          "1 query\n",
+          "8\n",
+          "32\n",
+          "128\n",
+          "Time per 1,000 queries at batch 128 (ours / solver)\n"
+        ],
+        [
+          "64³\n",
+          "9.4×\n",
+          "39.8×\n",
+          "64.5×\n",
+          "75.1×\n",
+          "1.6–2.1 s / 117–159 s\n"
+        ],
+        [
+          "96³\n",
+          "11.6×\n",
+          "35.7×\n",
+          "46.7×\n",
+          "48.4×\n",
+          "—\n"
+        ],
+        [
+          "128³\n",
+          "6.5×\n",
+          "15.4×\n",
+          "17.3×\n",
+          "17.1×\n",
+          "about 11 s / about 3 min\n"
+        ]
+      ]
+    }
+  ]
+}

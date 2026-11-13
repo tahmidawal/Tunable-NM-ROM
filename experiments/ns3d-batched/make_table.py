@@ -11,8 +11,12 @@ def fmt(x, d=2):
     return "-" if x is None else f"{x:.{d}f}"
 
 
+KINDS = {"SOLVE_": ("SOLVE_VMAP", "SOLVE_RFFT"), "E2E_": ("E2E_VMAP", "E2E_RFFT")}
+
+
 def best(cs, prefix, tag):
-    cand = {k: v for k, v in cs.items() if k.split("|", 1)[0].startswith(prefix) and k.split("|", 1)[1] == tag
+    kinds = KINDS.get(prefix, (prefix,))
+    cand = {k: v for k, v in cs.items() if k.split("|", 1)[0] in kinds and k.split("|", 1)[1] == tag
             and v.get("median_ms") is not None}
     if not cand:
         return None, None
@@ -24,11 +28,15 @@ def mark(c):
     return f" (chunk {c['chunk']})" if c and c.get("chunked") else ""
 
 
+EXPLORATORY = ("ROM_SHAREDR",)
+
+
 def summary(paths):
     """Headline: per mesh/arm/B, best ROM e2e vs best solver solve-only, per-query ms and ratio."""
     print("| mesh | GPU | arm | ROM worst % | solver (worst %) | B | ROM ms/query | solver ms/query | ROM queries/s "
-          "| solver queries/s | ROM s/1000 | solver s/1000 | ratio | ratio vs ROM solve-only |")
-    print("|" + "---|" * 14)
+          "| solver queries/s | ROM s/1000 | solver s/1000 | ratio | ratio vs ROM solve-only | variants (ROM / solver) "
+          "| A2 rom_shared_r ms/query (ratio) |")
+    print("|" + "---|" * 16)
     for p in paths:
         r = json.load(open(p)); n = r["mesh"]; gpu = r["gpu"].split(",")[0].replace("NVIDIA ", "")
         for arm, a in r["arms"].items():
@@ -45,7 +53,10 @@ def summary(paths):
                       + f" | {rc['samples_per_s']:.0f} | " + (f"{fc['samples_per_s']:.2f}" if fc else "-")
                       + f" | {rc['ms_per_1000'] / 1e3:.2f} | " + (f"{fc['ms_per_1000'] / 1e3:.0f}" if fc else "-")
                       + " | " + (f"{fc['median_ms'] / rc['median_ms']:.1f}" if fc else "-")
-                      + " | " + (f"{fc['median_ms'] / lat['median_ms']:.0f}" if fc and lat and lat.get("median_ms") else "-") + " |")
+                      + " | " + (f"{fc['median_ms'] / lat['median_ms']:.0f}" if fc and lat and lat.get("median_ms") else "-")
+                + f" | {rk.split('_', 1)[1].lower()} / " + (fk.split('_', 1)[1].lower() if fk else "-")
+                + " | " + (lambda x: f"{x['median_ms'] / Bi:.2f}{mark(x)}" + (f" ({fc['median_ms'] / x['median_ms']:.1f})" if fc else "")
+                           if x and x.get("median_ms") else "-")(cs.get(f"ROM_SHAREDR|{arm}")) + " |")
 
 
 def main(paths):

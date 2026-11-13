@@ -11,6 +11,21 @@ def fmt(x, d=2):
     return "-" if x is None else f"{x:.{d}f}"
 
 
+TOL = {"ROM": 1e-9, "SOLVE": 1e-10, "E2E": 1e-10}
+
+
+def failed(r, B, name):
+    c = r.get("checks", {}).get(str(B), {}).get(name)
+    if not c or c.get("max_rel_diff") is None:
+        return False
+    return c["max_rel_diff"] > TOL[name.split("_")[0].split("|")[0] if not name.startswith("ROM") else "ROM"]
+
+
+def clean(r, B, cs):
+    """Callables of batch B minus those that failed the agreement check (reported separately)."""
+    return {k: v for k, v in cs.items() if not failed(r, B, k)}
+
+
 KINDS = {"SOLVE_": ("SOLVE_VMAP", "SOLVE_RFFT"), "E2E_": ("E2E_VMAP", "E2E_RFFT")}
 
 
@@ -42,7 +57,7 @@ def summary(paths):
         for arm, a in r["arms"].items():
             m = a["matched"]; tag = f"{m['scheme']}|{m['n']}|{m['steps']}"
             for B, b in sorted(r["batches"].items(), key=lambda x: int(x[0])):
-                cs = b["callables"]; Bi = int(B)
+                cs = clean(r, B, b["callables"]); Bi = int(B)
                 rk, rc = best(cs, "ROM_VMAP", arm); sk, sc = best(cs, "ROM_SHARED", arm)
                 if sc and (rc is None or sc["median_ms"] < rc["median_ms"]):
                     rk, rc = sk, sc
@@ -56,7 +71,8 @@ def summary(paths):
                       + " | " + (f"{fc['median_ms'] / lat['median_ms']:.0f}" if fc and lat and lat.get("median_ms") else "-")
                 + f" | {rk.split('_', 1)[1].lower()} / " + (fk.split('_', 1)[1].lower() if fk else "-")
                 + " | " + (lambda x: f"{x['median_ms'] / Bi:.2f}{mark(x)}" + (f" ({fc['median_ms'] / x['median_ms']:.1f})" if fc else "")
-                           if x and x.get("median_ms") else "-")(cs.get(f"ROM_SHAREDR|{arm}")) + " |")
+                           if x and x.get("median_ms") else ("FAILED CHECK" if failed(r, B, f"ROM_SHAREDR|{arm}") else "-"))(
+                                cs.get(f"ROM_SHAREDR|{arm}")) + " |")
 
 
 def main(paths):
@@ -72,7 +88,7 @@ def main(paths):
         for arm, a in r["arms"].items():
             m = a["matched"]; tag = f"{m['scheme']}|{m['n']}|{m['steps']}"
             for B, b in sorted(r["batches"].items(), key=lambda x: int(x[0])):
-                cs = b["callables"]; Bi = int(B)
+                cs = clean(r, B, b["callables"]); Bi = int(B)
                 rk, rc = best(cs, "ROM_VMAP", arm); sk, sc = best(cs, "ROM_SHARED", arm)
                 if sc and (rc is None or sc["median_ms"] < rc["median_ms"]):
                     rk, rc = sk, sc

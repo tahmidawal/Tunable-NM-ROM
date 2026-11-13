@@ -18,8 +18,8 @@ def stats(x):
                 p95_ms=float(np.quantile(x, .95)), min_ms=float(x.min()), max_ms=float(x.max()))
 
 
-def load(run):
-    ck = torch.load(run / 'best.pt', map_location='cuda', weights_only=False)
+def load(ckpt):
+    ck = torch.load(ckpt, map_location='cuda', weights_only=False)
     net = opnet.make(ck['config'])
     net.load_state_dict({k: v for k, v in ck['model'].items() if k != '_metadata'})
     net.eval()
@@ -94,12 +94,12 @@ def main():
             if target.exists():
                 print('SKIP (already evaluated)', target.name, flush=True)
                 continue
-            run = Path(entry['path'])
-            assert sha256(run / 'best.pt') == entry['best_sha256'], f'checkpoint changed after the selection was frozen: {run}'
-            net, ck = load(run)
+            ckpt = Path(entry['path']) / entry.get('checkpoint', 'best.pt')
+            assert sha256(ckpt) == entry['best_sha256'], f'checkpoint changed after the selection was frozen: {ckpt}'
+            net, ck = load(ckpt)
             norm = ck['normalization']
             r = dict(env, key=key, mesh=L, arm=ck['arm'], rung=ck['rung'], seed=ck['seed'], best_step=ck['step'],
-                     validation=ck['validation'], real_parameters=opnet.real_parameters(net), best_sha256=entry['best_sha256'])
+                     checkpoint=ckpt.name, validation=ck['validation'], real_parameters=opnet.real_parameters(net), best_sha256=entry['best_sha256'])
             routes = (('L256', query_direct),) if L == 256 else (
                 ('L1024_zero_shot', query_direct), ('L1024_coarse_bilinear', lambda n, u, v, nm: query_coarse(n, u, v, nm, 4)))
             for name, q in routes:

@@ -1,6 +1,6 @@
 # Rebuttal manuscript revision, 2026-11-13
 
-The updated manuscript builds to 37 pages. Its conclusion ends on page
+The updated manuscript builds to 38 pages. Its conclusion ends on page
 10, within the discussion-phase main-text limit.
 The source ZIP supplied by the author is preserved under `manuscript_tools/original`;
 its `main.tex` exactly matches `submitted.tex`, which remains unchanged.
@@ -29,6 +29,12 @@ The author's `todonotes` and `soul` preamble additions are retained.
 - Kept CROM/CoLoRA re-implementation, budget, failed-timing, transfer and
   extrapolation disclosures. Older cylinder field plots retain their explicit
   earlier-development-bank caption and do not depict the held-out headline bank.
+- Following the author's presentation choice, neural operators are compared
+  by error only. Their inference times and relative-speed claims are removed
+  from the main text, historical/matched-data appendix tables and cylinder/NS
+  descriptions; the cost plot now shows ROMs and numerical solvers only.
+  All prediction-error values and training-budget disclosures are retained.
+  Numerical-solver and reduced-model timing comparisons remain in place.
 
 ## Build and upload
 

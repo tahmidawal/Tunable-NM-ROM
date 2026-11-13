@@ -106,13 +106,15 @@ shared by every mesh (the Navier--Stokes results of Table~\ref{tab:g1} use
 per-mesh POD banks); the reduced operators are assembled once per mesh, and we charge that assembly as an
 offline cost. On periodic boxes a POD basis interpolated across meshes
 transfers as well as the coordinate network, so there the network
-provides a single mesh-free object rather than higher accuracy.} All online coefficients come
-from the PDE residual, without access to the reference solution.
+provides a single mesh-free object rather than higher accuracy.} Our intended use is repeated queries within a parameterised family after
+offline learning and assembly. The learned network provides a compact
+representation; each query still determines its coefficients from the PDE
+residual, without access to the reference solution.
 
 \begin{revblock}
 The main results are Tables~\ref{tab:g1} (harder Navier--Stokes),
 \ref{tab:g2} (cylinder) and \ref{tab:baselines} (neural-field ROMs and
-neural operators), each against accuracy-matched comparators.
+neural operators). Classical-solver costs are accuracy-matched; neural-operator comparisons report prediction errors under the stated training budgets.
 \end{revblock}
 
 \paragraph{Contributions.}
@@ -837,7 +839,7 @@ online; ours takes an initial field. FNO and U-Net are trained on exactly
 the 4,608 trajectories our head uses, for up to 8.1 hours each (a
 4.6-hour run plus one 3.5-hour continuation); most of these runs reached their
 time budget before our convergence rule, so these measure budget-limited
-performance, not convergence. The 128-trajectory rows rerun the submission's data budget.}
+performance, not convergence. The 128-trajectory rows rerun the submission's data budget. Neural operators are compared by prediction error only; inference times are not reported for those rows.}
 \label{tab:baselines}
 \scriptsize\setlength{\tabcolsep}{4pt}
 \begin{tabular}{@{}llrrr@{}}
@@ -848,10 +850,10 @@ Ours, linear span, width 384 & 576 (bank) + 4,608 & 0.875 & 0.026 & 45.2 \\
 Ours, nonlinear head, 16 coordinates & 4,608 & 4.10 & 0.67 & 32.4 \\
 CROM-style, 16 coordinates, accurate / fast setting & same & 22.4 / 16.9 & 0.43 / 1.11 & 2,818 / 507 \\
 CoLoRA-style regression, 16 & same & 0.240 & 0.104 & 49.9 \\
-FNO, variant selected on validation (one seed) & 4,608 & 0.48 & 0.19 & 6.6 \\
-FNO, paper architecture (three seeds) & 4,608 & 0.43--0.49 & 0.20--0.23 & 4.1 \\
-U-Net (three seeds) & 4,608 & 0.45--0.51 & 0.20--0.22 & 7.4 \\
-FNO / U-Net, rerun with 128 trajectories & 128 & 9.78 / 5.01 & 2.61 / 1.23 & 4.1 / 7.4 \\
+FNO, variant selected on validation (one seed) & 4,608 & 0.48 & 0.19 & --- \\
+FNO, paper architecture (three seeds) & 4,608 & 0.43--0.49 & 0.20--0.23 & --- \\
+U-Net (three seeds) & 4,608 & 0.45--0.51 & 0.20--0.22 & --- \\
+FNO / U-Net, rerun with 128 trajectories & 128 & 9.78 / 5.01 & 2.61 / 1.23 & --- \\
 Full-order solver (Newton--BiCGStab) & --- & 0.109 & 0.030 & 17.4 \\
 \bottomrule
 \end{tabular}
@@ -868,18 +870,18 @@ error is four times lower at slightly lower cost, and its worst-case error
 is 3.6 times lower. With matched data, our median error is 7--9 times
 lower than FNO's and U-Net's and below the full-order solver's own median
 error against the reference; the operators have the lower worst-case error
-(0.43--0.51\,\% against 0.875\,\%) and are 6--7 times faster (11 times for
-the smaller FNO). This replaces the submission's operator claim, which
+(0.43--0.51\,\% against 0.875\,\%). We compare these direct predictors
+by error, separately from the timing comparison with numerical solvers and ROMs. This replaces the submission's operator claim, which
 rested on 128 training trajectories (old comparison in
 Table~\ref{tab:operators}, whose heat rows, trained for only 6--7 epochs,
 support no claim). At $1024^2$ without retraining our model gives
 1.25\,\%, a zero-shot FNO 2.9--3.2\,\% and the U-Net about 53\,\%. On the harder Navier--Stokes family an FNO
-gives 2.41--2.52\,\% in 18--23\,ms against 0.90--1.39\,\% in 13--29\,ms
+gives 2.41--2.52\,\% worst-case error against 0.90--1.39\,\%
 for our coordinate bank with the head. On the cylinder's standard window the best operator (an FNO,
 180 minutes of final training) also meets all six targets, at
-$9.9{\times}10^{-3}$ at Reynolds 105 in 0.45\,s on a GPU, where our width
+$9.9{\times}10^{-3}$ at Reynolds 105, where our width
 32 reaches $1.9{\times}10^{-3}$ with a fine step and width 24 meets all
-six at $5.5{\times}10^{-3}$ in 0.83\,s on a CPU node; over the long window and outside the
+six at $5.5{\times}10^{-3}$; over the long window and outside the
 training band no operator meets all six (Appendix~\ref{app:operators}).
 \end{revblock}
 
@@ -1540,33 +1542,29 @@ projection error onto the span of the bank, which no solve can beat.
 \label{app:operators}
 \begin{table}[htbp]
 \centering
-\caption{\rev{Submission's operator comparison, kept for the record: on Burgers the operators were trained on 128 trajectories, and this comparison is superseded by the matched-data Table~\ref{tab:baselines}; the heat operators completed only 6--7 epochs (Table~\ref{tab:development-training}) and support no claim.} Best NM-ROM against FNO, U-Net, Transolver and DeepONet at every
-measured (PDE, $N$) cell. Both NM-ROM columns come from the same trained
-model. Error and speedup as in Table~\ref{tab:headline}, one full-order
-setting per cell; \emph{italic} marks speedups below $1\times$. \textbf{Bold} marks an NM-ROM setting that is both more accurate
-and faster than every operator in the cell. Each operator family shows the size chosen on its
-validation cases; most operator runs stopped at the 3000\,s wall
-budget (Table~\ref{tab:development-training}). Timed separately from
-Table~\ref{tab:headline} (Appendix~\ref{app:operators}).}
+\caption{\rev{Historical accuracy-only operator comparison. Burgers operators
+used 128 trajectories and are superseded by the matched-data
+Table~\ref{tab:baselines}; heat runs completed only 6--7 epochs and support
+no claim.} Worst-case relative errors (\%) at each measured cell; both NM-ROM
+settings come from one trained model. Operator sizes were selected on validation
+data under the reported training budget. No operator timing comparison is made.}
 \label{tab:operators}
 \resizebox{\linewidth}{!}{%
 \scriptsize\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}llrrrrrrrrrrrr@{}}
+\begin{tabular}{@{}llrrrrrr@{}}
 \toprule
- & & \multicolumn{2}{c}{NM-ROM accurate} & \multicolumn{2}{c}{NM-ROM second setting} & \multicolumn{2}{c}{FNO} & \multicolumn{2}{c}{U-Net} & \multicolumn{2}{c}{Transolver} & \multicolumn{2}{c}{DeepONet} \\
-\cmidrule(lr){3-4}\cmidrule(lr){5-6}\cmidrule(lr){7-8}\cmidrule(lr){9-10}\cmidrule(lr){11-12}\cmidrule(l){13-14}
-PDE & $N$ & Err.\ (\%) & Speedup & Err.\ (\%) & Speedup & Err.\ (\%) & Speedup & Err.\ (\%) & Speedup & Err.\ (\%) & Speedup & Err.\ (\%) & Speedup \\
+PDE & $N$ & NM-ROM accurate & NM-ROM second setting & FNO & U-Net & Transolver & DeepONet \\
 \midrule
-\multirow{3}{*}{Burgers 2D} & $256^2$ & --- & --- & 4.10 & \emph{0.58$\times$} & 8.76 & 2.53$\times$ & 5.98 & 1.83$\times$ & 6.83 & 1.64$\times$ & 64.2 & 4.79$\times$ \\
- & $1024^2$ & 1.25 & \emph{0.24$\times$} & \textbf{8.42} & \textbf{2.15$\times$} & 14.8 & \emph{0.74$\times$} & 11.5 & 1.38$\times$ & 14.9 & \emph{0.55$\times$} & 68.2 & 1.44$\times$ \\
- & $2048^2$ & 1.32 & 1.05$\times$ & \textbf{9.04} & \textbf{7.37$\times$} & 18.0 & \emph{0.31$\times$} & 22.6 & 1.42$\times$ & 33.8 & 1.43$\times$ & 67.1 & 1.96$\times$ \\
+\multirow{3}{*}{Burgers 2D} & $256^2$ & --- & 4.10 & 8.76 & 5.98 & 6.83 & 64.2 \\
+ & $1024^2$ & 1.25 & 8.42 & 14.8 & 11.5 & 14.9 & 68.2 \\
+ & $2048^2$ & 1.32 & 9.04 & 18.0 & 22.6 & 33.8 & 67.1 \\
 \midrule
-\multirow{2}{*}{Heat 2D} & $1024^2$ & \textbf{0.13} & \textbf{87.4$\times$} & --- & --- & 3.59 & 1.07$\times$ & 1.56 & 1.93$\times$ & 2.57 & 6.22$\times$ & 4.60 & 2.09$\times$ \\
- & $2048^2$ & \textbf{0.13} & \textbf{289$\times$} & --- & --- & 3.98 & \emph{0.93$\times$} & 2.76 & 2.76$\times$ & 3.66 & 40.5$\times$ & 10.9 & 5.11$\times$ \\
+\multirow{2}{*}{Heat 2D} & $1024^2$ & 0.13 & --- & 3.59 & 1.56 & 2.57 & 4.60 \\
+ & $2048^2$ & 0.13 & --- & 3.98 & 2.76 & 3.66 & 10.9 \\
 \midrule
-\multirow{3}{*}{Navier--Stokes 3D} & $32^3$ & 0.21 & \emph{0.94$\times$} & 3.24 & 1.68$\times$ & 0.53 & 1.69$\times$ & 0.68 & \emph{0.37$\times$} & 0.78 & \emph{0.34$\times$} & 51.9 & 1.52$\times$ \\
- & $64^3$ & \textbf{0.21} & \textbf{3.00$\times$} & 3.24 & 5.29$\times$ & 1.76 & 2.07$\times$ & 1.58 & \emph{0.75$\times$} & 1.80 & \emph{0.71$\times$} & 47.6 & 1.39$\times$ \\
- & $96^3$ & \textbf{0.21} & \textbf{8.01$\times$} & 3.24 & 14.4$\times$ & 1.51 & 3.23$\times$ & 2.29 & 1.44$\times$ & 1.16 & 6.65$\times$ & 51.4 & 2.26$\times$ \\
+\multirow{3}{*}{Navier--Stokes 3D} & $32^3$ & 0.21 & 3.24 & 0.53 & 0.68 & 0.78 & 51.9 \\
+ & $64^3$ & 0.21 & 3.24 & 1.76 & 1.58 & 1.80 & 47.6 \\
+ & $96^3$ & 0.21 & 3.24 & 1.51 & 2.29 & 1.16 & 51.4 \\
 \bottomrule
 \end{tabular}}
 \end{table}
@@ -1585,20 +1583,16 @@ tol $3{\times}10^{-3}$, $\Delta t{=}0.005$ (0.11, 0.13 and 0.14\,\%); heat $1024
 $2048^2$ (A100 and H200 GPUs), the 16 test
 cases of Table~\ref{tab:headline}, FOM CN--CG $\Delta t{=}0.025$, rtol
 $10^{-4}$ (0.045\,\%); Navier--Stokes $32^3$ and $64^3$, the 32 test cases of Table~\ref{tab:headline}, FOM
-CNAB2 with 40 and 50 steps (0.19 and 0.12\,\%); Navier--Stokes $96^3$, 32 test cases, FOM CNAB2 with 70 steps (0.056\,\%). In these jobs the
-Burgers accurate setting (span, $R'=384$) ran on the general solver path,
-slower than the path of Table~\ref{tab:headline}, and was not timed at
-$256^2$; the second NM-ROM setting is the head with $k=16$ on Burgers and the span
-$R'=16$ on Navier--Stokes, and was not timed for heat. These cells were
-timed in separate runs from Table~\ref{tab:headline}, so the same setting
-can show a different speedup in the two tables.
+CNAB2 with 40 and 50 steps (0.19 and 0.12\,\%); Navier--Stokes $96^3$, 32 test cases, FOM CNAB2 with 70 steps (0.056\,\%). The accurate NM-ROM setting is the span with $R'=384$; the second
+setting uses the head with $k=16$ on Burgers and the span with $R'=16$ on
+Navier--Stokes. Blank cells indicate unavailable measurements.
 
 \begin{table}[htbp]
 \centering
 \caption{Best NM-ROM against other nonlinear-manifold and projection ROMs on
 Burgers 2D at matched latent dimension ($k=16$ for every baseline and for
 our head). Error is the worst evolved same-grid relative $L^2$
-error (\%). Speedup as in Table~\ref{tab:operators}: one full-order setting
+error (\%). Speedup uses one full-order setting
 per cell, the fastest at least as accurate as the NM-ROM accurate setting,
 same allocation; \emph{italic} below $1\times$; \textbf{bold} marks an
 NM-ROM setting more accurate and faster than every baseline. At $256^2$ and
@@ -1610,8 +1604,7 @@ masked-autoencoder NM-LSPG of \citet{KimChoi2022NMROM} was checked against its p
 hyper-reduction was not reproduced and it was not run from $1024^2$. The
 quadratic manifold \citep{GeelenWrightWillcox2022} was run at $1024^2$ and
 $2048^2$ only. Every latent size and the memory use are in
-Tables~\ref{tab:nmrom-baselines-appx} and~\ref{tab:ops1024}. This table was timed in a separate run from
-Table~\ref{tab:operators} (H200 at $2048^2$, H100 there), so the same setting can show a different speedup.}
+Tables~\ref{tab:nmrom-baselines-appx} and~\ref{tab:ops1024}. The reduced-model timing comparison uses a separate allocation.}
 \label{tab:nmrom-baselines}
 \resizebox{\linewidth}{!}{%
 \scriptsize\setlength{\tabcolsep}{3pt}
@@ -2646,20 +2639,20 @@ the submission's FNO architecture; F2 the variant selected on
 validation.}
 \label{tab:ops-matched}
 \scriptsize\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}llrrr@{\hspace{10pt}}rr@{}}
+\begin{tabular}{@{}llrr@{\hspace{10pt}}r@{}}
 \toprule
- & & \multicolumn{3}{c}{$256^2$} & \multicolumn{2}{c}{$1024^2$} \\
-\cmidrule(lr){3-5}\cmidrule(l){6-7}
-Method & Trajectories & Worst (\%) & Median (\%) & ms & Worst (\%) & ms \\
+ & & \multicolumn{2}{c}{$256^2$} & $1024^2$ \\
+\cmidrule(lr){3-4}\cmidrule(l){5-5}
+Method & Trajectories & Worst (\%) & Median (\%) & Worst (\%) \\
 \midrule
-Ours, span $R'=384$ & 576 + 4,608 & 0.875 & 0.026 & 45.2 & 1.25 & 49.1 \\
-Ours, span $R'=96$ & 576 + 4,608 & 3.85 & 0.53 & 14.2 & 4.25 & 19.1 \\
-FNO F0, seeds 0/1/2 & 4,608 & 0.48/0.44/0.49 & 0.22/0.20/0.23 & 4.1 & 3.17/2.99/3.04 & 52 \\
-FNO F2 (selected) & 4,608 & 0.48 & 0.19 & 6.6 & 2.98 & 85 \\
-U-Net, seeds 0/1/2 & 4,608 & 0.45/0.50/0.51 & 0.21/0.22/0.20 & 7.4 & 53.5/54.0/53.4 & 91 \\
-FNO F0 & 576 & 4.03 & 0.40 & 4.1 & & \\
-U-Net & 576 & 0.74 & 0.27 & 7.4 & & \\
-FNO F0 / U-Net, rerun & 128 & 9.78 / 5.01 & 2.61 / 1.23 & 4.1 / 7.4 & & \\
+Ours, span $R'=384$ & 576 + 4,608 & 0.875 & 0.026 & 1.25 \\
+Ours, span $R'=96$ & 576 + 4,608 & 3.85 & 0.53 & 4.25 \\
+FNO F0, seeds 0/1/2 & 4,608 & 0.48/0.44/0.49 & 0.22/0.20/0.23 & 3.17/2.99/3.04 \\
+FNO F2 (selected) & 4,608 & 0.48 & 0.19 & 2.98 \\
+U-Net, seeds 0/1/2 & 4,608 & 0.45/0.50/0.51 & 0.21/0.22/0.20 & 53.5/54.0/53.4 \\
+FNO F0 & 576 & 4.03 & 0.40 & \\
+U-Net & 576 & 0.74 & 0.27 & \\
+FNO F0 / U-Net, rerun & 128 & 9.78 / 5.01 & 2.61 / 1.23 & \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -2667,19 +2660,18 @@ FNO F0 / U-Net, rerun & 128 & 9.78 / 5.01 & 2.61 / 1.23 & 4.1 / 7.4 & & \\
 \emph{Harder Navier--Stokes.} An FNO (81\,M parameters, the better on
 validation of two sizes) trained on the head's 448/64 trajectory split
 gives 2.41/2.51/2.52\,\% worst-case error on the 32-case cohort of
-Table~\ref{tab:coordnet} in 18.4/21.0/23.5\,ms; it is faster than our
-coordinate bank with the head only at $128^3$.
+Table~\ref{tab:coordnet}; the coordinate-bank head gives
+0.90/1.23/1.39\,\% on the same cohort. This is an accuracy-only comparison.
 
 \emph{Cylinder.} Table~\ref{tab:cyl-ops} gives the six operators trained
 on the same three training trajectories (60 and 180 minutes of final
-training each), timed on one GPU.
+training each). We report prediction errors and acceptance targets only.
 
 \begin{table}[htbp]
 \centering
 \caption{Cylinder operators: velocity RMS error and targets met (of six)
 on the standard window, and targets met on the long window and out of
-band. Inference per window on an L40S GPU: Transolver-style 2.5\,s, FNO
-0.45\,s, DeepONet 2.8\,s.}
+band. The operator comparison is accuracy-only.}
 \label{tab:cyl-ops}
 \scriptsize\setlength{\tabcolsep}{4pt}
 \begin{tabular}{@{}lccccc@{}}
@@ -2748,8 +2740,8 @@ experiments they name; each caption states its cohort.
 online GPU time per query on four problems of the original benchmark set.
 Blue: span along its width ladder $R'$; orange: head; grey diamonds: the
 named full-order solver along its own ladder; violet: transform or
-pseudo-spectral solvers; green: neural operators (one point per trained
-model). Poisson 2D and Burgers 2D panels are development cohorts at
+pseudo-spectral solvers. Neural operators are compared by error in
+Tables~\ref{tab:baselines} and~\ref{tab:ops-matched} and are omitted from this cost plot. Poisson 2D and Burgers 2D panels are development cohorts at
 $1024^2$ (held-out errors are higher), heat 2D at $1024^2$, original
 Navier--Stokes at $96^3$. Points come from more than one job (5--20\,\%
 cross-job timing differences). On these problems the transform and

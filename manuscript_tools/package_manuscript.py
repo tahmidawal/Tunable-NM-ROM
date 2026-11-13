@@ -64,6 +64,12 @@ The author's `todonotes` and `soul` preamble additions are retained.
 - Kept CROM/CoLoRA re-implementation, budget, failed-timing, transfer and
   extrapolation disclosures. Older cylinder field plots retain their explicit
   earlier-development-bank caption and do not depict the held-out headline bank.
+- Following the author's presentation choice, neural operators are compared
+  by error only. Their inference times and relative-speed claims are removed
+  from the main text, historical/matched-data appendix tables and cylinder/NS
+  descriptions; the cost plot now shows ROMs and numerical solvers only.
+  All prediction-error values and training-budget disclosures are retained.
+  Numerical-solver and reduced-model timing comparisons remain in place.
 
 ## Build and upload
 

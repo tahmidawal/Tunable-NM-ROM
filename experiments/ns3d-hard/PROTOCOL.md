@@ -340,7 +340,7 @@ LANE 2026-11-13-ns3d-flat-timing (branch exp/2026-11-13-ns3d-flat-timing, forked
 rank lane at 64ed589c9; own cluster namespace rebuttal-ns3d-flat-timing). Everything above
 is the source lane and is not changed. Source-lane cluster directories are read only.
 
-T1 (2026-11-13, 00:55 EST; written before the job below is submitted). ADDITIONAL
+T1 (2026-11-13, ~00:45 EST; written before the job below is submitted). ADDITIONAL
 TIMING-ONLY RERUN of the replicate-1 fresh-cohort comparison, BEYOND the one rerun that
 A5.6 and the 2026-11-12 NOTE permit. Disclosed as such wherever its numbers are used.
 Reason: fresh_s1 (job 7144216) and its permitted rerun fresh_s1b (job 7145063) both failed
@@ -358,7 +358,7 @@ block, i.e. a node-contention symptom. This rerun asks the scheduler for an excl
   such and there is no further rerun. Replicate 1 errors are unaffected and were never in
   question.
 
-T2 (2026-11-13, 01:45 EST; written before any split-timing job is submitted). SPLIT TIMING of
+T2 (2026-11-13, ~00:50 EST; written before any split-timing job is submitted). SPLIT TIMING of
 the frozen replicate-0 head arms r64_head, r96_head, r128_head, r128_head_fast, r192_head,
 r192_head_fast (frozen_rank/ files and heads exactly as fresh_s0b, job 7145062). Code:
 split_timing.py (new; imports pipeline.py / rank.py unchanged).
@@ -398,7 +398,7 @@ split_timing.py (new; imports pipeline.py / rank.py unchanged).
 7. Reported: per arm and mesh ENC, FIT, SOLVE, DEC, FULL, the sum, the references; flatness
    of SOLVE as max/min over meshes (frozen settings differ by mesh for r64_head, r128_head,
    r192_head; the other three arms have identical settings at every mesh).
-T2 addendum (2026-11-13, 02:05 EST; before any split job ran). The cluster user cap (12 GPUs)
+T2 addendum (2026-11-13, ~00:54 EST; before any split job ran). The cluster user cap (12 GPUs)
 is full with other lanes' jobs and every A100 80 GB GPU is allocated, so the separate asm jobs
 were cancelled before starting (7161726, 7161729). Assembly now runs inside each split job
 (at 192^3, all three banks; failures recorded, not fatal). At 256^3 the operators are NOT
@@ -406,3 +406,11 @@ assembled: they are the 128^3 operators with T multiplied by (128/256)^{3/2}, us
 in-job 192^3 assembly confirms the invariance (A, Dd, lam equal and T equal after the factor
 to <= 1e-10). Reason: assembling the rank-192 tensor at 256^3 needs ~270 GB host and ~100 GB
 device memory, which no free node offers. Requests use 3 CPUs (the free H200 slot has 3).
+T2 note (2026-11-13, 02:35 EST). split_h200 (job 7161809) finished 64/96/128 (gates passed at
+the first attempt) and the 192^3 assembly, then died of GPU out-of-memory at 192^3 while all
+three banks (81.5 GB) shared one block (crash, not a measurement outcome). Technical fix only:
+banks are copied to the device in column chunks (jnp.asarray of a host array stages a second
+full copy), and the memory budget for a single block is 45 % of the device. The 192^3/256^3
+part is rerun as split_h200b (meshes 192, 256 only; one block per bank at these meshes; it
+reads the 192^3 operators and the invariance check from split_h200). Meshes 64/96/128 of
+split_h200 stand.

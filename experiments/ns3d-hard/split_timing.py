@@ -126,6 +126,15 @@ def make_split_head(dt, nsteps, out_every, n, R, k, iters, damping, ic_iters):
     return enc, fit, solve, dec, decb
 
 
+def to_device(G, chunk=16):
+    """Host bank -> device without the 2x staging transient of jnp.asarray (in-place chunk writes)."""
+    out = jnp.zeros(G.shape, dtype=G.dtype)
+    put = jax.jit(lambda o, c, s: jax.lax.dynamic_update_slice(o, c, (0, s)), donate_argnums=0)
+    for s in range(0, G.shape[1], chunk):
+        out = put(out, jnp.asarray(np.ascontiguousarray(G[:, s:s + chunk])), s)
+    return jax.block_until_ready(out)
+
+
 def bank_of(rank):
     return "r64" if rank == 64 else ("r128" if rank <= 128 else "r192")
 
@@ -175,8 +184,10 @@ def cmd_split(a):
         P.build_tensor_chunked = orig; SRC = a.src; gc.collect()
         rep["asm"] = json.loads((out / "asm.json").read_text()) if (out / "asm.json").exists() else {}
         dump()
+    elif a.asm and (asm_dir / "asm.json").exists():   # assembly done by an earlier job of this lane
+        rep["asm"] = json.loads((asm_dir / "asm.json").read_text()); rep["asm_from"] = str(asm_dir); dump()
     scaled = ints(a.scaled_meshes) if a.scaled_meshes else []
-    if scaled or a.asm_meshes:                             # operators by the exact scaling, only if assembly confirmed it
+    if scaled or a.asm_meshes or rep.get("asm"):                             # operators by the exact scaling, only if assembly confirmed it
         worst = max([v["vs_128_operators"][q]["relative_difference"] for b in rep.get("asm", {}).get("banks", {}).values()
                      for v in b["meshes"].values() for q in ("A", "Dd", "lam", "T_scaled")] or [1.0])
         rep["scaled_operator_check_worst"] = worst
@@ -237,7 +248,8 @@ def cmd_split(a):
                         mrep.setdefault("operators", {})[b] = f"assembled at {n} (asm)"
                     orth = float(np.max(np.abs(G.T @ G - np.eye(G.shape[1]))))
                     mrep.setdefault("resampled_orthonormality", {})[b] = orth
-                arms_by_bank[b] = RK.RankArms(n, T, G, ops); del G, ops; gc.collect()
+                Gd = to_device(G); del G; gc.collect()
+                arms_by_bank[b] = RK.RankArms(n, T, Gd, ops); del Gd, ops; gc.collect()
             scale = 1.0 if native else (n / SRC) ** 1.5
             calls, parts = {}, {}
             for name in arm_names:

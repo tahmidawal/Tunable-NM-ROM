@@ -1,0 +1,37 @@
+{
+ "arm": "Ub48",
+ "config": {
+  "family": "unet",
+  "base": 48,
+  "groups": 8,
+  "lr": 0.0003
+ },
+ "rung": 4608,
+ "data_device": "cuda",
+ "extra_dir": null,
+ "seed": 0,
+ "train_cases": 4352,
+ "validation_cases": 256,
+ "train_layout": "P[0:4352] ++ X[0:0]",
+ "validation_layout": "P[4352:4608]",
+ "normalization": {
+  "u_mean": 0.12552112126310638,
+  "u_std": 0.27771753282320677,
+  "nu_mean": 0.03906131535768509,
+  "nu_std": 0.024881545454263687,
+  "scale": 0.24250672771196524
+ },
+ "real_parameters": 17462021,
+ "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+ "job_id": "7157810",
+ "node": "pax186",
+ "torch": "2.11.0+cu128",
+ "eval_every": 500,
+ "plateau_patience": 6,
+ "stop_patience": 20,
+ "threshold": 0.001,
+ "min_lr": 1e-05,
+ "batch": 8,
+ "test_cohort_seen": false,
+ "continuation": null
+}

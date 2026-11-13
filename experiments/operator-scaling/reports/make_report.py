@@ -169,8 +169,10 @@ def main():
                 fits[f'{fam} size, {which}'] = dict(points=list(zip(xs, ys)), fit=f,
                                                     extrapolation=extrapolate(f, xs, ys, TARGET) if which == 'median' else None)
         arm = 'Fw128m64L4' if fam == 'FNO' else 'Ub128'
+        # equal 200k budget: at 36,864 use the best-up-to-200k snapshot, or the final checkpoint if the run stopped by 200k
         data = [r for r in rows if r['arm'] == arm and r['schedule'] == 'plateau' and val_of(r, 'median') and
-                ((r['rung'] < 36864 and r['checkpoint'] == 'final best') or (r['rung'] == 36864 and r['checkpoint'] == 'best up to 200k'))]
+                ((r['rung'] < 36864 and r['checkpoint'] == 'final best') or
+                 (r['rung'] == 36864 and (r['checkpoint'] == 'best up to 200k' or (r['checkpoint'] == 'final best' and r['steps'] <= 200000))))]
         if not have_test:
             data = [r for r in rows if r['arm'] == arm and r['schedule'] == 'plateau' and r['checkpoint'] == 'final best' and r['val_mean']]
         for which in ('median', 'worst'):

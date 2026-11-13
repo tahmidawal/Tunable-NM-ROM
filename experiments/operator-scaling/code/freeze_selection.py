@@ -28,15 +28,16 @@ for d in sorted(Path(a.ns).glob('*/runs/*')):
                 continued=r.get('continued_from_last'))
     runs[f'{d.parent.parent.name}/{d.name}'] = dict(base, checkpoint='best.pt', best_sha256=sha256(d / 'best.pt'),
                                                     best_step=r['best_step'], validation=r['best_validation'], budget='final')
-    snap = d / 'best_upto_200000.pt'
-    if snap.exists():
+    for snap in sorted(d.glob('best_upto_*.pt')):
+        tag = snap.stem.split('_')[-1]
+        tag = f'{int(tag) // 1000}k'
         import torch
         ck = torch.load(snap, map_location='cpu', weights_only=False)
-        runs[f'{d.parent.parent.name}/{d.name}@200k'] = dict(base, checkpoint=snap.name, best_sha256=sha256(snap),
-                                                             best_step=ck['step'], validation=ck['validation'], budget='200k')
+        runs[f'{d.parent.parent.name}/{d.name}@{tag}'] = dict(base, checkpoint=snap.name, best_sha256=sha256(snap),
+                                                              best_step=ck['step'], validation=ck['validation'], budget=tag)
 selection = {}
 for fam, letter in (('FNO', 'F'), ('U-Net', 'U')):
-    cand = {k: v['validation']['mean'] for k, v in runs.items() if v['arm'][0] == letter}
+    cand = {k: v['validation']['mean'] for k, v in runs.items() if v['arm'][0] == letter and v['budget'] == 'final'}
     best = min(cand, key=cand.get)
     selection[fam] = dict(rule='lowest validation mean over all runs of the family (any size, any rung)', candidates=cand,
                           selected=best)

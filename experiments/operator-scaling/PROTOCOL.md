@@ -171,3 +171,20 @@ operators can be pushed, and the schedule evidently matters, the cosine schedule
   specified).
 - Cosine runs remain eligible for the per-family validation selection (section 6, as A1).
 - All under the same deadline rule.
+
+### 2026-11-13 ~09:10 EST, A3 — made after ~12 h of training (validation only), before any test evaluation
+
+What was seen: the A1 cosine run (`Fw128m64L4`, 36,864, 400k steps) reached a validation mean of 0.073 %, against
+0.134 % for the protocol (plateau) run of the same model and data, with most of the gain arriving as the learning
+rate decayed. Training length under a decaying schedule is therefore the most promising remaining lever toward
+0.0264 %, and there are ~49 h to the deadline. Added (cosine schedule of A1, deadline rule applies; a run cut by the
+deadline is evaluated from its best checkpoint and flagged "not converged / cut by deadline"):
+
+- **A3a** `Fw128m64L4`, 36,864 rung, cosine over **1,000,000** steps ($10^{-3}\to10^{-6}$). Isolates training length.
+- **A3b** `Fw192m48L4` (354 M parameters), 36,864 rung, cosine over **600,000** steps — largest FNO × largest data ×
+  better schedule. Started when a second slot of this lane frees (one slot of the 12-GPU cap is left for another
+  lane's pending job).
+
+Like A1/A2, these are eligible for the per-family validation selection and reported in the full table, labelled;
+they are not points of the protocol's fitted ladders. A3a's best checkpoint up to 400,000 steps is also kept
+(`best_upto_400000.pt`) and evaluated, so that the effect of length alone is measured on the same run.

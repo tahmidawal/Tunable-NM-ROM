@@ -122,13 +122,13 @@ def main():
     W('|---|---|---|---|---|---|---|---|---|---|---|---|---|---|')
     rows = []
     for k, r in sorted(runs.items(), key=lambda kv: (kv[1]['family'], kv[1]['rung'], kv[1]['params'])):
-        for ck in ('', '@200k'):
+        for ck in ('', '@200k', '@400k'):
             t = tests.get(k + ck)
             if ck and not t:
                 continue
-            rows.append(dict(r, checkpoint='best up to 200k' if ck else 'final best', test=t, test_key=k + ck))
+            rows.append(dict(r, checkpoint=('best up to ' + ck[1:]) if ck else 'final best', test=t, test_key=k + ck))
             gpu = r['gpu'].replace('NVIDIA ', '').replace(' Blackwell Server Edition', '')
-            W(f"| {r['family']} | {r['arm']}{' (cosine, A1)' if r['schedule'] == 'cosine' else ''} | {r['params']:,} | {r['train_cases']:,} | {'best ≤200k' if ck else 'final best'} | "
+            W(f"| {r['family']} | {r['arm']}{' (cosine, A1)' if r['schedule'] == 'cosine' else ''} | {r['params']:,} | {r['train_cases']:,} | {('best ≤' + ck[1:]) if ck else 'final best'} | "
               f"{r['steps']:,} ({(t['best_step'] if t else r['best_step']) or 0:,}) | {r['stop']} | {'yes' if r['converged'] else '**no**'} | "
               f"{r['gpu_hours']:.1f} ({gpu}) | {fmt(r['val_mean'], 4)} | {fmt(r['val_worst'])} | "
               f"{fmt(t['median'], 3) if t else ''} | {fmt(t['worst'], 3) if t else ''} | "

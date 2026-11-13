@@ -97,5 +97,13 @@ meta = {'source_archive_sha256':hashlib.sha256(archive.read_bytes()).hexdigest()
         'undefined_references':False,'overfull_boxes':False,
         'pending_experiments_included':False,'overleaf_uploaded':False,
         'archive_files':len(files)}
+package_build = TOOLS/'checks/package-build'
+if (package_build/'main.log').exists():
+    with ZipFile(archive) as z:
+        matching_source = all((package_build/n).read_bytes() == z.read(n) for n in z.namelist())
+    built_log = (package_build/'main.log').read_text()
+    meta['source_zip_independent_build_verified'] = matching_source and bool(
+        re.search(r'Output written on main.pdf', built_log)) and not bool(
+        re.search(r'Overfull|undefined|^!', built_log, re.M))
 (TOOLS/'checks/validation.json').write_text(json.dumps(meta,indent=2)+'\n')
 print(json.dumps(meta,indent=2))

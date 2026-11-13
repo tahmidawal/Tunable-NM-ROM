@@ -1,0 +1,34 @@
+sources verified
+01292338cf5ba3a143c2c529b52aada2fe95653b
+cpu_model=Intel(R) Xeon(R) Gold 6438M
+pax028
+16
+{"wheel": "ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl", "sha256": "4e02591fe98a1068b4f7ca094aec36844da1f6ddf826088b060e5a8e7780efff"}
+{"wheel": "netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", "sha256": "d8118835e2aec5739ee5755d61e866505313d92e3d4c6b947be7835f9fbf5122"}
+{"wheel": "netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", "sha256": "db71d77f56f79c0768489e76dde8febdeb25b95777986587a5d09575fa112f94"}
+{"wheel": "ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl", "sha256": "8d3266615c7b099e78c5891a41971c6bffe5d6014d13d736cef0cc119d1ca141"}
+Processing ./wheels/ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+Processing ./wheels/ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl
+Installing collected packages: ngsolve-openblas, ngsolve, netgen-occt, netgen-mesher
+
+Successfully installed netgen-mesher-6.2.2608 netgen-occt-7.8.1 ngsolve-6.2.2608 ngsolve-openblas-0.3.33
+{"prefix_layout_verified": true, "occt_libraries": 47, "site_packages": "/cluster/tufts/paralab/tawal01/cyl-amg-20261113/amg-smoke2/deps/lib/python3.13/site-packages"}
+ngsolve 6.2.2608 pyamg 5.4.1 scipy 1.18.0
+reference on Q 21 saves 1036497 points 6.8 s
+space c4 3 16912 check 6.661338147750939e-16 4.8 s
+{"scalar_return_contract": {"label": "normal_P0_constant", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "oriented_normal_moment", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "normal_geometry_volume", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "probe", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+  rep 0 c4_p3_dt300_frozen_oseen_K30_lu 8.18 {'conv_apply': 1.2862895254511386, 'factor': 2.4698837951291353, 'solve': 2.2947953743860126, 'observe': 1.9963306852150708, 'diagnostics': 0.0} {'setups': 0, 'extract_seconds': 0.0, 'amg_setup_seconds': 0.0, 'krylov_seconds': 0.0, 'inner_iters': 0, 'levels': None, 'blocks_identical': None, 'pressure_setup_seconds': 0.0}
+c4_p3_dt300_frozen_oseen_K30_lu completed 16912 8.175633079838008 {'rms': 0.003491240404381355, 'max': 0.00523276379554891, 'at_start': 0.0012182302491690292, 'saves': 21} {'rms': 0.0019825776269700407, 'max': 0.002805618758276405, 'at_start': 0.0007751617490054003} {} 3 
+  rep 0 c4_p3_dt300_frozen_oseen_K30_amg1_sa_cc_r1e-8 15.29 {'conv_apply': 1.8091275643091649, 'factor': 0.6066804027650505, 'solve': 10.15274148620665, 'observe': 2.4796027911361307, 'diagnostics': 0.0} {'setups': 3, 'extract_seconds': 0.062470592092722654, 'amg_setup_seconds': 0.3637242738623172, 'krylov_seconds': 9.518971444806084, 'inner_iters': 0, 'levels': 3, 'blocks_identical': True, 'pressure_setup_seconds': 0.09352964186109602, 'pressure_levels': 3, 'outer_iters_mean': 27.92063492063492, 'outer_iters_max': 50, 'outer_iters_total': 1759, 'solves': 63, 'final_rel_max': 9.959594191019379e-09}
+c4_p3_dt300_frozen_oseen_K30_amg1_sa_cc_r1e-8 completed 16912 15.288263213820755 {'rms': 0.003491270448435749, 'max': 0.005232821495428465, 'at_start': 0.0012182302491690292, 'saves': 21} {'rms': 0.001982514984257274, 'max': 0.002805656385794804, 'at_start': 0.0007751617490054003} {} 3 
+  rep 0 c4_p3_dt300_frozen_oseen_K30_amg2_sa_cc_r1e-8 130.03 {'conv_apply': 0.24685716535896063, 'factor': 0.5108146688435227, 'solve': 127.37513726367615, 'observe': 1.7584971773903817, 'diagnostics': 0.0} {'setups': 3, 'extract_seconds': 0.07056948286481202, 'amg_setup_seconds': 0.24887604522518814, 'krylov_seconds': 126.68273784313351, 'inner_iters': 91582, 'levels': 3, 'blocks_identical': True, 'pressure_setup_seconds': 0.0261913500726223, 'pressure_levels': 3, 'outer_iters_mean': 17.904761904761905, 'outer_iters_max': 34, 'outer_iters_total': 1128, 'solves': 63, 'final_rel_max': 9.95854371447209e-09}
+c4_p3_dt300_frozen_oseen_K30_amg2_sa_cc_r1e-8 completed 16912 130.03118746192195 {'rms': 0.003491246181696561, 'max': 0.0052327782028660915, 'at_start': 0.0012182302491690292, 'saves': 21} {'rms': 0.0019826819352611194, 'max': 0.002805825486458964, 'at_start': 0.0007751617490054003} {} 3 
+  rep 0 c4_p3_dt300_frozen_oseen_K30_amg1_rs_cc_r1e-8 15.38 {'conv_apply': 0.6208155450876802, 'factor': 0.37374347331933677, 'solve': 11.868957300204784, 'observe': 2.3630961682647467, 'diagnostics': 0.0} {'setups': 3, 'extract_seconds': 0.06017945217899978, 'amg_setup_seconds': 0.017340177670121193, 'krylov_seconds': 10.998082500183955, 'inner_iters': 0, 'levels': 4, 'blocks_identical': True, 'pressure_setup_seconds': 0.020979176042601466, 'pressure_levels': 4, 'outer_iters_mean': 28.650793650793652, 'outer_iters_max': 64, 'outer_iters_total': 1805, 'solves': 63, 'final_rel_max': 9.947923476566242e-09}
+c4_p3_dt300_frozen_oseen_K30_amg1_rs_cc_r1e-8 completed 16912 15.38017934304662 {'rms': 0.0034912958657219917, 'max': 0.005232874828940737, 'at_start': 0.0012182302491690292, 'saves': 21} {'rms': 0.0019828879833002524, 'max': 0.0028059067514448646, 'at_start': 0.0007751617490054003} {} 3 
+c4_p3_dt300_frozen_oseen_K30_amg1_sa_mass_r1e-6 failed None None None None None None ArithmeticError('AMG Krylov relative residual 8.467e-03 > 1e-06 at t=17.450833333335584 (info 120)')
+task_completed

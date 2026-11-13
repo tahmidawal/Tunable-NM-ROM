@@ -24,6 +24,30 @@ def mark(c):
     return f" (chunk {c['chunk']})" if c and c.get("chunked") else ""
 
 
+def summary(paths):
+    """Headline: per mesh/arm/B, best ROM e2e vs best solver solve-only, per-query ms and ratio."""
+    print("| mesh | GPU | arm | ROM worst % | solver (worst %) | B | ROM ms/query | solver ms/query | ROM queries/s "
+          "| solver queries/s | ROM s/1000 | solver s/1000 | ratio | ratio vs ROM solve-only |")
+    print("|" + "---|" * 14)
+    for p in paths:
+        r = json.load(open(p)); n = r["mesh"]; gpu = r["gpu"].split(",")[0].replace("NVIDIA ", "")
+        for arm, a in r["arms"].items():
+            m = a["matched"]; tag = f"{m['scheme']}|{m['n']}|{m['steps']}"
+            for B, b in sorted(r["batches"].items(), key=lambda x: int(x[0])):
+                cs = b["callables"]; Bi = int(B)
+                rk, rc = best(cs, "ROM_VMAP", arm); sk, sc = best(cs, "ROM_SHARED", arm)
+                if sc and (rc is None or sc["median_ms"] < rc["median_ms"]):
+                    rk, rc = sk, sc
+                fk, fc = best(cs, "SOLVE_", tag); lat = cs.get(f"ROM_LAT|{arm}")
+                if rc is None: continue
+                print(f"| {n} | {gpu} | {arm} | {a['fresh_worst'] * 100:.2f} | {m['scheme']} {m['n']}^3 x{m['steps']} ({m['cohort_worst'] * 100:.2f}) "
+                      f"| {Bi} | {rc['median_ms'] / Bi:.2f}{mark(rc)} | " + (f"{fc['median_ms'] / Bi:.1f}{mark(fc)}" if fc else "-")
+                      + f" | {rc['samples_per_s']:.0f} | " + (f"{fc['samples_per_s']:.2f}" if fc else "-")
+                      + f" | {rc['ms_per_1000'] / 1e3:.2f} | " + (f"{fc['ms_per_1000'] / 1e3:.0f}" if fc else "-")
+                      + " | " + (f"{fc['median_ms'] / rc['median_ms']:.1f}" if fc else "-")
+                      + " | " + (f"{fc['median_ms'] / lat['median_ms']:.0f}" if fc and lat and lat.get("median_ms") else "-") + " |")
+
+
 def main(paths):
     for p in paths:
         r = json.load(open(p)); n = r["mesh"]
@@ -90,4 +114,7 @@ def main(paths):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    if sys.argv[1] == "--summary":
+        summary(sys.argv[2:])
+    else:
+        main(sys.argv[1:])

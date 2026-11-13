@@ -179,6 +179,16 @@ def free_bytes():
     return int(st.get("bytes_limit", 80e9) - st.get("bytes_in_use", 0))
 
 
+def build(calls, rep, B, name, *args, **kw):
+    try:
+        calls[name] = Callable(name, *args, **kw)
+        return calls[name]
+    except Exception as e:
+        rep["failures"].append(f"B={B}: {name} not built: {type(e).__name__}: {str(e)[:200]}")
+        log(rep["failures"][-1]); gc.collect()
+        return None
+
+
 class Callable:
     """A batched function at batch B: AOT compile at chunk c (largest power of two <= B
     whose buffers fit), executed as ceil(B / c) consecutive calls when c < B (the chunk
@@ -195,7 +205,12 @@ class Callable:
         self.chunk = None
         while c >= 1:
             spec = [jax.ShapeDtypeStruct((c,) + x.shape[1:], x.dtype) for x in self.batch_args]
-            comp = self.jit.lower(*spec, *self.shared).compile()
+            try:
+                comp = self.jit.lower(*spec, *self.shared).compile()
+            except Exception as e:   # e.g. GEMM autotuning runs out of device memory at this chunk
+                self.chunks_tried.append(dict(chunk=c, compile_error=f"{type(e).__name__}: {str(e)[:160]}"))
+                gc.collect(); c //= 2
+                continue
             ma = comp.memory_analysis()
             need_batch = int(ma.output_size_in_bytes + ma.temp_size_in_bytes - ma.alias_size_in_bytes
                              + (sum(nbytes(s) for s in spec) if c < self.B else 0))
@@ -257,6 +272,9 @@ def safe_first_call(c):
             gc.collect(); c.shrink()
 
 
+DROPPED = []
+
+
 def burn(seconds=2.0):
     warm = jnp.ones((1024, 1024)) * 1e-3; t0 = time.perf_counter()
     while time.perf_counter() - t0 < seconds:
@@ -266,8 +284,13 @@ def burn(seconds=2.0):
 
 def time_block(calls, reps, seed):
     burn()
-    for c in calls.values():          # one untimed call each (after AOT compile)
-        safe_first_call(c)
+    for name in list(calls):          # one untimed call each (after AOT compile); drop what cannot run
+        try:
+            safe_first_call(calls[name])
+        except Exception as e:
+            log(f"dropped from timing block: {name}: {type(e).__name__}: {str(e)[:200]}")
+            DROPPED.append(f"{name}: {type(e).__name__}: {str(e)[:200]}")
+            del calls[name]; gc.collect()
     rng = np.random.default_rng(seed); names = list(calls); samples = {k: [] for k in names}
     for _ in range(reps):
         for name in rng.permutation(names):
@@ -402,6 +425,9 @@ def main():
     Bs = ints(a.batches); extra = ints(a.rom_extra) if a.rom_extra else []
     for B in Bs + [b for b in extra if b not in Bs]:
         rom_only = B not in Bs
+        if rom_only and B * 6 * 3 * n ** 3 * 8 > 0.5 * free_bytes():
+            rep["batches"][str(B)] = dict(B=B, skipped="ROM outputs exceed half the free device memory", callables={})
+            log(f"B={B}: skipped (memory)"); continue
         idx = np.arange(B) % ncases
         u0n = jnp.asarray(np.stack([truth[c][0] for c in idx])); nuB = jnp.asarray(nus[idx])
         calls = {}; brep = dict(B=B, callables={}); rep["batches"][str(B)] = brep
@@ -415,17 +441,17 @@ def main():
             for name in arms:
                 R_ = rom[name]; e2e_b, enc_b, lat_b, dec_b = R_["parts"]
                 vm = jax.vmap(R_["run"], in_axes=(0, 0) + (None,) * 10)
-                calls[f"ROM_VMAP|{name}"] = Callable(f"ROM_VMAP|{name}", vm, [u0n, nuB], list(R_["full"]), B,
-                                                     max_chunk=None)
+                build(calls, rep, B, f"ROM_VMAP|{name}", vm, [u0n, nuB], list(R_["full"]), B)
                 sh = (R_["G"], R_["A"], R_["T"], R_["lam"], R_["Dd"], R_["p"], R_["Hc"], R_["Hn"], R_["Z"])
-                calls[f"ROM_SHARED|{name}"] = Callable(f"ROM_SHARED|{name}", e2e_b, [u0n, nuB], list(sh), B)
-                ce = Callable(f"ROM_ENC|{name}", enc_b, [u0n], [R_["G"], R_["p"], R_["Hc"], R_["Hn"], R_["Z"]], B)
-                w0s, c0s = ce.full_output()
-                cl = Callable(f"ROM_LAT|{name}", lat_b, [w0s, c0s, nuB],
-                              [R_["A"], R_["T"], R_["lam"], R_["Dd"], R_["p"]], B)
-                Ws, css = cl.full_output()
-                cd = Callable(f"ROM_DEC|{name}", dec_b, [w0s, c0s, Ws, css], [R_["G"], R_["p"]], B)
-                calls[ce.name] = ce; calls[cl.name] = cl; calls[cd.name] = cd
+                build(calls, rep, B, f"ROM_SHARED|{name}", e2e_b, [u0n, nuB], list(sh), B)
+                ce = build(calls, rep, B, f"ROM_ENC|{name}", enc_b, [u0n], [R_["G"], R_["p"], R_["Hc"], R_["Hn"], R_["Z"]], B)
+                if ce is not None:
+                    w0s, c0s = ce.full_output()
+                    cl = build(calls, rep, B, f"ROM_LAT|{name}", lat_b, [w0s, c0s, nuB],
+                               [R_["A"], R_["T"], R_["lam"], R_["Dd"], R_["p"]], B)
+                    if cl is not None:
+                        Ws, css = cl.full_output()
+                        build(calls, rep, B, f"ROM_DEC|{name}", dec_b, [w0s, c0s, Ws, css], [R_["G"], R_["p"]], B)
                 if rom_only:      # informational large batch: never chunked
                     for kk in [x for x in calls if x.endswith(name) and calls[x].chunked]:
                         del calls[kk]
@@ -438,8 +464,8 @@ def main():
                         vs = jax.vmap(fn, in_axes=(0, 0, None))
                         ve = jax.vmap(lambda u, v, g, fn=fn, m=m: P.spec_resample(fn(P.spec_resample(u, m), v, g), n),
                                       in_axes=(0, 0, None))
-                        calls[f"SOLVE_{var.upper()}|{tag}"] = Callable(f"SOLVE_{var.upper()}|{tag}", vs, [u0m, nuB], [geom], B)
-                        calls[f"E2E_{var.upper()}|{tag}"] = Callable(f"E2E_{var.upper()}|{tag}", ve, [u0S, nuB], [geom], B)
+                        build(calls, rep, B, f"SOLVE_{var.upper()}|{tag}", vs, [u0m, nuB], [geom], B)
+                        build(calls, rep, B, f"E2E_{var.upper()}|{tag}", ve, [u0S, nuB], [geom], B)
                     del u0m
         except Exception as e:  # report and continue with what compiled
             rep["failures"].append(f"B={B}: build failed: {type(e).__name__}: {str(e)[:300]}")
@@ -530,8 +556,7 @@ def main():
                 scheme, m, s = key; tag = f"{scheme}|{m}|{s}"; u0m = P.spec_resample(u0S, m)
                 for var in ("vmap", "rfft"):
                     fn, geom = solver(key, var)
-                    rc[f"SOLVE_{var.upper()}|{tag}"] = Callable(f"SOLVE_{var.upper()}|{tag}",
-                                                                jax.vmap(fn, in_axes=(0, 0, None)), [u0m, nuB], [geom], B)
+                    build(rc, rep, B, f"SOLVE_{var.upper()}|{tag}", jax.vmap(fn, in_axes=(0, 0, None)), [u0m, nuB], [geom], B)
                 del u0m
             try:
                 smp = time_block(rc, a.reps_large, seed=77)
@@ -541,10 +566,11 @@ def main():
                                               samples_per_s=B / (med / 1e3), mem=rc[nm].mem)
                     log(f"rematch B=32 {nm}: {med:.2f} ms")
             except Exception as e:
-                rep["failures"].append(f"rematch failed: {type(e).__name__}: {str(e)[:300]}")
+                rep["failures"].append(f"rematch failed: {type(e).__name__}: {str(e)[:300]}"); log(rep["failures"][-1])
             del rc; gc.collect(); dump()
         del u0n, nuB, u0S; gc.collect()
-    rep["status"] = "final" if not rep["failures"] else "with-failures"
+    rep["dropped_from_timing"] = DROPPED
+    rep["status"] = "final" if not rep["failures"] and not DROPPED else "with-failures"
     dump()
     log(f"DONE status {rep['status']} failures {rep['failures']}")
 

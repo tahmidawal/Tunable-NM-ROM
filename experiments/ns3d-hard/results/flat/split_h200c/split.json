@@ -1,0 +1,630 @@
+{
+ "schema": "ns3d-flat-split-v1",
+ "family": "B",
+ "args": {
+  "cmd": "split",
+  "out": "output",
+  "family": "B",
+  "smoke": false,
+  "src": 128,
+  "cohort": "/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/genF_0,/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/genF_1",
+  "meshes": "256",
+  "arms": "r64_head,r96_head,r128_head,r128_head_fast,r192_head,r192_head_fast",
+  "banks": "r64=/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/bankB,r128=/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/bank128_s0b,r192=/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/bank192_s0",
+  "heads": "r64=/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/romdevB_64:/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/romdevB_96:/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/romdevB_128,r128=/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/rdev_s0_64:/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/rdev_s0_96:/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/rdev_s0_128,r192=/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/rdev192_s0_64:/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/rdev192_s0_96:/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/rdev192_s0_128",
+  "head_meshes": "64,96,128",
+  "asm": "/cluster/tufts/paralab/tawal01/rebuttal-ns3d-flat-timing/split_h200",
+  "frozen": "/cluster/tufts/paralab/tawal01/rebuttal-ns3d-flat-timing/split_h200c/experiments/ns3d-hard/frozen_rank",
+  "refcompare": "/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/fresh_s0b/output/compare.json",
+  "reps": 9,
+  "timing_cases": "0,16,32,48,64,80,96,112",
+  "gate": 1.1,
+  "gate_block": 1.25,
+  "sentinels": "r64_head,r128_head",
+  "budget": 0.45,
+  "decb_max": 192,
+  "asm_meshes": "",
+  "scaled_meshes": "256",
+  "modes": 2336,
+  "tchunk": 8
+ },
+ "device": "cuda:0",
+ "job_id": "7162483",
+ "meshes": {
+  "256": {
+   "native_bank": false,
+   "settings_from_mesh": 128,
+   "frozen": {
+    "r64_head": {
+     "kind": "head",
+     "rank": 64,
+     "k": 8,
+     "width": 256,
+     "M": 584,
+     "steps": 10,
+     "iters": 3,
+     "dev_worst": 0.014485969118172369,
+     "dev_median": 0.00564162457478937
+    },
+    "r96_head": {
+     "kind": "head",
+     "rank": 96,
+     "k": 8,
+     "width": 256,
+     "M": 584,
+     "steps": 20,
+     "iters": 3,
+     "dev_worst": 0.00866286734122623,
+     "dev_median": 0.0018597952049423327
+    },
+    "r128_head": {
+     "kind": "head",
+     "rank": 128,
+     "k": 8,
+     "width": 256,
+     "M": 584,
+     "steps": 40,
+     "iters": 3,
+     "dev_worst": 0.0071007110938434434,
+     "dev_median": 0.001139500228535977
+    },
+    "r128_head_fast": {
+     "kind": "head",
+     "rank": 128,
+     "k": 8,
+     "width": 256,
+     "M": 584,
+     "steps": 20,
+     "iters": 3,
+     "dev_worst": 0.007377740995156512,
+     "dev_median": 0.001321643620825377
+    },
+    "r192_head": {
+     "kind": "head",
+     "rank": 192,
+     "k": 8,
+     "width": 256,
+     "M": 2336,
+     "steps": 40,
+     "iters": 3,
+     "dev_worst": 0.005861647191791272,
+     "dev_median": 0.0007004475919273354
+    },
+    "r192_head_fast": {
+     "kind": "head",
+     "rank": 192,
+     "k": 8,
+     "width": 256,
+     "M": 584,
+     "steps": 20,
+     "iters": 3,
+     "dev_worst": 0.006714045580138089,
+     "dev_median": 0.0009049305831284002
+    }
+   },
+   "fom_refs": {
+    "r64_head": {
+     "any": [
+      "rk4",
+      88,
+      20
+     ],
+     "same": [
+      "cnab2",
+      256,
+      120
+     ],
+     "ref_any_ms": 112.0703131891787,
+     "ref_same_ms": 473.8575159572065,
+     "ref_rom_ms": 30.77199449762702,
+     "ref_any_ratio": 3.641958053704351
+    },
+    "r96_head": {
+     "any": [
+      "cnab2",
+      108,
+      120
+     ],
+     "same": [
+      "cnab2",
+      256,
+      120
+     ],
+     "ref_any_ms": 298.9650620147586,
+     "ref_same_ms": 473.8575159572065,
+     "ref_rom_ms": 43.1508794426918,
+     "ref_any_ratio": 6.928365444134475
+    },
+    "r128_head": {
+     "any": [
+      "cnab2",
+      112,
+      120
+     ],
+     "same": [
+      "cnab2",
+      256,
+      120
+     ],
+     "ref_any_ms": 333.65074545145035,
+     "ref_same_ms": 473.8575159572065,
+     "ref_rom_ms": 62.424554489552975,
+     "ref_any_ratio": 5.344863862941757
+    },
+    "r128_head_fast": {
+     "any": [
+      "rk4",
+      108,
+      30
+     ],
+     "same": [
+      "cnab2",
+      256,
+      120
+     ],
+     "ref_any_ms": 308.7146165780723,
+     "ref_same_ms": 473.8575159572065,
+     "ref_rom_ms": 50.97131058573723,
+     "ref_any_ratio": 6.056634860482805
+    },
+    "r192_head": {
+     "any": [
+      "rk4",
+      120,
+      30
+     ],
+     "same": [
+      "cnab2",
+      256,
+      140
+     ],
+     "ref_any_ms": 415.7881438732147,
+     "ref_same_ms": 550.648111384362,
+     "ref_rom_ms": 120.98454404622316,
+     "ref_any_ratio": 3.43670463984523
+    },
+    "r192_head_fast": {
+     "any": [
+      "rk4",
+      112,
+      30
+     ],
+     "same": [
+      "cnab2",
+      256,
+      120
+     ],
+     "ref_any_ms": 346.1067685857415,
+     "ref_same_ms": 473.8575159572065,
+     "ref_rom_ms": 67.5609796307981,
+     "ref_any_ratio": 5.1228796633370095
+    }
+   },
+   "groups": [
+    [
+     "r128"
+    ],
+    [
+     "r192"
+    ],
+    [
+     "r64"
+    ]
+   ],
+   "arms": {
+    "r96_head": {
+     "config": {
+      "kind": "head",
+      "rank": 96,
+      "k": 8,
+      "width": 256,
+      "M": 584,
+      "steps": 20,
+      "iters": 3,
+      "dev_worst": 0.00866286734122623,
+      "dev_median": 0.0018597952049423327
+     },
+     "timing_case_errors": [
+      [
+       0.0005575919162176829,
+       0.0010372906709559778,
+       0.0009646396322690208,
+       0.0009434117122634388,
+       0.0010655667888584278,
+       0.001498953902475551
+      ],
+      [
+       0.0011462022394948049,
+       0.0014832806221021428,
+       0.0014158740612593588,
+       0.0014966069614447608,
+       0.001483553743183786,
+       0.0015232401922615367
+      ],
+      [
+       0.0003382330314593032,
+       0.001479113089747909,
+       0.001021093358671486,
+       0.0010316838770544803,
+       0.000977093545043001,
+       0.0011937168020590555
+      ],
+      [
+       0.0015935471712037056,
+       0.001957058150062567,
+       0.002555001403360364,
+       0.003664030782835392,
+       0.003955037266324801,
+       0.004976224678946768
+      ],
+      [
+       0.0005849773223523729,
+       0.0009009951126861378,
+       0.0009254811417576389,
+       0.001104060413728626,
+       0.0011392099111278288,
+       0.0014995418169115346
+      ],
+      [
+       0.0002888670523149704,
+       0.001259544463863432,
+       0.0008710313371553021,
+       0.0010425089614054782,
+       0.0013575070126200816,
+       0.0012356717421195358
+      ],
+      [
+       0.00040157669131415415,
+       0.0015944939619971007,
+       0.0013799265395039826,
+       0.0014625716845658577,
+       0.0014436253624102715,
+       0.0012617326442749004
+      ],
+      [
+       0.0004743423411071052,
+       0.0018309716131852752,
+       0.0012770356749579141,
+       0.0014949440202256924,
+       0.0016625924014405547,
+       0.0019504151606277026
+      ]
+     ],
+     "timing_case_evolved_worst": 0.004976224678946768,
+     "source_errors_same_cases_mesh": 128,
+     "source_evolved_worst_same_cases": 0.004976224678946969,
+     "max_abs_diff_vs_source": 8.1900632109555005e-16,
+     "split_vs_full_relative": 3.898504527374267e-16
+    },
+    "r128_head": {
+     "config": {
+      "kind": "head",
+      "rank": 128,
+      "k": 8,
+      "width": 256,
+      "M": 584,
+      "steps": 40,
+      "iters": 3,
+      "dev_worst": 0.0071007110938434434,
+      "dev_median": 0.001139500228535977
+     },
+     "timing_case_errors": [
+      [
+       0.0002195093469529833,
+       0.000995699966971781,
+       0.0008131666725157103,
+       0.0006310758694379868,
+       0.0006828550753860437,
+       0.001005252457150584
+      ],
+      [
+       0.00035748759428837917,
+       0.0010456310933097623,
+       0.0007677400741411892,
+       0.0007038454098667456,
+       0.000739043219198648,
+       0.0007771861823402085
+      ],
+      [
+       0.00017378250245639887,
+       0.0008351394776430683,
+       0.0006009119880820766,
+       0.0005123144517420812,
+       0.0005371563054960921,
+       0.0005673588672596762
+      ],
+      [
+       0.0006196222889594909,
+       0.0009753126171309614,
+       0.0013995052723959104,
+       0.001885446216648482,
+       0.002517817309780568,
+       0.003302564461191758
+      ],
+      [
+       0.00017651683795229305,
+       0.000768043722138942,
+       0.0007335643379536141,
+       0.0007536839306087423,
+       0.0008061958176376784,
+       0.0009321070843572756
+      ],
+      [
+       0.00017670645017333388,
+       0.00120702032634821,
+       0.0008380852865774462,
+       0.0008768214634099584,
+       0.0008218217027277783,
+       0.0008620426236033467
+      ],
+      [
+       0.0003167882039303636,
+       0.0008641333357494631,
+       0.0007539690578726781,
+       0.0007655060304496206,
+       0.0005956185709532514,
+       0.0007133528923380482
+      ],
+      [
+       0.0002005634491668975,
+       0.0013980745652846253,
+       0.0009113342017813739,
+       0.0009292006772554131,
+       0.0010661976327531512,
+       0.0010589970253630347
+      ]
+     ],
+     "timing_case_evolved_worst": 0.003302564461191758,
+     "source_errors_same_cases_mesh": 128,
+     "source_evolved_worst_same_cases": 0.003302564461191884,
+     "max_abs_diff_vs_source": 8.194400019645443e-16,
+     "split_vs_full_relative": 3.603494288294655e-16
+    },
+    "r128_head_fast": {
+     "config": {
+      "kind": "head",
+      "rank": 128,
+      "k": 8,
+      "width": 256,
+      "M": 584,
+      "steps": 20,
+      "iters": 3,
+      "dev_worst": 0.007377740995156512,
+      "dev_median": 0.001321643620825377
+     },
+     "timing_case_errors": [
+      [
+       0.0002195093469529833,
+       0.0008371082655382508,
+       0.0006973835263019508,
+       0.0008367804153434283,
+       0.0009723409326519417,
+       0.0012773740214971165
+      ],
+      [
+       0.00035748759428837917,
+       0.0009266160100696576,
+       0.0006692211769134715,
+       0.0008513209777236322,
+       0.0009006385968836206,
+       0.0009345705129459389
+      ],
+      [
+       0.00017378250245639887,
+       0.0008362336086403405,
+       0.0005059525803022884,
+       0.0005720212118617415,
+       0.0007041012836367627,
+       0.0007051136177850908
+      ],
+      [
+       0.0006196222889594909,
+       0.0010561131683054115,
+       0.0015473373800549014,
+       0.0021018760081095845,
+       0.002627661476961339,
+       0.0033595976344390397
+      ],
+      [
+       0.00017651683795229305,
+       0.0006149834490597123,
+       0.0006004036171002965,
+       0.0008205602195817995,
+       0.000973145780385672,
+       0.0010509577372733825
+      ],
+      [
+       0.00017670645017333388,
+       0.0010428795596192412,
+       0.0007521422237430636,
+       0.0009523328065094906,
+       0.0010430719186690289,
+       0.0010689714988338782
+      ],
+      [
+       0.0003167882039303636,
+       0.0008888467851550177,
+       0.0010115593900051519,
+       0.001023065701901142,
+       0.0007946199053704572,
+       0.0007067446129843478
+      ],
+      [
+       0.0002005634491668975,
+       0.0014090598702761264,
+       0.0009388681302170735,
+       0.0012337839247899911,
+       0.0015429137210254454,
+       0.0014130114488186876
+      ]
+     ],
+     "timing_case_evolved_worst": 0.0033595976344390397,
+     "source_errors_same_cases_mesh": 128,
+     "source_evolved_worst_same_cases": 0.0033595976344392804,
+     "max_abs_diff_vs_source": 6.216815257031882e-16,
+     "split_vs_full_relative": 3.365582282390693e-16
+    }
+   },
+   "solvers": {},
+   "basis_bytes": 193273528320,
+   "operators": {
+    "r128": "ops_128 of the bank, T x (128/256)^1.5"
+   },
+   "resampled_orthonormality": {
+    "r128": 2.1760371282653068e-14
+   }
+  }
+ },
+ "failures": [],
+ "source_commit": "93c1e34b5fc6deae1d0a7dff05d0265184b87032",
+ "gpu": "NVIDIA H200, GPU-4a83be81-02ff-dbdc-5bd9-cc82c722caa3, 143771 MiB",
+ "host": "pax010",
+ "device_bytes_limit": 138101653504,
+ "elapsed_seconds": 386.5331256389618,
+ "asm": {
+  "schema": "ns3d-flat-asm-v1",
+  "args": {
+   "out": "output",
+   "banks": "r64=/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/bankB,r128=/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/bank128_s0b,r192=/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/bank192_s0",
+   "meshes": "192",
+   "modes": 2336,
+   "tchunk": 8,
+   "src": 128
+  },
+  "device": "cuda:0",
+  "job_id": "7161809",
+  "banks": {
+   "r64": {
+    "source": "/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/bankB",
+    "rank": 64,
+    "meshes": {
+     "192": {
+      "orthonormality": 1.554312234475219e-14,
+      "operator_checks": {
+       "modes": 2336,
+       "rank": 64,
+       "bank_orthonormality": 1.554312234475219e-14,
+       "pad_mesh": 208,
+       "kmax": 6,
+       "A_condition": 233.82008659712375,
+       "A_relative": 8.961803184426881e-14,
+       "derivative_relative": 1.7380972724789218e-14,
+       "tensor_relative": 4.5694403615989265e-14,
+       "tensor_vs_masked_mesh_product": 1.823445008269766e-15
+      },
+      "vs_128_operators": {
+       "A": {
+        "relative_difference": 3.090560365337908e-16,
+        "norm_ratio": 0.9999999999999997
+       },
+       "T": {
+        "relative_difference": 0.4556689460481816,
+        "norm_ratio": 0.5443310539518174
+       },
+       "Dd": {
+        "relative_difference": 3.310007905748841e-16,
+        "norm_ratio": 0.9999999999999998
+       },
+       "lam": {
+        "relative_difference": 0.0,
+        "norm_ratio": 1.0
+       },
+       "T_scaled": {
+        "relative_difference": 1.0472865110220692e-15
+       }
+      },
+      "seconds": 513.2704718112946
+     }
+    }
+   },
+   "r128": {
+    "source": "/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/bank128_s0b",
+    "rank": 128,
+    "meshes": {
+     "192": {
+      "orthonormality": 1.4432899320127035e-14,
+      "operator_checks": {
+       "modes": 2336,
+       "rank": 128,
+       "bank_orthonormality": 1.4432899320127035e-14,
+       "pad_mesh": 208,
+       "kmax": 6,
+       "A_condition": 1350.0275074730616,
+       "A_relative": 4.238571128940257e-14,
+       "derivative_relative": 8.619464788123067e-15,
+       "tensor_relative": 3.367186162213745e-14,
+       "tensor_vs_masked_mesh_product": 1.4846790412211865e-14
+      },
+      "vs_128_operators": {
+       "A": {
+        "relative_difference": 3.132081616210303e-16,
+        "norm_ratio": 0.9999999999999996
+       },
+       "T": {
+        "relative_difference": 0.4556689460481822,
+        "norm_ratio": 0.544331053951817
+       },
+       "Dd": {
+        "relative_difference": 3.352103159030682e-16,
+        "norm_ratio": 1.0
+       },
+       "lam": {
+        "relative_difference": 0.0,
+        "norm_ratio": 1.0
+       },
+       "T_scaled": {
+        "relative_difference": 1.0481623537970424e-15
+       }
+      },
+      "seconds": 1024.2233483791351
+     }
+    }
+   },
+   "r192": {
+    "source": "/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/bank192_s0",
+    "rank": 192,
+    "meshes": {
+     "192": {
+      "orthonormality": 1.554312234475219e-14,
+      "operator_checks": {
+       "modes": 2336,
+       "rank": 192,
+       "bank_orthonormality": 1.554312234475219e-14,
+       "pad_mesh": 208,
+       "kmax": 6,
+       "A_condition": 6247.599478099231,
+       "A_relative": 5.925609533476087e-14,
+       "derivative_relative": 8.275711324612509e-15,
+       "tensor_relative": 2.4050362496029745e-14,
+       "tensor_vs_masked_mesh_product": 5.0548464463874246e-14
+      },
+      "vs_128_operators": {
+       "A": {
+        "relative_difference": 3.150285086621399e-16,
+        "norm_ratio": 0.9999999999999998
+       },
+       "T": {
+        "relative_difference": 0.4556689460481813,
+        "norm_ratio": 0.544331053951817
+       },
+       "Dd": {
+        "relative_difference": 3.3662874143361106e-16,
+        "norm_ratio": 0.9999999999999997
+       },
+       "lam": {
+        "relative_difference": 0.0,
+        "norm_ratio": 1.0
+       },
+       "T_scaled": {
+        "relative_difference": 1.0476630592317526e-15
+       }
+      },
+      "seconds": 1650.6060111522675
+     }
+    }
+   }
+  }
+ },
+ "asm_from": "/cluster/tufts/paralab/tawal01/rebuttal-ns3d-flat-timing/split_h200/output",
+ "scaled_operator_check_worst": 1.0481623537970424e-15
+}

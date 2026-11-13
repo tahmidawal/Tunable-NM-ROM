@@ -1,0 +1,32 @@
+sources verified
+cc6c3797ed8dc3ba437cd8954108999ad5216ecb
+pax011
+Fri Nov 13 12:18:41 EST 2026
+name, memory.total [MiB], driver_version
+NVIDIA H200, 143771 MiB, 575.57.08
+cpu_model=INTEL(R) XEON(R) PLATINUM 8568Y+
+jax_backend=gpu
+cupy 14.2.0 numpy 2.5.0 scipy 1.18.0 pyamg 5.4.1 jax 0.10.2
+amgx_commit=91a8413ef267b1c32aff4014c02820e1c5897ac2
+12:19:00 cg heat 2d n=256: ok rc=0 wall=11s
+12:19:03 cg poisson 2d n=256: ok rc=0 wall=3s
+12:19:05 cg heat 2d n=512: ok rc=0 wall=2s
+12:19:07 cg heat 3d n=64: ok rc=0 wall=2s
+12:19:11 cg poisson 2d n=512: ok rc=0 wall=4s
+12:19:13 cg poisson 3d n=64: ok rc=0 wall=2s
+12:19:15 cg heat 3d n=96: ok rc=0 wall=2s
+12:19:18 cg poisson 3d n=96: ok rc=0 wall=3s
+12:19:21 cg heat 2d n=1024: ok rc=0 wall=3s
+12:19:27 cg poisson 2d n=1024: ok rc=0 wall=7s
+12:19:30 cg heat 3d n=128: ok rc=0 wall=2s
+12:19:33 cg poisson 3d n=128: ok rc=0 wall=3s
+12:19:40 cg heat 2d n=2048: ok rc=0 wall=7s
+12:20:02 cg poisson 2d n=2048: ok rc=0 wall=22s
+12:20:07 cg heat 3d n=192: ok rc=0 wall=5s
+12:20:15 cg poisson 3d n=192: ok rc=0 wall=8s
+12:20:51 cg heat 2d n=4096: ok rc=0 wall=36s
+12:21:00 cg heat 3d n=256: ok rc=0 wall=9s
+12:23:15 cg poisson 2d n=4096: ok rc=0 wall=135s
+12:23:33 cg poisson 3d n=256: ok rc=0 wall=18s
+Fri Nov 13 12:23:33 EST 2026
+task_completed

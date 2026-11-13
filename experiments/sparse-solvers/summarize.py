@@ -91,7 +91,7 @@ for (p, dm) in keys:
     ohead = ours['headline'].get(f'{p}{dm}d', {})
     P(f'## {p} {dm}D\n')
     P('### cuDSS (' + ('SPD' if spd else 'general') + ' mode)\n')
-    P('| n | unknowns | analysis | factor | solve | refactor | factor nnz | peak device GB | rel. residual | repeats |')
+    P('| n | unknowns | analysis | factor | solve | refactor | factor nnz | peak device GiB | rel. residual | repeats |')
     P('|---|---|---|---|---|---|---|---|---|---|')
     for n in ns:
         d = R.get((p, dm, n, 'cudss'))
@@ -222,7 +222,7 @@ for f in fails or ['none']:
     P('- ' + f)
 P('')
 P('## AmgX, all configurations\n')
-P('| problem | n | config | tol | setup | solve | iterations | status | rel. residual (external) | reached tol | peak device GB |')
+P('| problem | n | config | tol | setup | solve | iterations | status | rel. residual (external) | reached tol | peak device GiB |')
 P('|---|---|---|---|---|---|---|---|---|---|---|')
 for (p, dm, n, s), d in sorted(R.items(), key=lambda kv: (kv[0][0], kv[0][1], kv[0][2])):
     if s != 'amgx':

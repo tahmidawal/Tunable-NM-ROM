@@ -1,0 +1,40 @@
+sources verified
+cc6c3797ed8dc3ba437cd8954108999ad5216ecb
+pax009
+Fri Nov 13 11:56:30 EST 2026
+name, memory.total [MiB], driver_version
+NVIDIA H200, 143771 MiB, 575.57.08
+cpu_model=INTEL(R) XEON(R) PLATINUM 8568Y+
+jax_backend=gpu
+cupy 14.2.0 numpy 2.5.0 scipy 1.18.0 pyamg 5.4.1 jax 0.10.2
+amgx_commit=91a8413ef267b1c32aff4014c02820e1c5897ac2
+11:56:46 amgx burgers 2d n=256: ok rc=0 wall=10s
+11:56:49 amgx heat 2d n=256: ok rc=0 wall=3s
+11:56:52 amgx poisson 2d n=256: ok rc=0 wall=4s
+11:57:16 amgx burgers 2d n=512: ok rc=0 wall=24s
+11:57:28 amgx burgers 3d n=64: ok rc=0 wall=12s
+11:57:37 amgx heat 2d n=512: ok rc=0 wall=9s
+11:57:42 amgx heat 3d n=64: ok rc=0 wall=5s
+11:57:48 amgx poisson 2d n=512: ok rc=0 wall=6s
+11:57:52 amgx poisson 3d n=64: ok rc=0 wall=4s
+11:58:37 amgx burgers 3d n=96: ok rc=0 wall=45s
+11:58:42 amgx heat 3d n=96: ok rc=0 wall=5s
+11:58:48 amgx poisson 3d n=96: ok rc=0 wall=6s
+11:59:35 amgx burgers 2d n=1024: ok rc=0 wall=48s
+11:59:55 amgx heat 2d n=1024: ok rc=0 wall=20s
+12:00:04 amgx poisson 2d n=1024: ok rc=0 wall=8s
+12:01:50 amgx burgers 3d n=128: ok rc=0 wall=107s
+12:01:57 amgx heat 3d n=128: ok rc=0 wall=7s
+12:02:05 amgx poisson 3d n=128: ok rc=0 wall=8s
+12:06:57 amgx burgers 2d n=2048: ok rc=0 wall=292s
+12:07:42 amgx heat 2d n=2048: ok rc=0 wall=44s
+12:08:05 amgx poisson 2d n=2048: ok rc=0 wall=23s
+12:08:18 amgx heat 3d n=192: ok rc=0 wall=14s
+12:08:38 amgx poisson 3d n=192: ok rc=0 wall=19s
+12:31:03 amgx burgers 2d n=4096: ok rc=0 wall=1345s
+12:33:08 amgx heat 2d n=4096: ok rc=0 wall=125s
+12:33:42 amgx heat 3d n=256: ok rc=0 wall=34s
+12:35:15 amgx poisson 2d n=4096: ok rc=0 wall=93s
+12:35:56 amgx poisson 3d n=256: ok rc=0 wall=41s
+Fri Nov 13 12:35:56 EST 2026
+task_completed

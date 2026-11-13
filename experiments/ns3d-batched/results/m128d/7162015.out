@@ -1,0 +1,16 @@
+host=pax007 source_commit=b01d110c85c9d44a250410c6a4c0162ad36a62e0 job=7162015
+NVIDIA A100 80GB PCIe, GPU-aafad47a-9358-af08-cda9-1eacee35afea, 81920 MiB
+jax_backend=gpu
+mesh 128: 128 cases loaded (17s)
+B=128: 30 callables compiled (2573s); chunked: ROM_VMAP|r96_head:32, ROM_SHARED|r96_head:16, ROM_SHAREDR|r96_head:32, ROM_DEC|r96_head:16, ROM_VMAP|r128_head_fast:32, ROM_SHARED|r128_head_fast:16, ROM_SHAREDR|r128_head_fast:32, ROM_DEC|r128_head_fast:16, ROM_VMAP|r192_head_fast:32, ROM_SHARED|r192_head_fast:16, ROM_SHAREDR|r192_head_fast:32, ROM_DEC|r192_head_fast:16, SOLVE_VMAP|cnab2|108|120:32, E2E_VMAP|cnab2|108|120:16, SOLVE_RFFT|cnab2|108|120:32, E2E_RFFT|cnab2|108|120:16, SOLVE_VMAP|rk4|108|30:32, E2E_VMAP|rk4|108|30:16, SOLVE_RFFT|rk4|108|30:32, E2E_RFFT|rk4|108|30:16, SOLVE_VMAP|rk4|112|30:32, E2E_VMAP|rk4|112|30:16, SOLVE_RFFT|rk4|112|30:32, E2E_RFFT|rk4|112|30:16
+dropped from timing block: ROM_LAT|r96_head: RuntimeError: ROM_LAT|r96_head: cannot shrink below 1
+dropped from timing block: ROM_DEC|r96_head: RuntimeError: ROM_DEC|r96_head: cannot shrink below 1
+dropped from timing block: ROM_SHARED|r128_head_fast: RuntimeError: ROM_SHARED|r128_head_fast: nothing fits
+dropped from timing block: ROM_SHAREDR|r128_head_fast: RuntimeError: ROM_SHAREDR|r128_head_fast: nothing fits
+dropped from timing block: ROM_LAT|r128_head_fast: RuntimeError: ROM_LAT|r128_head_fast: cannot shrink below 1
+dropped from timing block: ROM_DEC|r128_head_fast: RuntimeError: ROM_DEC|r128_head_fast: nothing fits
+dropped from timing block: ROM_SHARED|r192_head_fast: RuntimeError: ROM_SHARED|r192_head_fast: nothing fits
+dropped from timing block: ROM_SHAREDR|r192_head_fast: RuntimeError: ROM_SHAREDR|r192_head_fast: nothing fits
+dropped from timing block: ROM_LAT|r192_head_fast: RuntimeError: ROM_LAT|r192_head_fast: cannot shrink below 1
+dropped from timing block: ROM_DEC|r192_head_fast: RuntimeError: ROM_DEC|r192_head_fast: nothing fits
+B=128: timing failed: JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 3.90GiB. [tf-allocator-allocation-error=''] [executable_name='jit_run']

@@ -1,0 +1,650 @@
+{
+ "schema": "ns3d-batched-v1",
+ "mesh": 128,
+ "args": {
+  "out": "/cluster/tufts/paralab/tawal01/rebuttal-ns3d-batched/m128g",
+  "mesh": 128,
+  "family": "B",
+  "src": "/cluster/tufts/paralab/tawal01/rebuttal-ns3d-batched/m128g/experiments/ns3d-hard",
+  "compare": null,
+  "ns": "/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank",
+  "arms": "r96_head,r128_head_fast,r192_head_fast",
+  "batches": "128",
+  "rom_extra": "128",
+  "reps_small": 5,
+  "reps_large": 3,
+  "cases": 128,
+  "no_rematch": true,
+  "no_cohort": true,
+  "smoke": false,
+  "rom_rfft": false,
+  "rematch_only": false,
+  "lean": true
+ },
+ "job_id": "7162778",
+ "device": "cuda:0",
+ "backend": "gpu",
+ "matmul_precision": "highest",
+ "x64": true,
+ "source_compare_job": "7145062",
+ "source_commit": "8fa2354fea07915a7158e1e59fa643a0861c0450",
+ "arms": {
+  "r96_head": {
+   "config": {
+    "kind": "head",
+    "rank": 96,
+    "k": 8,
+    "width": 256,
+    "M": 584,
+    "steps": 20,
+    "iters": 3,
+    "dev_worst": 0.00866286734122623,
+    "dev_median": 0.0018597952049423327
+   },
+   "fresh_worst": 0.006159952349350631,
+   "fresh_median": 0.0019490098700981468,
+   "fresh_ms_batch1": 43.1508794426918,
+   "matched": {
+    "scheme": "cnab2",
+    "n": 108,
+    "steps": 120,
+    "cohort_worst": 0.0060156015377488,
+    "cohort_median": 0.0008262136173385796,
+    "ms": 298.9650620147586,
+    "ratio": 6.928365444134475
+   },
+   "matched_e2e_ms": 305.4066770710051,
+   "shortlist": [
+    [
+     "cnab2",
+     108,
+     120
+    ],
+    [
+     "rk4",
+     108,
+     30
+    ],
+    [
+     "cnab2",
+     112,
+     120
+    ],
+    [
+     "cnab2",
+     108,
+     140
+    ],
+    [
+     "cnab2",
+     128,
+     120
+    ],
+    [
+     "cnab2",
+     128,
+     140
+    ]
+   ]
+  },
+  "r128_head_fast": {
+   "config": {
+    "kind": "head",
+    "rank": 128,
+    "k": 8,
+    "width": 256,
+    "M": 584,
+    "steps": 20,
+    "iters": 3,
+    "dev_worst": 0.007377740995156512,
+    "dev_median": 0.001321643620825377
+   },
+   "fresh_worst": 0.005862758809701094,
+   "fresh_median": 0.0013992004072911398,
+   "fresh_ms_batch1": 50.97131058573723,
+   "matched": {
+    "scheme": "rk4",
+    "n": 108,
+    "steps": 30,
+    "cohort_worst": 0.005836924211592684,
+    "cohort_median": 0.0005819844248883704,
+    "ms": 308.7146165780723,
+    "ratio": 6.056634860482805
+   },
+   "matched_e2e_ms": 314.7533880546689,
+   "shortlist": [
+    [
+     "rk4",
+     108,
+     30
+    ],
+    [
+     "cnab2",
+     112,
+     120
+    ],
+    [
+     "rk4",
+     112,
+     30
+    ],
+    [
+     "cnab2",
+     112,
+     140
+    ],
+    [
+     "cnab2",
+     128,
+     120
+    ],
+    [
+     "cnab2",
+     128,
+     140
+    ]
+   ]
+  },
+  "r192_head_fast": {
+   "config": {
+    "kind": "head",
+    "rank": 192,
+    "k": 8,
+    "width": 256,
+    "M": 584,
+    "steps": 20,
+    "iters": 3,
+    "dev_worst": 0.006714045580138089,
+    "dev_median": 0.0009049305831284002
+   },
+   "fresh_worst": 0.004548814362691385,
+   "fresh_median": 0.000978402478576575,
+   "fresh_ms_batch1": 67.5609796307981,
+   "matched": {
+    "scheme": "rk4",
+    "n": 112,
+    "steps": 30,
+    "cohort_worst": 0.004533506047801055,
+    "cohort_median": 0.00040568454053935374,
+    "ms": 346.1067685857415,
+    "ratio": 5.1228796633370095
+   },
+   "matched_e2e_ms": 353.29705476760864,
+   "shortlist": [
+    [
+     "rk4",
+     112,
+     30
+    ],
+    [
+     "cnab2",
+     120,
+     120
+    ],
+    [
+     "rk4",
+     120,
+     30
+    ],
+    [
+     "cnab2",
+     120,
+     140
+    ],
+    [
+     "cnab2",
+     128,
+     120
+    ],
+    [
+     "cnab2",
+     128,
+     140
+    ]
+   ]
+  }
+ },
+ "solvers": {},
+ "batches": {
+  "128": {
+   "B": 128,
+   "callables": {
+    "ROM_SHARED|r96_head": {
+     "chunk": 16,
+     "chunked": true,
+     "mem": {
+      "chunk": 16,
+      "args_gb": 5.690651584,
+      "out_gb": 4.831838208,
+      "temp_gb": 19.327365784,
+      "batch_need_gb": 24.964510488,
+      "total_gb": 29.849855576,
+      "free_gb": 36.619483392
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.18 = f64[6291456,768]{0,1} fusion(%basis.1, %loop_add_fusion.11), kind=kCustom, calls=%gemm_fusion_dot.18_"
+      },
+      {
+       "chunk": 64,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.18 = f64[6291456,384]{0,1} fusion(%basis.1, %loop_add_fusion.11), kind=kCustom, calls=%gemm_fusion_dot.18_"
+      },
+      {
+       "chunk": 32,
+       "args_gb": 6.49595808,
+       "out_gb": 9.663676416,
+       "temp_gb": 38.65472092,
+       "batch_need_gb": 49.929010328,
+       "total_gb": 54.814355416,
+       "free_gb": 36.619483392
+      },
+      {
+       "chunk": 16,
+       "args_gb": 5.690651584,
+       "out_gb": 4.831838208,
+       "temp_gb": 19.327365784,
+       "batch_need_gb": 24.964510488,
+       "total_gb": 29.849855576,
+       "free_gb": 36.619483392
+      }
+     ],
+     "reps_ms": [
+      1338.4192176163197,
+      1338.8075111433864,
+      1340.624245814979
+     ],
+     "median_ms": 1338.8075111433864,
+     "min_ms": 1338.4192176163197,
+     "max_ms": 1340.624245814979,
+     "samples_per_s": 95.60747077874079,
+     "ms_per_1000": 10459.433680807706
+    },
+    "ROM_SHARED|r128_head_fast": {
+     "chunk": 16,
+     "chunked": true,
+     "mem": {
+      "chunk": 16,
+      "args_gb": 7.33782752,
+      "out_gb": 4.831838208,
+      "temp_gb": 19.327365784,
+      "batch_need_gb": 24.964510488,
+      "total_gb": 31.497031512,
+      "free_gb": 36.619483392
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.18 = f64[6291456,768]{0,1} fusion(%basis.1, %loop_add_fusion.11), kind=kCustom, calls=%gemm_fusion_dot.18_"
+      },
+      {
+       "chunk": 64,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.18 = f64[6291456,384]{0,1} fusion(%basis.1, %loop_add_fusion.11), kind=kCustom, calls=%gemm_fusion_dot.18_"
+      },
+      {
+       "chunk": 32,
+       "args_gb": 8.143134016,
+       "out_gb": 9.663676416,
+       "temp_gb": 38.65472092,
+       "batch_need_gb": 49.929010328,
+       "total_gb": 56.461531352,
+       "free_gb": 36.619483392
+      },
+      {
+       "chunk": 16,
+       "args_gb": 7.33782752,
+       "out_gb": 4.831838208,
+       "temp_gb": 19.327365784,
+       "batch_need_gb": 24.964510488,
+       "total_gb": 31.497031512,
+       "free_gb": 36.619483392
+      }
+     ],
+     "reps_ms": [
+      1395.897096954286,
+      1400.6185065954924,
+      1396.823369897902
+     ],
+     "median_ms": 1396.823369897902,
+     "min_ms": 1395.897096954286,
+     "max_ms": 1400.6185065954924,
+     "samples_per_s": 91.63649660970084,
+     "ms_per_1000": 10912.68257732736
+    },
+    "ROM_SHARED|r192_head_fast": {
+     "chunk": 16,
+     "chunked": true,
+     "mem": {
+      "chunk": 16,
+      "args_gb": 10.66088416,
+      "out_gb": 4.831838208,
+      "temp_gb": 19.327365784,
+      "batch_need_gb": 24.964510488,
+      "total_gb": 34.820088152,
+      "free_gb": 36.619483392
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.18 = f64[6291456,768]{0,1} fusion(%basis.1, %loop_add_fusion.11), kind=kCustom, calls=%gemm_fusion_dot.18_"
+      },
+      {
+       "chunk": 64,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.18 = f64[6291456,384]{0,1} fusion(%basis.1, %loop_add_fusion.11), kind=kCustom, calls=%gemm_fusion_dot.18_"
+      },
+      {
+       "chunk": 32,
+       "args_gb": 11.466190656,
+       "out_gb": 9.663676416,
+       "temp_gb": 38.654721176,
+       "batch_need_gb": 49.929010584,
+       "total_gb": 59.784588248,
+       "free_gb": 36.619483392
+      },
+      {
+       "chunk": 16,
+       "args_gb": 10.66088416,
+       "out_gb": 4.831838208,
+       "temp_gb": 19.327365784,
+       "batch_need_gb": 24.964510488,
+       "total_gb": 34.820088152,
+       "free_gb": 36.619483392
+      }
+     ],
+     "reps_ms": [
+      1510.3652570396662,
+      1513.2085205987096,
+      1512.356928549707
+     ],
+     "median_ms": 1512.356928549707,
+     "min_ms": 1510.3652570396662,
+     "max_ms": 1513.2085205987096,
+     "samples_per_s": 84.6361051307823,
+     "ms_per_1000": 11815.288504294585
+    },
+    "SOLVE_RFFT|cnab2|108|120": {
+     "chunk": 32,
+     "chunked": true,
+     "mem": {
+      "chunk": 32,
+      "args_gb": 0.988629232,
+      "out_gb": 5.804752896,
+      "temp_gb": 10.93755912,
+      "batch_need_gb": 17.709771088,
+      "total_gb": 17.730941248,
+      "free_gb": 36.593177856
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %input_concatenate_fusion = f64[128,6,3,108,108,108]{5,4,3,2,1,0} fusion(%while.21.0, %fft.93.0), kind=kInput, calls=%fused"
+      },
+      {
+       "chunk": 64,
+       "args_gb": 1.956088304,
+       "out_gb": 11.609505792,
+       "temp_gb": 21.833415248,
+       "batch_need_gb": 35.377839184,
+       "total_gb": 35.399009344,
+       "free_gb": 36.593177856
+      },
+      {
+       "chunk": 32,
+       "args_gb": 0.988629232,
+       "out_gb": 5.804752896,
+       "temp_gb": 10.93755912,
+       "batch_need_gb": 17.709771088,
+       "total_gb": 17.730941248,
+       "free_gb": 36.593177856
+      }
+     ],
+     "reps_ms": [
+      23131.789880804718,
+      23149.105926044285,
+      23153.633932583034
+     ],
+     "median_ms": 23149.105926044285,
+     "min_ms": 23131.789880804718,
+     "max_ms": 23153.633932583034,
+     "samples_per_s": 5.529371216708265,
+     "ms_per_1000": 180852.39004722098
+    },
+    "SOLVE_RFFT|rk4|108|30": {
+     "chunk": 32,
+     "chunked": true,
+     "mem": {
+      "chunk": 32,
+      "args_gb": 0.988629232,
+      "out_gb": 5.804752896,
+      "temp_gb": 12.715897152,
+      "batch_need_gb": 19.48810912,
+      "total_gb": 19.50927928,
+      "free_gb": 36.572007424
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %input_concatenate_fusion = f64[128,6,3,108,108,108]{5,4,3,2,1,0} fusion(%while.17.0, %fft.174.0), kind=kInput, calls=%fuse"
+      },
+      {
+       "chunk": 64,
+       "args_gb": 1.956088304,
+       "out_gb": 11.609505792,
+       "temp_gb": 25.40035744,
+       "batch_need_gb": 38.944781376,
+       "total_gb": 38.965951536,
+       "free_gb": 36.572007424
+      },
+      {
+       "chunk": 32,
+       "args_gb": 0.988629232,
+       "out_gb": 5.804752896,
+       "temp_gb": 12.715897152,
+       "batch_need_gb": 19.48810912,
+       "total_gb": 19.50927928,
+       "free_gb": 36.572007424
+      }
+     ],
+     "reps_ms": [
+      22450.312323868275,
+      22463.16692698747,
+      22462.823029607534
+     ],
+     "median_ms": 22462.823029607534,
+     "min_ms": 22450.312323868275,
+     "max_ms": 22463.16692698747,
+     "samples_per_s": 5.698304252821974,
+     "ms_per_1000": 175490.80491880886
+    },
+    "SOLVE_RFFT|rk4|112|30": {
+     "chunk": 32,
+     "chunked": true,
+     "mem": {
+      "chunk": 32,
+      "args_gb": 1.102580224,
+      "out_gb": 6.473908224,
+      "temp_gb": 14.177444416,
+      "batch_need_gb": 21.7303376,
+      "total_gb": 21.753932864,
+      "free_gb": 36.545483008
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %input_concatenate_fusion = f64[128,6,3,112,112,112]{5,4,3,2,1,0} fusion(%while.17.0, %fft.174.0), kind=kInput, calls=%fuse"
+      },
+      {
+       "chunk": 64,
+       "args_gb": 2.181565184,
+       "out_gb": 12.947816448,
+       "temp_gb": 28.319851328,
+       "batch_need_gb": 43.425637696,
+       "total_gb": 43.44923296,
+       "free_gb": 36.545483008
+      },
+      {
+       "chunk": 32,
+       "args_gb": 1.102580224,
+       "out_gb": 6.473908224,
+       "temp_gb": 14.177444416,
+       "batch_need_gb": 21.7303376,
+       "total_gb": 21.753932864,
+       "free_gb": 36.545483008
+      }
+     ],
+     "reps_ms": [
+      25788.183253258467,
+      25798.920372501016,
+      25804.040674120188
+     ],
+     "median_ms": 25798.920372501016,
+     "min_ms": 25788.183253258467,
+     "max_ms": 25804.040674120188,
+     "samples_per_s": 4.961447926961888,
+     "ms_per_1000": 201554.06541016418
+    }
+   }
+  }
+ },
+ "checks": {
+  "128": {
+   "ROM_SHARED|r96_head": {
+    "slots": [
+     0,
+     1,
+     64,
+     127
+    ],
+    "max_rel_diff": 4.291958102119454e-15
+   },
+   "ROM_SHARED|r128_head_fast": {
+    "slots": [
+     0,
+     1,
+     64,
+     127
+    ],
+    "max_rel_diff": 6.400601467254004e-15
+   },
+   "ROM_SHARED|r192_head_fast": {
+    "slots": [
+     0,
+     1,
+     64,
+     127
+    ],
+    "max_rel_diff": 5.490935973965867e-15
+   },
+   "SOLVE_RFFT|cnab2|108|120": {
+    "slots": [
+     0,
+     1,
+     64,
+     127
+    ],
+    "max_rel_diff": 4.3693152476142505e-16
+   },
+   "SOLVE_RFFT|rk4|108|30": {
+    "slots": [
+     0,
+     1,
+     64,
+     127
+    ],
+    "max_rel_diff": 2.906331303152219e-15
+   },
+   "SOLVE_RFFT|rk4|112|30": {
+    "slots": [
+     0,
+     1,
+     64,
+     127
+    ],
+    "max_rel_diff": 2.2269020851713899e-13
+   }
+  }
+ },
+ "cohort": {},
+ "rematch": {},
+ "failures": [],
+ "gpu": "NVIDIA A100 80GB PCIe, GPU-9732c808-acc9-5c43-f0ce-4a81a2bf1719, 81920 MiB",
+ "commit": "9da7dfc19e1f609b51e252fc6cbab9ddb28d8353",
+ "solver_keys": [
+  [
+   "cnab2",
+   108,
+   120
+  ],
+  [
+   "rk4",
+   108,
+   30
+  ],
+  [
+   "rk4",
+   112,
+   30
+  ]
+ ],
+ "rematch_keys": [
+  [
+   "cnab2",
+   108,
+   120
+  ],
+  [
+   "cnab2",
+   108,
+   140
+  ],
+  [
+   "cnab2",
+   112,
+   120
+  ],
+  [
+   "cnab2",
+   112,
+   140
+  ],
+  [
+   "cnab2",
+   120,
+   120
+  ],
+  [
+   "cnab2",
+   120,
+   140
+  ],
+  [
+   "cnab2",
+   128,
+   120
+  ],
+  [
+   "cnab2",
+   128,
+   140
+  ],
+  [
+   "rk4",
+   108,
+   30
+  ],
+  [
+   "rk4",
+   112,
+   30
+  ],
+  [
+   "rk4",
+   120,
+   30
+  ]
+ ],
+ "elapsed_seconds": 1706.3506894111633,
+ "process_peak_gb": 69.473677056,
+ "dropped_from_timing": [],
+ "status": "final"
+}

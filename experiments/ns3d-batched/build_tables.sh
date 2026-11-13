@@ -8,14 +8,14 @@ PY=/home/tahmid/Dev/.venv/bin/python
   echo
   echo "Headline: fastest pre-registered ROM variant (end-to-end) vs fastest solver variant (solve-only) of the"
   echo "arm's fresh_s0b-matched configuration, same job, same GPU. 'ratio' = solver time / ROM time at equal B."
-  for j in m64 m64r m96 m96r m128 m128c m128r m128d m128e; do
+  for j in m64 m64r m96 m96r m128 m128c m128r m128d m128e m128f m128g; do
     f=results/$j/batched.json
     [ -f "$f" ] || continue
     echo; echo "## Job directory $j"; echo
     $PY make_table.py --summary "$f"
   done
   echo; echo "# Per-job detail"
-  for j in m64 m64r m96 m96r m128 m128c m128r m128d m128e; do
+  for j in m64 m64r m96 m96r m128 m128c m128r m128d m128e m128f m128g; do
     f=results/$j/batched.json
     [ -f "$f" ] || continue
     echo; echo "# Job directory $j"

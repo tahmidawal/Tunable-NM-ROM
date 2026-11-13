@@ -20,6 +20,17 @@ arm's fresh_s0b-matched configuration, same job, same GPU. 'ratio' = solver time
 | 64 | A100 80GB PCIe | r192_head_fast | 0.35 | cnab2 108^3 x100 (0.33) | 32 | 2.46 | 158.8 | 406 | 6.30 | 2.46 | 159 | 64.5 | 141 | shared / rfft | - |
 | 64 | A100 80GB PCIe | r192_head_fast | 0.35 | cnab2 108^3 x100 (0.33) | 128 | 2.11 | 158.6 (chunk 64) | 474 | 6.30 | 2.11 | 159 | 75.1 | 195 | shared / rfft | - |
 
+## Job directory m64r
+
+| mesh | GPU | arm | ROM worst % | solver (worst %) | B | ROM ms/query | solver ms/query | ROM queries/s | solver queries/s | ROM s/1000 | solver s/1000 | ratio | ratio vs ROM solve-only | variants (ROM / solver) | A2 rom_shared_r ms/query (ratio) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 64 | A100 80GB PCIe | r96_head | 0.58 | cnab2 100^3 x100 (0.44) | 32 | 1.82 | 117.0 | 550 | 8.54 | 1.82 | 117 | 64.4 | 189 | shared / rfft | 1.37 (85.3) |
+| 64 | A100 80GB PCIe | r96_head | 0.58 | cnab2 100^3 x100 (0.44) | 128 | 1.57 | 116.8 (chunk 64) | 636 | 8.57 | 1.57 | 117 | 74.3 | 279 | shared / rfft | 1.13 (103.4) |
+| 64 | A100 80GB PCIe | r128_head_fast | 0.52 | cnab2 100^3 x100 (0.44) | 32 | 1.99 | 117.0 | 502 | 8.54 | 1.99 | 117 | 58.7 | 154 | shared / rfft | 1.52 (77.1) |
+| 64 | A100 80GB PCIe | r128_head_fast | 0.52 | cnab2 100^3 x100 (0.44) | 128 | 1.69 | 116.8 (chunk 64) | 591 | 8.57 | 1.69 | 117 | 69.0 | 224 | shared / rfft | 1.26 (92.6) |
+| 64 | A100 80GB PCIe | r192_head_fast | 0.35 | cnab2 108^3 x100 (0.33) | 32 | 2.33 | 150.9 | 430 | 6.63 | 2.33 | 151 | 64.9 | 144 | shared / rfft | 1.84 (81.9) |
+| 64 | A100 80GB PCIe | r192_head_fast | 0.35 | cnab2 108^3 x100 (0.33) | 128 | 1.99 | 151.0 (chunk 64) | 502 | 6.62 | 1.99 | 151 | 75.8 | 197 | shared / rfft | 1.55 (97.4) |
+
 ## Job directory m96
 
 | mesh | GPU | arm | ROM worst % | solver (worst %) | B | ROM ms/query | solver ms/query | ROM queries/s | solver queries/s | ROM s/1000 | solver s/1000 | ratio | ratio vs ROM solve-only | variants (ROM / solver) | A2 rom_shared_r ms/query (ratio) |
@@ -37,6 +48,17 @@ arm's fresh_s0b-matched configuration, same job, same GPU. 'ratio' = solver time
 | 96 | A100 80GB PCIe | r192_head_fast | 0.39 | cnab2 120^3 x120 (0.36) | 8 | 6.98 | 249.0 | 143 | 4.02 | 6.98 | 249 | 35.7 | 106 | shared / rfft | - |
 | 96 | A100 80GB PCIe | r192_head_fast | 0.39 | cnab2 120^3 x120 (0.36) | 32 | 5.35 | 249.7 | 187 | 4.00 | 5.35 | 250 | 46.7 | 227 | shared / rfft | - |
 | 96 | A100 80GB PCIe | r192_head_fast | 0.39 | cnab2 120^3 x120 (0.36) | 128 | 5.36 (chunk 32) | - | 187 | - | 5.36 | - | - | - | shared / - | - |
+
+## Job directory m96r
+
+| mesh | GPU | arm | ROM worst % | solver (worst %) | B | ROM ms/query | solver ms/query | ROM queries/s | solver queries/s | ROM s/1000 | solver s/1000 | ratio | ratio vs ROM solve-only | variants (ROM / solver) | A2 rom_shared_r ms/query (ratio) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 96 | H200 | r96_head | 0.64 | cnab2 108^3 x100 (0.62) | 32 | 2.10 | 60.3 | 477 | 16.59 | 2.10 | 60 | 28.8 | 185 | shared / rfft | 1.57 (38.5) |
+| 96 | H200 | r96_head | 0.64 | cnab2 108^3 x100 (0.62) | 128 | 1.96 | 59.7 | 511 | 16.74 | 1.96 | 60 | 30.5 | 351 | shared / rfft | 1.37 (43.5) |
+| 96 | H200 | r128_head_fast | 0.56 | cnab2 112^3 x120 (0.46) | 32 | 2.16 | 84.6 | 464 | 11.82 | 2.16 | 85 | 39.2 | 229 | shared / rfft | 1.63 (52.0) |
+| 96 | H200 | r128_head_fast | 0.56 | cnab2 112^3 x120 (0.46) | 128 | 1.99 | 83.7 | 503 | 11.95 | 1.99 | 84 | 42.1 | 407 | shared / rfft | 1.46 (57.3) |
+| 96 | H200 | r192_head_fast | 0.39 | cnab2 120^3 x120 (0.36) | 32 | 2.31 | 103.4 | 434 | 9.67 | 2.31 | 103 | 44.8 | 220 | shared / rfft | 1.77 (58.4) |
+| 96 | H200 | r192_head_fast | 0.39 | cnab2 120^3 x120 (0.36) | 128 | 2.13 | 103.1 | 470 | 9.70 | 2.13 | 103 | 48.4 | 360 | shared / rfft | 1.56 (66.0) |
 
 ## Job directory m128
 
@@ -59,6 +81,40 @@ arm's fresh_s0b-matched configuration, same job, same GPU. 'ratio' = solver time
 | 128 | A100 80GB PCIe | r96_head | 0.62 | cnab2 108^3 x120 (0.60) | 32 | 10.40 (chunk 16) | 180.4 | 96 | 5.54 | 10.40 | 180 | 17.4 | 273 | shared / rfft | - |
 | 128 | A100 80GB PCIe | r128_head_fast | 0.59 | rk4 108^3 x30 (0.58) | 32 | 10.85 (chunk 16) | 175.3 | 92 | 5.70 | 10.85 | 175 | 16.2 | 224 | shared / rfft | - |
 | 128 | A100 80GB PCIe | r192_head_fast | 0.45 | rk4 112^3 x30 (0.45) | 32 | 11.76 (chunk 16) | 201.3 | 85 | 4.97 | 11.76 | 201 | 17.1 | 185 | shared / rfft | - |
+
+## Job directory m128r
+
+| mesh | GPU | arm | ROM worst % | solver (worst %) | B | ROM ms/query | solver ms/query | ROM queries/s | solver queries/s | ROM s/1000 | solver s/1000 | ratio | ratio vs ROM solve-only | variants (ROM / solver) | A2 rom_shared_r ms/query (ratio) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 128 | A100 80GB PCIe | r96_head | 0.62 | cnab2 108^3 x120 (0.60) | 32 | 10.44 (chunk 16) | 180.6 | 96 | 5.54 | 10.44 | 181 | 17.3 | 271 | shared / rfft | 6.10 (29.6) |
+| 128 | A100 80GB PCIe | r128_head_fast | 0.59 | rk4 108^3 x30 (0.58) | 32 | 10.91 (chunk 16) | 175.3 | 92 | 5.70 | 10.91 | 175 | 16.1 | 218 | shared / rfft | 6.47 (27.1) |
+| 128 | A100 80GB PCIe | r192_head_fast | 0.45 | rk4 112^3 x30 (0.45) | 32 | 11.81 (chunk 16) | 201.4 | 85 | 4.96 | 11.81 | 201 | 17.1 | 183 | shared / rfft | 7.08 (28.5) |
+
+## Job directory m128d
+
+| mesh | GPU | arm | ROM worst % | solver (worst %) | B | ROM ms/query | solver ms/query | ROM queries/s | solver queries/s | ROM s/1000 | solver s/1000 | ratio | ratio vs ROM solve-only | variants (ROM / solver) | A2 rom_shared_r ms/query (ratio) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+
+## Job directory m128e
+
+| mesh | GPU | arm | ROM worst % | solver (worst %) | B | ROM ms/query | solver ms/query | ROM queries/s | solver queries/s | ROM s/1000 | solver s/1000 | ratio | ratio vs ROM solve-only | variants (ROM / solver) | A2 rom_shared_r ms/query (ratio) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+
+## Job directory m128f
+
+| mesh | GPU | arm | ROM worst % | solver (worst %) | B | ROM ms/query | solver ms/query | ROM queries/s | solver queries/s | ROM s/1000 | solver s/1000 | ratio | ratio vs ROM solve-only | variants (ROM / solver) | A2 rom_shared_r ms/query (ratio) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 128 | H200 | r96_head | 0.62 | cnab2 108^3 x120 (0.60) | 128 | 4.18 (chunk 32) | 71.5 | 239 | 13.99 | 4.18 | 71 | 17.1 | - | shared / rfft | FAILED CHECK |
+| 128 | H200 | r128_head_fast | 0.59 | rk4 108^3 x30 (0.58) | 128 | 4.27 (chunk 32) | 70.0 | 234 | 14.28 | 4.27 | 70 | 16.4 | - | shared / rfft | FAILED CHECK |
+| 128 | H200 | r192_head_fast | 0.45 | rk4 112^3 x30 (0.45) | 128 | 4.47 (chunk 32) | 83.7 | 224 | 11.94 | 4.47 | 84 | 18.7 | - | shared / rfft | FAILED CHECK |
+
+## Job directory m128g
+
+| mesh | GPU | arm | ROM worst % | solver (worst %) | B | ROM ms/query | solver ms/query | ROM queries/s | solver queries/s | ROM s/1000 | solver s/1000 | ratio | ratio vs ROM solve-only | variants (ROM / solver) | A2 rom_shared_r ms/query (ratio) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 128 | A100 80GB PCIe | r96_head | 0.62 | cnab2 108^3 x120 (0.60) | 128 | 10.46 (chunk 16) | 180.9 (chunk 32) | 96 | 5.53 | 10.46 | 181 | 17.3 | - | shared / rfft | - |
+| 128 | A100 80GB PCIe | r128_head_fast | 0.59 | rk4 108^3 x30 (0.58) | 128 | 10.91 (chunk 16) | 175.5 (chunk 32) | 92 | 5.70 | 10.91 | 175 | 16.1 | - | shared / rfft | - |
+| 128 | A100 80GB PCIe | r192_head_fast | 0.45 | rk4 112^3 x30 (0.45) | 128 | 11.82 (chunk 16) | 201.6 (chunk 32) | 85 | 4.96 | 11.82 | 202 | 17.1 | - | shared / rfft | - |
 
 # Per-job detail
 
@@ -137,6 +193,72 @@ Re-match at B=32 (solve-only, shortlist configurations):
 - r192_head_fast: fastest shortlisted SOLVE_RFFT|cnab2|108|100 5096.8 ms; ratio vs ROM e2e 64.71
 
 Process peak device memory 66.8 GB; elapsed 47.0 min.
+
+# Job directory m64r
+
+## Mesh 64^3 — job 7161959, NVIDIA A100 80GB PCIe, GPU-ef0906da-ee15-780e-c19b-39842e183c5c, 81920 MiB, status final
+
+| arm | worst err (ROM / solver) | solver config | B | ROM e2e ms (variant) | ROM samples/s | ROM s per 1000 | ROM mem GB | solver solve ms (variant) | solver samples/s | solver s per 1000 | solver mem GB | ratio solve/e2e | ratio e2e/e2e | ratio solve/solve |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| r96_head | 0.58 / 0.44 % | cnab2 100^3 x100 | 32 | 58.13 (shared) | 550.5 | 1.82 | 6.9 | 3745.06 (rfft) | 8.5 | 117.03 | 14.1 | 64.43 | 65.43 | 188.99 |
+| r96_head | 0.58 / 0.44 % | cnab2 100^3 x100 | 128 | 201.16 (shared) | 636.3 | 1.57 | 25.6 | 14944.44 (rfft) (chunk 64) | 8.6 | 116.75 | 28.1 | 74.29 | 75.88 | 279.45 |
+| r128_head_fast | 0.52 / 0.44 % | cnab2 100^3 x100 | 32 | 63.77 (shared) | 501.8 | 1.99 | 7.1 | 3745.06 (rfft) | 8.5 | 117.03 | 14.1 | 58.73 | 59.64 | 154.35 |
+| r128_head_fast | 0.52 / 0.44 % | cnab2 100^3 x100 | 128 | 216.44 (shared) | 591.4 | 1.69 | 25.9 | 14944.44 (rfft) (chunk 64) | 8.6 | 116.75 | 28.1 | 69.05 | 70.53 | 223.71 |
+| r192_head_fast | 0.35 / 0.33 % | cnab2 108^3 x100 | 32 | 74.43 (shared) | 429.9 | 2.33 | 7.6 | 4827.62 (rfft) | 6.6 | 150.86 | 17.7 | 64.86 | 66.09 | 144.43 |
+| r192_head_fast | 0.35 / 0.33 % | cnab2 108^3 x100 | 128 | 254.94 (shared) | 502.1 | 1.99 | 26.4 | 19323.87 (rfft) (chunk 64) | 6.6 | 150.97 | 35.4 | 75.80 | 77.31 | 196.63 |
+
+All variants (median ms per batch call; chunk if chunked):
+
+| callable | B=32 | B=128 | B=512 |
+|---|---|---|---|
+| E2E_RFFT|cnab2|100|100 | 3803.41 | 15264.40 (chunk 64) | - |
+| E2E_RFFT|cnab2|108|100 | 4919.02 | 19710.31 (chunk 64) | - |
+| E2E_VMAP|cnab2|100|100 | 7979.97 | 31946.52 (chunk 64) | - |
+| E2E_VMAP|cnab2|108|100 | 10044.72 | 40294.42 (chunk 64) | - |
+| ROM_DEC|r128_head_fast | 32.28 | 127.06 | - |
+| ROM_DEC|r192_head_fast | 34.62 | 130.31 | - |
+| ROM_DEC|r96_head | 31.14 | 125.51 | - |
+| ROM_ENC|r128_head_fast | 7.54 | 26.25 | 91.86 |
+| ROM_ENC|r192_head_fast | 8.02 | 25.89 | 94.65 |
+| ROM_ENC|r96_head | 7.54 | 25.09 | 90.80 |
+| ROM_LAT|r128_head_fast | 24.26 | 66.80 | 232.13 |
+| ROM_LAT|r192_head_fast | 33.42 | 98.28 | 352.64 |
+| ROM_LAT|r96_head | 19.82 | 53.48 | 178.53 |
+| ROM_SHAREDR|r128_head_fast | 48.54 | 161.35 | - |
+| ROM_SHAREDR|r192_head_fast | 58.93 | 198.46 | - |
+| ROM_SHAREDR|r96_head | 43.89 | 144.49 | - |
+| ROM_SHARED|r128_head_fast | 63.77 | 216.44 | - |
+| ROM_SHARED|r192_head_fast | 74.43 | 254.94 | - |
+| ROM_SHARED|r96_head | 58.13 | 201.16 | - |
+| ROM_VMAP|r128_head_fast | 149.23 | 560.75 | - |
+| ROM_VMAP|r192_head_fast | 260.46 | 1005.84 | - |
+| ROM_VMAP|r96_head | 108.34 | 401.21 | - |
+| SOLVE_RFFT|cnab2|100|100 | 3745.06 | 14944.44 (chunk 64) | - |
+| SOLVE_RFFT|cnab2|108|100 | 4827.62 | 19323.87 (chunk 64) | - |
+| SOLVE_VMAP|cnab2|100|100 | 7897.58 | 31632.61 (chunk 64) | - |
+| SOLVE_VMAP|cnab2|108|100 | 9955.32 | 39939.03 (chunk 64) | - |
+
+Agreement with the unchanged batch-1 code (max |diff| / max |ref| over checked slots):
+
+- B=128: max 7.74e-15 over 17 callables
+
+Cohort agreement (all cases, B=32 callables):
+
+- ROM_VMAP|r96_head: max |err diff| 1.9e-15, worst 0.577 %, ok True
+- ROM_SHARED|r96_head: max |err diff| 1.4e-15, worst 0.577 %, ok True
+- ROM_SHAREDR|r96_head: max |err diff| 2.2e-15, worst 0.577 %, ok True
+- ROM_VMAP|r128_head_fast: max |err diff| 1.7e-15, worst 0.516 %, ok True
+- ROM_SHARED|r128_head_fast: max |err diff| 2.5e-15, worst 0.516 %, ok True
+- ROM_SHAREDR|r128_head_fast: max |err diff| 1.6e-15, worst 0.516 %, ok True
+- ROM_VMAP|r192_head_fast: max |err diff| 2.0e-15, worst 0.353 %, ok True
+- ROM_SHARED|r192_head_fast: max |err diff| 1.6e-15, worst 0.353 %, ok True
+- ROM_SHAREDR|r192_head_fast: max |err diff| 3.3e-15, worst 0.353 %, ok True
+- E2E_VMAP|cnab2|100|100: max |err diff| 9.4e-14, worst 0.438 %, ok True
+- E2E_RFFT|cnab2|100|100: max |err diff| 9.4e-14, worst 0.438 %, ok True
+- E2E_VMAP|cnab2|108|100: max |err diff| 6.4e-14, worst 0.326 %, ok True
+- E2E_RFFT|cnab2|108|100: max |err diff| 6.4e-14, worst 0.326 %, ok True
+
+Process peak device memory 72.5 GB; elapsed 33.8 min.
 
 # Job directory m96
 
@@ -220,6 +342,78 @@ Re-match at B=32 (solve-only, shortlist configurations):
 - r192_head_fast: fastest shortlisted SOLVE_RFFT|rk4|120|30 7782.3 ms; ratio vs ROM e2e 45.44
 
 Process peak device memory 70.7 GB; elapsed 60.1 min.
+
+# Job directory m96r
+
+## Mesh 96^3 — job 7161983, NVIDIA H200, GPU-53ec98ff-6fbf-49ea-2fb1-2141063303c8, 143771 MiB, status final
+
+| arm | worst err (ROM / solver) | solver config | B | ROM e2e ms (variant) | ROM samples/s | ROM s per 1000 | ROM mem GB | solver solve ms (variant) | solver samples/s | solver s per 1000 | solver mem GB | ratio solve/e2e | ratio e2e/e2e | ratio solve/solve |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| r96_head | 0.64 / 0.62 % | cnab2 108^3 x100 | 32 | 67.07 (shared) | 477.1 | 2.10 | 23.2 | 1928.53 (rfft) | 16.6 | 60.27 | 17.7 | 28.75 | 29.61 | 184.89 |
+| r96_head | 0.64 / 0.62 % | cnab2 108^3 x100 | 128 | 250.56 (shared) | 510.8 | 1.96 | 86.3 | 7645.02 (rfft) | 16.7 | 59.73 | 70.7 | 30.51 | 31.56 | 350.81 |
+| r128_head_fast | 0.56 / 0.46 % | cnab2 112^3 x120 | 32 | 68.99 (shared) | 463.9 | 2.16 | 23.9 | 2706.55 (rfft) | 11.8 | 84.58 | 19.8 | 39.23 | 40.04 | 229.29 |
+| r128_head_fast | 0.56 / 0.46 % | cnab2 112^3 x120 | 128 | 254.62 (shared) | 502.7 | 1.99 | 87.1 | 10708.71 (rfft) | 12.0 | 83.66 | 78.9 | 42.06 | 42.89 | 406.76 |
+| r192_head_fast | 0.39 / 0.36 % | cnab2 120^3 x120 | 32 | 73.80 (shared) | 433.6 | 2.31 | 25.3 | 3308.02 (rfft) | 9.7 | 103.38 | 24.3 | 44.82 | 45.52 | 220.10 |
+| r192_head_fast | 0.39 / 0.36 % | cnab2 120^3 x120 | 128 | 272.57 (shared) | 469.6 | 2.13 | 88.5 | 13194.83 (rfft) | 9.7 | 103.08 | 97.0 | 48.41 | 49.31 | 359.73 |
+
+All variants (median ms per batch call; chunk if chunked):
+
+| callable | B=32 | B=128 |
+|---|---|---|
+| E2E_RFFT|cnab2|108|100 | 1986.25 | 7907.70 (chunk 64) |
+| E2E_RFFT|cnab2|112|120 | 2762.55 | 10921.59 (chunk 64) |
+| E2E_RFFT|cnab2|120|120 | 3359.66 | 13441.06 (chunk 64) |
+| E2E_VMAP|cnab2|108|100 | 4094.89 | 17089.38 (chunk 64) |
+| E2E_VMAP|cnab2|112|120 | 5676.38 | 23661.95 (chunk 64) |
+| E2E_VMAP|cnab2|120|120 | 6627.24 | 27875.76 (chunk 64) |
+| ROM_DEC|r128_head_fast | 48.27 | 201.36 |
+| ROM_DEC|r192_head_fast | 49.25 | 206.49 |
+| ROM_DEC|r96_head | 47.84 | 199.26 |
+| ROM_ENC|r128_head_fast | 10.01 | 33.92 |
+| ROM_ENC|r192_head_fast | 10.35 | 34.73 |
+| ROM_ENC|r96_head | 9.83 | 33.75 |
+| ROM_LAT|r128_head_fast | 11.80 | 26.33 |
+| ROM_LAT|r192_head_fast | 15.03 | 36.68 |
+| ROM_LAT|r96_head | 10.43 | 21.79 |
+| ROM_SHAREDR|r128_head_fast | 52.01 | 186.80 |
+| ROM_SHAREDR|r192_head_fast | 56.64 | 199.92 |
+| ROM_SHAREDR|r96_head | 50.15 | 175.69 |
+| ROM_SHARED|r128_head_fast | 68.99 | 254.62 |
+| ROM_SHARED|r192_head_fast | 73.80 | 272.57 |
+| ROM_SHARED|r96_head | 67.07 | 250.56 |
+| ROM_VMAP|r128_head_fast | 108.46 | 410.77 |
+| ROM_VMAP|r192_head_fast | 156.41 | 597.94 |
+| ROM_VMAP|r96_head | 92.06 | 341.13 |
+| SOLVE_RFFT|cnab2|108|100 | 1928.53 | 7645.02 |
+| SOLVE_RFFT|cnab2|112|120 | 2706.55 | 10708.71 |
+| SOLVE_RFFT|cnab2|120|120 | 3308.02 | 13194.83 |
+| SOLVE_VMAP|cnab2|108|100 | 4038.83 | 16813.29 |
+| SOLVE_VMAP|cnab2|112|120 | 5604.36 | 23410.33 (chunk 64) |
+| SOLVE_VMAP|cnab2|120|120 | 6547.05 | 27620.42 (chunk 64) |
+
+Agreement with the unchanged batch-1 code (max |diff| / max |ref| over checked slots):
+
+- B=128: max 7.30e-15 over 21 callables
+
+Cohort agreement (all cases, B=32 callables):
+
+- ROM_VMAP|r96_head: max |err diff| 1.8e-15, worst 0.638 %, ok True
+- ROM_SHARED|r96_head: max |err diff| 1.7e-15, worst 0.638 %, ok True
+- ROM_SHAREDR|r96_head: max |err diff| 2.3e-15, worst 0.638 %, ok True
+- ROM_VMAP|r128_head_fast: max |err diff| 1.7e-15, worst 0.564 %, ok True
+- ROM_SHARED|r128_head_fast: max |err diff| 1.7e-15, worst 0.564 %, ok True
+- ROM_SHAREDR|r128_head_fast: max |err diff| 1.7e-15, worst 0.564 %, ok True
+- ROM_VMAP|r192_head_fast: max |err diff| 2.2e-15, worst 0.385 %, ok True
+- ROM_SHARED|r192_head_fast: max |err diff| 1.9e-15, worst 0.385 %, ok True
+- ROM_SHAREDR|r192_head_fast: max |err diff| 2.4e-15, worst 0.385 %, ok True
+- E2E_VMAP|cnab2|108|100: max |err diff| 7.6e-14, worst 0.615 %, ok True
+- E2E_RFFT|cnab2|108|100: max |err diff| 7.6e-14, worst 0.615 %, ok True
+- E2E_VMAP|cnab2|112|120: max |err diff| 1.3e-13, worst 0.464 %, ok True
+- E2E_RFFT|cnab2|112|120: max |err diff| 1.3e-13, worst 0.464 %, ok True
+- E2E_VMAP|cnab2|120|120: max |err diff| 1.2e-13, worst 0.365 %, ok True
+- E2E_RFFT|cnab2|120|120: max |err diff| 1.2e-13, worst 0.365 %, ok True
+
+Process peak device memory 130.4 GB; elapsed 35.1 min.
 
 # Job directory m128
 
@@ -342,3 +536,204 @@ Agreement with the unchanged batch-1 code (max |diff| / max |ref| over checked s
 
 
 Process peak device memory 79.1 GB; elapsed 22.8 min.
+
+# Job directory m128r
+
+## Mesh 128^3 — job 7161958, NVIDIA A100 80GB PCIe, GPU-2fa16ce0-8cbb-a4bf-cedd-ac0436db49e7, 81920 MiB, status with-failures
+
+Failures: B=128: timing failed: JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 4.50GiB. [tf-allocator-allocation-error=''] [executable_name='jit_e2e_b']
+
+| arm | worst err (ROM / solver) | solver config | B | ROM e2e ms (variant) | ROM samples/s | ROM s per 1000 | ROM mem GB | solver solve ms (variant) | solver samples/s | solver s per 1000 | solver mem GB | ratio solve/e2e | ratio e2e/e2e | ratio solve/solve |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| r96_head | 0.62 / 0.60 % | cnab2 108^3 x120 | 32 | 334.07 (shared) (chunk 16) | 95.8 | 10.44 | 29.8 | 5778.26 (rfft) | 5.5 | 180.57 | 17.7 | 17.30 | 17.17 | 270.61 |
+| r128_head_fast | 0.59 / 0.58 % | rk4 108^3 x30 | 32 | 349.26 (shared) (chunk 16) | 91.6 | 10.91 | 31.5 | 5611.03 (rfft) | 5.7 | 175.34 | 19.5 | 16.07 | 16.59 | 218.43 |
+| r192_head_fast | 0.45 / 0.45 % | rk4 112^3 x30 | 32 | 377.81 (shared) (chunk 16) | 84.7 | 11.81 | 34.8 | 6445.79 (rfft) | 5.0 | 201.43 | 21.8 | 17.06 | 17.91 | 183.01 |
+
+All variants (median ms per batch call; chunk if chunked):
+
+| callable | B=32 | B=128 |
+|---|---|---|
+| E2E_RFFT|cnab2|108|120 | 5737.68 (chunk 16) | - |
+| E2E_RFFT|rk4|108|30 | 5795.58 (chunk 16) | - |
+| E2E_RFFT|rk4|112|30 | 6766.46 (chunk 16) | - |
+| E2E_VMAP|cnab2|108|120 | 11625.37 (chunk 16) | - |
+| E2E_VMAP|rk4|108|30 | 12189.04 (chunk 16) | - |
+| E2E_VMAP|rk4|112|30 | 13797.38 (chunk 16) | - |
+| ROM_DEC|r128_head_fast | 267.31 (chunk 16) | - |
+| ROM_DEC|r192_head_fast | 279.72 (chunk 16) | - |
+| ROM_DEC|r96_head | 260.33 (chunk 16) | - |
+| ROM_ENC|r128_head_fast | 46.03 | - |
+| ROM_ENC|r192_head_fast | 48.80 | - |
+| ROM_ENC|r96_head | 45.53 | - |
+| ROM_LAT|r128_head_fast | 25.69 | - |
+| ROM_LAT|r192_head_fast | 35.22 | - |
+| ROM_LAT|r96_head | 21.35 | - |
+| ROM_SHAREDR|r128_head_fast | 207.01 | - |
+| ROM_SHAREDR|r192_head_fast | 226.56 | - |
+| ROM_SHAREDR|r96_head | 195.13 | - |
+| ROM_SHARED|r128_head_fast | 349.26 (chunk 16) | - |
+| ROM_SHARED|r192_head_fast | 377.81 (chunk 16) | - |
+| ROM_SHARED|r96_head | 334.07 (chunk 16) | - |
+| ROM_VMAP|r128_head_fast | 430.49 | - |
+| ROM_VMAP|r192_head_fast | 552.51 | - |
+| ROM_VMAP|r96_head | 385.84 | - |
+| SOLVE_RFFT|cnab2|108|120 | 5778.26 | - |
+| SOLVE_RFFT|rk4|108|30 | 5611.03 | - |
+| SOLVE_RFFT|rk4|112|30 | 6445.79 | - |
+| SOLVE_VMAP|cnab2|108|120 | 11916.48 | - |
+| SOLVE_VMAP|rk4|108|30 | 11902.95 | - |
+| SOLVE_VMAP|rk4|112|30 | 13493.97 | - |
+
+Agreement with the unchanged batch-1 code (max |diff| / max |ref| over checked slots):
+
+- B=128: no successful check; errors: ['ROM_VMAP|r96_head', 'ROM_SHARED|r96_head', 'ROM_SHAREDR|r96_head', 'ROM_VMAP|r128_head_fast', 'ROM_SHARED|r128_head_fast', 'ROM_SHAREDR|r128_head_fast', 'ROM_VMAP|r192_head_fast', 'ROM_SHARED|r192_head_fast', 'ROM_SHAREDR|r192_head_fast', 'SOLVE_VMAP|cnab2|108|120', 'E2E_VMAP|cnab2|108|120', 'SOLVE_RFFT|cnab2|108|120', 'E2E_RFFT|cnab2|108|120', 'SOLVE_VMAP|rk4|108|30', 'E2E_VMAP|rk4|108|30', 'SOLVE_RFFT|rk4|108|30', 'E2E_RFFT|rk4|108|30', 'SOLVE_VMAP|rk4|112|30', 'E2E_VMAP|rk4|112|30', 'SOLVE_RFFT|rk4|112|30', 'E2E_RFFT|rk4|112|30']
+
+Cohort agreement (all cases, B=32 callables):
+
+- ROM_VMAP|r96_head: max |err diff| 1.4e-15, worst 0.616 %, ok True
+- ROM_SHARED|r96_head: max |err diff| 1.5e-15, worst 0.616 %, ok True
+- ROM_SHAREDR|r96_head: max |err diff| 1.3e-15, worst 0.616 %, ok True
+- ROM_VMAP|r128_head_fast: max |err diff| 2.5e-15, worst 0.586 %, ok True
+- ROM_SHARED|r128_head_fast: max |err diff| 3.0e-15, worst 0.586 %, ok True
+- ROM_SHAREDR|r128_head_fast: max |err diff| 2.4e-15, worst 0.586 %, ok True
+- ROM_VMAP|r192_head_fast: max |err diff| 2.4e-15, worst 0.455 %, ok True
+- ROM_SHARED|r192_head_fast: max |err diff| 2.0e-15, worst 0.455 %, ok True
+- ROM_SHAREDR|r192_head_fast: max |err diff| 2.8e-15, worst 0.455 %, ok True
+- E2E_VMAP|cnab2|108|120: max |err diff| 4.2e-13, worst 0.602 %, ok True
+- E2E_RFFT|cnab2|108|120: max |err diff| 4.2e-13, worst 0.602 %, ok True
+- E2E_VMAP|rk4|108|30: max |err diff| 3.1e-12, worst 0.584 %, ok True
+- E2E_RFFT|rk4|108|30: max |err diff| 3.1e-12, worst 0.584 %, ok True
+- E2E_VMAP|rk4|112|30: max |err diff| 2.9e-12, worst 0.453 %, ok True
+- E2E_RFFT|rk4|112|30: max |err diff| 2.9e-12, worst 0.453 %, ok True
+
+Process peak device memory 79.9 GB; elapsed 77.3 min.
+
+# Job directory m128d
+
+## Mesh 128^3 — job 7162015, NVIDIA A100 80GB PCIe, GPU-aafad47a-9358-af08-cda9-1eacee35afea, 81920 MiB, status None
+
+Failures: B=128: timing failed: JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 3.90GiB. [tf-allocator-allocation-error=''] [executable_name='jit_run']
+
+| arm | worst err (ROM / solver) | solver config | B | ROM e2e ms (variant) | ROM samples/s | ROM s per 1000 | ROM mem GB | solver solve ms (variant) | solver samples/s | solver s per 1000 | solver mem GB | ratio solve/e2e | ratio e2e/e2e | ratio solve/solve |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+
+All variants (median ms per batch call; chunk if chunked):
+
+| callable | B=128 |
+|---|---|
+| E2E_RFFT|cnab2|108|120 | - |
+| E2E_RFFT|rk4|108|30 | - |
+| E2E_RFFT|rk4|112|30 | - |
+| E2E_VMAP|cnab2|108|120 | - |
+| E2E_VMAP|rk4|108|30 | - |
+| E2E_VMAP|rk4|112|30 | - |
+| ROM_DEC|r128_head_fast | - |
+| ROM_DEC|r192_head_fast | - |
+| ROM_DEC|r96_head | - |
+| ROM_ENC|r128_head_fast | - |
+| ROM_ENC|r192_head_fast | - |
+| ROM_ENC|r96_head | - |
+| ROM_LAT|r128_head_fast | - |
+| ROM_LAT|r192_head_fast | - |
+| ROM_LAT|r96_head | - |
+| ROM_SHAREDR|r128_head_fast | - |
+| ROM_SHAREDR|r192_head_fast | - |
+| ROM_SHAREDR|r96_head | - |
+| ROM_SHARED|r128_head_fast | - |
+| ROM_SHARED|r192_head_fast | - |
+| ROM_SHARED|r96_head | - |
+| ROM_VMAP|r128_head_fast | - |
+| ROM_VMAP|r192_head_fast | - |
+| ROM_VMAP|r96_head | - |
+| SOLVE_RFFT|cnab2|108|120 | - |
+| SOLVE_RFFT|rk4|108|30 | - |
+| SOLVE_RFFT|rk4|112|30 | - |
+| SOLVE_VMAP|cnab2|108|120 | - |
+| SOLVE_VMAP|rk4|108|30 | - |
+| SOLVE_VMAP|rk4|112|30 | - |
+
+Agreement with the unchanged batch-1 code (max |diff| / max |ref| over checked slots):
+
+
+Process peak device memory 78.3 GB; elapsed 59.1 min.
+
+# Job directory m128e
+
+## Mesh 128^3 — job 7162017, NVIDIA A100 80GB PCIe, GPU-ef0906da-ee15-780e-c19b-39842e183c5c, 81920 MiB, status final
+
+| arm | worst err (ROM / solver) | solver config | B | ROM e2e ms (variant) | ROM samples/s | ROM s per 1000 | ROM mem GB | solver solve ms (variant) | solver samples/s | solver s per 1000 | solver mem GB | ratio solve/e2e | ratio e2e/e2e | ratio solve/solve |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+
+All variants (median ms per batch call; chunk if chunked):
+
+| callable | B=32 |
+|---|---|
+
+Agreement with the unchanged batch-1 code (max |diff| / max |ref| over checked slots):
+
+- B=32: no successful check
+
+Re-match at B=32 (solve-only, shortlist configurations):
+
+- r96_head: fastest shortlisted SOLVE_RFFT|rk4|108|30 5614.4 ms; ratio vs ROM e2e -
+- r128_head_fast: fastest shortlisted SOLVE_RFFT|rk4|108|30 5614.4 ms; ratio vs ROM e2e -
+- r192_head_fast: fastest shortlisted SOLVE_RFFT|rk4|112|30 6438.0 ms; ratio vs ROM e2e -
+
+Process peak device memory 69.1 GB; elapsed 18.4 min.
+
+# Job directory m128f
+
+## Mesh 128^3 — job 7162488, NVIDIA H200, GPU-744df6ce-73c5-9d32-f055-7bb568e0a92b, 143771 MiB, status final
+
+| arm | worst err (ROM / solver) | solver config | B | ROM e2e ms (variant) | ROM samples/s | ROM s per 1000 | ROM mem GB | solver solve ms (variant) | solver samples/s | solver s per 1000 | solver mem GB | ratio solve/e2e | ratio e2e/e2e | ratio solve/solve |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| r96_head | 0.62 / 0.60 % | cnab2 108^3 x120 | 128 | 534.83 (shared) (chunk 32) | 239.3 | 4.18 | 54.8 | 9150.15 (rfft) | 14.0 | 71.49 | 70.7 | 17.11 | - | - |
+| r128_head_fast | 0.59 / 0.58 % | rk4 108^3 x30 | 128 | 545.99 (shared) (chunk 32) | 234.4 | 4.27 | 56.5 | 8964.37 (rfft) | 14.3 | 70.03 | 77.9 | 16.42 | - | - |
+| r192_head_fast | 0.45 / 0.45 % | rk4 112^3 x30 | 128 | 572.53 (shared) (chunk 32) | 223.6 | 4.47 | 59.8 | 10716.00 (rfft) | 11.9 | 83.72 | 86.8 | 18.72 | - | - |
+
+All variants (median ms per batch call; chunk if chunked):
+
+| callable | B=128 |
+|---|---|
+| ROM_SHAREDR|r128_head_fast | 324.88 (chunk 64) |
+| ROM_SHAREDR|r192_head_fast | 345.44 (chunk 64) |
+| ROM_SHAREDR|r96_head | 315.18 (chunk 64) |
+| ROM_SHARED|r128_head_fast | 545.99 (chunk 32) |
+| ROM_SHARED|r192_head_fast | 572.53 (chunk 32) |
+| ROM_SHARED|r96_head | 534.83 (chunk 32) |
+| SOLVE_RFFT|cnab2|108|120 | 9150.15 |
+| SOLVE_RFFT|rk4|108|30 | 8964.37 |
+| SOLVE_RFFT|rk4|112|30 | 10716.00 |
+
+Agreement with the unchanged batch-1 code (max |diff| / max |ref| over checked slots):
+
+- B=128: max 1.27e+02 over 9 callables
+
+Process peak device memory 130.6 GB; elapsed 11.1 min.
+
+# Job directory m128g
+
+## Mesh 128^3 — job 7162778, NVIDIA A100 80GB PCIe, GPU-9732c808-acc9-5c43-f0ce-4a81a2bf1719, 81920 MiB, status final
+
+| arm | worst err (ROM / solver) | solver config | B | ROM e2e ms (variant) | ROM samples/s | ROM s per 1000 | ROM mem GB | solver solve ms (variant) | solver samples/s | solver s per 1000 | solver mem GB | ratio solve/e2e | ratio e2e/e2e | ratio solve/solve |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| r96_head | 0.62 / 0.60 % | cnab2 108^3 x120 | 128 | 1338.81 (shared) (chunk 16) | 95.6 | 10.46 | 29.8 | 23149.11 (rfft) (chunk 32) | 5.5 | 180.85 | 17.7 | 17.29 | - | - |
+| r128_head_fast | 0.59 / 0.58 % | rk4 108^3 x30 | 128 | 1396.82 (shared) (chunk 16) | 91.6 | 10.91 | 31.5 | 22462.82 (rfft) (chunk 32) | 5.7 | 175.49 | 19.5 | 16.08 | - | - |
+| r192_head_fast | 0.45 / 0.45 % | rk4 112^3 x30 | 128 | 1512.36 (shared) (chunk 16) | 84.6 | 11.82 | 34.8 | 25798.92 (rfft) (chunk 32) | 5.0 | 201.55 | 21.8 | 17.06 | - | - |
+
+All variants (median ms per batch call; chunk if chunked):
+
+| callable | B=128 |
+|---|---|
+| ROM_SHARED|r128_head_fast | 1396.82 (chunk 16) |
+| ROM_SHARED|r192_head_fast | 1512.36 (chunk 16) |
+| ROM_SHARED|r96_head | 1338.81 (chunk 16) |
+| SOLVE_RFFT|cnab2|108|120 | 23149.11 (chunk 32) |
+| SOLVE_RFFT|rk4|108|30 | 22462.82 (chunk 32) |
+| SOLVE_RFFT|rk4|112|30 | 25798.92 (chunk 32) |
+
+Agreement with the unchanged batch-1 code (max |diff| / max |ref| over checked slots):
+
+- B=128: max 2.23e-13 over 6 callables
+
+Process peak device memory 69.5 GB; elapsed 28.4 min.

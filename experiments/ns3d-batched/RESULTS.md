@@ -38,8 +38,8 @@ flowchart LR
 1. Batching helps the ROM much more than the solver. The solver at its matched meshes
    (100^3-120^3) already fills the GPU at batch 1: its per-query time drops only modestly from
    B = 1 to B = 8 with real FFTs and is flat from B = 8 on (the unchanged complex-FFT solver gets
-   slower per query when batched). The ROM's per-query time falls by roughly an order of
-   magnitude from B = 1 to B = 32 and is flat beyond that.
+   slower per query when batched). The ROM's per-query time falls several-fold from B = 1 to
+   B = 32 (most at 64^3, least at 128^3, where reconstruction dominates) and is flat beyond that.
 2. Hence the throughput ratio (solver time / ROM time at equal B, equal accuracy) GROWS with B
    at every mesh and arm, from the batch-1 value (which reproduces fresh_s0b's ordering) to a
    plateau reached by B = 32.
@@ -89,7 +89,9 @@ flowchart LR
 only partly compiled); `m128` 7161724 (failed at B = 128 after B <= 32 completed); `m128c` 7161935
 (failed: re-match and B = 128 out of memory; B = 32 re-timing kept); `m64r` 7161959; `m96r`
 7161983; `m128r` 7161958; `m128d` 7162015; `m128e` 7162017 (B = 32 re-match only); `m128f` 7162488 (H200, lean
-B = 128: ROM shared / shared_r and solver rfft only). Cluster namespace
+B = 128: ROM shared / shared_r and solver rfft only); `m128g` 7162778 (A100-80G, lean B = 128:
+ROM shared and solver rfft only; the A100 B = 128 point at 128^3). `m128d` was cancelled after
+its all-callable B = 128 block ran out of memory. Cluster namespace
 `/cluster/tufts/paralab/tawal01/rebuttal-ns3d-batched/`.
 
 ## Glossary

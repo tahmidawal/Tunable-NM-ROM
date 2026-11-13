@@ -1,0 +1,2371 @@
+{
+ "schema": "ns3d-batched-v1",
+ "mesh": 128,
+ "args": {
+  "out": "/cluster/tufts/paralab/tawal01/rebuttal-ns3d-batched/m128d",
+  "mesh": 128,
+  "family": "B",
+  "src": "/cluster/tufts/paralab/tawal01/rebuttal-ns3d-batched/m128d/experiments/ns3d-hard",
+  "compare": null,
+  "ns": "/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank",
+  "arms": "r96_head,r128_head_fast,r192_head_fast",
+  "batches": "128",
+  "rom_extra": "128",
+  "reps_small": 5,
+  "reps_large": 3,
+  "cases": 128,
+  "no_rematch": true,
+  "no_cohort": true,
+  "smoke": false,
+  "rom_rfft": true,
+  "rematch_only": false
+ },
+ "job_id": "7162015",
+ "device": "cuda:0",
+ "backend": "gpu",
+ "matmul_precision": "highest",
+ "x64": true,
+ "source_compare_job": "7145062",
+ "source_commit": "8fa2354fea07915a7158e1e59fa643a0861c0450",
+ "arms": {
+  "r96_head": {
+   "config": {
+    "kind": "head",
+    "rank": 96,
+    "k": 8,
+    "width": 256,
+    "M": 584,
+    "steps": 20,
+    "iters": 3,
+    "dev_worst": 0.00866286734122623,
+    "dev_median": 0.0018597952049423327
+   },
+   "fresh_worst": 0.006159952349350631,
+   "fresh_median": 0.0019490098700981468,
+   "fresh_ms_batch1": 43.1508794426918,
+   "matched": {
+    "scheme": "cnab2",
+    "n": 108,
+    "steps": 120,
+    "cohort_worst": 0.0060156015377488,
+    "cohort_median": 0.0008262136173385796,
+    "ms": 298.9650620147586,
+    "ratio": 6.928365444134475
+   },
+   "matched_e2e_ms": 305.4066770710051,
+   "shortlist": [
+    [
+     "cnab2",
+     108,
+     120
+    ],
+    [
+     "rk4",
+     108,
+     30
+    ],
+    [
+     "cnab2",
+     112,
+     120
+    ],
+    [
+     "cnab2",
+     108,
+     140
+    ],
+    [
+     "cnab2",
+     128,
+     120
+    ],
+    [
+     "cnab2",
+     128,
+     140
+    ]
+   ]
+  },
+  "r128_head_fast": {
+   "config": {
+    "kind": "head",
+    "rank": 128,
+    "k": 8,
+    "width": 256,
+    "M": 584,
+    "steps": 20,
+    "iters": 3,
+    "dev_worst": 0.007377740995156512,
+    "dev_median": 0.001321643620825377
+   },
+   "fresh_worst": 0.005862758809701094,
+   "fresh_median": 0.0013992004072911398,
+   "fresh_ms_batch1": 50.97131058573723,
+   "matched": {
+    "scheme": "rk4",
+    "n": 108,
+    "steps": 30,
+    "cohort_worst": 0.005836924211592684,
+    "cohort_median": 0.0005819844248883704,
+    "ms": 308.7146165780723,
+    "ratio": 6.056634860482805
+   },
+   "matched_e2e_ms": 314.7533880546689,
+   "shortlist": [
+    [
+     "rk4",
+     108,
+     30
+    ],
+    [
+     "cnab2",
+     112,
+     120
+    ],
+    [
+     "rk4",
+     112,
+     30
+    ],
+    [
+     "cnab2",
+     112,
+     140
+    ],
+    [
+     "cnab2",
+     128,
+     120
+    ],
+    [
+     "cnab2",
+     128,
+     140
+    ]
+   ]
+  },
+  "r192_head_fast": {
+   "config": {
+    "kind": "head",
+    "rank": 192,
+    "k": 8,
+    "width": 256,
+    "M": 584,
+    "steps": 20,
+    "iters": 3,
+    "dev_worst": 0.006714045580138089,
+    "dev_median": 0.0009049305831284002
+   },
+   "fresh_worst": 0.004548814362691385,
+   "fresh_median": 0.000978402478576575,
+   "fresh_ms_batch1": 67.5609796307981,
+   "matched": {
+    "scheme": "rk4",
+    "n": 112,
+    "steps": 30,
+    "cohort_worst": 0.004533506047801055,
+    "cohort_median": 0.00040568454053935374,
+    "ms": 346.1067685857415,
+    "ratio": 5.1228796633370095
+   },
+   "matched_e2e_ms": 353.29705476760864,
+   "shortlist": [
+    [
+     "rk4",
+     112,
+     30
+    ],
+    [
+     "cnab2",
+     120,
+     120
+    ],
+    [
+     "rk4",
+     120,
+     30
+    ],
+    [
+     "cnab2",
+     120,
+     140
+    ],
+    [
+     "cnab2",
+     128,
+     120
+    ],
+    [
+     "cnab2",
+     128,
+     140
+    ]
+   ]
+  }
+ },
+ "solvers": {},
+ "batches": {
+  "128": {
+   "B": 128,
+   "callables": {
+    "ROM_VMAP|r96_head": {
+     "chunk": 32,
+     "chunked": true,
+     "mem": {
+      "chunk": 32,
+      "args_gb": 6.49595808,
+      "out_gb": 9.663676416,
+      "temp_gb": 12.738642576,
+      "batch_need_gb": 24.012931984,
+      "total_gb": 28.898277072,
+      "free_gb": 36.619483392
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "args_gb": 11.327797056,
+       "out_gb": 38.654705664,
+       "temp_gb": 50.953759632,
+       "batch_need_gb": 89.608465296,
+       "total_gb": 100.936262352,
+       "free_gb": 36.619483392
+      },
+      {
+       "chunk": 64,
+       "args_gb": 8.106571072,
+       "out_gb": 19.327352832,
+       "temp_gb": 25.47727784,
+       "batch_need_gb": 48.025856656,
+       "total_gb": 52.911201744,
+       "free_gb": 36.619483392
+      },
+      {
+       "chunk": 32,
+       "args_gb": 6.49595808,
+       "out_gb": 9.663676416,
+       "temp_gb": 12.738642576,
+       "batch_need_gb": 24.012931984,
+       "total_gb": 28.898277072,
+       "free_gb": 36.619483392
+      }
+     ]
+    },
+    "ROM_SHARED|r96_head": {
+     "chunk": 16,
+     "chunked": true,
+     "mem": {
+      "chunk": 16,
+      "args_gb": 5.690651584,
+      "out_gb": 4.831838208,
+      "temp_gb": 19.327365784,
+      "batch_need_gb": 24.964510488,
+      "total_gb": 29.849855576,
+      "free_gb": 36.619483392
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.18 = f64[6291456,768]{0,1} fusion(%basis.1, %loop_add_fusion.11), kind=kCustom, calls=%gemm_fusion_dot.18_"
+      },
+      {
+       "chunk": 64,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.18 = f64[6291456,384]{0,1} fusion(%basis.1, %loop_add_fusion.11), kind=kCustom, calls=%gemm_fusion_dot.18_"
+      },
+      {
+       "chunk": 32,
+       "args_gb": 6.49595808,
+       "out_gb": 9.663676416,
+       "temp_gb": 38.65472092,
+       "batch_need_gb": 49.929010328,
+       "total_gb": 54.814355416,
+       "free_gb": 36.619483392
+      },
+      {
+       "chunk": 16,
+       "args_gb": 5.690651584,
+       "out_gb": 4.831838208,
+       "temp_gb": 19.327365784,
+       "batch_need_gb": 24.964510488,
+       "total_gb": 29.849855576,
+       "free_gb": 36.619483392
+      }
+     ]
+    },
+    "ROM_SHAREDR|r96_head": {
+     "chunk": 32,
+     "chunked": true,
+     "mem": {
+      "chunk": 32,
+      "args_gb": 6.49595808,
+      "out_gb": 9.663676416,
+      "temp_gb": 19.630337176,
+      "batch_need_gb": 30.904626584,
+      "total_gb": 35.789971672,
+      "free_gb": 36.619483392
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.18 = f64[6291456,768]{0,1} fusion(%basis.1, %loop_add_fusion.11), kind=kCustom, calls=%gemm_fusion_dot.18_"
+      },
+      {
+       "chunk": 64,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.18 = f64[6291456,384]{0,1} fusion(%basis.1, %loop_add_fusion.11), kind=kCustom, calls=%gemm_fusion_dot.18_"
+      },
+      {
+       "chunk": 32,
+       "args_gb": 6.49595808,
+       "out_gb": 9.663676416,
+       "temp_gb": 19.630337176,
+       "batch_need_gb": 30.904626584,
+       "total_gb": 35.789971672,
+       "free_gb": 36.619483392
+      },
+      {
+       "oom_at_runtime": 32
+      },
+      {
+       "chunk": 16,
+       "args_gb": 5.690651584,
+       "out_gb": 4.831838208,
+       "temp_gb": 9.815172504,
+       "batch_need_gb": 15.452317208,
+       "total_gb": 20.337662296,
+       "free_gb": 26.744020224
+      }
+     ]
+    },
+    "ROM_ENC|r96_head": {
+     "chunk": 128,
+     "chunked": false,
+     "mem": {
+      "chunk": 128,
+      "args_gb": 11.28294016,
+      "out_gb": 1.4352e-05,
+      "temp_gb": 25.770593104,
+      "batch_need_gb": 25.770607456,
+      "total_gb": 37.053547616,
+      "free_gb": 36.619483392
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "args_gb": 11.28294016,
+       "out_gb": 1.4352e-05,
+       "temp_gb": 25.770593104,
+       "batch_need_gb": 25.770607456,
+       "total_gb": 37.053547616,
+       "free_gb": 36.619483392
+      },
+      {
+       "oom_at_runtime": 128
+      },
+      {
+       "chunk": 64,
+       "args_gb": 8.061714688,
+       "out_gb": 7.184e-06,
+       "temp_gb": 12.885298,
+       "batch_need_gb": 16.106530656,
+       "total_gb": 20.947019872,
+       "free_gb": 26.744005632
+      }
+     ]
+    },
+    "ROM_LAT|r96_head": {
+     "chunk": 128,
+     "chunked": false,
+     "mem": {
+      "chunk": 128,
+      "args_gb": 0.04561952,
+      "out_gb": 7.1696e-05,
+      "temp_gb": 0.5075798,
+      "batch_need_gb": 0.507651496,
+      "total_gb": 0.553271016,
+      "free_gb": 36.619465984
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "args_gb": 0.04561952,
+       "out_gb": 7.1696e-05,
+       "temp_gb": 0.5075798,
+       "batch_need_gb": 0.507651496,
+       "total_gb": 0.553271016,
+       "free_gb": 36.619465984
+      },
+      {
+       "oom_at_runtime": 128
+      },
+      {
+       "chunk": 64,
+       "args_gb": 0.04561184,
+       "out_gb": 3.5856e-05,
+       "temp_gb": 0.252187288,
+       "batch_need_gb": 0.252230824,
+       "total_gb": 0.297834984,
+       "free_gb": 26.744005632
+      },
+      {
+       "oom_at_runtime": 64
+      },
+      {
+       "chunk": 32,
+       "args_gb": 0.045608,
+       "out_gb": 1.7936e-05,
+       "temp_gb": 0.147647128,
+       "batch_need_gb": 0.147668904,
+       "total_gb": 0.193273064,
+       "free_gb": 26.744005632
+      },
+      {
+       "oom_at_runtime": 32
+      },
+      {
+       "chunk": 16,
+       "args_gb": 0.04560608,
+       "out_gb": 8.976e-06,
+       "temp_gb": 0.095735448,
+       "batch_need_gb": 0.095746344,
+       "total_gb": 0.141350504,
+       "free_gb": 26.744005632
+      },
+      {
+       "oom_at_runtime": 16
+      },
+      {
+       "chunk": 8,
+       "args_gb": 0.04560512,
+       "out_gb": 4.496e-06,
+       "temp_gb": 0.069409944,
+       "batch_need_gb": 0.0694154,
+       "total_gb": 0.11501956,
+       "free_gb": 26.744005632
+      },
+      {
+       "oom_at_runtime": 8
+      },
+      {
+       "chunk": 4,
+       "args_gb": 0.04560464,
+       "out_gb": 2.256e-06,
+       "temp_gb": 0.056155288,
+       "batch_need_gb": 0.056158024,
+       "total_gb": 0.101762184,
+       "free_gb": 26.744005632
+      },
+      {
+       "oom_at_runtime": 4
+      },
+      {
+       "chunk": 2,
+       "args_gb": 0.0456044,
+       "out_gb": 1.136e-06,
+       "temp_gb": 0.049619864,
+       "batch_need_gb": 0.04962124,
+       "total_gb": 0.0952254,
+       "free_gb": 26.744005632
+      },
+      {
+       "oom_at_runtime": 2
+      },
+      {
+       "chunk": 1,
+       "args_gb": 0.04560428,
+       "out_gb": 5.76e-07,
+       "temp_gb": 0.046778008,
+       "batch_need_gb": 0.046778704,
+       "total_gb": 0.092382864,
+       "free_gb": 26.744005632
+      }
+     ]
+    },
+    "ROM_DEC|r96_head": {
+     "chunk": 16,
+     "chunked": true,
+     "mem": {
+      "chunk": 16,
+      "args_gb": 4.832597248,
+      "out_gb": 4.831838208,
+      "temp_gb": 19.327352856,
+      "batch_need_gb": 24.159201816,
+      "total_gb": 28.991788312,
+      "free_gb": 36.619465984
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.4 = f64[6291456,768]{0,1} fusion(%basis.1, %loop_add_fusion), kind=kCustom, calls=%gemm_fusion_dot.4_compu"
+      },
+      {
+       "chunk": 64,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.4 = f64[6291456,384]{0,1} fusion(%basis.1, %loop_add_fusion), kind=kCustom, calls=%gemm_fusion_dot.4_compu"
+      },
+      {
+       "chunk": 32,
+       "args_gb": 4.832608,
+       "out_gb": 9.663676416,
+       "temp_gb": 38.654705968,
+       "batch_need_gb": 48.318403888,
+       "total_gb": 53.150990384,
+       "free_gb": 36.619465984
+      },
+      {
+       "chunk": 16,
+       "args_gb": 4.832597248,
+       "out_gb": 4.831838208,
+       "temp_gb": 19.327352856,
+       "batch_need_gb": 24.159201816,
+       "total_gb": 28.991788312,
+       "free_gb": 36.619465984
+      },
+      {
+       "oom_at_runtime": 16
+      },
+      {
+       "chunk": 8,
+       "args_gb": 4.832591872,
+       "out_gb": 2.415919104,
+       "temp_gb": 9.66367644,
+       "batch_need_gb": 12.07960092,
+       "total_gb": 16.912187416,
+       "free_gb": 26.744005632
+      },
+      {
+       "oom_at_runtime": 8
+      },
+      {
+       "chunk": 4,
+       "args_gb": 4.832589184,
+       "out_gb": 1.207959552,
+       "temp_gb": 4.83183872,
+       "batch_need_gb": 6.03980096,
+       "total_gb": 10.872387456,
+       "free_gb": 26.744005632
+      },
+      {
+       "oom_at_runtime": 4
+      },
+      {
+       "chunk": 2,
+       "args_gb": 4.83258784,
+       "out_gb": 0.603979776,
+       "temp_gb": 2.415919616,
+       "batch_need_gb": 3.019900736,
+       "total_gb": 7.852487232,
+       "free_gb": 26.744005632
+      },
+      {
+       "oom_at_runtime": 2
+      },
+      {
+       "chunk": 1,
+       "args_gb": 4.832587168,
+       "out_gb": 0.301989888,
+       "temp_gb": 1.207959808,
+       "batch_need_gb": 1.509950368,
+       "total_gb": 6.342536864,
+       "free_gb": 26.744005632
+      }
+     ]
+    },
+    "ROM_VMAP|r128_head_fast": {
+     "chunk": 32,
+     "chunked": true,
+     "mem": {
+      "chunk": 32,
+      "args_gb": 8.143134016,
+      "out_gb": 9.663676416,
+      "temp_gb": 13.838992016,
+      "batch_need_gb": 25.113281424,
+      "total_gb": 31.645802448,
+      "free_gb": 36.619465984
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "args_gb": 12.974972992,
+       "out_gb": 38.654705664,
+       "temp_gb": 55.355158416,
+       "batch_need_gb": 94.00986408,
+       "total_gb": 106.984837072,
+       "free_gb": 36.619465984
+      },
+      {
+       "chunk": 64,
+       "args_gb": 9.753747008,
+       "out_gb": 19.327352832,
+       "temp_gb": 27.677976976,
+       "batch_need_gb": 50.226555792,
+       "total_gb": 56.759076816,
+       "free_gb": 36.619465984
+      },
+      {
+       "chunk": 32,
+       "args_gb": 8.143134016,
+       "out_gb": 9.663676416,
+       "temp_gb": 13.838992016,
+       "batch_need_gb": 25.113281424,
+       "total_gb": 31.645802448,
+       "free_gb": 36.619465984
+      },
+      {
+       "oom_at_runtime": 32
+      },
+      {
+       "chunk": 16,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.14 = f64[16,6291456]{1,0} fusion(%loop_add_fusion.9, %get-tuple-element.139.0), kind=kCustom, calls=%gemm_"
+      },
+      {
+       "chunk": 8,
+       "compile_error": "JaxRuntimeError: INTERNAL: Failed to get configs for: 2 out of 86 instructions. See logs for all failures. Example failure: \nAutotuning failed for HLO: %gemm_fusion_dot.41 = f64"
+      },
+      {
+       "chunk": 4,
+       "compile_error": "JaxRuntimeError: INTERNAL: Failed to get configs for: 2 out of 86 instructions. See logs for all failures. Example failure: \nAutotuning failed for HLO: %gemm_fusion_dot.14 = f64"
+      },
+      {
+       "chunk": 2,
+       "compile_error": "JaxRuntimeError: INTERNAL: Failed to get configs for: 2 out of 86 instructions. See logs for all failures. Example failure: \nAutotuning failed for HLO: %gemm_fusion_dot.37 = f64"
+      },
+      {
+       "chunk": 1,
+       "args_gb": 6.58285268,
+       "out_gb": 0.301989888,
+       "temp_gb": 0.432477328,
+       "batch_need_gb": 0.784798872,
+       "total_gb": 7.317319896,
+       "free_gb": 17.080329216
+      }
+     ]
+    },
+    "ROM_SHARED|r128_head_fast": {
+     "chunk": 16,
+     "chunked": true,
+     "mem": {
+      "chunk": 16,
+      "args_gb": 7.33782752,
+      "out_gb": 4.831838208,
+      "temp_gb": 19.327365784,
+      "batch_need_gb": 24.964510488,
+      "total_gb": 31.497031512,
+      "free_gb": 36.619465984
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.18 = f64[6291456,768]{0,1} fusion(%basis.1, %loop_add_fusion.11), kind=kCustom, calls=%gemm_fusion_dot.18_"
+      },
+      {
+       "chunk": 64,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.18 = f64[6291456,384]{0,1} fusion(%basis.1, %loop_add_fusion.11), kind=kCustom, calls=%gemm_fusion_dot.18_"
+      },
+      {
+       "chunk": 32,
+       "args_gb": 8.143134016,
+       "out_gb": 9.663676416,
+       "temp_gb": 38.65472092,
+       "batch_need_gb": 49.929010328,
+       "total_gb": 56.461531352,
+       "free_gb": 36.619465984
+      },
+      {
+       "chunk": 16,
+       "args_gb": 7.33782752,
+       "out_gb": 4.831838208,
+       "temp_gb": 19.327365784,
+       "batch_need_gb": 24.964510488,
+       "total_gb": 31.497031512,
+       "free_gb": 36.619465984
+      },
+      {
+       "oom_at_runtime": 16
+      },
+      {
+       "chunk": 8,
+       "compile_error": "JaxRuntimeError: INTERNAL: Failed to get configs for: 2 out of 93 instructions. See logs for all failures. Example failure: \nAutotuning failed for HLO: %gemm_fusion_dot.18 = f64"
+      },
+      {
+       "chunk": 4,
+       "compile_error": "JaxRuntimeError: INTERNAL: Failed to get configs for: 2 out of 93 instructions. See logs for all failures. Example failure: \nAutotuning failed for HLO: %gemm_fusion_dot.47 = f64"
+      },
+      {
+       "chunk": 2,
+       "compile_error": "JaxRuntimeError: INTERNAL: Failed to get configs for: 2 out of 93 instructions. See logs for all failures. Example failure: \nAutotuning failed for HLO: %gemm_fusion_dot.43 = f64"
+      },
+      {
+       "chunk": 1,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.18 = f64[6291456,6]{0,1} fusion(%basis.1, %bitcast.756.0), kind=kCustom, calls=%gemm_fusion_dot.18_computa"
+      }
+     ]
+    },
+    "ROM_SHAREDR|r128_head_fast": {
+     "chunk": 32,
+     "chunked": true,
+     "mem": {
+      "chunk": 32,
+      "args_gb": 8.143134016,
+      "out_gb": 9.663676416,
+      "temp_gb": 19.630337176,
+      "batch_need_gb": 30.904626584,
+      "total_gb": 37.437147608,
+      "free_gb": 36.619465984
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.18 = f64[6291456,768]{0,1} fusion(%basis.1, %loop_add_fusion.11), kind=kCustom, calls=%gemm_fusion_dot.18_"
+      },
+      {
+       "chunk": 64,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.18 = f64[6291456,384]{0,1} fusion(%basis.1, %loop_add_fusion.11), kind=kCustom, calls=%gemm_fusion_dot.18_"
+      },
+      {
+       "chunk": 32,
+       "args_gb": 8.143134016,
+       "out_gb": 9.663676416,
+       "temp_gb": 19.630337176,
+       "batch_need_gb": 30.904626584,
+       "total_gb": 37.437147608,
+       "free_gb": 36.619465984
+      },
+      {
+       "oom_at_runtime": 32
+      },
+      {
+       "chunk": 16,
+       "args_gb": 7.33782752,
+       "out_gb": 4.831838208,
+       "temp_gb": 9.815172504,
+       "batch_need_gb": 15.452317208,
+       "total_gb": 21.984838232,
+       "free_gb": 12.248491008
+      },
+      {
+       "chunk": 8,
+       "compile_error": "JaxRuntimeError: INTERNAL: Failed to get configs for: 2 out of 94 instructions. See logs for all failures. Example failure: \nAutotuning failed for HLO: %gemm_fusion_dot.18 = f64"
+      },
+      {
+       "chunk": 4,
+       "compile_error": "JaxRuntimeError: INTERNAL: Failed to get configs for: 2 out of 94 instructions. See logs for all failures. Example failure: \nAutotuning failed for HLO: %gemm_fusion_dot.47 = f64"
+      },
+      {
+       "chunk": 2,
+       "compile_error": "JaxRuntimeError: INTERNAL: Failed to get configs for: 2 out of 94 instructions. See logs for all failures. Example failure: \nAutotuning failed for HLO: %gemm_fusion_dot.43 = f64"
+      },
+      {
+       "chunk": 1,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.18 = f64[6291456,6]{0,1} fusion(%basis.1, %bitcast.760.0), kind=kCustom, calls=%gemm_fusion_dot.18_computa"
+      }
+     ]
+    },
+    "ROM_ENC|r128_head_fast": {
+     "chunk": 128,
+     "chunked": false,
+     "mem": {
+      "chunk": 128,
+      "args_gb": 12.896029184,
+      "out_gb": 1.4352e-05,
+      "temp_gb": 25.77059336,
+      "batch_need_gb": 25.770607712,
+      "total_gb": 38.666636896,
+      "free_gb": 36.619465984
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "args_gb": 12.896029184,
+       "out_gb": 1.4352e-05,
+       "temp_gb": 25.77059336,
+       "batch_need_gb": 25.770607712,
+       "total_gb": 38.666636896,
+       "free_gb": 36.619465984
+      },
+      {
+       "oom_at_runtime": 128
+      },
+      {
+       "chunk": 64,
+       "args_gb": 9.674803712,
+       "out_gb": 7.184e-06,
+       "temp_gb": 12.885298,
+       "batch_need_gb": 16.106530656,
+       "total_gb": 22.560108896,
+       "free_gb": 12.248476416
+      },
+      {
+       "chunk": 32,
+       "args_gb": 8.064190976,
+       "out_gb": 3.6e-06,
+       "temp_gb": 6.442650192,
+       "batch_need_gb": 8.053266528,
+       "total_gb": 14.506844768,
+       "free_gb": 12.248476416
+      },
+      {
+       "oom_at_runtime": 32
+      },
+      {
+       "chunk": 16,
+       "args_gb": 7.258884608,
+       "out_gb": 1.808e-06,
+       "temp_gb": 3.221326416,
+       "batch_need_gb": 4.026634592,
+       "total_gb": 10.480212832,
+       "free_gb": 12.24847232
+      }
+     ]
+    },
+    "ROM_LAT|r128_head_fast": {
+     "chunk": 128,
+     "chunked": false,
+     "mem": {
+      "chunk": 128,
+      "args_gb": 0.079774272,
+      "out_gb": 7.1696e-05,
+      "temp_gb": 0.692621464,
+      "batch_need_gb": 0.69269316,
+      "total_gb": 0.772467432,
+      "free_gb": 36.619451392
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "args_gb": 0.079774272,
+       "out_gb": 7.1696e-05,
+       "temp_gb": 0.692621464,
+       "batch_need_gb": 0.69269316,
+       "total_gb": 0.772467432,
+       "free_gb": 36.619451392
+      },
+      {
+       "oom_at_runtime": 128
+      },
+      {
+       "chunk": 64,
+       "args_gb": 0.079766592,
+       "out_gb": 3.5856e-05,
+       "temp_gb": 0.349238168,
+       "batch_need_gb": 0.349281704,
+       "total_gb": 0.429040616,
+       "free_gb": 12.24847232
+      },
+      {
+       "oom_at_runtime": 64
+      },
+      {
+       "chunk": 32,
+       "args_gb": 0.079762752,
+       "out_gb": 1.7936e-05,
+       "temp_gb": 0.21289436,
+       "batch_need_gb": 0.212916136,
+       "total_gb": 0.292675048,
+       "free_gb": 12.24847232
+      },
+      {
+       "oom_at_runtime": 32
+      },
+      {
+       "chunk": 16,
+       "args_gb": 0.079760832,
+       "out_gb": 8.976e-06,
+       "temp_gb": 0.145216664,
+       "batch_need_gb": 0.14522756,
+       "total_gb": 0.224986472,
+       "free_gb": 12.24847232
+      },
+      {
+       "oom_at_runtime": 16
+      },
+      {
+       "chunk": 8,
+       "args_gb": 0.079759872,
+       "out_gb": 4.496e-06,
+       "temp_gb": 0.110883736,
+       "batch_need_gb": 0.110889192,
+       "total_gb": 0.190648104,
+       "free_gb": 12.24847232
+      },
+      {
+       "oom_at_runtime": 8
+      },
+      {
+       "chunk": 4,
+       "args_gb": 0.079759392,
+       "out_gb": 2.256e-06,
+       "temp_gb": 0.093717912,
+       "batch_need_gb": 0.093720648,
+       "total_gb": 0.17347956,
+       "free_gb": 12.24847232
+      },
+      {
+       "oom_at_runtime": 4
+      },
+      {
+       "chunk": 2,
+       "args_gb": 0.079759152,
+       "out_gb": 1.136e-06,
+       "temp_gb": 0.085080216,
+       "batch_need_gb": 0.085081592,
+       "total_gb": 0.164840504,
+       "free_gb": 12.24847232
+      },
+      {
+       "oom_at_runtime": 2
+      },
+      {
+       "chunk": 1,
+       "args_gb": 0.079759032,
+       "out_gb": 5.76e-07,
+       "temp_gb": 0.080819608,
+       "batch_need_gb": 0.080820304,
+       "total_gb": 0.160579216,
+       "free_gb": 12.24847232
+      }
+     ]
+    },
+    "ROM_DEC|r128_head_fast": {
+     "chunk": 16,
+     "chunked": true,
+     "mem": {
+      "chunk": 16,
+      "args_gb": 6.443277824,
+      "out_gb": 4.831838208,
+      "temp_gb": 19.327352856,
+      "batch_need_gb": 24.159201816,
+      "total_gb": 30.602468888,
+      "free_gb": 36.619451392
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.4 = f64[6291456,768]{0,1} fusion(%basis.1, %loop_add_fusion), kind=kCustom, calls=%gemm_fusion_dot.4_compu"
+      },
+      {
+       "chunk": 64,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.4 = f64[6291456,384]{0,1} fusion(%basis.1, %loop_add_fusion), kind=kCustom, calls=%gemm_fusion_dot.4_compu"
+      },
+      {
+       "chunk": 32,
+       "args_gb": 6.443288576,
+       "out_gb": 9.663676416,
+       "temp_gb": 38.654705968,
+       "batch_need_gb": 48.318403888,
+       "total_gb": 54.76167096,
+       "free_gb": 36.619451392
+      },
+      {
+       "chunk": 16,
+       "args_gb": 6.443277824,
+       "out_gb": 4.831838208,
+       "temp_gb": 19.327352856,
+       "batch_need_gb": 24.159201816,
+       "total_gb": 30.602468888,
+       "free_gb": 36.619451392
+      },
+      {
+       "oom_at_runtime": 16
+      },
+      {
+       "chunk": 8,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.4 = f64[6291456,48]{0,1} fusion(%basis.1, %loop_add_fusion), kind=kCustom, calls=%gemm_fusion_dot.4_comput"
+      },
+      {
+       "chunk": 4,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.4 = f64[6291456,24]{0,1} fusion(%basis.1, %loop_add_fusion), kind=kCustom, calls=%gemm_fusion_dot.4_comput"
+      },
+      {
+       "chunk": 2,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.4 = f64[6291456,12]{0,1} fusion(%basis.1, %loop_add_fusion), kind=kCustom, calls=%gemm_fusion_dot.4_comput"
+      },
+      {
+       "chunk": 1,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.4 = f64[6291456,6]{0,1} fusion(%basis.1, %bitcast.50.0), kind=kCustom, calls=%gemm_fusion_dot.4_computatio"
+      }
+     ]
+    },
+    "ROM_VMAP|r192_head_fast": {
+     "chunk": 32,
+     "chunked": true,
+     "mem": {
+      "chunk": 32,
+      "args_gb": 11.466190656,
+      "out_gb": 9.663676416,
+      "temp_gb": 14.668153744,
+      "batch_need_gb": 25.942443152,
+      "total_gb": 35.798020816,
+      "free_gb": 36.619451392
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "args_gb": 16.298029632,
+       "out_gb": 38.654705664,
+       "temp_gb": 58.671017104,
+       "batch_need_gb": 97.325722768,
+       "total_gb": 113.6237524,
+       "free_gb": 36.619451392
+      },
+      {
+       "chunk": 64,
+       "args_gb": 13.076803648,
+       "out_gb": 19.327352832,
+       "temp_gb": 29.33629992,
+       "batch_need_gb": 51.884878736,
+       "total_gb": 61.7404564,
+       "free_gb": 36.619451392
+      },
+      {
+       "chunk": 32,
+       "args_gb": 11.466190656,
+       "out_gb": 9.663676416,
+       "temp_gb": 14.668153744,
+       "batch_need_gb": 25.942443152,
+       "total_gb": 35.798020816,
+       "free_gb": 36.619451392
+      },
+      {
+       "oom_at_runtime": 32
+      },
+      {
+       "chunk": 16,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.14 = f64[16,6291456]{1,0} fusion(%loop_add_fusion.10, %get-tuple-element.139.0), kind=kCustom, calls=%gemm"
+      },
+      {
+       "chunk": 8,
+       "compile_error": "JaxRuntimeError: INTERNAL: Failed to get configs for: 2 out of 86 instructions. See logs for all failures. Example failure: \nAutotuning failed for HLO: %gemm_fusion_dot.14 = f64"
+      },
+      {
+       "chunk": 4,
+       "compile_error": "JaxRuntimeError: INTERNAL: Failed to get configs for: 2 out of 85 instructions. See logs for all failures. Example failure: \nAutotuning failed for HLO: %gemm_fusion_dot.14 = f64"
+      },
+      {
+       "chunk": 2,
+       "compile_error": "JaxRuntimeError: INTERNAL: Failed to get configs for: 2 out of 85 instructions. See logs for all failures. Example failure: \nAutotuning failed for HLO: %gemm_fusion_dot.14 = f64"
+      },
+      {
+       "chunk": 1,
+       "args_gb": 9.90590932,
+       "out_gb": 0.301989888,
+       "temp_gb": 0.458382736,
+       "batch_need_gb": 0.81070428,
+       "total_gb": 10.666281944,
+       "free_gb": 12.24847232
+      }
+     ]
+    },
+    "ROM_SHARED|r192_head_fast": {
+     "chunk": 16,
+     "chunked": true,
+     "mem": {
+      "chunk": 16,
+      "args_gb": 10.66088416,
+      "out_gb": 4.831838208,
+      "temp_gb": 19.327365784,
+      "batch_need_gb": 24.964510488,
+      "total_gb": 34.820088152,
+      "free_gb": 36.619451392
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.18 = f64[6291456,768]{0,1} fusion(%basis.1, %loop_add_fusion.11), kind=kCustom, calls=%gemm_fusion_dot.18_"
+      },
+      {
+       "chunk": 64,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.18 = f64[6291456,384]{0,1} fusion(%basis.1, %loop_add_fusion.11), kind=kCustom, calls=%gemm_fusion_dot.18_"
+      },
+      {
+       "chunk": 32,
+       "args_gb": 11.466190656,
+       "out_gb": 9.663676416,
+       "temp_gb": 38.654721176,
+       "batch_need_gb": 49.929010584,
+       "total_gb": 59.784588248,
+       "free_gb": 36.619451392
+      },
+      {
+       "chunk": 16,
+       "args_gb": 10.66088416,
+       "out_gb": 4.831838208,
+       "temp_gb": 19.327365784,
+       "batch_need_gb": 24.964510488,
+       "total_gb": 34.820088152,
+       "free_gb": 36.619451392
+      },
+      {
+       "oom_at_runtime": 16
+      },
+      {
+       "chunk": 8,
+       "compile_error": "JaxRuntimeError: INTERNAL: Failed to get configs for: 2 out of 93 instructions. See logs for all failures. Example failure: \nAutotuning failed for HLO: %gemm_fusion_dot.47 = f64"
+      },
+      {
+       "chunk": 4,
+       "compile_error": "JaxRuntimeError: INTERNAL: Failed to get configs for: 2 out of 92 instructions. See logs for all failures. Example failure: \nAutotuning failed for HLO: %gemm_fusion_dot.18 = f64"
+      },
+      {
+       "chunk": 2,
+       "compile_error": "JaxRuntimeError: INTERNAL: Failed to get configs for: 2 out of 92 instructions. See logs for all failures. Example failure: \nAutotuning failed for HLO: %gemm_fusion_dot.18 = f64"
+      },
+      {
+       "chunk": 1,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.18 = f64[6291456,6]{0,1} fusion(%basis.1, %bitcast.756.0), kind=kCustom, calls=%gemm_fusion_dot.18_computa"
+      }
+     ]
+    },
+    "ROM_SHAREDR|r192_head_fast": {
+     "chunk": 32,
+     "chunked": true,
+     "mem": {
+      "chunk": 32,
+      "args_gb": 11.466190656,
+      "out_gb": 9.663676416,
+      "temp_gb": 19.630337432,
+      "batch_need_gb": 30.90462684,
+      "total_gb": 40.760204504,
+      "free_gb": 36.619451392
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.18 = f64[6291456,768]{0,1} fusion(%basis.1, %loop_add_fusion.11), kind=kCustom, calls=%gemm_fusion_dot.18_"
+      },
+      {
+       "chunk": 64,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.18 = f64[6291456,384]{0,1} fusion(%basis.1, %loop_add_fusion.11), kind=kCustom, calls=%gemm_fusion_dot.18_"
+      },
+      {
+       "chunk": 32,
+       "args_gb": 11.466190656,
+       "out_gb": 9.663676416,
+       "temp_gb": 19.630337432,
+       "batch_need_gb": 30.90462684,
+       "total_gb": 40.760204504,
+       "free_gb": 36.619451392
+      },
+      {
+       "oom_at_runtime": 32
+      },
+      {
+       "chunk": 16,
+       "args_gb": 10.66088416,
+       "out_gb": 4.831838208,
+       "temp_gb": 9.815172504,
+       "batch_need_gb": 15.452317208,
+       "total_gb": 25.307894872,
+       "free_gb": 12.24847232
+      },
+      {
+       "chunk": 8,
+       "compile_error": "JaxRuntimeError: INTERNAL: Failed to get configs for: 2 out of 94 instructions. See logs for all failures. Example failure: \nAutotuning failed for HLO: %gemm_fusion_dot.47 = f64"
+      },
+      {
+       "chunk": 4,
+       "compile_error": "JaxRuntimeError: INTERNAL: Failed to get configs for: 2 out of 93 instructions. See logs for all failures. Example failure: \nAutotuning failed for HLO: %gemm_fusion_dot.18 = f64"
+      },
+      {
+       "chunk": 2,
+       "compile_error": "JaxRuntimeError: INTERNAL: Failed to get configs for: 2 out of 93 instructions. See logs for all failures. Example failure: \nAutotuning failed for HLO: %gemm_fusion_dot.18 = f64"
+      },
+      {
+       "chunk": 1,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.18 = f64[6291456,6]{0,1} fusion(%basis.1, %bitcast.760.0), kind=kCustom, calls=%gemm_fusion_dot.18_computa"
+      }
+     ]
+    },
+    "ROM_ENC|r192_head_fast": {
+     "chunk": 128,
+     "chunked": false,
+     "mem": {
+      "chunk": 128,
+      "args_gb": 16.122207232,
+      "out_gb": 1.4352e-05,
+      "temp_gb": 25.770593104,
+      "batch_need_gb": 25.770607456,
+      "total_gb": 41.892814688,
+      "free_gb": 36.619451392
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "args_gb": 16.122207232,
+       "out_gb": 1.4352e-05,
+       "temp_gb": 25.770593104,
+       "batch_need_gb": 25.770607456,
+       "total_gb": 41.892814688,
+       "free_gb": 36.619451392
+      },
+      {
+       "oom_at_runtime": 128
+      },
+      {
+       "chunk": 64,
+       "args_gb": 12.90098176,
+       "out_gb": 7.184e-06,
+       "temp_gb": 12.885298,
+       "batch_need_gb": 16.106530656,
+       "total_gb": 25.786286944,
+       "free_gb": 12.248457728
+      },
+      {
+       "chunk": 32,
+       "args_gb": 11.290369024,
+       "out_gb": 3.6e-06,
+       "temp_gb": 6.442650192,
+       "batch_need_gb": 8.053266528,
+       "total_gb": 17.733022816,
+       "free_gb": 12.248457728
+      },
+      {
+       "oom_at_runtime": 32
+      },
+      {
+       "chunk": 16,
+       "args_gb": 10.485062656,
+       "out_gb": 1.808e-06,
+       "temp_gb": 3.221326416,
+       "batch_need_gb": 4.026634592,
+       "total_gb": 13.70639088,
+       "free_gb": 12.248453888
+      }
+     ]
+    },
+    "ROM_LAT|r192_head_fast": {
+     "chunk": 128,
+     "chunked": false,
+     "mem": {
+      "chunk": 128,
+      "args_gb": 0.176788544,
+      "out_gb": 7.1696e-05,
+      "temp_gb": 0.986958744,
+      "batch_need_gb": 0.98703044,
+      "total_gb": 1.163818984,
+      "free_gb": 36.6194368
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "args_gb": 0.176788544,
+       "out_gb": 7.1696e-05,
+       "temp_gb": 0.986958744,
+       "batch_need_gb": 0.98703044,
+       "total_gb": 1.163818984,
+       "free_gb": 36.6194368
+      },
+      {
+       "oom_at_runtime": 128
+      },
+      {
+       "chunk": 64,
+       "args_gb": 0.176780864,
+       "out_gb": 3.5856e-05,
+       "temp_gb": 0.579597208,
+       "batch_need_gb": 0.579640744,
+       "total_gb": 0.756413928,
+       "free_gb": 12.248453888
+      },
+      {
+       "oom_at_runtime": 64
+      },
+      {
+       "chunk": 32,
+       "args_gb": 0.176777024,
+       "out_gb": 1.7936e-05,
+       "temp_gb": 0.375915416,
+       "batch_need_gb": 0.375937192,
+       "total_gb": 0.552710376,
+       "free_gb": 12.248453888
+      },
+      {
+       "oom_at_runtime": 32
+      },
+      {
+       "chunk": 16,
+       "args_gb": 0.176775104,
+       "out_gb": 8.976e-06,
+       "temp_gb": 0.27457244,
+       "batch_need_gb": 0.274583336,
+       "total_gb": 0.45135652,
+       "free_gb": 12.248453888
+      },
+      {
+       "oom_at_runtime": 16
+      },
+      {
+       "chunk": 8,
+       "args_gb": 0.176774144,
+       "out_gb": 4.496e-06,
+       "temp_gb": 0.223648664,
+       "batch_need_gb": 0.22365412,
+       "total_gb": 0.400427304,
+       "free_gb": 12.248453888
+      },
+      {
+       "oom_at_runtime": 8
+      },
+      {
+       "chunk": 4,
+       "args_gb": 0.176773664,
+       "out_gb": 2.256e-06,
+       "temp_gb": 0.197694872,
+       "batch_need_gb": 0.197697608,
+       "total_gb": 0.374470792,
+       "free_gb": 12.248453888
+      },
+      {
+       "oom_at_runtime": 4
+      },
+      {
+       "chunk": 2,
+       "args_gb": 0.176773424,
+       "out_gb": 1.136e-06,
+       "temp_gb": 0.184965016,
+       "batch_need_gb": 0.184966392,
+       "total_gb": 0.361739576,
+       "free_gb": 12.248453888
+      },
+      {
+       "oom_at_runtime": 2
+      },
+      {
+       "chunk": 1,
+       "args_gb": 0.176773304,
+       "out_gb": 5.76e-07,
+       "temp_gb": 0.178600088,
+       "batch_need_gb": 0.178600784,
+       "total_gb": 0.355373968,
+       "free_gb": 12.248453888
+      }
+     ]
+    },
+    "ROM_DEC|r192_head_fast": {
+     "chunk": 16,
+     "chunked": true,
+     "mem": {
+      "chunk": 16,
+      "args_gb": 9.664638976,
+      "out_gb": 4.831838208,
+      "temp_gb": 19.327352856,
+      "batch_need_gb": 24.159201816,
+      "total_gb": 33.82383004,
+      "free_gb": 36.6194368
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.4 = f64[6291456,768]{0,1} fusion(%basis.1, %loop_add_fusion), kind=kCustom, calls=%gemm_fusion_dot.4_compu"
+      },
+      {
+       "chunk": 64,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.4 = f64[6291456,384]{0,1} fusion(%basis.1, %loop_add_fusion), kind=kCustom, calls=%gemm_fusion_dot.4_compu"
+      },
+      {
+       "chunk": 32,
+       "args_gb": 9.664649728,
+       "out_gb": 9.663676416,
+       "temp_gb": 38.654706176,
+       "batch_need_gb": 48.318404096,
+       "total_gb": 57.98303232,
+       "free_gb": 36.6194368
+      },
+      {
+       "chunk": 16,
+       "args_gb": 9.664638976,
+       "out_gb": 4.831838208,
+       "temp_gb": 19.327352856,
+       "batch_need_gb": 24.159201816,
+       "total_gb": 33.82383004,
+       "free_gb": 36.6194368
+      },
+      {
+       "oom_at_runtime": 16
+      },
+      {
+       "chunk": 8,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.4 = f64[6291456,48]{0,1} fusion(%basis.1, %loop_add_fusion), kind=kCustom, calls=%gemm_fusion_dot.4_comput"
+      },
+      {
+       "chunk": 4,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.4 = f64[6291456,24]{0,1} fusion(%basis.1, %loop_add_fusion), kind=kCustom, calls=%gemm_fusion_dot.4_comput"
+      },
+      {
+       "chunk": 2,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.4 = f64[6291456,12]{0,1} fusion(%basis.1, %loop_add_fusion), kind=kCustom, calls=%gemm_fusion_dot.4_comput"
+      },
+      {
+       "chunk": 1,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.4 = f64[6291456,6]{0,1} fusion(%basis.1, %bitcast.50.0), kind=kCustom, calls=%gemm_fusion_dot.4_computatio"
+      }
+     ]
+    },
+    "SOLVE_VMAP|cnab2|108|120": {
+     "chunk": 32,
+     "chunked": true,
+     "mem": {
+      "chunk": 32,
+      "args_gb": 1.009029568,
+      "out_gb": 5.804752896,
+      "temp_gb": 16.809601104,
+      "batch_need_gb": 23.581813072,
+      "total_gb": 23.623383568,
+      "free_gb": 36.57786624
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "args_gb": 3.911406784,
+       "out_gb": 23.219011584,
+       "temp_gb": 59.357634128,
+       "batch_need_gb": 82.576645712,
+       "total_gb": 86.488052496,
+       "free_gb": 36.57786624
+      },
+      {
+       "chunk": 64,
+       "args_gb": 1.97648864,
+       "out_gb": 11.609505792,
+       "temp_gb": 33.578887504,
+       "batch_need_gb": 47.12331144,
+       "total_gb": 47.164881936,
+       "free_gb": 36.57786624
+      },
+      {
+       "chunk": 32,
+       "args_gb": 1.009029568,
+       "out_gb": 5.804752896,
+       "temp_gb": 16.809601104,
+       "batch_need_gb": 23.581813072,
+       "total_gb": 23.623383568,
+       "free_gb": 36.57786624
+      },
+      {
+       "oom_at_runtime": 32
+      },
+      {
+       "chunk": 16,
+       "args_gb": 0.525300032,
+       "out_gb": 2.902376448,
+       "temp_gb": 8.40480264,
+       "batch_need_gb": 11.790908624,
+       "total_gb": 11.83247912,
+       "free_gb": 12.248453888
+      },
+      {
+       "chunk": 8,
+       "args_gb": 0.283435264,
+       "out_gb": 1.451188224,
+       "temp_gb": 4.192325968,
+       "batch_need_gb": 5.88537896,
+       "total_gb": 5.926949456,
+       "free_gb": 12.248453888
+      }
+     ]
+    },
+    "E2E_VMAP|cnab2|108|120": {
+     "chunk": 16,
+     "chunked": true,
+     "mem": {
+      "chunk": 16,
+      "args_gb": 0.846876992,
+      "out_gb": 4.831838208,
+      "temp_gb": 19.327354448,
+      "batch_need_gb": 24.964499152,
+      "total_gb": 25.006069648,
+      "free_gb": 36.57786624
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "args_gb": 6.484022464,
+       "out_gb": 38.654705664,
+       "temp_gb": 154.618824272,
+       "batch_need_gb": 193.273529936,
+       "total_gb": 199.7575524,
+       "free_gb": 36.57786624
+      },
+      {
+       "chunk": 64,
+       "args_gb": 3.26279648,
+       "out_gb": 19.327352832,
+       "temp_gb": 77.309412944,
+       "batch_need_gb": 99.85799176,
+       "total_gb": 99.899562256,
+       "free_gb": 36.57786624
+      },
+      {
+       "chunk": 32,
+       "args_gb": 1.652183488,
+       "out_gb": 9.663676416,
+       "temp_gb": 38.65470728,
+       "batch_need_gb": 49.928996688,
+       "total_gb": 49.970567184,
+       "free_gb": 36.57786624
+      },
+      {
+       "chunk": 16,
+       "args_gb": 0.846876992,
+       "out_gb": 4.831838208,
+       "temp_gb": 19.327354448,
+       "batch_need_gb": 24.964499152,
+       "total_gb": 25.006069648,
+       "free_gb": 36.57786624
+      },
+      {
+       "oom_at_runtime": 16
+      },
+      {
+       "chunk": 8,
+       "args_gb": 0.444223744,
+       "out_gb": 2.415919104,
+       "temp_gb": 9.663678288,
+       "batch_need_gb": 12.48225064,
+       "total_gb": 12.523821136,
+       "free_gb": 12.248453888
+      },
+      {
+       "chunk": 4,
+       "args_gb": 0.24289712,
+       "out_gb": 1.207959552,
+       "temp_gb": 4.83184008,
+       "batch_need_gb": 6.241126256,
+       "total_gb": 6.282696752,
+       "free_gb": 12.248453888
+      },
+      {
+       "oom_at_runtime": 4
+      },
+      {
+       "chunk": 2,
+       "args_gb": 0.142233808,
+       "out_gb": 0.603979776,
+       "temp_gb": 2.415921488,
+       "batch_need_gb": 3.120564576,
+       "total_gb": 3.162135072,
+       "free_gb": 11.040494336
+      }
+     ]
+    },
+    "SOLVE_RFFT|cnab2|108|120": {
+     "chunk": 32,
+     "chunked": true,
+     "mem": {
+      "chunk": 32,
+      "args_gb": 0.988629232,
+      "out_gb": 5.804752896,
+      "temp_gb": 10.93755912,
+      "batch_need_gb": 17.709771088,
+      "total_gb": 17.730941248,
+      "free_gb": 36.556692736
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %input_concatenate_fusion = f64[128,6,3,108,108,108]{5,4,3,2,1,0} fusion(%while.21.0, %fft.93.0), kind=kInput, calls=%fused"
+      },
+      {
+       "chunk": 64,
+       "args_gb": 1.956088304,
+       "out_gb": 11.609505792,
+       "temp_gb": 21.833415248,
+       "batch_need_gb": 35.377839184,
+       "total_gb": 35.399009344,
+       "free_gb": 36.556692736
+      },
+      {
+       "chunk": 32,
+       "args_gb": 0.988629232,
+       "out_gb": 5.804752896,
+       "temp_gb": 10.93755912,
+       "batch_need_gb": 17.709771088,
+       "total_gb": 17.730941248,
+       "free_gb": 36.556692736
+      },
+      {
+       "oom_at_runtime": 32
+      },
+      {
+       "chunk": 16,
+       "args_gb": 0.504899696,
+       "out_gb": 2.902376448,
+       "temp_gb": 5.479366992,
+       "batch_need_gb": 8.865472976,
+       "total_gb": 8.886643136,
+       "free_gb": 11.040494336
+      },
+      {
+       "oom_at_runtime": 16
+      },
+      {
+       "chunk": 8,
+       "args_gb": 0.263034928,
+       "out_gb": 1.451188224,
+       "temp_gb": 2.745138768,
+       "batch_need_gb": 4.43819176,
+       "total_gb": 4.45936192,
+       "free_gb": 8.138117888
+      }
+     ]
+    },
+    "E2E_RFFT|cnab2|108|120": {
+     "chunk": 16,
+     "chunked": true,
+     "mem": {
+      "chunk": 16,
+      "args_gb": 0.826476656,
+      "out_gb": 4.831838208,
+      "temp_gb": 19.327354192,
+      "batch_need_gb": 24.964498896,
+      "total_gb": 24.985669056,
+      "free_gb": 36.556692736
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "args_gb": 6.463622128,
+       "out_gb": 38.654705664,
+       "temp_gb": 154.618824528,
+       "batch_need_gb": 193.273530192,
+       "total_gb": 199.73715232,
+       "free_gb": 36.556692736
+      },
+      {
+       "chunk": 64,
+       "args_gb": 3.242396144,
+       "out_gb": 19.327352832,
+       "temp_gb": 77.3094132,
+       "batch_need_gb": 99.857992016,
+       "total_gb": 99.879162176,
+       "free_gb": 36.556692736
+      },
+      {
+       "chunk": 32,
+       "args_gb": 1.631783152,
+       "out_gb": 9.663676416,
+       "temp_gb": 38.65470728,
+       "batch_need_gb": 49.928996688,
+       "total_gb": 49.950166848,
+       "free_gb": 36.556692736
+      },
+      {
+       "chunk": 16,
+       "args_gb": 0.826476656,
+       "out_gb": 4.831838208,
+       "temp_gb": 19.327354192,
+       "batch_need_gb": 24.964498896,
+       "total_gb": 24.985669056,
+       "free_gb": 36.556692736
+      },
+      {
+       "oom_at_runtime": 16
+      },
+      {
+       "chunk": 8,
+       "args_gb": 0.423823408,
+       "out_gb": 2.415919104,
+       "temp_gb": 9.663678032,
+       "batch_need_gb": 12.482250384,
+       "total_gb": 12.503420544,
+       "free_gb": 8.138117888
+      },
+      {
+       "chunk": 4,
+       "args_gb": 0.222496784,
+       "out_gb": 1.207959552,
+       "temp_gb": 4.831839824,
+       "batch_need_gb": 6.241126,
+       "total_gb": 6.26229616,
+       "free_gb": 8.138117888
+      },
+      {
+       "oom_at_runtime": 4
+      },
+      {
+       "chunk": 2,
+       "args_gb": 0.121833472,
+       "out_gb": 0.603979776,
+       "temp_gb": 2.415920464,
+       "batch_need_gb": 3.120563552,
+       "total_gb": 3.141733712,
+       "free_gb": 6.930158336
+      }
+     ]
+    },
+    "SOLVE_VMAP|rk4|108|30": {
+     "chunk": 32,
+     "chunked": true,
+     "mem": {
+      "chunk": 32,
+      "args_gb": 1.009029568,
+      "out_gb": 5.804752896,
+      "temp_gb": 19.691819832,
+      "batch_need_gb": 26.4640318,
+      "total_gb": 26.505602296,
+      "free_gb": 36.512450048
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "args_gb": 3.911406784,
+       "out_gb": 23.219011584,
+       "temp_gb": 68.38724716,
+       "batch_need_gb": 91.606258744,
+       "total_gb": 95.517665528,
+       "free_gb": 36.512450048
+      },
+      {
+       "chunk": 64,
+       "args_gb": 1.97648864,
+       "out_gb": 11.609505792,
+       "temp_gb": 39.363482424,
+       "batch_need_gb": 52.90790636,
+       "total_gb": 52.949476856,
+       "free_gb": 36.512450048
+      },
+      {
+       "chunk": 32,
+       "args_gb": 1.009029568,
+       "out_gb": 5.804752896,
+       "temp_gb": 19.691819832,
+       "batch_need_gb": 26.4640318,
+       "total_gb": 26.505602296,
+       "free_gb": 36.512450048
+      },
+      {
+       "oom_at_runtime": 32
+      },
+      {
+       "chunk": 16,
+       "args_gb": 0.525300032,
+       "out_gb": 2.902376448,
+       "temp_gb": 9.855988536,
+       "batch_need_gb": 13.24209452,
+       "total_gb": 13.283665016,
+       "free_gb": 6.930158336
+      },
+      {
+       "chunk": 8,
+       "args_gb": 0.283435264,
+       "out_gb": 1.451188224,
+       "temp_gb": 4.927995192,
+       "batch_need_gb": 6.621048184,
+       "total_gb": 6.66261868,
+       "free_gb": 6.930158336
+      },
+      {
+       "chunk": 4,
+       "args_gb": 0.16250288,
+       "out_gb": 0.725594112,
+       "temp_gb": 2.469037368,
+       "batch_need_gb": 3.315563864,
+       "total_gb": 3.35713436,
+       "free_gb": 6.930158336
+      }
+     ]
+    },
+    "E2E_VMAP|rk4|108|30": {
+     "chunk": 16,
+     "chunked": true,
+     "mem": {
+      "chunk": 16,
+      "args_gb": 0.846876992,
+      "out_gb": 4.831838208,
+      "temp_gb": 19.3273534,
+      "batch_need_gb": 24.964498104,
+      "total_gb": 25.0060686,
+      "free_gb": 36.512450048
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "args_gb": 6.484022464,
+       "out_gb": 38.654705664,
+       "temp_gb": 154.618823224,
+       "batch_need_gb": 193.273528888,
+       "total_gb": 199.757551352,
+       "free_gb": 36.512450048
+      },
+      {
+       "chunk": 64,
+       "args_gb": 3.26279648,
+       "out_gb": 19.327352832,
+       "temp_gb": 77.309411896,
+       "batch_need_gb": 99.857990712,
+       "total_gb": 99.899561208,
+       "free_gb": 36.512450048
+      },
+      {
+       "chunk": 32,
+       "args_gb": 1.652183488,
+       "out_gb": 9.663676416,
+       "temp_gb": 38.654706232,
+       "batch_need_gb": 49.92899564,
+       "total_gb": 49.970566136,
+       "free_gb": 36.512450048
+      },
+      {
+       "chunk": 16,
+       "args_gb": 0.846876992,
+       "out_gb": 4.831838208,
+       "temp_gb": 19.3273534,
+       "batch_need_gb": 24.964498104,
+       "total_gb": 25.0060686,
+       "free_gb": 36.512450048
+      },
+      {
+       "oom_at_runtime": 16
+      },
+      {
+       "chunk": 8,
+       "args_gb": 0.444223744,
+       "out_gb": 2.415919104,
+       "temp_gb": 9.663676984,
+       "batch_need_gb": 12.482249336,
+       "total_gb": 12.523819832,
+       "free_gb": 6.930158336
+      },
+      {
+       "chunk": 4,
+       "args_gb": 0.24289712,
+       "out_gb": 1.207959552,
+       "temp_gb": 4.831838776,
+       "batch_need_gb": 6.241124952,
+       "total_gb": 6.282695448,
+       "free_gb": 6.930158336
+      },
+      {
+       "chunk": 2,
+       "args_gb": 0.142233808,
+       "out_gb": 0.603979776,
+       "temp_gb": 2.415920184,
+       "batch_need_gb": 3.120563272,
+       "total_gb": 3.162133768,
+       "free_gb": 6.930158336
+      }
+     ]
+    },
+    "SOLVE_RFFT|rk4|108|30": {
+     "chunk": 32,
+     "chunked": true,
+     "mem": {
+      "chunk": 32,
+      "args_gb": 0.988629232,
+      "out_gb": 5.804752896,
+      "temp_gb": 12.715897152,
+      "batch_need_gb": 19.48810912,
+      "total_gb": 19.50927928,
+      "free_gb": 36.481611008
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %input_concatenate_fusion = f64[128,6,3,108,108,108]{5,4,3,2,1,0} fusion(%while.17.0, %fft.174.0), kind=kInput, calls=%fuse"
+      },
+      {
+       "chunk": 64,
+       "args_gb": 1.956088304,
+       "out_gb": 11.609505792,
+       "temp_gb": 25.40035744,
+       "batch_need_gb": 38.944781376,
+       "total_gb": 38.965951536,
+       "free_gb": 36.481611008
+      },
+      {
+       "chunk": 32,
+       "args_gb": 0.988629232,
+       "out_gb": 5.804752896,
+       "temp_gb": 12.715897152,
+       "batch_need_gb": 19.48810912,
+       "total_gb": 19.50927928,
+       "free_gb": 36.481611008
+      },
+      {
+       "oom_at_runtime": 32
+      },
+      {
+       "chunk": 16,
+       "args_gb": 0.504899696,
+       "out_gb": 2.902376448,
+       "temp_gb": 6.37366688,
+       "batch_need_gb": 9.759772864,
+       "total_gb": 9.780943024,
+       "free_gb": 6.930158336
+      },
+      {
+       "chunk": 8,
+       "args_gb": 0.263034928,
+       "out_gb": 1.451188224,
+       "temp_gb": 3.202551616,
+       "batch_need_gb": 4.895604608,
+       "total_gb": 4.916774768,
+       "free_gb": 6.930158336
+      }
+     ]
+    },
+    "E2E_RFFT|rk4|108|30": {
+     "chunk": 16,
+     "chunked": true,
+     "mem": {
+      "chunk": 16,
+      "args_gb": 0.826476656,
+      "out_gb": 4.831838208,
+      "temp_gb": 19.327353408,
+      "batch_need_gb": 24.964498112,
+      "total_gb": 24.985668272,
+      "free_gb": 36.481611008
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "args_gb": 6.463622128,
+       "out_gb": 38.654705664,
+       "temp_gb": 154.618824,
+       "batch_need_gb": 193.273529664,
+       "total_gb": 199.737151792,
+       "free_gb": 36.481611008
+      },
+      {
+       "chunk": 64,
+       "args_gb": 3.242396144,
+       "out_gb": 19.327352832,
+       "temp_gb": 77.309412416,
+       "batch_need_gb": 99.857991232,
+       "total_gb": 99.879161392,
+       "free_gb": 36.481611008
+      },
+      {
+       "chunk": 32,
+       "args_gb": 1.631783152,
+       "out_gb": 9.663676416,
+       "temp_gb": 38.654706496,
+       "batch_need_gb": 49.928995904,
+       "total_gb": 49.950166064,
+       "free_gb": 36.481611008
+      },
+      {
+       "chunk": 16,
+       "args_gb": 0.826476656,
+       "out_gb": 4.831838208,
+       "temp_gb": 19.327353408,
+       "batch_need_gb": 24.964498112,
+       "total_gb": 24.985668272,
+       "free_gb": 36.481611008
+      },
+      {
+       "oom_at_runtime": 16
+      },
+      {
+       "chunk": 8,
+       "args_gb": 0.423823408,
+       "out_gb": 2.415919104,
+       "temp_gb": 9.663676736,
+       "batch_need_gb": 12.482249088,
+       "total_gb": 12.503419248,
+       "free_gb": 6.930158336
+      },
+      {
+       "chunk": 4,
+       "args_gb": 0.222496784,
+       "out_gb": 1.207959552,
+       "temp_gb": 4.831838784,
+       "batch_need_gb": 6.24112496,
+       "total_gb": 6.26229512,
+       "free_gb": 6.930158336
+      },
+      {
+       "chunk": 2,
+       "args_gb": 0.121833472,
+       "out_gb": 0.603979776,
+       "temp_gb": 2.41591968,
+       "batch_need_gb": 3.120562768,
+       "total_gb": 3.141732928,
+       "free_gb": 6.930158336
+      }
+     ]
+    },
+    "SOLVE_VMAP|rk4|112|30": {
+     "chunk": 32,
+     "chunked": true,
+     "mem": {
+      "chunk": 32,
+      "args_gb": 1.125347584,
+      "out_gb": 6.473908224,
+      "temp_gb": 21.961836344,
+      "batch_need_gb": 29.514729528,
+      "total_gb": 29.561092152,
+      "free_gb": 36.435248384
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "args_gb": 4.362302464,
+       "out_gb": 25.895632896,
+       "temp_gb": 76.270733112,
+       "batch_need_gb": 102.166366008,
+       "total_gb": 106.528668472,
+       "free_gb": 36.435248384
+      },
+      {
+       "chunk": 64,
+       "args_gb": 2.204332544,
+       "out_gb": 12.947816448,
+       "temp_gb": 43.901191992,
+       "batch_need_gb": 59.00697836,
+       "total_gb": 59.053340984,
+       "free_gb": 36.435248384
+      },
+      {
+       "chunk": 32,
+       "args_gb": 1.125347584,
+       "out_gb": 6.473908224,
+       "temp_gb": 21.961836344,
+       "batch_need_gb": 29.514729528,
+       "total_gb": 29.561092152,
+       "free_gb": 36.435248384
+      },
+      {
+       "oom_at_runtime": 32
+      },
+      {
+       "chunk": 16,
+       "args_gb": 0.585855104,
+       "out_gb": 3.236954112,
+       "temp_gb": 10.99215852,
+       "batch_need_gb": 14.768605112,
+       "total_gb": 14.814967736,
+       "free_gb": 6.930158336
+      },
+      {
+       "chunk": 8,
+       "args_gb": 0.316108864,
+       "out_gb": 1.618477056,
+       "temp_gb": 5.496080184,
+       "batch_need_gb": 7.38430348,
+       "total_gb": 7.430666104,
+       "free_gb": 6.930158336
+      },
+      {
+       "chunk": 4,
+       "args_gb": 0.181235744,
+       "out_gb": 0.809238528,
+       "temp_gb": 2.753660728,
+       "batch_need_gb": 3.697772376,
+       "total_gb": 3.744135,
+       "free_gb": 6.930158336
+      }
+     ]
+    },
+    "E2E_VMAP|rk4|112|30": {
+     "chunk": 16,
+     "chunked": true,
+     "mem": {
+      "chunk": 16,
+      "args_gb": 0.85166912,
+      "out_gb": 4.831838208,
+      "temp_gb": 19.3273534,
+      "batch_need_gb": 24.964498104,
+      "total_gb": 25.010860728,
+      "free_gb": 36.435248384
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "args_gb": 6.488814592,
+       "out_gb": 38.654705664,
+       "temp_gb": 154.618823224,
+       "batch_need_gb": 193.273528888,
+       "total_gb": 199.76234348,
+       "free_gb": 36.435248384
+      },
+      {
+       "chunk": 64,
+       "args_gb": 3.267588608,
+       "out_gb": 19.327352832,
+       "temp_gb": 77.309411896,
+       "batch_need_gb": 99.857990712,
+       "total_gb": 99.904353336,
+       "free_gb": 36.435248384
+      },
+      {
+       "chunk": 32,
+       "args_gb": 1.656975616,
+       "out_gb": 9.663676416,
+       "temp_gb": 38.654706232,
+       "batch_need_gb": 49.92899564,
+       "total_gb": 49.975358264,
+       "free_gb": 36.435248384
+      },
+      {
+       "chunk": 16,
+       "args_gb": 0.85166912,
+       "out_gb": 4.831838208,
+       "temp_gb": 19.3273534,
+       "batch_need_gb": 24.964498104,
+       "total_gb": 25.010860728,
+       "free_gb": 36.435248384
+      },
+      {
+       "oom_at_runtime": 16
+      },
+      {
+       "chunk": 8,
+       "args_gb": 0.449015872,
+       "out_gb": 2.415919104,
+       "temp_gb": 9.663676984,
+       "batch_need_gb": 12.482249336,
+       "total_gb": 12.52861196,
+       "free_gb": 6.930158336
+      },
+      {
+       "chunk": 4,
+       "args_gb": 0.247689248,
+       "out_gb": 1.207959552,
+       "temp_gb": 4.831838776,
+       "batch_need_gb": 6.241124952,
+       "total_gb": 6.287487576,
+       "free_gb": 6.930158336
+      },
+      {
+       "chunk": 2,
+       "args_gb": 0.147025936,
+       "out_gb": 0.603979776,
+       "temp_gb": 2.415919672,
+       "batch_need_gb": 3.12056276,
+       "total_gb": 3.166925384,
+       "free_gb": 6.930158336
+      }
+     ]
+    },
+    "SOLVE_RFFT|rk4|112|30": {
+     "chunk": 32,
+     "chunked": true,
+     "mem": {
+      "chunk": 32,
+      "args_gb": 1.102580224,
+      "out_gb": 6.473908224,
+      "temp_gb": 14.177444416,
+      "batch_need_gb": 21.7303376,
+      "total_gb": 21.753932864,
+      "free_gb": 36.40769664
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %input_concatenate_fusion = f64[128,6,3,112,112,112]{5,4,3,2,1,0} fusion(%while.17.0, %fft.174.0), kind=kInput, calls=%fuse"
+      },
+      {
+       "chunk": 64,
+       "args_gb": 2.181565184,
+       "out_gb": 12.947816448,
+       "temp_gb": 28.319851328,
+       "batch_need_gb": 43.425637696,
+       "total_gb": 43.44923296,
+       "free_gb": 36.40769664
+      },
+      {
+       "chunk": 32,
+       "args_gb": 1.102580224,
+       "out_gb": 6.473908224,
+       "temp_gb": 14.177444416,
+       "batch_need_gb": 21.7303376,
+       "total_gb": 21.753932864,
+       "free_gb": 36.40769664
+      },
+      {
+       "oom_at_runtime": 32
+      },
+      {
+       "chunk": 16,
+       "compile_error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %input_concatenate_fusion = f64[16,6,3,112,112,112]{5,4,3,2,1,0} fusion(%while.17.0, %fft.174.0), kind=kInput, calls=%fused"
+      },
+      {
+       "chunk": 8,
+       "args_gb": 0.293341504,
+       "out_gb": 1.618477056,
+       "temp_gb": 3.570638912,
+       "batch_need_gb": 5.458862208,
+       "total_gb": 5.482457472,
+       "free_gb": 6.930158336
+      },
+      {
+       "oom_at_runtime": 8
+      },
+      {
+       "chunk": 4,
+       "args_gb": 0.158468384,
+       "out_gb": 0.809238528,
+       "temp_gb": 1.797118016,
+       "batch_need_gb": 2.741229664,
+       "total_gb": 2.764824928,
+       "free_gb": 5.31168128
+      }
+     ]
+    },
+    "E2E_RFFT|rk4|112|30": {
+     "chunk": 16,
+     "chunked": true,
+     "mem": {
+      "chunk": 16,
+      "args_gb": 0.82890176,
+      "out_gb": 4.831838208,
+      "temp_gb": 19.327353408,
+      "batch_need_gb": 24.964498112,
+      "total_gb": 24.988093376,
+      "free_gb": 36.40769664
+     },
+     "tried": [
+      {
+       "chunk": 128,
+       "args_gb": 6.466047232,
+       "out_gb": 38.654705664,
+       "temp_gb": 154.618824,
+       "batch_need_gb": 193.273529664,
+       "total_gb": 199.739576896,
+       "free_gb": 36.40769664
+      },
+      {
+       "chunk": 64,
+       "args_gb": 3.244821248,
+       "out_gb": 19.327352832,
+       "temp_gb": 77.309412416,
+       "batch_need_gb": 99.857991232,
+       "total_gb": 99.881586496,
+       "free_gb": 36.40769664
+      },
+      {
+       "chunk": 32,
+       "args_gb": 1.634208256,
+       "out_gb": 9.663676416,
+       "temp_gb": 38.654706496,
+       "batch_need_gb": 49.928995904,
+       "total_gb": 49.952591168,
+       "free_gb": 36.40769664
+      },
+      {
+       "chunk": 16,
+       "args_gb": 0.82890176,
+       "out_gb": 4.831838208,
+       "temp_gb": 19.327353408,
+       "batch_need_gb": 24.964498112,
+       "total_gb": 24.988093376,
+       "free_gb": 36.40769664
+      },
+      {
+       "oom_at_runtime": 16
+      },
+      {
+       "chunk": 8,
+       "args_gb": 0.426248512,
+       "out_gb": 2.415919104,
+       "temp_gb": 9.663676736,
+       "batch_need_gb": 12.482249088,
+       "total_gb": 12.505844352,
+       "free_gb": 5.31168128
+      },
+      {
+       "chunk": 4,
+       "args_gb": 0.224921888,
+       "out_gb": 1.207959552,
+       "temp_gb": 4.831838528,
+       "batch_need_gb": 6.241124704,
+       "total_gb": 6.264719968,
+       "free_gb": 5.31168128
+      },
+      {
+       "chunk": 2,
+       "args_gb": 0.124258576,
+       "out_gb": 0.603979776,
+       "temp_gb": 2.41591968,
+       "batch_need_gb": 3.120562768,
+       "total_gb": 3.144158032,
+       "free_gb": 5.31168128
+      }
+     ]
+    }
+   }
+  }
+ },
+ "checks": {},
+ "cohort": {},
+ "rematch": {},
+ "failures": [
+  "B=128: timing failed: JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 3.90GiB. [tf-allocator-allocation-error=''] [executable_name='jit_run']"
+ ],
+ "gpu": "NVIDIA A100 80GB PCIe, GPU-aafad47a-9358-af08-cda9-1eacee35afea, 81920 MiB",
+ "commit": "b01d110c85c9d44a250410c6a4c0162ad36a62e0",
+ "solver_keys": [
+  [
+   "cnab2",
+   108,
+   120
+  ],
+  [
+   "rk4",
+   108,
+   30
+  ],
+  [
+   "rk4",
+   112,
+   30
+  ]
+ ],
+ "rematch_keys": [
+  [
+   "cnab2",
+   108,
+   120
+  ],
+  [
+   "cnab2",
+   108,
+   140
+  ],
+  [
+   "cnab2",
+   112,
+   120
+  ],
+  [
+   "cnab2",
+   112,
+   140
+  ],
+  [
+   "cnab2",
+   120,
+   120
+  ],
+  [
+   "cnab2",
+   120,
+   140
+  ],
+  [
+   "cnab2",
+   128,
+   120
+  ],
+  [
+   "cnab2",
+   128,
+   140
+  ],
+  [
+   "rk4",
+   108,
+   30
+  ],
+  [
+   "rk4",
+   112,
+   30
+  ],
+  [
+   "rk4",
+   120,
+   30
+  ]
+ ],
+ "elapsed_seconds": 3546.60964345932,
+ "process_peak_gb": 78.280914432
+}

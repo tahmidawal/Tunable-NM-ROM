@@ -1,0 +1,14 @@
+host=pax106 source_commit=9da7dfc19e1f609b51e252fc6cbab9ddb28d8353 job=7162778
+NVIDIA A100 80GB PCIe, GPU-9732c808-acc9-5c43-f0ce-4a81a2bf1719, 81920 MiB
+jax_backend=gpu
+mesh 128: 128 cases loaded (148s)
+B=128: 6 callables compiled (1299s); chunked: ROM_SHARED|r96_head:16, ROM_SHARED|r128_head_fast:16, ROM_SHARED|r192_head_fast:16, SOLVE_RFFT|cnab2|108|120:32, SOLVE_RFFT|rk4|108|30:32, SOLVE_RFFT|rk4|112|30:32
+B=128 ROM_SHARED|r96_head: 1338.81 ms (95.6/s, 10.46 s per 1000) chunk 16
+B=128 ROM_SHARED|r128_head_fast: 1396.82 ms (91.6/s, 10.91 s per 1000) chunk 16
+B=128 ROM_SHARED|r192_head_fast: 1512.36 ms (84.6/s, 11.82 s per 1000) chunk 16
+B=128 SOLVE_RFFT|cnab2|108|120: 23149.11 ms (5.5/s, 180.85 s per 1000) chunk 32
+B=128 SOLVE_RFFT|rk4|108|30: 22462.82 ms (5.7/s, 175.49 s per 1000) chunk 32
+B=128 SOLVE_RFFT|rk4|112|30: 25798.92 ms (5.0/s, 201.55 s per 1000) chunk 32
+B=128 agreement: ROM_SHARED|r96_head:4.291958102119454e-15, ROM_SHARED|r128_head_fast:6.400601467254004e-15, ROM_SHARED|r192_head_fast:5.490935973965867e-15, SOLVE_RFFT|cnab2|108|120:4.3693152476142505e-16, SOLVE_RFFT|rk4|108|30:2.906331303152219e-15, SOLVE_RFFT|rk4|112|30:2.2269020851713899e-13
+DONE status final failures []
+RUN_EXIT=0

@@ -1,0 +1,32 @@
+References below are to the [revised manuscript](https://openreview.net/pdf?id=hxRqdR3Rn7).
+
+Thank you for your review. We have added the comparisons and ablations you requested and address the concerns and questions you raised below.
+
+**W1. Contribution and neural-field baselines**
+
+Our contribution is the bank/head factorisation: exact precomputed linear terms, a nonlinear constraint on bank coefficients, and nested widths from one training run. PCA ordering and quadrature are established techniques. We now compare with same-data re-implementations of CROM and CoLoRA (Table 4; Appendix F.1). Our head has 4–5.5× lower worst-case error and 16–87× faster queries than CROM, although CROM's accurate setting has lower median error. CoLoRA has lower worst-case error; our span has lower median error at slightly lower cost. CoLoRA receives initial-condition parameters; ours receives a field.
+
+**W2. Matched training data and budgets**
+
+We retrained FNO and U-Net on the same 4,608 trajectories, allowing up to 8.1 hours. We compare prediction errors here: our Burgers median error is 7–9× lower, while operators have lower worst-case error (Table 4; Appendix F.2). This is an accuracy-only comparison with direct prediction models; our online method solves the projected PDE. Most runs reached their time limit before convergence, so the results are budget-limited.
+
+**W3. Stronger, accuracy-matched solvers**
+
+We now match each setting to its own error. The fast width-192 head reaches 0.35–0.48 % worst-case error at 5.1–10.2× over the fastest equal-accuracy pseudo-spectral Navier–Stokes solver from 450 configurations (Table 1; Appendix E.1). Errors cover three models and 128 fresh cases; speedups use the two seeds passing timing checks. Section 5.3 and Appendix C.3 also disclose transform-solver wins on box Poisson/heat 3D and the original Navier–Stokes family's lack of consistent advantage after mesh coarsening.
+
+**W4. Coordinate bank and nonlinear head**
+
+Table 1 and Figure 2 use per-mesh POD banks. We separately test one coordinate-network bank across meshes: it matches POD at 64³/96³ but trails at 128³ (Table E.1). The earlier cohort and fallback selection after missing the preset rank-64 transfer tolerance are disclosed. Interpolated POD transfers equally well on periodic boxes, so we remove the claim that POD must be rebuilt per mesh.
+
+**Q1. Does the operator accuracy gap remain with matched training?**
+
+The accuracy result is mixed, as reported under W2: our median error is lower, while the operators have lower worst-case error. Further operator training is running; we will report the updated error comparison by tomorrow (14 November).
+
+**Q2. How much speedup survives stronger solvers?**
+
+The new Navier–Stokes result is given under W3. Table 3 and Appendix C.3 report the corrected original comparisons, including cases where stronger solvers win.
+
+**Q3. What does each component contribute?**
+
+We added the neural-field comparisons in W1 and component ablations in Table F.3. At 16 Burgers coordinates, the head gives 2.56 % error versus 56.9 % for a linear closure and 31.8 % for a quadratic one. Sparse nonlinear evaluation reduces time at unchanged error. Appendix F.3 separates these gains from the coordinate bank's mesh-transfer role.
+

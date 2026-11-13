@@ -1,0 +1,285 @@
+- navigation:
+  - text: 
+  - link "OpenReview .net":
+    - /url: /
+    - strong: OpenReview
+    - text: .net
+  - search:
+    - textbox "term":
+      - /placeholder: Search articles, authors and reviews...
+    - generic: 
+  - link "Notifications unread":
+    - /url: /notifications
+    - text: Notifications
+    - generic: unread
+  - link "Activity":
+    - /url: /activity
+  - link "Tasks":
+    - /url: /tasks
+  - generic: Tahmid Awal
+- banner:
+  - link "back arrowBack to Author Console":
+    - /url: /group?id=ICLR.cc/2027/Conference/Authors#your-submissions
+    - img "back arrow"
+    - text: Back to
+    - strong: Author Console
+- main:
+  - heading "Edit Rebuttal Revision" [level=2]
+  - separator
+  - generic: "* denotes a required field"
+  - heading "Title*" [level=5]
+  - paragraph: "Title of paper. Add TeX formulas using the following formats: $In-line Formula$ or $$Block Formula$$."
+  - textbox: Tunable Non-linear Manifold ROMs for PDEs via Matrix-Free Petrov–Galerkin Projection
+  - heading "Abstract*" [level=5]
+  - paragraph: "Abstract of paper. Add TeX formulas using the following formats: $In-line Formula$ or $$Block Formula$$."
+  - tablist:
+    - tab "Write" [expanded]
+    - tab "Preview"
+  - tabpanel:
+    - textbox: The cost of a full-order PDE solve grows quickly as the mesh is refined, and neural operators such as Fourier Neural Operators and DeepONets generally provide only one accuracy-efficiency trade-off per trained model, and adjusting it requires retraining the model. We present a nonlinear-manifold reduced-order model (NM-ROM) whose query time grows far more slowly with the mesh than the full-order solver's, so its speedup grows as the mesh is refined, and whose balance between accuracy and speed is chosen when the model is used, not when it is trained. Its spatial bank, a set of learned spatial functions, is ordered once by importance after training, so a query chooses how many bank functions to use, and whether to solve with a nonlinear head or in the linear span of the bank, without changing a learned weight. For Burgers, Poisson and heat, the trained network can be used unchanged on meshes much finer than those it was trained on, while our POD-LSPG baseline has to be rebuilt for each mesh. The model is a coordinate-network bank with exact Dirichlet enforcement, solved by least-squares Petrov–Galerkin projection of the discrete residual onto fixed tests. Every linear term is precomputed, the solver runs matrix-free in JAX, and the nonlinear term uses empirical quadrature. On viscous Burgers and three-dimensional Navier–Stokes it is up to 27.5× faster than the full-order solver, and on linear Poisson and heat problems 108× and 216× faster at 0.83% and 0.13% worst-case error. On Burgers, refining the mesh from $256^2$ to $4096^2$ raises its query time 2.6× and the solver's 74×. At the same latent dimension it is also more accurate than POD-LSPG and a quadratic manifold.
+    - link "TeX is supported":
+      - /url: https://docs.openreview.net/reference/openreview-tex
+      - text: TeX is supported
+  - generic: "Characters remaining: 3304"
+  - heading "PDF*" [level=5]
+  - paragraph: Upload a PDF file that ends with .pdf. The maximum file size is 50MB.
+  - button "Choose PDF"
+  - text: PDF (/pdf/8157a8558461018434a05dbdaebe22193c8c6316.pdf)
+  - button "trash":
+    - generic: 
+  - heading "Supplementary Material" [level=5]
+  - paragraph: All supplementary material must be self-contained and zipped into a single file. Note that supplementary material will be visible to reviewers and the public throughout and after the review period, and ensure all material is anonymized. The maximum file size is 100MB.
+  - button "Choose Supplementary Material"
+  - heading "Edit History" [level=2]
+  - separator
+  - heading "Readers*" [level=5]
+  - generic: ICLR 2027 Conference
+  - generic: ICLR 2027 Conference Submission49310 Authors
+  - heading "Signatures*" [level=5]
+  - generic: ICLR 2027 Conference Submission49310 Authors
+  - button "Submit"
+  - button "Cancel"
+  - log
+  - generic: Filter by reply type...
+  - combobox "Filter by reply type..."
+  - log
+  - generic: Filter by author...
+  - combobox "Filter by author..."
+  - textbox "Search keywords..."
+  - combobox "Order By":
+    - 'option "Sort: Newest First" [selected]'
+    - 'option "Sort: Oldest First"'
+  - group "nesting level":
+    - button "back arrow Linear":
+      - img "back arrow"
+      - generic: Linear
+    - button "back arrow Threaded":
+      - img "back arrow"
+      - generic: Threaded
+    - button "back arrow Nested":
+      - img "back arrow"
+      - generic: Nested
+  - group "collapse level":
+    - button "− Collapsed":
+      - text: −
+      - generic: Collapsed
+    - button "＝ Default":
+      - text: ＝
+      - generic: Default
+    - button "≡ Expanded":
+      - text: ≡
+      - generic: Expanded
+  - group "copy url":
+    - button "Copy link":
+      - generic: 
+      - generic: Copy link
+  - generic: 
+  - checkbox "Everyone"
+  - text: Everyone
+  - checkbox "Reset"
+  - generic: 
+  - generic: Reset
+  - emphasis: 3 / 3 replies shown
+  - text: "Add:"
+  - button "Withdrawal"
+  - button "Official Comment"
+  - group "Collapse controls":
+    - button "−"
+    - button "＝"
+    - button "≡"
+  - heading "Official Review of Submission49310 by Reviewer 1dYR" [level=4]
+  - button "Copy URL of note ys9NF39TCA":
+    - generic: 
+    - generic: Copy URL of note ys9NF39TCA
+  - generic: Official Review
+  - generic: by Reviewer 1dYR
+  - generic: 
+  - text: "23 Oct 2026, 02:30 (modified: 06 Nov 2026, 07:36)"
+  - generic: 
+  - text: Everyone
+  - generic: 
+  - link "Revisions":
+    - /url: /revisions?id=ys9NF39TCA
+  - strong: "Paper Summary:"
+  - paragraph: This paper proposes a reduced-order model for PDEs. It learns a spatial bank and a small nonlinear head, then solves the projected PDE residual at query time. The bank is ordered after training, so users can change its width or choose between the nonlinear head and the linear span to adjust accuracy and speed.
+  - strong: "Presentation:"
+  - text: "3: Clear and easy to follow."
+  - strong: "Informativeness:"
+  - text: "2: I learned something interesting or useful."
+  - strong: "Soundness:"
+  - text: "2: I have minor or fixable concerns about the paper’s soundness."
+  - strong: "Critical Strengths:"
+  - list:
+    - paragraph: The separation of the spatial bank and the head makes linear terms easy to precompute and reduces the online cost.
+    - paragraph: Choosing different bank widths without retraining is useful. The paper also reports failed settings and limitations clearly.
+  - strong: "Critical Weaknesses:"
+  - list:
+    - paragraph: PCA ordering, operator precomputation and empirical quadrature are existing techniques. The paper does not directly compare with CROM or CoLoRA, although it identifies neural-field ROMs as its closest relatives. The gain over these methods is therefore unclear.
+    - paragraph: The neural operator comparison is not well controlled. Appendix B states that Burgers operators use 128 training trajectories, while the proposed bank and head use 576 and 4608. The operators also have a 3000-second training limit; the heat FNO only completes 6-7 epochs at high resolutions (Table B.3). These differences make the accuracy comparison difficult to interpret.
+    - paragraph: The reported speedups depend on the selected full-order solvers. Poisson and three-dimensional heat use unpreconditioned CG comparators. Also, Table 1 compares both model settings with a solver chosen to match the accurate setting. The fast setting therefore needs a separate comparison at a similar error level.
+    - paragraph: Most headline results use the linear span. The nonlinear head works well on Navier-Stokes, but its bank is a POD basis, and both bank and head are built separately for each mesh (Appendix A.5). These results do not clearly establish the combined benefit of the nonlinear head and the mesh-independent coordinate bank.
+  - strong: "Questions For Authors:"
+  - list:
+    - paragraph: Could the authors compare the neural operators using the same training trajectories and allow enough training to check whether the accuracy gap remains?
+    - paragraph: How much speedup remains against a stronger full-order solver when each model setting is compared at a similar error level?
+    - paragraph: Could the authors compare with a neural-field ROM and separate the gains from the coordinate bank, nonlinear head and hyper-reduction?
+  - strong: "Flag For Ethics Review:"
+  - text: "No"
+  - strong: "Rating:"
+  - text: "2: Weak rejection"
+  - strong: "Confidence:"
+  - text: "3: I am familiar with this topic and its relevant literature."
+  - generic: "Add:"
+  - button "Official Comment":
+    - generic: Official Comment
+  - group "Collapse controls":
+    - button "−"
+    - button "＝"
+    - button "≡"
+  - heading "Official Review of Submission49310 by Reviewer iMp8" [level=4]
+  - button "Copy URL of note 6mUbmNh84O":
+    - generic: 
+    - generic: Copy URL of note 6mUbmNh84O
+  - generic: Official Review
+  - generic: by Reviewer iMp8
+  - generic: 
+  - text: "21 Oct 2026, 16:57 (modified: 06 Nov 2026, 07:36)"
+  - generic: 
+  - text: Everyone
+  - generic: 
+  - link "Revisions":
+    - /url: /revisions?id=6mUbmNh84O
+  - strong: "Paper Summary:"
+  - paragraph: The paper proposes a reduced-order model for PDEs. The solution is a sum of R basis functions (small coordinate networks times a boundary factor) with coefficients from a small head network. After training, the basis is reordered by PCA so that the first R′ functions give a cheaper and less accurate model. At query time, the coefficients are found by minimizing the PDE residual, using precomputed linear terms and empirical quadrature. Tests on Poisson, heat, Burgers and 3D Navier–Stokes report speedups up to 27.5× (nonlinear) and over 100× (linear).
+  - strong: "Presentation:"
+  - text: "3: Clear and easy to follow."
+  - strong: "Informativeness:"
+  - text: "1: I learned little or nothing new from this paper."
+  - strong: "Soundness:"
+  - text: "1: I have significant concerns about the paper’s soundness that do not appear easy to address."
+  - strong: "Critical Strengths:"
+  - list:
+    - listitem: "Clear cost model: space and latent code are separated, so linear terms can be precomputed."
+    - listitem: Timing setup is described in detail, with named baselines.
+    - listitem: Limitations are partly acknowledged.
+  - strong: "Critical Weaknesses:"
+  - list:
+    - listitem: Weak motivation. The test problems (Poisson, heat, Burgers on a square or cube) are cheap to solve. Modern GPU solvers (FFT, multigrid, GPU finite elements) solve them in milliseconds to seconds with batch (cudss) and can generate thousands of samples in seconds to minutes. There is no point in solving these benchmarks and stressing speed nowadays.
+    - listitem: Limited novelty. All parts are known. Neural-field ROMs, hard Dirichlet enforcement.
+    - listitem: Mesh independence is overstated. For Navier–Stokes, the basis and head are rebuilt for each mesh. For other problems, there is still a per-mesh setup cost (up to 869 s).
+    - listitem: Small and weak evaluation. Test sets are small (6–64 cases), and timings have no spread.
+    - listitem: Poor presentation. The main text has one figure (a pipeline diagram). There are no solution plots, error maps, failure cases, or learned basis plots.
+  - strong: "Questions For Authors:"
+  - list:
+    - listitem: What is the total cost (data, training, setup), and how many queries are needed to break even?
+    - listitem: How is the basis loss defined, and are coefficients solved exactly at each step?
+    - listitem: Can it handle other boundary conditions and complex geometry without a hand-made boundary factor?
+    - listitem: Please compare with FFT/multigrid GPU solvers and show solution visualizations.
+  - strong: "Flag For Ethics Review:"
+  - text: "No"
+  - strong: "Rating:"
+  - text: "1: Clear rejection"
+  - strong: "Confidence:"
+  - text: "2: I have broad familiarity with this field but little or no direct research experience on this topic."
+  - generic: "Add:"
+  - button "Official Comment":
+    - generic: Official Comment
+  - group "Collapse controls":
+    - button "−"
+    - button "＝"
+    - button "≡"
+  - heading "Official Review of Submission49310 by Reviewer 8ZEF" [level=4]
+  - button "Copy URL of note Qmci185gnN":
+    - generic: 
+    - generic: Copy URL of note Qmci185gnN
+  - generic: Official Review
+  - generic: by Reviewer 8ZEF
+  - generic: 
+  - text: "16 Oct 2026, 22:27 (modified: 06 Nov 2026, 07:36)"
+  - generic: 
+  - text: Everyone
+  - generic: 
+  - link "Revisions":
+    - /url: /revisions?id=Qmci185gnN
+  - strong: "Paper Summary:"
+  - paragraph: This paper proposes a runtime-tunable reduced-order modeling framework for efficient PDE solving. It combines a learned coordinate-based spatial bank with linear-span and nonlinear-manifold representations, using matrix-free Petrov–Galerkin projection for efficient online solving. The ordered spatial bank allows users to adjust the accuracy–efficiency trade-off without retraining. Experiments on Poisson, heat, Burgers, and Navier–Stokes equations demonstrate promising accuracy and speedups over full-order solvers and existing learning-based approaches.
+  - strong: "Presentation:"
+  - text: "2: Generally understandable, but requires substantial effort in places."
+  - strong: "Informativeness:"
+  - text: "2: I learned something interesting or useful."
+  - strong: "Soundness:"
+  - text: "3: I have no substantive concerns about the paper’s soundness."
+  - strong: "Critical Strengths:"
+  - list:
+    - paragraph: Practical and flexible design. The ability to switch between linear-span and nonlinear-manifold representations and adjust the basis width at inference time is useful. The integration of coordinate-based spatial banks, precomputation, and hyper-reduction makes the framework computationally efficient.
+    - paragraph: Strong empirical results. The experiments cover multiple PDE families and resolutions, demonstrating substantial speedups and encouraging cross-resolution performance. The comparisons with both conventional ROMs and neural operators provide useful evidence of the method's practical value.
+  - strong: "Critical Weaknesses:"
+  - list:
+    - paragraph: Limited diversity of nonlinear evaluations. Although the paper includes Burgers and Navier–Stokes equations, the most accurate configurations for several tasks use the linear-span representation. Additional challenging nonlinear PDE benchmarks would help establish when the nonlinear-manifold component provides substantial benefits and how broadly the framework generalizes.
+    - paragraph: Some limitations in baseline comparisons. The reported speedups depend on the selected full-order solvers, and the neural operator comparisons use different training data sizes and computational budgets in some settings. More closely matched comparisons would strengthen the empirical conclusions.
+  - strong: "Questions For Authors:"
+  - list:
+    - paragraph: Could the authors provide additional experiments on more challenging nonlinear PDEs, particularly problems with stronger nonlinear dynamics, to further demonstrate the benefits of the nonlinear-manifold representation?
+    - paragraph: Could the authors further clarify when the nonlinear head is preferable to the linear span, and whether its advantages extend beyond the current Navier–Stokes setting?
+    - paragraph: How might the reported speedups change when compared with more optimized full-order solvers or neural operators trained under more closely matched budgets?
+  - paragraph: "Minor Suggestion: The paper is generally well organized and easy to follow. However, Figure 1 could be more visually polished, with a cleaner layout, more consistent typography, and clearer separation between offline training and online inference. This would further improve the presentation."
+  - strong: "Flag For Ethics Review:"
+  - text: "No"
+  - strong: "Rating:"
+  - text: "3: Weak acceptance"
+  - strong: "Confidence:"
+  - text: "3: I am familiar with this topic and its relevant literature."
+  - generic: "Add:"
+  - button "Official Comment":
+    - generic: Official Comment
+- contentinfo:
+  - link "About OpenReview":
+    - /url: /about
+  - link "Contact":
+    - /url: /contact
+  - link "FAQ":
+    - /url: https://docs.openreview.net/getting-started/frequently-asked-questions
+  - link "Hosting a Venue":
+    - /url: /group?id=OpenReview.net/Support
+  - link "Sponsors":
+    - /url: /sponsors
+  - link "Terms of Use":
+    - /url: /legal/terms
+  - text: /
+  - link "Privacy Policy":
+    - /url: /legal/privacy
+  - link "All Venues":
+    - /url: /venues
+  - link "Donate":
+    - /url: /donate
+    - strong: Donate
+  - link "News":
+    - /url: /group?id=OpenReview.net/News&referrer=[Homepage](/)
+  - paragraph:
+    - link "OpenReview":
+      - /url: /about
+    - text: is a long-term project to advance science through improved peer review with legal nonprofit status. We gratefully acknowledge the support of the
+    - link "OpenReview Sponsors":
+      - /url: /sponsors
+    - text: . © 2026 OpenReview
+- alert

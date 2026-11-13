@@ -1,0 +1,28 @@
+References below are to the [revised manuscript](https://openreview.net/pdf?id=hxRqdR3Rn7).
+
+Thank you for your constructive review. We have added nonlinear benchmarks, matched comparisons and clearer figures in response to your suggestions.
+
+**W1. Diversity of nonlinear evaluations**
+
+We added interacting-vortex Navier–Stokes with sharper initial data and lower viscosity (§5.1, Table 1), and unsteady cylinder flow (§5.2, Table 2). The fast Navier–Stokes head stays below 0.5 % worst-case error at 5.1–10.2× over its matched solver, while the same bank's linear span fails. The cylinder demonstrates non-box geometry and query-time width choices; it uses linear-span Galerkin and does not establish an additional nonlinear-head advantage.
+
+**W2. Fairness of the comparisons**
+
+We separate the comparisons: numerical solvers are matched to each setting's accuracy (§5.3), while neural operators are compared by prediction error under the reported training budgets. With the same 4,608 Burgers trajectories, our median error is 7–9× lower; operators have lower worst-case error (Table 4; Appendix F.2). The budgets do not establish convergence. Transform solvers win on box Poisson/3D heat.
+
+**Q1. Additional challenging nonlinear experiments**
+
+The added benchmarks are described under W1. Cylinder widths 24/32 retain all six targets over a window three times longer; extrapolation outside the training band remains limited (Table E.2). We state these limits alongside the results.
+
+**Q2. When is the nonlinear head preferable?**
+
+The head helps when few unknowns are affordable and a linear span fails (Figure 2). At 16 Burgers coordinates, errors are 2.56 % for the head, 56.9 % for a linear closure and 31.8 % for a quadratic one (Table F.3). A wider span can be faster; §5.5 explains this choice.
+
+**Q3. Stronger solvers and matched neural operators**
+
+W2 summarises the corrected comparison. For cylinder flow, FNO meets all targets on the standard window, but no tested operator does on the longer window or outside the training band (Table F.2). Further operator error comparisons are running; we will report them by tomorrow (14 November).
+
+**Minor suggestion. Figure 1**
+
+We redrew Figure 1 to separate offline training and online inference, with a cleaner layout and consistent typography.
+

@@ -1,0 +1,48 @@
+References below are to the [revised manuscript](https://openreview.net/pdf?id=hxRqdR3Rn7).
+
+Thank you for your review. We have strengthened the solver comparisons, clarified the scope and cost of the method, and added the requested visual evidence.
+
+**W1. Motivation and comparisons with modern solvers**
+
+We disagree that fast GPU solvers remove the motivation for reduced models. Our learned representation retains an online projected-PDE solve and targets repeated queries with query-time accuracy–cost control. The comparison is complete-query cost at matched accuracy.
+
+Our Navier–Stokes head is 3.3–11.7× faster than the fastest accuracy-matched solver from a 450-entry GPU pseudo-spectral ladder; the fast width-192 setting gives 5.1–10.2× (Table 1; Appendix E.1). Incompressibility already uses modewise projection, so there is no sparse pressure system for multigrid or cuDSS to accelerate. Batching both codes gives 17× at 128³ and 75× at 64³ for batch 128, including our input/output work.
+
+The scaling distinction matters: FFT diagonalisation requires compatible operators and geometry, and nonlinear evolution still requires time stepping. Multigrid and sparse-direct methods retain mesh-based systems. Our reduced solve is mesh-independent at fixed settings after assembly (Figure G.3); comparators may coarsen their mesh wherever accuracy permits.
+
+For cylinder flow, we obtain 25–54× in rollout and 11–18× with output against the cheapest passing finite-element configuration on the same CPU node. Tested CPU AMG variants pass the same targets but are slower than reused sparse LU (Table 2; Appendix E.2).
+
+We retain the measured limits: transforms win on box Poisson/3D heat, and input/output cost removes a consistent full-query advantage at 256³. We will report the pending cuDSS/AmgX single-solve results by tomorrow (14 November), separately from complete PDE-query comparisons.
+
+**W2. Contribution**
+
+The contribution is a physics-based reduced model with a query-time accuracy–cost ladder from one training run. Bank/head factorisation makes linear terms exact precomputed matrices and constrains online dynamics within the bank span. Figure 2 and Table F.3 isolate the head's benefit; Table 4 compares neural-field baselines. Sections 3 and 5.5 distinguish the contribution from established PCA ordering and quadrature.
+
+**W3. Mesh independence and setup**
+
+Mesh independence concerns the learned representation and reduced online computation. Per-mesh operator assembly is an explicit offline cost. Table E.1 demonstrates one coordinate bank across meshes, including unchanged-head reuse. Table 1 uses per-mesh POD and is labelled accordingly. Interpolated POD also transfers on periodic boxes; our claim does not require rebuilding POD on every mesh.
+
+**W4. Evaluation size and timing variability**
+
+Our main revised evaluation uses 128 fresh cases and three independently trained models (Table 1). Appendix C.4 reports timing spread; Table 2 gives five-repeat cylinder ranges. Speedups use the two seeds passing timing checks. The third seed's accuracy remains included, with its failed timing gate disclosed in Appendix E.1. Exploratory cohorts and failed retrains are labelled.
+
+**W5. Solution plots and presentation**
+
+We added a main-text head-versus-span comparison (Figure 2). Appendix G supplies solution fields, error maps, learned bases, failure cases, mesh scaling and break-even curves.
+
+**Q1. Total cost and break-even**
+
+We target repeated queries within one parameterised family. Appendix C.2, Table C.4 reports offline costs and break-even counts: about 1,800 queries for cylinder and 43,000 for Navier–Stokes at 128³. GPU-hours and CPU node-seconds are distinguished; missing data-generation costs are identified. Against transforms, box Poisson never breaks even, and heat 2D needs about 370,000 queries.
+
+**Q2. Basis loss and exact coefficient solves**
+
+We give the losses and weights in Appendix C.1, Eqs. (20)–(23) and Table C.3. Only heat 3D and Burgers 3D eliminate coefficients at every training step through thin QR. Heat 3D uses a weighted POD-mode mean and a snapshot-minibatch tail term. Other banks jointly train coefficients or latent codes, with the stated least-squares resets/phases. After freezing the bank, ordering coefficients and head targets are exact least-squares fits; online coefficients come from the projected PDE solve.
+
+**Q3. Geometry and boundary conditions**
+
+We demonstrate cylinder flow using smooth boundary-distance factors and an inflow lift in a Galerkin rollout (Appendix E.2). Automatic handling of arbitrary geometry and Neumann/Robin conditions remains untested.
+
+**Q4. FFT/multigrid comparisons and visualisations**
+
+See W1 for the numerical-solver comparisons and W5 for visualisations. We will report the pending GPU sparse-solver results by tomorrow (14 November).
+

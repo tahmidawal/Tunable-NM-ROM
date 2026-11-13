@@ -333,6 +333,7 @@ def main():
     ap.add_argument("--no-rematch", action="store_true"); ap.add_argument("--no-cohort", action="store_true")
     ap.add_argument("--smoke", action="store_true"); ap.add_argument("--rom-rfft", action="store_true")
     ap.add_argument("--rematch-only", action="store_true")
+    ap.add_argument("--lean", action="store_true", help="headline callables only: ROM shared (+r), solver rfft solve-only")
     a = ap.parse_args()
     if jax.default_backend() != "gpu" and not a.smoke:
         raise RuntimeError("need a GPU backend")
@@ -457,12 +458,14 @@ def main():
             for name in (arms if not a.rematch_only else []):
                 R_ = rom[name]; e2e_b, enc_b, lat_b, dec_b = R_["parts"]
                 vm = jax.vmap(R_["run"], in_axes=(0, 0) + (None,) * 10)
-                build(calls, rep, B, f"ROM_VMAP|{name}", vm, [u0n, nuB], list(R_["full"]), B)
+                if not a.lean:
+                    build(calls, rep, B, f"ROM_VMAP|{name}", vm, [u0n, nuB], list(R_["full"]), B)
                 sh = (R_["G"], R_["A"], R_["T"], R_["lam"], R_["Dd"], R_["p"], R_["Hc"], R_["Hn"], R_["Z"])
                 build(calls, rep, B, f"ROM_SHARED|{name}", e2e_b, [u0n, nuB], list(sh), B)
                 if a.rom_rfft:     # amendment A2 (exploratory): shift transforms with real FFTs
                     build(calls, rep, B, f"ROM_SHAREDR|{name}", R_["parts_r"][0], [u0n, nuB], list(sh), B)
-                ce = build(calls, rep, B, f"ROM_ENC|{name}", enc_b, [u0n], [R_["G"], R_["p"], R_["Hc"], R_["Hn"], R_["Z"]], B)
+                ce = None if a.lean else build(calls, rep, B, f"ROM_ENC|{name}", enc_b, [u0n],
+                                                   [R_["G"], R_["p"], R_["Hc"], R_["Hn"], R_["Z"]], B)
                 if ce is not None:
                     w0s, c0s = ce.full_output()
                     cl = build(calls, rep, B, f"ROM_LAT|{name}", lat_b, [w0s, c0s, nuB],
@@ -477,13 +480,14 @@ def main():
                 for key in solver_keys:
                     scheme, m, s = key; tag = f"{scheme}|{m}|{s}"
                     u0m = u0ms[m]
-                    for var in ("vmap", "rfft"):
+                    for var in (("rfft",) if a.lean else ("vmap", "rfft")):
                         fn, geom = solver(key, var)
                         vs = jax.vmap(fn, in_axes=(0, 0, None))
                         ve = jax.vmap(lambda u, v, g, fn=fn, m=m: P.spec_resample(fn(P.spec_resample(u, m), v, g), n),
                                       in_axes=(0, 0, None))
                         build(calls, rep, B, f"SOLVE_{var.upper()}|{tag}", vs, [u0m, nuB], [geom], B)
-                        build(calls, rep, B, f"E2E_{var.upper()}|{tag}", ve, [u0S, nuB], [geom], B)
+                        if not a.lean:
+                            build(calls, rep, B, f"E2E_{var.upper()}|{tag}", ve, [u0S, nuB], [geom], B)
                     del u0m
         except Exception as e:  # report and continue with what compiled
             rep["failures"].append(f"B={B}: build failed: {type(e).__name__}: {str(e)[:300]}")

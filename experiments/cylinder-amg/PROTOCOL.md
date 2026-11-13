@@ -95,3 +95,16 @@ record is quoted next to it.
 AMG implementations other than pyamg (e.g. NGSolve's own h1amg/BDDC, hypre BoomerAMG, PETSc fieldsplit),
 monolithic AMG, geometric multigrid, other Schur approximations (PCD, LSC), and larger meshes where AMG's
 better asymptotic scaling may win. pyamg's kernels are single-threaded (so is UMFPACK's factorisation/solve).
+
+## Amendments
+
+- S1 (2026-11-13 ~01:50 EST, smoke amg-smoke2 job 7161713, Re 95, first 0.2 s = 63 solves, plumbing only; job 7161708
+  failed on a missing staged import): every kind runs. Node pax028, Xeon Gold 6438M (Sapphire Rapids). Wall seconds:
+  lu 8.2 (factor 2.5, solve 2.3), amg1 SA 15.3 (Krylov 9.5 s, 27.9 FGMRES iterations per solve, max 50), amg1 RS 15.4
+  (28.7 / 64), amg2 130.0 (17.9 outer, 91,582 inner iterations). e_u/e_p of the three AMG runs equal the LU values to
+  <= 2e-5 relative. amg1m (mass-only Schur) fails: relative residual 8.5e-3 after 120 iterations at the first step, as
+  expected when coef*M dominates (recorded; it stays in the development job with the 300-iteration cap).
+- D1 (same time, before any development result): the development job is split into three jobs run concurrently (same
+  partition/constraint, different directories) only for wall time, because amg2 costs ~2 s per step: dev-a = lu, amg1
+  ladder, amg1rs, amg1m; dev-b = lu, amg2 1e-10, 1e-8; dev-c = lu, amg2 1e-6, 1e-4. Each repeats lu so that every job has
+  its own paired LU timing; the accuracy rule uses the lu of dev-a (LU is deterministic, the three must agree, checked).

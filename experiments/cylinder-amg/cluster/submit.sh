@@ -14,7 +14,7 @@ SFILES=(vendor/ref/transient.py vendor/ref/cycles.py vendor/ref/vendor/scalars.p
         vendor/dependencies.py vendor/DEPENDENCIES.json rom_r4.py rom_core.py cycles.py fe_ladder2.py inputs/admitted_mesh.vol.bin
         tasks/manifest_production.json)
 LFILES=(amg_stepper.py fe_amg.py install_deps.py cluster/run.sh "$TASK" tasks/MESHES.json tasks/entries_dev.json
-        tasks/entries_smoke.json tasks/entries_heldout.json)
+        tasks/entries_smoke.json tasks/entries_heldout.json tasks/entries_deva.json tasks/entries_devb.json tasks/entries_devc.json)
 ssh tufts-login "test ! -e $DIR && mkdir -p $DIR" || { echo "attempt directory exists: $DIR"; exit 4; }
 ( cd "$SRC" && tar -cf - "${SFILES[@]}" ) | ssh tufts-login "cd $DIR && tar -xf -"
 tar -cf - "${LFILES[@]}" | ssh tufts-login "cd $DIR && tar -xf - && echo $COMMIT > SOURCE_COMMIT.txt && sha256sum ${SFILES[*]} ${LFILES[*]} > SOURCE-SHA256SUMS"

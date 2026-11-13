@@ -1,0 +1,83 @@
+host=pax049 source_commit=2155a978bbeb848bf801e4e32505f70a147c65d1 job=7134656
+NVIDIA A100 80GB PCIe, GPU-ddaed0e6-973b-70bc-7131-3e8516bfa534, 81920 MiB
+jax_backend=gpu
+backend=gpu devices=[CudaDevice(id=0)] args={'cmd': 'compare', 'family': 'B', 'out': 'output', 'truth_n': 192, 'truth_dt': 0.00025, 'store_n': 128, 'smoke': False, 'meshes': '64,96,128', 'cases': 0, 'fom_meshes': '32,40,48,56,64,72,80,88,96,104,112,128', 'cn_steps': '5,10,15,20,30,40,50,60,70,80,100,120,160,240', 'rk_steps': '5,10,15,20,25,30,40,60,80', 'cohort': '/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/genB_dev', 'bank': '/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/bankB', 'romdev': '/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/romdevB_64,/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/romdevB_96,/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/romdevB_128', 'interp': '/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/interpB', 'ladder': '/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/fomdevB,/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/fomdevB2', 'interp_source': 64, 'interp_romdev': None, 'devcompare': None, 'reps': 9, 'timing_cases': '0,1,2', 'shortlist': 4, 'gate': 1.1, 'gate_block': 1.25}
+ladder: 304 configurations (/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/fomdevB,/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/fomdevB2)
+mesh 64 head: worst 0.01395 median 0.00389
+mesh 64 head_fast: worst 0.01526 median 0.00609
+mesh 64 span64: worst 0.06911 median 0.02629
+mesh 64 span48: worst 0.06955 median 0.03429
+mesh 64 span32: worst 0.09669 median 0.03775
+mesh 64 span16: worst 0.12518 median 0.04944
+mesh 64 span8: worst 0.18799 median 0.09826
+mesh 64: 18 solver configurations in the timing block
+mesh 64 timing attempt 1: gate True agreement rom 0.00e+00 solver 2.66e-14
+mesh 64 head: 0.01395 14.65 ms | any-mesh solve rk4 m88 s20 107.01 ms ratio 7.30 | same-mesh none
+mesh 64 head_fast: 0.01526 8.00 ms | any-mesh solve rk4 m88 s20 107.01 ms ratio 13.37 | same-mesh none
+mesh 64 span64: 0.06911 17.50 ms | any-mesh solve rk4 m56 s10 10.89 ms ratio 0.62 | same-mesh cnab2 s50 23.79 ms ratio 1.36
+mesh 64 span48: 0.06955 7.45 ms | any-mesh solve rk4 m56 s10 10.89 ms ratio 1.46 | same-mesh cnab2 s50 23.79 ms ratio 3.20
+mesh 64 span32: 0.09669 5.98 ms | any-mesh solve rk4 m48 s10 7.28 ms ratio 1.22 | same-mesh cnab2 s50 23.79 ms ratio 3.98
+mesh 64 span16: 0.12518 4.92 ms | any-mesh solve rk4 m40 s10 5.13 ms ratio 1.04 | same-mesh cnab2 s50 23.79 ms ratio 4.84
+mesh 64 span8: 0.18799 4.37 ms | any-mesh solve rk4 m32 s5 2.20 ms ratio 0.50 | same-mesh cnab2 s50 23.79 ms ratio 5.45
+mesh 96 head: worst 0.01452 median 0.00578
+mesh 96 head_fast: worst 0.01470 median 0.00596
+mesh 96 span64: worst 0.06984 median 0.02718
+mesh 96 span48: worst 0.07272 median 0.03443
+mesh 96 span32: worst 0.09685 median 0.03862
+mesh 96 span16: worst 0.12530 median 0.04946
+mesh 96 span8: worst 0.18813 median 0.09826
+mesh 96 interp_head: worst 0.01522 median 0.00436
+mesh 96 interp_head_fast: worst 0.01643 median 0.00621
+mesh 96 interp_span64: worst 0.06924 median 0.02634
+mesh 96 interp_span48: worst 0.06981 median 0.03430
+mesh 96 interp_span32: worst 0.09676 median 0.03788
+mesh 96 interp_span16: worst 0.12532 median 0.04948
+mesh 96 interp_span8: worst 0.18811 median 0.09826
+mesh 96: 20 solver configurations in the timing block
+mesh 96 timing attempt 1: gate True agreement rom 0.00e+00 solver 6.06e-14
+mesh 96 head: 0.01452 15.69 ms | any-mesh solve cnab2 m88 s80 107.50 ms ratio 6.85 | same-mesh cnab2 s100 173.19 ms ratio 11.04
+mesh 96 head_fast: 0.01470 15.44 ms | any-mesh solve cnab2 m88 s80 107.50 ms ratio 6.96 | same-mesh cnab2 s100 173.19 ms ratio 11.22
+mesh 96 span64: 0.06984 24.53 ms | any-mesh solve rk4 m56 s10 11.25 ms ratio 0.46 | same-mesh cnab2 s80 139.44 ms ratio 5.68
+mesh 96 span48: 0.07272 13.97 ms | any-mesh solve rk4 m56 s10 11.25 ms ratio 0.81 | same-mesh cnab2 s80 139.44 ms ratio 9.98
+mesh 96 span32: 0.09685 11.63 ms | any-mesh solve rk4 m48 s10 7.50 ms ratio 0.64 | same-mesh cnab2 s80 139.44 ms ratio 11.99
+mesh 96 span16: 0.12530 9.21 ms | any-mesh solve rk4 m40 s10 5.33 ms ratio 0.58 | same-mesh cnab2 s80 139.44 ms ratio 15.15
+mesh 96 span8: 0.18813 8.07 ms | any-mesh solve rk4 m32 s5 2.23 ms ratio 0.28 | same-mesh cnab2 s80 139.44 ms ratio 17.27
+mesh 96 interp_head: 0.01522 21.73 ms | any-mesh solve cnab2 m88 s80 107.50 ms ratio 4.95 | same-mesh cnab2 s100 173.19 ms ratio 7.97
+mesh 96 interp_head_fast: 0.01643 15.41 ms | any-mesh solve cnab2 m88 s80 107.50 ms ratio 6.98 | same-mesh cnab2 s100 173.19 ms ratio 11.24
+mesh 96 interp_span64: 0.06924 24.46 ms | any-mesh solve rk4 m56 s10 11.25 ms ratio 0.46 | same-mesh cnab2 s80 139.44 ms ratio 5.70
+mesh 96 interp_span48: 0.06981 13.93 ms | any-mesh solve rk4 m56 s10 11.25 ms ratio 0.81 | same-mesh cnab2 s80 139.44 ms ratio 10.01
+mesh 96 interp_span32: 0.09676 11.62 ms | any-mesh solve rk4 m48 s10 7.50 ms ratio 0.65 | same-mesh cnab2 s80 139.44 ms ratio 12.00
+mesh 96 interp_span16: 0.12532 9.14 ms | any-mesh solve rk4 m40 s10 5.33 ms ratio 0.58 | same-mesh cnab2 s80 139.44 ms ratio 15.25
+mesh 96 interp_span8: 0.18811 8.13 ms | any-mesh solve rk4 m32 s5 2.23 ms ratio 0.27 | same-mesh cnab2 s80 139.44 ms ratio 17.15
+mesh 128 head: worst 0.01449 median 0.00564
+mesh 128 head_fast: worst 0.01501 median 0.00576
+mesh 128 span64: worst 0.06984 median 0.02714
+mesh 128 span48: worst 0.07278 median 0.03446
+mesh 128 span32: worst 0.09686 median 0.03864
+mesh 128 span16: worst 0.12530 median 0.04946
+mesh 128 span8: worst 0.18813 median 0.09826
+mesh 128 interp_head: worst 0.01524 median 0.00436
+mesh 128 interp_head_fast: worst 0.01644 median 0.00621
+mesh 128 interp_span64: worst 0.06925 median 0.02634
+mesh 128 interp_span48: worst 0.06981 median 0.03430
+mesh 128 interp_span32: worst 0.09676 median 0.03788
+mesh 128 interp_span16: worst 0.12532 median 0.04948
+mesh 128 interp_span8: worst 0.18811 median 0.09827
+mesh 128: 19 solver configurations in the timing block
+mesh 128 timing attempt 1: gate True agreement rom 0.00e+00 solver 9.34e-14
+mesh 128 head: 0.01449 28.54 ms | any-mesh solve cnab2 m88 s80 107.82 ms ratio 3.78 | same-mesh cnab2 s120 454.91 ms ratio 15.94
+mesh 128 head_fast: 0.01501 28.47 ms | any-mesh solve cnab2 m88 s80 107.82 ms ratio 3.79 | same-mesh cnab2 s120 454.91 ms ratio 15.98
+mesh 128 span64: 0.06984 37.36 ms | any-mesh solve rk4 m56 s10 11.39 ms ratio 0.30 | same-mesh cnab2 s120 454.91 ms ratio 12.18
+mesh 128 span48: 0.07278 25.14 ms | any-mesh solve rk4 m56 s10 11.39 ms ratio 0.45 | same-mesh cnab2 s120 454.91 ms ratio 18.09
+mesh 128 span32: 0.09686 21.23 ms | any-mesh solve rk4 m48 s10 7.68 ms ratio 0.36 | same-mesh cnab2 s120 454.91 ms ratio 21.43
+mesh 128 span16: 0.12530 16.79 ms | any-mesh solve rk4 m40 s10 5.52 ms ratio 0.33 | same-mesh cnab2 s120 454.91 ms ratio 27.09
+mesh 128 span8: 0.18813 14.58 ms | any-mesh solve rk4 m32 s5 2.35 ms ratio 0.16 | same-mesh cnab2 s120 454.91 ms ratio 31.20
+mesh 128 interp_head: 0.01524 34.60 ms | any-mesh solve cnab2 m88 s80 107.82 ms ratio 3.12 | same-mesh cnab2 s120 454.91 ms ratio 13.15
+mesh 128 interp_head_fast: 0.01644 28.41 ms | any-mesh solve cnab2 m88 s80 107.82 ms ratio 3.79 | same-mesh cnab2 s120 454.91 ms ratio 16.01
+mesh 128 interp_span64: 0.06925 37.21 ms | any-mesh solve rk4 m56 s10 11.39 ms ratio 0.31 | same-mesh cnab2 s120 454.91 ms ratio 12.22
+mesh 128 interp_span48: 0.06981 25.12 ms | any-mesh solve rk4 m56 s10 11.39 ms ratio 0.45 | same-mesh cnab2 s120 454.91 ms ratio 18.11
+mesh 128 interp_span32: 0.09676 21.41 ms | any-mesh solve rk4 m48 s10 7.68 ms ratio 0.36 | same-mesh cnab2 s120 454.91 ms ratio 21.25
+mesh 128 interp_span16: 0.12532 16.90 ms | any-mesh solve rk4 m40 s10 5.52 ms ratio 0.33 | same-mesh cnab2 s120 454.91 ms ratio 26.92
+mesh 128 interp_span8: 0.18811 14.66 ms | any-mesh solve rk4 m32 s5 2.35 ms ratio 0.16 | same-mesh cnab2 s120 454.91 ms ratio 31.03
+DONE status final failures []
+RUN_EXIT=0

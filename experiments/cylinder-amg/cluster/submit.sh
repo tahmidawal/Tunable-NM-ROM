@@ -11,7 +11,7 @@ DIR=$NS/$ATTEMPT
 git diff --quiet HEAD -- . ../cylinder-unsteady-rom || { echo "uncommitted changes; commit first"; exit 2; }
 COMMIT=$(git rev-parse HEAD)
 SFILES=(vendor/ref/transient.py vendor/ref/cycles.py vendor/ref/vendor/scalars.py vendor/ref/vendor/oriented_normals.py
-        vendor/dependencies.py vendor/DEPENDENCIES.json rom_r4.py cycles.py fe_ladder2.py inputs/admitted_mesh.vol.bin
+        vendor/dependencies.py vendor/DEPENDENCIES.json rom_r4.py rom_core.py cycles.py fe_ladder2.py inputs/admitted_mesh.vol.bin
         tasks/manifest_production.json)
 LFILES=(amg_stepper.py fe_amg.py install_deps.py cluster/run.sh "$TASK" tasks/MESHES.json tasks/entries_dev.json
         tasks/entries_smoke.json tasks/entries_heldout.json)

@@ -435,3 +435,13 @@ previous block's device arrays were still referenced by loop variables. Fix: all
 dropped at the end of each block. split_h200d (job 7162578) was cancelled seconds after start
 for the same reason. Reruns: split_a100c (192^3, arms r64_head, r192_head, r192_head_fast only;
 the r96/r128 block of split_a100b stands) and split_h200e (256^3, one block per rank).
+T2 note 6 (2026-11-13, ~04:03 EST). split_h200e (job 7162605) finished the 256^3 r96 and r128 blocks
+(gates passed at attempt 1) and could not allocate the 72 GiB rank-192 basis afterwards (allocator
+fragmentation after two large blocks in one process). Rerun split_h200f: 256^3, arms r192_head,
+r192_head_fast, r64_head only, rank-192 block first in a fresh process.
+OUTCOME T2 (2026-11-13, ~04:40 EST). All split-timing blocks that ran passed the A4 gate at the first
+attempt. Results: results/flat/tables.md (generated), results/flat/README.md (jobs, caveats, glossary).
+The reduced online solve (SOLVE) is flat in the mesh at fixed (M, steps); the growth of the reported
+query time (FULL) is entirely projection (ENC) and frame-by-frame reconstruction (DEC). At 256^3 the
+reconstruction-dominated FULL time reaches or exceeds the matched any-mesh solver's solve-only time
+for several arms. Reported as found.

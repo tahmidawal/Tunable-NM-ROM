@@ -16,7 +16,14 @@ def load(spec):
     for q, x in zip(parts, ds):
         for m, mr in x["meshes"].items():
             if any("ms" in a for a in mr["arms"].values()):
-                d["meshes"][m] = dict(mr, job=x.get("job_id"))
+                arms = {k: v for k, v in mr["arms"].items() if "ms" in v}
+                if m in d["meshes"]:          # same mesh from several jobs (different arm blocks): merge
+                    old = d["meshes"][m]
+                    old["arms"].update(arms); old["timing"].update(mr.get("timing", {}))
+                    old["fom_refs"].update(mr["fom_refs"]); old["job"] = f"{old['job']},{x.get('job_id')}"
+                else:
+                    d["meshes"][m] = dict(mr, arms=dict(arms), timing=dict(mr.get("timing", {})),
+                                          fom_refs=dict(mr["fom_refs"]), job=x.get("job_id"))
         d["failures"] += [f"[{x.get('job_id')}] {f}" for f in x.get("failures", [])]
     d["label"] = " + ".join(f"{Path(q).parent.name if Path(q).parent.name != 'output' else Path(q).parent.parent.name} "
                             f"(job {x.get('job_id')}, {x.get('gpu', '').split(',')[0]}, {x.get('host')}, "
@@ -41,8 +48,8 @@ def split_tables(paths):
                 gates.append(f"{m}^3 [{g}]: {'pass' if t['gate_passed'] else 'FAIL'} (attempt {t['attempts']})")
         out.append("Timing gate: " + "; ".join(gates) + "\n")
         out.append("| arm | mesh | M | steps | ENC ms | FIT ms | SOLVE ms | DEC ms | sum ms | FULL ms | DECB ms | "
-                   "solver any-mesh (solve-only) ms | solver same-mesh ms | FULL ratio | SOLVE-only ratio |")
-        out.append("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
+                   "solver any-mesh (solve-only) ms | solver same-mesh ms | FULL ratio | SOLVE-only ratio | solver e2e ms | e2e/FULL ratio |")
+        out.append("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
         flat = []
         for arm in ARMS:
             solves, fulls = {}, {}
@@ -55,7 +62,8 @@ def split_tables(paths):
                 out.append(f"| {arm} | {m}{'' if d['meshes'][m]['native_bank'] else '*'} | {c['M']} | {c['steps']} | "
                            f"{s['ENC']:.2f} | {s['FIT']:.2f} | {s['SOLVE']:.2f} | {s['DEC']:.2f} | {s['SUM']:.2f} | {s['FULL']:.2f} | "
                            f"{s.get('DECB', float('nan')):.2f} | {s['FOM_any_solve']:.1f} ({any_tag}) | {same} | "
-                           f"{s['FOM_any_solve'] / s['FULL']:.2f} | {s['FOM_any_solve'] / s['SOLVE']:.2f} |")
+                           f"{s['FOM_any_solve'] / s['FULL']:.2f} | {s['FOM_any_solve'] / s['SOLVE']:.2f} | "
+                           f"{s['FOM_any_e2e']:.1f} | {s['FOM_any_e2e'] / s['FULL']:.2f} |")
                 solves[m] = s["SOLVE"]; fulls[m] = s["FULL"]
             if solves:
                 byc = {}
@@ -67,10 +75,10 @@ def split_tables(paths):
                                 for m in solves}) == 1
                 flat.append(f"| {arm} | {'yes' if same_cfg else 'no'} | {min(solves.values()):.2f} | {max(solves.values()):.2f} | "
                             f"{max(solves.values()) / min(solves.values()):.3f} | {within:.3f} ({groups}) | "
-                            f"{max(fulls.values()) / min(fulls.values()):.2f} | {fulls[meshes[-1]] / fulls[meshes[0]]:.2f} |")
+                            f"{max(fulls.values()) / min(fulls.values()):.2f} | {fulls[max(fulls, key=int)] / fulls[min(fulls, key=int)]:.2f} ({max(fulls, key=int)}/{min(fulls, key=int)}) |")
         out.append("\n`*` = mesh above the bank meshes (128^3 bank resampled, 128^3 heads and settings).\n")
         out.append(f"| arm | same (M, steps) at every mesh | SOLVE min ms | SOLVE max ms | SOLVE max/min | SOLVE max/min at identical (M, steps) | FULL max/min | "
-                   f"FULL {meshes[-1]}/{meshes[0]} |")
+                   f"FULL largest/smallest mesh |")
         out.append("|---|---|---|---|---|---|---|---|")
         out += flat
         chk = []

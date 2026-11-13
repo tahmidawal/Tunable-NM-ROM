@@ -102,3 +102,13 @@ Read from the revised paper source (table and line recorded in RESULTS.md); not 
    1, 2, ... 5 on repeats).  The solution vector is now set to zero before every solve, outside the timed
    region.  The smoke AmgX numbers are invalid and are not used; smoke files are kept in `results/smoke1`.
    No change to sizes, solvers, configurations, tolerances or the timing rule.
+
+### Amendment 2 (Fri 13 Nov 2026, 12:41 EST): cuDSS hybrid memory mode for the size that did not fit
+
+Reason: the in-device cuDSS factorisation of the 256^3 Poisson and heat matrices failed with ALLOC_FAILED on the H200
+(library estimate 380.6 GiB of device memory against 140 GiB).  cuDSS has a documented hybrid memory mode
+(`CUDSS_CONFIG_HYBRID_MEMORY_MODE = 1`) that keeps part of the factors in host memory; the library's own estimate of the
+minimum device memory in that mode is 91.8 GiB, which fits.  To give the direct solver a fair chance at that size it is run
+once more as solver `cudss_hybrid` (same phases, same timing rule, device memory limit left at the library default, host
+memory request raised to 600 GiB), on 256^3 Poisson and heat and on 192^3 Poisson as a cross-check against the in-device run.
+The in-device failure stays in the record.  Written before the hybrid run; the outcome is not known.

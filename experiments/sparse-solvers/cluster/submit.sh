@@ -14,7 +14,7 @@ mine=$(ssh tufts-login "squeue -u \$USER -h -p gpu -o '%j'" | grep -c '^ss_' || 
 ssh tufts-login "test ! -e $DIR && mkdir -p $DIR" || { echo "attempt directory exists: $DIR"; exit 4; }
 tar -cf - "${FILES[@]}" | ssh tufts-login "cd $DIR && tar -xf - && echo $COMMIT > SOURCE_COMMIT.txt && sha256sum ${FILES[*]} > SOURCE-SHA256SUMS"
 [ "$(sha256sum "${FILES[@]}")" = "$(ssh tufts-login "cd $DIR && cat SOURCE-SHA256SUMS")" ] || { echo "staged checksum mismatch"; exit 3; }
-JOB=$(ssh tufts-login "cd $DIR && sbatch --parsable --job-name=ss_$ATTEMPT --time=$WALL --constraint=$FEAT cluster/run_gpu.sh $TASKS $TMO")
+JOB=$(ssh tufts-login "cd $DIR && sbatch --parsable --job-name=ss_$ATTEMPT --time=$WALL --constraint=$FEAT ${SS_MEM:+--mem=$SS_MEM} cluster/run_gpu.sh $TASKS $TMO")
 n=$(ssh tufts-login "squeue -u \$USER -h -o '%i %Z'" | awk -v d="$DIR" '$2==d' | wc -l)
 [ "$n" -eq 1 ] || { echo "expected exactly one job in $DIR, found $n (job $JOB)"; exit 5; }
 echo "submitted job=$JOB dir=$DIR commit=$COMMIT"

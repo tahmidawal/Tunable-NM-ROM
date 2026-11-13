@@ -102,6 +102,7 @@ PH_ANALYSIS, PH_FACT, PH_REFACT, PH_SOLVE = 3, 4, 8, 1008
 CUDA_R_64F, CUDA_R_32I = 1, 10
 MTYPE_GENERAL, MTYPE_SPD, MVIEW_FULL, MVIEW_UPPER = 0, 3, 0, 2
 CFG_HOST_NTHREADS, DATA_LU_NNZ, DATA_MEMORY_ESTIMATES = 14, 1, 13
+CFG_HYBRID_MEMORY_MODE = 11
 CUDSS_STATUS = ['SUCCESS', 'NOT_INITIALIZED', 'ALLOC_FAILED', 'INVALID_VALUE', 'NOT_SUPPORTED', 'EXECUTION_FAILED',
                 'INTERNAL_ERROR', 'IR_FAILED']
 
@@ -150,6 +151,10 @@ def run_cudss(a):
     chk(lib.cudssConfigCreate(ctypes.byref(config)), 'config')
     nt = ctypes.c_int(nthreads)
     chk(lib.cudssConfigSet(config, CFG_HOST_NTHREADS, ctypes.byref(nt), ctypes.sizeof(nt)), 'host threads')
+    if a.solver == 'cudss_hybrid':  # amendment 2: factors may live in host memory
+        hy = ctypes.c_int(1)
+        chk(lib.cudssConfigSet(config, CFG_HYBRID_MEMORY_MODE, ctypes.byref(hy), ctypes.sizeof(hy)), 'hybrid memory mode')
+        rec.save(hybrid_memory_mode=1, hybrid_device_memory_limit='library default')
     mA, mx, mb = vp(), vp(), vp()
     chk(lib.cudssMatrixCreateCsr(ctypes.byref(mA), N, N, nnz, indptr.data.ptr, None, indices.data.ptr, data.data.ptr,
                                  CUDA_R_32I, CUDA_R_32I, CUDA_R_64F, MTYPE_SPD if spd else MTYPE_GENERAL, MVIEW_FULL, 0),
@@ -467,4 +472,4 @@ if __name__ == '__main__':
     if a.cmd == 'driver':
         driver(a)
     else:
-        {'cudss': run_cudss, 'amgx': run_amgx, 'cg': run_cg}[a.solver](a)
+        {'cudss': run_cudss, 'cudss_hybrid': run_cudss, 'amgx': run_amgx, 'cg': run_cg}[a.solver](a)

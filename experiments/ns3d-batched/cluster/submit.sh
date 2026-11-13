@@ -16,6 +16,6 @@ for pkg in ns3d ns2d separable-decoder ns3d-grok ns3d-shift ns3d-shift-head ns3d
 done
 rsync -az "$HERE/experiments/ns3d-batched/cluster/" "tufts-login:$DEST/experiments/ns3d-batched/cluster/"
 git -c gc.auto=0 -C "$HERE" rev-parse HEAD | ssh tufts-login "cat > $DEST/COMMIT.txt"
-ID=$(ssh tufts-login "cd $DEST && sbatch --parsable --job-name=nb_$JOB --gres=gpu:1 --constraint='a100-80G|h200-141G' --mem=$MEM --time=$TIME \
+ID=$(ssh tufts-login "cd $DEST && sbatch --parsable --job-name=nb_$JOB --gres=gpu:1 --constraint='${GPU_CONSTRAINT:-a100-80G|h200-141G}' --mem=$MEM --time=$TIME \
   --output=$DEST/logs/%j.out --error=$DEST/logs/%j.err experiments/ns3d-batched/cluster/job.sbatch $*")
 echo "submitted job $ID into $DEST"

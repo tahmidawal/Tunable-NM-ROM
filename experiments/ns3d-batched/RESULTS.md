@@ -74,6 +74,11 @@ flowchart LR
   with each other; every ratio is within one job.
 - Time per 1,000 queries is extrapolated from the measured batch time (both codes run a fixed
   number of iterations, so cost does not depend on the content of a query).
+- One exploratory callable produced wrong output and is excluded: `shared_r` at 128^3, B = 128
+  (chunk 64) returned 128 x the reference field. That single batched real FFT holds
+  64 x 6 x 3 x 128^3 > 2^31 elements, so a 32-bit indexing fault in the batched FFT path is the
+  likely cause; the same callable passes at every smaller size. The tables mark it FAILED CHECK
+  and drop every callable whose batch-1 agreement check fails; every number shown has passed.
 - Several jobs failed at B = 128 or in the re-match (compile-time GEMM autotuning or runtime
   out-of-memory with many callables resident); they were rerun as separate jobs (m128c, m128d,
   m128e, m96r). Every attempt and failure is kept in `results/` and listed below.
@@ -83,7 +88,8 @@ flowchart LR
 `smoke64` 7161709 (pipeline check, not a result); `m64` 7161723; `m96` 7161725 (B = 128 solver
 only partly compiled); `m128` 7161724 (failed at B = 128 after B <= 32 completed); `m128c` 7161935
 (failed: re-match and B = 128 out of memory; B = 32 re-timing kept); `m64r` 7161959; `m96r`
-7161983; `m128r` 7161958; `m128d` 7162015; `m128e` 7162017. Cluster namespace
+7161983; `m128r` 7161958; `m128d` 7162015; `m128e` 7162017 (B = 32 re-match only); `m128f` 7162488 (H200, lean
+B = 128: ROM shared / shared_r and solver rfft only). Cluster namespace
 `/cluster/tufts/paralab/tawal01/rebuttal-ns3d-batched/`.
 
 ## Glossary

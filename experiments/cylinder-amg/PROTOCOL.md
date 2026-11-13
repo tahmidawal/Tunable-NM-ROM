@@ -1,4 +1,4 @@
-# Algebraic multigrid in the accuracy-matched cylinder comparator (fixed 2026-11-13 ~01:00 EST, before any AMG run)
+# Algebraic multigrid in the accuracy-matched cylinder comparator (fixed 2026-11-13, committed 00:45 EST in e60f943b0, before any AMG run)
 
 Question (reviewer iMp8, multigrid): the accuracy-matched finite-element comparator of the cylinder-flow rebuttal
 (held-out Re 105) solves its linear systems with a sparse direct factorisation. Is it faster or slower when those solves
@@ -98,7 +98,7 @@ better asymptotic scaling may win. pyamg's kernels are single-threaded (so is UM
 
 ## Amendments
 
-- S1 (2026-11-13 ~01:50 EST, smoke amg-smoke2 job 7161713, Re 95, first 0.2 s = 63 solves, plumbing only; job 7161708
+- S1 (2026-11-13, committed 00:51 EST, smoke amg-smoke2 job 7161713, Re 95, first 0.2 s = 63 solves, plumbing only; job 7161708
   failed on a missing staged import): every kind runs. Node pax028, Xeon Gold 6438M (Sapphire Rapids). Wall seconds:
   lu 8.2 (factor 2.5, solve 2.3), amg1 SA 15.3 (Krylov 9.5 s, 27.9 FGMRES iterations per solve, max 50), amg1 RS 15.4
   (28.7 / 64), amg2 130.0 (17.9 outer, 91,582 inner iterations). e_u/e_p of the three AMG runs equal the LU values to
@@ -108,7 +108,7 @@ better asymptotic scaling may win. pyamg's kernels are single-threaded (so is UM
   partition/constraint, different directories) only for wall time, because amg2 costs ~2 s per step: dev-a = lu, amg1
   ladder, amg1rs, amg1m; dev-b = lu, amg2 1e-10, 1e-8; dev-c = lu, amg2 1e-6, 1e-4. Each repeats lu so that every job has
   its own paired LU timing; the accuracy rule uses the lu of dev-a (LU is deterministic, the three must agree, checked).
-- H1 (2026-11-13 ~02:20 EST, after dev-a 7161797 was read, before Re 105 is opened; Re 95 values in
+- H1 (2026-11-13, committed 01:04 EST, after dev-a 7161797 was read, before Re 105 is opened; Re 95 values in
   artifacts/amg-deva). Rule applied to amg1: rtol 1e-8 is selected (all six metrics within 0.06 % of lu; 1e-6 meets
   6/6 but CL_max differs by 2.0 % and e_p RMS by 1.0 %, outside the 1 % reproduction band; 1e-4 fails 4 targets). amg1rs
   at 1e-6 fails three targets (pressure error 0.18), so it does not replace amg1; amg1m fails to converge (residual 2e-3
@@ -116,8 +116,10 @@ better asymptotic scaling may win. pyamg's kernels are single-threaded (so is UM
   two allocations, each with its own paired lu: ho-a = lu, amg1 r1e-8 (selected), amg1 r1e-6, lu_b; ho-b = lu, amg2
   (selected when dev-b/dev-c finish), lu_b. amg1 r1e-6 is added as a DECLARED SECONDARY row: the loosest tolerance that
   meets all six targets on Re 95 (the setting most favourable to AMG); it is reported whatever it shows on Re 105.
-- H2 (2026-11-13 ~02:55 EST, after dev-b 7161798 and dev-c 7161799, before ho-b; artifacts/SUMMARY-dev.md). Rule
+- H2 (2026-11-13, committed 01:33 EST, after dev-b 7161798 and dev-c 7161799, before ho-b; artifacts/SUMMARY-dev.md). Rule
   applied to amg2: rtol 1e-8 is selected (all six metrics within 0.007 % of lu; 1e-6 meets 6/6 but St rel differs by
   2.0 % from lu's; 1e-4 fails 4 targets). LU agrees across the three dev jobs to rounding. ho-b = lu, amg2 r1e-8, lu_b.
   No secondary amg2 row is timed on Re 105: on Re 95 its loosest passing setting (1e-6) costs 824 s, 16x the paired LU,
   so it cannot change the conclusion and would cost another ~70 min of a 16-core allocation.
+- Note (02:20 EST): the amendment times above were first written as estimates that ran ahead of the clock; they are
+  replaced by the commit times (git log), which are authoritative. Order and content are unchanged.

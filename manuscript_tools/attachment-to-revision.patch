@@ -1,0 +1,2158 @@
+--- uploaded/main.tex
++++ revised/main.tex
+@@ -7,6 +7,9 @@
+ % short-hands used in prose
+ \newcommand{\evolved}{\emph{evolved}}
+ \newcommand{\alltimes}{\emph{all-times}}
++% revision markup: changed or added passages are blue
++\newcommand{\rev}[1]{{\color{blue}#1}}
++\newenvironment{revblock}{\par\color{blue}}{\par}
+ 
+ \title{Tunable Non-linear Manifold ROMs for PDEs via Matrix-Free Petrov--Galerkin Projection}
+ 
+@@ -18,29 +21,35 @@
+ 
+ % =====================================================================
+ \begin{abstract}
+-The cost of a full-order PDE solve grows quickly as the mesh is refined,
+-and neural operators such as Fourier Neural Operators and DeepONets
+-generally provide only one accuracy-efficiency trade-off per trained model,
+-% deliver one (accuracy, speed) operating point per trained model; 
+-and adjusting it requires retraining the model. We present a nonlinear-manifold reduced-order model
+-(NM-ROM) whose query time grows far more slowly with the mesh than the
+-full-order solver's, so its speedup grows as the mesh is refined, and whose balance
+-between accuracy and speed is chosen when the model is used, not when it
+-is trained. Its \emph{spatial bank}, a set of learned spatial functions, is ordered
+-once by importance after training, so a query chooses how many bank functions to use, and
+-whether to solve with a nonlinear head or in the linear span of the bank,
+-without changing a learned weight. For Burgers, Poisson and heat, the
+-trained network can be used unchanged on meshes much finer than those it
+-was trained on, while our POD-LSPG baseline has to be rebuilt for each mesh. The model is a coordinate-network bank with exact Dirichlet
+-enforcement, solved by least-squares Petrov--Galerkin projection of the
+-discrete residual onto fixed tests. Every linear term is precomputed, the
+-solver runs matrix-free in JAX, and the nonlinear term uses empirical
+-quadrature. On viscous Burgers and three-dimensional Navier--Stokes it is up to
+-27.5$\times$ faster than the full-order solver, and on linear Poisson and
+-heat problems 108$\times$ and 216$\times$ faster at 0.83\,\% and 0.13\,\%
+-worst-case error. On Burgers, refining the mesh from $256^2$ to $4096^2$
+-raises its query time $2.6\times$ and the solver's $74\times$. At the same latent dimension
+-it is also more accurate than POD-LSPG and a quadratic manifold.
++\begin{revblock}
++A trained neural operator gives one accuracy--cost trade-off per model, and
++changing it means retraining.\footnote{\rev{Revised version prepared during
++the author--reviewer discussion. Every changed or added passage, table and
++figure is set in blue; passages moved to the appendix or deleted are not
++marked.}} We present a nonlinear-manifold reduced-order model (NM-ROM)
++whose balance between accuracy and speed is chosen when the model is used.
++Its \emph{spatial bank}, a set of learned functions of space, is ordered
++once by importance after training, so a query chooses how many bank
++functions to use and whether to solve with a small nonlinear head or in the
++linear span of the bank, without changing a learned weight. Every linear
++term is precomputed exactly, the discrete PDE residual is solved by
++least-squares Petrov--Galerkin projection onto fixed tests, and the
++nonlinear term is evaluated on a sparse set of nodes. We compare every
++setting with the fastest tested solver that reaches the same accuracy; on
++the new problems that solver may choose its mesh, integrator and step. On a three-dimensional
++Navier--Stokes family with sharper interacting vortices and lower viscosity, on 128 fresh
++test cases and three independently trained models, the head reaches
++0.28--0.42\,\% worst-case error at bank width 192, and a faster setting
++0.35--0.48\,\% at 5.1--10.2$\times$ the speed of the matched solver from a
++450-configuration ladder; the linear span of the same bank is unstable
++(7.7--70\,\%). On unsteady flow past a cylinder, one trained bank meets six
++acceptance targets at a held-out Reynolds number at widths 16 to 32, with a
++rollout 25--54$\times$ faster than the cheapest finite-element run that
++meets the same targets. The advantage appears where the matched solver
++needs a fine mesh and the solution family is low-dimensional; on
++constant-coefficient box problems transform solvers are mostly faster, and
++we use those problems as correctness checks.
++\end{revblock}
+ \end{abstract}
+ 
+ % =====================================================================
+@@ -51,11 +60,10 @@
+ solutions fast to compute: neural operators and reduced-order models
+ (ROMs), and both have advanced quickly. Neural operators
+ \citep{Li2020FNO,Lu2021DeepONet,Kovachki2023NeuralOperator} now include
+-attention-based models for general geometries
+-\citep{WuTransolver2024,Luo2025Transolverpp} and pretrained PDE foundation
+-models and scalable transformer backbones
+-\citep{Herde2024Poseidon,Hao2024DPOT,Holzschuh2025PDETransformer}, and are fast to evaluate
+-once trained \citep{Azizzadenesheli2024NatRevPhys}. In parallel,
++attention-based models \citep{WuTransolver2024,Luo2025Transolverpp} and
++pretrained foundation models
++\citep{Herde2024Poseidon,Hao2024DPOT,Holzschuh2025PDETransformer}, and are
++fast to evaluate once trained \citep{Azizzadenesheli2024NatRevPhys}. In parallel,
+ nonlinear-manifold ROMs (NM-ROMs) have moved from dense
+ autoencoders \citep{LeeCarlberg2020,KimChoi2022NMROM} to
+ domain-decomposed \citep{Diaz2024DDNMROM}, neural-field
+@@ -67,25 +75,24 @@
+ 
+ Two properties decide whether such a model can stand in for a full-order
+ solver: whether accuracy can be traded for speed when the model is used,
+-and how fast the cost of a given accuracy grows as the mesh is refined.
+-Full-order methods (FOMs) with iterative solvers such as conjugate
+-gradients \citep{HestenesStiefel1952CG} have the first property, since
+-their tolerance and time step are set per query (each new problem instance to solve), but their cost grows
+-quickly with the mesh. A trained neural operator gives one trade-off
++and whether it is faster than a well-chosen solver of the same accuracy.
++Full-order methods (FOMs) have the first property, since
++their mesh, tolerance and time step are set per query (each new problem
++instance to solve). A trained neural operator gives one trade-off
+ between accuracy and wall-clock time at a given mesh, and changing it in
+ general requires retraining \citep{deHoop2022CostAccuracy}; comparisons
+ against weak numerical baselines can also overstate their speed
+ \citep{McGreivy2024Weak}. Linear ROMs can require many basis functions
+-for moving fronts \citep{CohenDeVore2015,Peherstorfer2022Kolmogorov},
+-and a POD basis built on one grid is usually tied to that grid. NM-ROMs are
++for moving fronts \citep{CohenDeVore2015,Peherstorfer2022Kolmogorov}. NM-ROMs are
+ more compact, but their online nonlinear solve can offset the benefit of
+-fewer unknowns. We ask: \emph{can one trained model have both
+-properties, an accuracy choice at query time and a cost that grows
+-slowly with the mesh?}
+-
+-We answer this question for viscous Burgers in 2D and
+-incompressible Navier--Stokes in 3D, and evaluate the same framework on
+-linear Poisson and heat equations. Our NM-ROM builds the solution from a \emph{spatial bank}, a set of $R$
++fewer unknowns. \rev{We ask: \emph{can one trained model offer an
++accuracy choice at query time, and on which problems is the resulting
++reduced model faster than a solver of the same accuracy?}}
++
++\rev{We answer this question on a three-dimensional Navier--Stokes family
++that a coarse mesh no longer resolves, on unsteady flow past a cylinder,
++on viscous Burgers in two and three dimensions, and, as correctness
++checks, on Poisson and heat problems.} Our NM-ROM builds the solution from a \emph{spatial bank}, a set of $R$
+ functions of space, each a small neural network of the coordinates, whose
+ weighted sum gives the solution; the weights come from a small nonlinear
+ \emph{head}.
+@@ -93,83 +100,53 @@
+ each of its functions carries. A query then chooses how many of the
+ ordered functions to use, $R'$, and whether to solve with the nonlinear
+ head or in the linear span of those functions, without changing a learned
+-weight. Because each bank function is a small network of the coordinates,
+-the same trained network can be evaluated on any mesh. For Burgers, Poisson
+-and heat we train it once on coarse meshes and use it unchanged up to
+-$4096^2$ in 2D and up to $256^3$ in 3D, while the POD basis of our
+-POD-LSPG baseline is rebuilt from new full-order solves for every mesh. For
+-Navier--Stokes the bank is itself a POD basis, built at each mesh. All online coefficients come
++weight. \rev{Because each bank function is a small network of the
++coordinates, for Poisson, heat and Burgers the learned functions are
++shared by every mesh (the Navier--Stokes results of Table~\ref{tab:g1} use
++per-mesh POD banks); the reduced operators are assembled once per mesh, and we charge that assembly as an
++offline cost. On periodic boxes a POD basis interpolated across meshes
++transfers as well as the coordinate network, so there the network
++provides a single mesh-free object rather than higher accuracy.} All online coefficients come
+ from the PDE residual, without access to the reference solution.
+ 
+-We report the following results, each from a single trained model per problem family. On 2D viscous Burgers at $4096^2$, the accurate setting reaches
+-$1.35\%$ worst error at $10.7\times$ the speed of Newton--BiCGStab and the
+-fast setting $3.11\%$ at $27.5\times$, on 64 held-out test cases
+-(Table~\ref{tab:headline}). On 3D Navier--Stokes the nonlinear head
+-reaches $0.21\%$ at $8.01\times$ the speed of the pseudo-spectral solver
+-at $96^3$. On the linear Poisson and heat equations the ordered span is
+-$108\times$ faster than conjugate gradients at $4096^2$ ($0.83\%$ error)
+-and $216\times$ faster than Crank--Nicolson CG at $2048^2$ ($0.13\%$).
+-
+-% Old version
+-% \st{On viscous Burgers at $4096^2$ one frozen model covers 0.22\,\% worst error
+-% at 8.78$\times$ the speed of Newton--BiCGStab and 4.83\,\% at 32.6$\times$
+-% on six development cases (Table~\ref{tab:headline}). From
+-% $1024^2$ one of its settings is more accurate and faster than FNO, U-Net,
+-% Transolver and DeepONet (Table~\ref{tab:operators}), and at matched latent
+-% dimension it is more accurate than a reproduced NM-ROM and POD-LSPG
+-% (Table~\ref{tab:nmrom-baselines}). On three-dimensional Navier--Stokes the
+-% nonlinear head is the accurate setting, $\nNsHeadErr\,\%$ at
+-% $\nNsHeadS\times$ the speed of the pseudo-spectral solver at $96^3$, and at
+-% $64^3$ and $96^3$ it is more accurate and faster than all four operators. On the
+-% linear Poisson and heat problems the ordered span is the best setting, up
+-% to $\nBwPoisAccS\times$ faster than conjugate gradients on Poisson and
+-% $\nHeatWideBatchedAccS\times$ faster than Crank--Nicolson CG on heat test cases.}
++\begin{revblock}
++The main results are Tables~\ref{tab:g1} (harder Navier--Stokes),
++\ref{tab:g2} (cylinder) and \ref{tab:baselines} (neural-field ROMs and
++neural operators), each against accuracy-matched comparators.
++\end{revblock}
+ 
+ \paragraph{Contributions.}
++\begin{revblock}
+ \begin{enumerate}
+-\item \textbf{Speed that scales with the mesh on nonlinear PDEs:} On 2D
+-Burgers up to $4096^2$ and 3D Navier--Stokes, a frozen model is up to
+-27$\times$ faster than the full-order solver at the finest meshes, and it
+-is both more accurate and faster than four neural operators on Burgers at
+-$1024^2$ and $2048^2$ and on Navier--Stokes at $64^3$ and $96^3$. At the
+-same latent dimension it is more accurate than POD-LSPG, a quadratic
+-manifold and a reproduced NM-ROM.
+-% \item \textbf{Accuracy and speed on nonlinear PDEs at large meshes.} On
+-% Burgers up to $4096^2$ and on three-dimensional Navier--Stokes, the same frozen model is faster than the named full-order solver at the
+-% finest meshes. It is also more accurate and faster than the neural
+-% operators on Burgers at $1024^2$ and $2048^2$ and on Navier--Stokes at
+-% $64^3$ and $96^3$, and more accurate than the prior NM-ROMs we ran on
+-% two-dimensional Burgers. Its empirical quadrature is confirmed on states that the solver reaches in test cases.
+ \item \textbf{Accuracy chosen at query time from one trained NM-ROM:}
+ After training, we order the spatial bank once by importance. A query
+ then chooses how many of the ordered bank functions to use (the width
+ $R'$) and whether to solve in their linear span or with the nonlinear
+-head, without changing a learned weight. Widening the span raises both
+-accuracy and cost, so one trained model gives a whole accuracy--cost
+-ladder instead of a single operating point. Which setting is most
+-accurate depends on the PDE: the full-width span for Burgers, Poisson
+-and heat, and the nonlinear head for Navier--Stokes, where it is more
+-accurate than every span width we tested.
+-% \item \textbf{Deployment-time tunability from a single trained NM-ROM.}
+-% An importance-ordered bank gives nested settings of its width $R'$, and
+-% the choice between the nonlinear head and the linear span sets the
+-% accurate end. Accuracy and cost are chosen at query time without
+-% retraining, and we measure the full ladders on development and test
+-% cases.
+-\item \textbf{An architecture built for a fast, mesh-independent solve:}
+-The decoder has no encoder: a bank of coordinate networks, zero on the
+-Dirichlet boundary, multiplied by a small head with a linear skip. Each
+-bank function can be evaluated at any single node, so the same trained
+-bank serves every mesh and empirical quadrature visits only a few nodes;
+-with every linear term precomputed, the matrix-free JAX solver's query
+-time grows far more slowly with the mesh than the full-order solver's
+-(\S\ref{sec:results:fom}).
+-% \item \textbf{An architecture and implementation that make this
+-% practical.} A coordinate-network bank with exact Dirichlet enforcement, a
+-% head with a linear skip, precomputed linear terms and matrix-free JAX
+-% evaluation keep the query cost nearly independent of the mesh, apart from
+-% reading and writing the fields.
++head, without changing a learned weight, so one trained model gives a
++ladder of accuracy--cost settings (Figure~\ref{fig:tunability}); every
++row of Table~\ref{tab:g2} comes from one trained bank.
++\item \textbf{A nonlinear head that makes a small model accurate:} The
++bank/head factorisation makes every linear term an exact precomputed
++matrix, and the head constrains the dynamics to a low-dimensional
++manifold inside the bank's span. On the harder Navier--Stokes family the
++head reaches 0.28--0.64\,\% at bank widths 128--192 where the linear span
++of the same bank gives 7.7--70\,\%; on Burgers, at 16 coordinates, the
++head gives 2.56\,\% against 56.9\,\% for a linear and 31.8\,\% for a
++quadratic closure on the same bank.
++\item \textbf{Speed measured against accuracy-matched solvers, with its
++limits:} The model is faster than a matched solver where that solver
++needs a fine mesh and the solution family is low-dimensional (harder
++Navier--Stokes, 3.3--11.7$\times$ across settings; cylinder,
++25--54$\times$). On the original Navier--Stokes family a solver
++free to coarsen its mesh gives 0.63/1.65/0.94$\times$, on box Poisson and heat 3D
++transform solvers are faster than our model, and on Burgers 2D the
++fast setting is slower than its matched solver at $256^2$ and $512^2$; we
++report all of these (\S\ref{sec:results:fom}). PCA ordering, operator
++precomputation and quadrature are established; what is new is their
++tested combination.
+ \end{enumerate}
++\end{revblock}
++
+ 
+ \section{Related Work}\label{sec:related}
+ 
+@@ -178,13 +155,13 @@
+ \setlength{\intextsep}{2pt plus 1pt minus 1pt}
+ \setlength{\abovecaptionskip}{2pt}
+ \setlength{\belowcaptionskip}{0pt}
+-\resizebox{\linewidth}{!}{%
+-% Model and online solve for Section 3.4. Top row: trained once, frozen.
+-% Bottom row: solved at each query. Dashed tags: deployment knobs. No numbers.
++\resizebox{0.86\linewidth}{!}{%
++% Redrawn for the revision: (a) offline training, (b) online inference.
+ \begin{tikzpicture}[
+   font=\footnotesize,
+   box/.style={draw, rounded corners=1.5pt, minimum height=9mm, align=center,
+               inner sep=3pt},
++  off/.style={box, fill=gray!8, draw=black!55, text width=25mm},
+   dec/.style={box, fill=red!8, draw=red!60!black, text width=24mm},
+   latent/.style={box, fill=yellow!18, draw=orange!70!black},
+   bank/.style={box, fill=blue!8, draw=blue!55!black, text width=46mm},
+@@ -196,18 +173,30 @@
+   arr/.style={-{Latex[length=2mm]}, thick, draw=black!65},
+   upd/.style={-{Latex[length=2mm]}, thick, dashed, draw=green!45!black},
+   lbl/.style={font=\scriptsize\itshape, text=black!55},
+-  row/.style={font=\scriptsize\bfseries, text=black!60, anchor=west}
++  row/.style={font=\scriptsize\bfseries, text=black!70, anchor=west},
++  panel/.style={draw=black!35, rounded corners=3pt, inner sep=5pt}
+ ]
+-  % ===== TOP ROW: the trial state =====
+-  \node[row] at (-0.7,1.75) {TRIAL STATE \textmd{(bank and head trained once, then frozen)}};
+-
++  % ===== (a) OFFLINE =====
++  \node[row] (ta) at (-0.9,4.55) {(a) OFFLINE \textmd{(once per problem family; weights then frozen)}};
++  \node[off] (o1) at (0.55,3.55) {training states $u_i$\\(full-order runs)};
++  \node[off] (o2) at (3.85,3.55) {fit bank $g_\phi$\\(loss \eqref{eq:bank-loss-joint}/\eqref{eq:bank-loss-vp})};
++  \node[off] (o3) at (7.15,3.55) {fit head $h$ to exact\\least-squares coeff.};
++  \node[off] (o4) at (10.45,3.55) {order bank once\\$\widehat G=G\,T$ (QR, SVD)};
++  \node[off, text width=27mm] (o5) at (13.85,3.55) {per mesh: assemble\\$PKG$, tensors, nodes};
++  \draw[arr] (o1) -- (o2); \draw[arr] (o2) -- (o3); \draw[arr] (o3) -- (o4); \draw[arr] (o4) -- (o5);
++  \begin{scope}[on background layer]
++    \node[panel, fill=gray!3, fit=(ta)(o1)(o5)] {};
++  \end{scope}
++
++  % ===== (b) ONLINE =====
++  \node[row] (tb) at (-0.9,1.95) {(b) ONLINE \textmd{(each query; no weight changes)}};
+   \node[latent, text width=12mm] (z) at (0,0) {latent\\$z\in\Real^{k}$};
+   \node[dec] (skip) at (2.75,0.75) {linear skip\\$W_{\mathrm{dir}} z$};
+   \node[dec] (mlp) at (2.75,-0.75) {shallow MLP\\$\varphi_\theta(z)$};
+   \node[sum] (s1) at (4.55,0) {$+$};
+   \node[latent, text width=17mm] (h) at (6.2,0) {head output\\$\head(z)\in\Real^{R}$};
+   \node[latent, text width=17mm] (c) at (6.2,-1.75) {coefficients\\$c\in\Real^{R'}$};
+-  \node[bank] (G) at (11.0,-0.85) {ordered spatial bank\\$\bank_{x,:}=\bcmask(x)\,g_\phi(x)\T$\\(coordinate network, zero on $\Gamma$)};
++  \node[bank] (G) at (11.0,-0.85) {ordered spatial bank\\$\bank_{x,:}=\bcmask(x)\,g_\phi(x)\T$\\(coordinate network)};
+   \node[io, text width=14mm] (u) at (14.6,-0.85) {field\\$\tilde u\in\Real^{N}$};
+ 
+   \draw[arr] (z.east) -- ++(0.3,0) |- (skip.west);
+@@ -220,17 +209,13 @@
+   \draw[arr] (c.east) -- ++(0.35,0) |- ([yshift=-2mm]G.west)
+        node[pos=0.75, below, lbl] {span};
+   \draw[arr] (G) -- (u);
+-
+-  \node[knob, above=1.5mm of G] {accuracy knob: bank width $R'$};
+-
+-  % ===== BOTTOM ROW: online solve =====
+-  \node[row] at (8.4,-2.75) {ONLINE SOLVE \textmd{(each query)}};
+-
+-  \node[io, text width=14mm] (res) at (14.6,-4.45) {residual\\$R(\tilde u)$};
+-  \node[solve, text width=40mm] (lin) at (11.0,-3.8) {linear terms, exact:\\computed once, $PKG$};
+-  \node[solve, text width=40mm] (eq) at (11.0,-5.1) {nonlinear terms: empirical\\quadrature on $N_{\mathrm{eq}}$ nodes};
+-  \node[solve, text width=22mm] (rw) at (6.2,-4.45) {tested residual\\$P R(\tilde u)\in\Real^{M}$};
+-  \node[solve, text width=30mm] (lm) at (2.2,-4.45) {linear: one solve\\nonlinear: LM steps};
++  \node[knob, above=1.5mm of G] {knobs: width $R'$; head or span};
++
++  \node[io, text width=14mm] (res) at (14.6,-3.75) {residual\\$R(\tilde u)$};
++  \node[solve, text width=40mm] (lin) at (11.0,-3.1) {linear terms, exact:\\precomputed $PKG$};
++  \node[solve, text width=40mm] (eq) at (11.0,-4.4) {nonlinear term on a sparse\\node set ($N_{\mathrm{eq}}$ nodes)};
++  \node[solve, text width=22mm] (rw) at (6.2,-3.75) {tested residual\\$P R(\tilde u)\in\Real^{M}$};
++  \node[solve, text width=30mm] (lm) at (2.2,-3.75) {linear: one solve\\nonlinear: LM steps};
+ 
+   \draw[arr] (u) -- (res);
+   \draw[arr] (res.west) -- ++(-0.3,0) |- (lin.east);
+@@ -240,33 +225,27 @@
+   \draw[arr] (rw) -- (lm);
+   \draw[upd] (lm.north) -- ++(0,0.9) -| (z.south);
+   \draw[upd] ([xshift=6mm]lm.north) -- ++(0,0.6) -| (c.south);
+-  \node[lbl, text=green!40!black] at (1.3,-3.3) {update};
+-
++  \node[lbl, text=green!40!black] at (1.3,-2.6) {update};
++  \begin{scope}[on background layer]
++    \node[panel, fill=green!2, fit=(tb)(z)(u)(eq)(lm)] {};
++  \end{scope}
++  \draw[arr, draw=blue!50!black] (o5.south) -- ++(0,-0.75) node[right, lbl, text=blue!50!black, pos=0.5] {frozen model};
+ \end{tikzpicture} {}}
+-\caption{NM-ROM model and online solve. \textbf{Top, trained once and
+-frozen:} the latent code $z$ passes through a linear skip and a shallow
+-SiLU network to give the bank coefficients $\head(z)$, and the ordered
+-coordinate-network bank, zero on $\Gamma$, turns them into the field
+-$\tilde u$. A query uses the head, $\tilde u=G h(z)$, or the span of the
+-first $R'$ ordered columns, $\tilde u=\widehat G_{R'}c$. \textbf{Bottom,
+-each query:} the residual is tested against $M$ fixed tests $P$, with
+-linear terms from the precomputed $PKG$ and advection from empirical
+-quadrature on $N_{\mathrm{eq}}$ nodes. A linear PDE in the span is one
+-least-squares solve; otherwise Levenberg--Marquardt steps update $z$ or
+-$c$. Dashed tags mark deployment choices.}
++\caption{\rev{NM-ROM, redrawn with the two stages separated.
++\textbf{(a) Offline, once per problem family:} fit the coordinate-network
++bank to full-order training states (Appendix~\ref{app:bank-loss}), fit the
++head to their exact least-squares bank coefficients, order the bank once,
++and assemble tests, reduced operators and nonlinear-term nodes for each
++mesh; all of it is charged as offline cost (Table~\ref{tab:breakeven}).
++\textbf{(b) Online, each query:} the head maps a latent code $z$ to bank
++coefficients, $\tilde u=G\,h(z)$, or the span of the first $R'$ ordered
++columns gives $\tilde u=\widehat G_{R'}c$; the residual, tested against
++$M$ fixed tests $P$ with precomputed linear terms and a sparse node set for
++the nonlinear term, is solved by one least-squares solve (linear PDE in the
++span) or Levenberg--Marquardt steps. Dashed tag: choices made at query
++time.}}
+ \label{fig:decoder}
+ \end{figure}
+-
+-\paragraph{Where our method sits.}
+-Two families of methods make PDE solutions cheaper to compute, and they
+-differ in whether they solve the PDE online. \emph{Projection-based
+-reduced-order models} build a trial space offline from full-order
+-solutions and, for each query, solve the discretised PDE restricted to
+-that space. \emph{Neural operators} learn the map from inputs to
+-solutions and return a forward pass of the trained network, without
+-evaluating the PDE. Our method is a projection-based nonlinear-manifold
+-ROM, solved by least-squares Petrov--Galerkin projection; we compare
+-against both families.
+ 
+ \paragraph{Projection-based ROMs.}
+ Linear ROMs approximate solutions in a fixed subspace
+@@ -280,8 +259,9 @@
+ adaptive bases \citep{PeherstorferWillcox2015Adaptive,Carlberg2015hRefinement},
+ hyper-reduced models of Navier--Stokes flows \citep{Romor2025Explicable}
+ and graph autoencoders on unstructured meshes \citep{Magargal2025GraphAE}.
+-These methods solve the PDE online, but a linear or quadratic basis is
+-tied to the mesh it was built on, and an autoencoder decoder is evaluated
++These methods solve the PDE online\rev{; a linear or quadratic basis is
++stored on the mesh it was built on, though it can be interpolated to
++another}, and an autoencoder decoder is evaluated
+ at every node in each online iteration unless it is hyper-reduced.
+ Latent-dynamics ROMs instead learn the reduced dynamics from data
+ \citep{Fries2022LaSDI,He2023gLaSDI}.
+@@ -290,10 +270,14 @@
+ \citep{StefanescuSandu2014,WederSchwerdtnerPeherstorfer2024} are
+ established components that we reuse. Our closest relatives are
+ neural-field ROMs \citep{Chen2023CROM,KimWenLeeChoiCNFROM2024,Berman2024CoLoRA}, which
+-also evaluate a coordinate network at individual nodes. We differ in
++also evaluate a coordinate network at individual nodes\rev{; we compare
++with a CROM-style and a CoLoRA-style model in
++\S\ref{sec:results:baselines}}. We differ in
+ three ways: our decoder separates space from the latent code (a bank
+ times a head), so every linear term is precomputed exactly; the bank
+-carries an exact Dirichlet factor; and the bank is ordered after
++carries an exact Dirichlet factor \rev{(on the cylinder, a product of
++smooth distance factors to the boundary pieces, with the inflow carried by
++a lift function)}; and the bank is ordered after
+ training, so its nested widths give accuracy settings at query time
+ from one trained model, as runtime-tunable networks do for vision and
+ language models
+@@ -311,11 +295,16 @@
+ 
+ \paragraph{Hyper-reduction and baselines.}
+ Empirical quadrature \citep{Hernandez2017EQ,YanoPatera2019LPEQ,Hernandez2024CECM}
+-reduces nonlinear residual evaluation through non-negative weights; we
+-retain that construction and test its error on the states the solver
+-reaches. Because learned solvers are often compared with weak baselines
+-\citep{McGreivy2024Weak}, we compare against named iterative full-order
+-solvers.
++and energy-conserving sampling and weighting \rev{(ECSW)
++\citep{Farhat2014ECSW}} reduce nonlinear residual evaluation through
++non-negative weights; we \rev{describe that construction, test every
++rule, fitted or not, on the states the solver reaches, and use a fixed
++uniform sub-lattice where it suffices (\S\ref{sec:method:precomp})}.
++Because learned solvers are often compared with weak baselines
++\citep{McGreivy2024Weak}, we compare \rev{each setting with the fastest
++configuration of a solver ladder that is at least as accurate, including
++coarser meshes and, on box problems, sine-transform solvers}.
++
+ 
+ \section{Methodology}\label{sec:method}
+ \edef\restoredisplays{%
+@@ -330,7 +319,8 @@
+ 
+ A full-order solve has one unknown per grid node, so its cost grows with
+ the mesh size $N$. For each query we instead solve the same discretised
+-PDE in a few unknowns, at a cost that barely depends on $N$. This needs
++PDE in a few unknowns, at a cost that barely depends on $N$ \rev{apart
++from forming the output field}. This needs
+ three ingredients. First, a compact set of candidate solutions, the trial
+ manifold (\S\ref{sec:method:manifold}): the solution is a weighted sum of
+ the functions in the spatial bank, and its weights are either produced by
+@@ -371,26 +361,22 @@
+ column of $G$ is zero there too. The boundary values therefore never
+ change when $z$ changes, on any mesh, and the boundary equations do not enter the solve. 
+ %The cube and the L-shaped domain use their own factor, which is zero on their boundaries in the same way. 
+-The cube and the L-shaped domain define their own boundary factor (Appendix~ \ref{app:method}), zero on their boundaries in the same way.
++The cube and the L-shaped domain define their own boundary factor (Appendix~ \ref{app:method}), zero on their boundaries in the same way. \rev{On the cylinder the factor is a product of smooth distance factors to the inlet, the channel walls and the cylinder surface, which can be formed for any boundary whose distance can be computed; the inflow is carried by a lift function and the bank represents the remainder (Appendix~\ref{app:method:cyl}).}
+ %For each new problem, we find $z$ by solving the PDE 
+ Each query then solves for $z$ (head) or $c$ (span) by solving the PDE
+ (\S\ref{sec:method:weak}).
+ 
+ \paragraph{Ordering the bank.}
+ \label{sec:method:ladder}\label{sec:method:ordered}
+-Training does not rank the columns of $G$: any one of them may matter as
+-much as any other, so keeping only the first $R'$ columns would throw
+-away useful ones at random. After training we therefore replace the
+-columns by new combinations of them, sorted from most to least important,
++Training does not rank the columns of $G$, so after training we replace
++them by combinations sorted from most to least important,
+ \begin{equation}
+   \widehat G = G\,T .
+   \label{eq:ordered}
+ \end{equation}
+ The matrix $T$ comes from a principal component analysis of the training
+-fields written in the bank (Appendix~\ref{app:method:ordered}). The first
+-column of $\widehat G$ is the single direction that best describes the
+-training fields, the second bests the remaining directions, and so on. Keeping
+-the first $R'$ columns therefore gives the best $R'$-dimensional subspace of the bank for the training data. At full width nothing changes: $\widehat G$
++fields written in the bank (Appendix~\ref{app:method:ordered}). Keeping
++the first $R'$ columns gives the best $R'$-dimensional subspace of the bank for the training data. At full width nothing changes: $\widehat G$
+ spans the same space as $G$, and no weight is retrained.
+ A query then solves in one of two ways,
+ \begin{equation}
+@@ -449,15 +435,9 @@
+ head and for the nonlinear PDEs.
+ 
+ \paragraph{Elliptic (Poisson).}
+-The Poisson residual is $R(u)=Ku-F$, where $F$ is the discrete source. In the span it is linear in $c$,
+-\begin{equation}
+-  P\,R\big(\widehat G_{R'}c\big) = \big(PK\widehat G_{R'}\big)\,c - PF,
+-  \label{eq:poisson-residual}
+-\end{equation}
+-so a query is one least-squares solve with a fixed $M\times R'$ matrix,
+-factorised once per mesh and width, and nothing is iterated. With the head,
+-\eqref{eq:lm} iterates in $z$ with $J=PKG\,J_h(z)$, and only the head is
+-re-evaluated.
++In the span the Poisson residual $R(u)=Ku-F$ is linear in $c$, so a query
++is one least-squares solve with the fixed matrix $PK\widehat G_{R'}$
++(Appendix~\ref{app:method:poisson}).
+ 
+ \paragraph{Time-dependent problems.}
+ Heat (Crank--Nicolson), Burgers (backward Euler with a sign-upwind
+@@ -507,23 +487,13 @@
+   \;\approx\; \sum_{i\in\mathcal S} w_i\,P_{:,i}\,A_i(\tilde u).
+   \label{eq:eq-rule}
+ \end{equation}
+-Letting $g_i^{(\ell)}=P_{:,i}A_i(\tilde u^{(\ell)})\in\Real^{M}$ denote the
+-per-node contribution at a stored state $\tilde u^{(\ell)}$ that the solver
+-reaches on training trajectories, the constraint at that state is
+-$\sum_{i} w_i\,g_i^{(\ell)}=P A(\tilde u^{(\ell)})$. Stacking the
+-constraints gives a matrix $E$ and a vector $b$, and we solve
+-\begin{equation}
+-  \min_{w\ge 0}\;\norm{E\,w-b}_2
+-  \label{eq:nnls-main}
+-\end{equation}
+-by NNLS \citep{LawsonHanson1974NNLS}, which returns a sparse $w$ with
+-support $\mathcal S$ of size $N_{\mathrm{eq}}\ll N$. Computing $A_i$ needs
+-$\tilde u$ at node $i$ and its stencil neighbours $\mathcal N(i)$, so we
+-evaluate the decoder only on
+-$\mathcal S^{+}=\mathcal S\cup\bigcup_{i\in\mathcal S}\mathcal N(i)$, with
+-$|\mathcal S^{+}|\le 5N_{\mathrm{eq}}$ in two dimensions and $7N_{\mathrm{eq}}$ in three. Because each bank column is a
+-coordinate network (\S\ref{sec:decoder}), those rows of the bank are computed
+-once and cached.
++It is fitted by non-negative least squares on states the solver reaches on training trajectories (Appendix~\ref{app:method:eq}), giving a support $\mathcal S$ of $N_{\mathrm{eq}}\ll N$ nodes. \rev{Where a
++simpler rule passes the same check we use it instead: the Burgers 2D rows
++of Table~\ref{tab:headline} use a fixed uniform $63{\times}63$ interior
++lattice with equal weights and no fit, which reduces the query at
++$1024^2$ from 1,263 to 49.3\,ms at unchanged error.} The decoder is evaluated only on $\mathcal S$ and its stencil
++neighbours, $\mathcal S^{+}$; those rows of the bank are computed once and
++cached.
+ 
+ \paragraph{Cost.}
+ With linear terms computed once and advection on $\mathcal S^{+}$, one
+@@ -538,13 +508,19 @@
+ 
+ \paragraph{Checking the rule.}
+ Each rule is checked on the states the reduced solver reaches on
+-held-out trajectories, against an error bar fixed in advance; every rule
+-behind Table~\ref{tab:headline} passes (Appendix~\ref{app:method:eq}).
++held-out trajectories, against an error bar fixed in advance\rev{; the
++lattice of the Burgers rows and the quadratic tensors of the 3D rows pass
++it (Appendix~\ref{app:method:eq})}.
+ 
+ \subsection{Model Architecture}
+ \label{sec:decoder}
+ 
+-Three requirements of the solve shape the model in Figure~\ref{fig:decoder}. First, every head solve starts from a stored training code and descends along the head's Jacobian, so that Jacobian must retain a usable direction at all times; the linear skip guarantees this. Second, empirical quadrature keeps only a sparse set of nodes, which saves time only if the decoder can be evaluated at one node without the others --and one trained model must serve every mesh of a series; the coordinate-network bank meets both. Third, one trained model must offer several accuracy settings without retraining; the \emph{ordered bank} provides this.
++Two requirements shape the model in Figure~\ref{fig:decoder}: the head
++solve needs a usable Jacobian at its stored starting code, and a sparse
++node set saves time only if the decoder can be evaluated at one node
++without the others\rev{; the learned functions are then also shared by the
++meshes of a series, while the reduced operators are assembled once per
++mesh}.
+ Widths and training
+ settings are in Appendix~\ref{app:training-schedule}.
+ 
+@@ -558,8 +534,9 @@
+ \end{equation}
+ with $\sigma$ the SiLU activation. Its Jacobian is
+ $\dhead(\latent)=W_{\mathrm{dir}}+J_{\varphi}(\latent)$. The first term does not
+-depend on $\latent$, so the Levenberg--Marquardt step from a stored code
+-always has a fixed linear direction to follow, while $\varphi_\theta$
++depend on $\latent$, so \rev{the first Levenberg--Marquardt step from a
++stored code has a non-zero linear direction even where $J_\varphi$ is
++small (this does not guarantee convergence)}, while $\varphi_\theta$
+ supplies the curvature of the manifold. The head acts on the $R$ bank
+ coefficients, not on the $N$ nodes, so its cost and its parameter count do
+ not depend on the mesh.
+@@ -575,45 +552,29 @@
+   \gamma(x)=\big[\cos(2\pi\Omega x),\;\sin(2\pi\Omega x)\big],
+   \label{eq:coordnet}
+ \end{equation}
+-where $\gamma$ is a random-Fourier-feature embedding with a fixed random
+-frequency matrix $\Omega$ \citep{Tancik2020FourierFeatures}. Because
++where $\gamma$ is a random-Fourier-feature embedding
++\citep{Tancik2020FourierFeatures} \rev{whose frequency matrix $\Omega$
++is initialised at random and then trained for Burgers 2D, Poisson 2D and
++the L-shape, and kept fixed for the other problems (Appendix~\ref{app:bank-loss})}. Because
+ $g_\phi$ reads a coordinate, a row of $\bank$ is computed from its node
+ alone. A quadrature rule therefore needs only the rows of $\mathcal S^{+}$,
+-and the same trained network is sampled on every mesh. Two natural
+-alternatives fail one of these tests. A convolutional or attention
+-decoder couples its output nodes, so one node costs a pass over the whole
+-grid, and a learned dense readout stores $NR$ parameters and must be
+-retrained for each mesh. The parameter count of $g_\phi$ does not depend on $N$.
+-
+-\paragraph{Ordered bank, for deployment-time accuracy.}
++and the same trained network is sampled on every mesh.
++
+ \label{sec:method:tuning}\label{sec:method:layers}
+-The ordering \eqref{eq:ordered} makes the settings nested, so one model
+-built with $R$ columns contains every smaller one, and the two solve modes
+-of \eqref{eq:modes} are its two ends: the span is a linear ROM in a learned
+-bank, and the head is a nonlinear-manifold ROM in $k$ unknowns that can
+-follow states no small span contains.
+-
+-
+-
+-
+ \subsection{Implementation and Training}
+ \label{sec:impl}
+-This subsection describes how a query runs on the GPU and how the model
+-is trained. The matrix $PKG$ is built once per mesh, so a linear term
+-costs one small matrix--vector product online, and in the span the
+-Jacobian is the fixed matrix $PK\widehat G_{R'}$. With the head, the
+-remaining factor is the head Jacobian, supplied by forward-mode automatic
+-differentiation \citep{Bradbury2018JAX}: $J=PKG\,J_h(z)$ with
+-$J_h v=\mathrm{JVP}(h,z,v)$. Each accepted step solves the small damped
+-normal equation directly, and advection reads the cached stencil on the
+-quadrature nodes (Appendix~\ref{app:method:burgers}). The ordered bank is
+-stored in column blocks at the tested widths, so a query at width $R'$
+-reads exactly $R'$ columns. Training uses training data only: the
+-coordinate network $g_\phi$ is fitted to the training states through
+-\eqref{eq:bank} and frozen; the head is then fitted to the bank
++Online, $J=PKG\,J_h(z)$ with the head Jacobian from forward-mode
++automatic differentiation in JAX \citep{Bradbury2018JAX}, and each accepted
++step solves the small damped normal equation directly. Training uses training data only: the
++coordinate network $g_\phi$ is fitted \rev{by minimising the relative
++reconstruction error of the training states in its span, with a small
++conditioning penalty on its columns (\eqref{eq:bank-loss-joint} and
++\eqref{eq:bank-loss-vp} in Appendix~\ref{app:bank-loss})}, and frozen; the
++head is then fitted to the \rev{exact least-squares} bank
+ coefficients of those states, with one stored code per training state (an
+ auto-decoder); last, the bank is ordered once by \eqref{eq:ordered}, with
+-one QR and one SVD. Widths, cohorts and offline costs are in
++one QR and one SVD. \rev{At query time the coefficients come from the
++projected PDE solve, never from the reference.} Widths, cohorts and offline costs are in
+ Appendix~\ref{app:training-schedule}.
+ 
+ % =====================================================================
+@@ -622,12 +583,23 @@
+ \restoredisplays
+ 
+ \paragraph{Problems and references.}
+-We test the method on PDEs of increasing difficulty: two linear problems,
+-Poisson and heat, and two nonlinear ones, viscous Burgers and
+-incompressible Navier--Stokes. In two dimensions we solve Poisson on the
+-square, with an L-shaped domain as a check with a re-entrant corner, heat
+-and Burgers; in three dimensions Poisson, heat and Burgers on the cube
+-and Navier--Stokes on the periodic cube. Meshes and cohorts are in
++\begin{revblock}
++The speed case rests on two problems that a coarse mesh does not resolve.
++(i) \emph{Navier--Stokes 3D, harder family}: incompressible flow on the
++periodic cube with a quarter of the viscosity of our original family
++($\nu\sim\log U(5{\times}10^{-4},2.5{\times}10^{-3})$) and four times
++sharper vortex blobs, horizon $T=0.2$, reference CNAB2 at $192^3$
++(Appendix~\ref{app:method:nshard}), chosen from five candidate families by
++criteria fixed before any reduced model was run; evaluated at $64^3$, $96^3$ and
++$128^3$. (ii) \emph{Unsteady flow past a cylinder} (DFG 2D-2 geometry
++\citep{SchaeferTurek1996}): vortex shedding on P2/P1 finite elements with
++96,781 unknowns, trained at Reynolds numbers 90, 100 and 110, settings
++frozen at 95, held-out 105 (Appendix~\ref{app:method:cyl}). We also report
++the submission's problems: Burgers 2D/3D, the original Navier--Stokes
++family, Poisson on an L-shape, and, as correctness checks, Poisson and
++heat on boxes (Appendix~\ref{app:boxes}).
++\end{revblock}
++Meshes and cohorts are in
+ Table~\ref{tab:problems}, the sampled families in Table~\ref{tab:spec} and
+ the three-dimensional configurations in Table~\ref{tab:config3d}.
+ 
+@@ -635,265 +607,341 @@
+ We report the worst relative $L^2$ error over the stated cases and
+ requested times, in percent. Poisson uses the steady reference norm and
+ heat the current reference norm; Burgers and Navier--Stokes use the
+-initial-field norm over evolved times. Same-grid error measures the
+-reduction error against the converged discrete solution. Settings for a test cohort are fixed before its
+-cases are opened; all other cohorts are development cohorts.
+-
+-\paragraph{Timing and speedup.}
+-Every accuracy--runtime pair comes from the same solver invocation, in
+-double precision, with GPU burn-in, synchronised timing and medians of
+-retained repetitions (protocol in Appendix~\ref{app:cg-current}). GPU
+-query time covers initialisation, the solve or rollout and the requested
+-device outputs. Training and compilation are offline costs. Speedup is
+-$S=T_{\mathrm{FOM}}/T_{\mathrm{method}}$ with both times from the same
+-allocation. Solves that miss their stopping rule are reported as such and
+-do not enter a speedup.
+-
+-\paragraph{Baselines.}
+-Poisson and the L-shape are compared with conjugate gradients (CG), heat
+-with Crank--Nicolson stepping whose linear solve is CG (CN--CG), Burgers
+-with Newton--BiCGStab, and Navier--Stokes with the Fourier pseudo-spectral
+-solver that generated its data (Crank--Nicolson diffusion,
+-Adams--Bashforth advection; CNAB2). Each runs at its fastest tested
+-setting at least as accurate as the accurate NM-ROM setting.
++initial-field norm over evolved times\rev{; the cylinder uses six fixed
++acceptance targets (velocity RMS and maximum error, pressure error,
++Strouhal number, maximum drag and maximum lift)}. \rev{Test cohorts have
++16 to 128 cases. In every new experiment (\S\ref{sec:results:ns}--\ref{sec:results:baselines})
++the settings were frozen on development cases before the held-out cases
++were evaluated; tables on six development cases are labelled as such.}
++
++\paragraph{Timing, speedup and matched solvers.}
++Each accuracy--time pair comes from one invocation, with warm-up,
++synchronisation and medians of repetitions (Appendix~\ref{app:cg-current}). Training, data generation and
++per-mesh assembly are offline costs (Table~\ref{tab:breakeven}).
++\rev{Speedup divides the time of a \emph{matched} solver by the model's:
++the fastest configuration of a solver ladder whose worst error on the same
++cases is at or below the setting's own. On the harder Navier--Stokes family
++the ladder has 450 configurations of a GPU Fourier pseudo-spectral solver
++over mesh ($32^3$--$128^3$), integrator (CNAB2, RK4) and step; on the cylinder, 62 finite-element configurations
++over mesh, element order, integrator, step and refresh interval; on the
++original benchmarks, the named solver's own ladder (CG, Crank--Nicolson CG,
++Newton--BiCGStab, CNAB2), with sine-transform solvers reported where
++measured. Spread is in Appendix~\ref{app:spread}.}
+ 
+ \section{Numerical Experiments and Results}\label{sec:results}
+-We ask three questions, on linear (Poisson, heat) and nonlinear (Burgers,
+-Navier--Stokes) problems: how the NM-ROM compares with full-order solvers
+-(\S\ref{sec:results:fom}, Table~\ref{tab:headline}), with neural operators
+-and other ROMs (\S\ref{sec:results:neuralops}, Table~\ref{tab:operators}),
+-and which setting to choose (\S\ref{sec:results:tunability}).
+-
+-
+-
+-\subsection{Accuracy and Speed against Full-Order Solvers}\label{sec:results:fom}
++\rev{We ask where the model is faster than a solver of the same accuracy
++(\S\ref{sec:results:ns}--\ref{sec:results:fom}), how it compares with
++neural-field ROMs and neural operators (\S\ref{sec:results:baselines}),
++and what each component contributes (\S\ref{sec:results:tunability}).}
++
++% ---------------------------------------------------------------------
++\subsection{Interacting Vortices in Three-Dimensional Navier--Stokes}\label{sec:results:ns}
++
++\begin{table}[t]
++\centering
++\color{blue}
++\caption{\textbf{Harder Navier--Stokes family}, 128 fresh test cases,
++three independently trained models (trajectories, per-mesh POD banks and
++heads re-drawn), settings frozen on 64 development cases. Errors: range
++over three seeds. Times: seed~0, median over eight cases, online solve
++only (spread in Table~\ref{tab:spread-g1}). Speedup over the fastest
++configuration of a 450-entry solver ladder (any mesh to $128^3$, CNAB2 or
++RK4, any step) at least as accurate on the same cases; range over the two
++seeds that passed the timing-stability check. \emph{Fast}: fewer steps
++or tests, also frozen on development cases.}
++\label{tab:g1}
++\scriptsize\setlength{\tabcolsep}{3.5pt}
++\begin{tabular}{@{}lllll@{}}
++\toprule
++Head on a per-mesh & Worst-case error, three seeds & Median & Time & Speedup over matched solver \\
++POD bank of width & $64^3$ / $96^3$ / $128^3$ (\%) & error (\%) & $64^3$ / $96^3$ / $128^3$ (ms) & $64^3$ / $96^3$ / $128^3$ \\
++\midrule
++64 & 1.17--1.36 / 1.45--1.61 / 1.43--1.69 & 0.34--0.54 & 16 / 17 / 31 & 6.9 / 6.4--6.5 / 3.6--3.7$\times$ \\
++96 & 0.58--0.75 / 0.64--0.78 / 0.62--0.82 & 0.17--0.19 & 17 / 26 / 43 & 9.4--11.7 / 7.6--9.5 / 4.7--6.9$\times$ \\
++128 & 0.42--0.60 / 0.43--0.62 / 0.45--0.64 & 0.10--0.12 & 31 / 48 / 62 & 6.3--6.5 / 5.2--7.0 / 4.0--5.3$\times$ \\
++128, fast & 0.49--0.67 / 0.52--0.68 / 0.47--0.69 & 0.12--0.14 & 19 / 31 / 51 & 9.4--10.4 / 8.0--10.9 / 4.9--6.1$\times$ \\
++192 & 0.28--0.39 / 0.35--0.41 / 0.35--0.42 & 0.06--0.08 & 52 / 67 / 121 & 3.9--5.9 / 5.9--6.2 / 3.3--3.4$\times$ \\
++192, fast & 0.35--0.48 / 0.39--0.47 / 0.43--0.47 & 0.09--0.11 & 25 / 40 / 68 & 8.0--10.2 / 8.3--10.0 / 5.1$\times$ \\
++\midrule
++Linear span, same banks & 7.7--70 & --- & --- & 0.04--0.56$\times$ \\
++\bottomrule
++\end{tabular}
++\end{table}
++
++\begin{revblock}
++The periodic unit cube contains two interacting vortex blobs, with sharpness
++$\beta=8$ and viscosity $\nu\in[5\times10^{-4},2.5\times10^{-3}]$.
++Relative to the original family, the blobs are narrower and the viscosity
++is four times lower. The family was selected by resolution and representation
++criteria fixed before reduced-model runs (Appendix~\ref{app:method:nshard}).
++Figure~\ref{fig:ns-head-span} compares the head and the same bank's span.
++
++In Table~\ref{tab:g1} the fast width-192 setting is below 0.5\,\% on every
++mesh and seed and 5.1--10.2$\times$ faster than the matched solver, which
++needs meshes of $100^3$ to $120^3$.
++Across all settings the head is 3.3--11.7$\times$ faster than its matched
++solver. The nonlinear head is what makes this work: the linear span of the
++same bank is unstable, more so as the bank widens, and slower than the
++solver. Median errors differ by less than 0.03 percentage points between
++seeds at widths 96 and above. The speedup narrows with mesh and width
++(3.3$\times$ for width 192 at $128^3$). The third seed's timing run failed
++a timing-stability check twice; its ratios (3.4--10.6$\times$) lie in the
++same range.
++
++\paragraph{One coordinate network for all meshes.} Table~\ref{tab:g1} uses
++per-mesh POD banks. On an earlier 32-case cohort one coordinate network
++fitted once replaces them on all three meshes at 0.90/1.23/1.39\,\% and
++14.2/6.7/3.8$\times$, level with per-mesh POD except at $128^3$
++(1.17\,\%, 6.1$\times$); with its $64^3$ head reused it gives
++1.05/1.06\,\% at $96^3$/$128^3$ (Table~\ref{tab:coordnet}).
++\end{revblock}
++
++% ---------------------------------------------------------------------
++\begin{figure}[t]
++\centering
++\includegraphics[width=\linewidth]{figs/F8_ns_head_span.pdf}
++\caption{\rev{The nonlinear head changes the dynamics within the same bank.
++Navier--Stokes at $128^3$, using the fresh cohort of Table~\ref{tab:g1}.
++Left: worst-case cohort error, median and range across three independently
++trained models. Right: speedup over each setting's own accuracy-matched
++pseudo-spectral solver, median and range over the two models passing the
++timing gate at every mesh; dashed line: equal cost.
++These are the accurate head settings, not the fast rows.}}
++\label{fig:ns-head-span}
++\end{figure}
++
++\subsection{Unsteady Flow past a Cylinder}\label{sec:results:cyl}
++
++\begin{table}[t]
++\centering
++\color{blue}
++\caption{\textbf{Cylinder flow, held-out Reynolds number 105.} One trained
++bank at three widths, rollout over 1.7\,s (five shedding periods).
++Comparator: cheapest finite-element run meeting all six targets, screened
++from a 62-entry ladder on the development case and re-checked at Re 105
++(coarser P3/P2 mesh, 16,912 unknowns). Every row meets all six targets.
++Medians of five repetitions on one 16-thread CPU node (ranges: 37.5--49.4,
++1.69--1.72, 0.82--0.83, 0.79\,s). \emph{With field output}: velocity
++rebuilt at all 681 saves.}
++\label{tab:g2}
++\small\setlength{\tabcolsep}{4pt}
++\begin{tabular}{@{}lccc@{}}
++\toprule
++Setting & Velocity error & Rollout time & Speedup (rollout / with field output) \\
++\midrule
++Cheapest passing finite-element run & $9.4{\times}10^{-3}$ & 42.2\,s & 1$\times$ \\
++Width 32, step 1/400 & $7.0{\times}10^{-3}$ & 1.71\,s & 24.7$\times$ / 11.2$\times$ \\
++Width 24, step 1/400 & $5.5{\times}10^{-3}$ & 0.83\,s & 51.2$\times$ / 15.9$\times$ \\
++Width 16, step 1/800 & $8.3{\times}10^{-3}$ & 0.79\,s & 53.6$\times$ / 17.6$\times$ \\
++\bottomrule
++\end{tabular}
++\end{table}
++
++\begin{revblock}
++Training and evaluation use a P4/P3 Taylor--Hood reference at step 1/3200;
++the reduced model is built on a P2/P1 export mesh with 96,781 unknowns.
++The accuracy-matched finite-element comparator is a separate, cheaper
++configuration (Table~\ref{tab:g2}).
++On a non-box geometry one trained bank meets all six targets at every
++width (Table~\ref{tab:g2}), with a rollout 25--54$\times$ faster than the
++cheapest finite-element run that meets the same targets (11--18$\times$
++including field output); with a finer step width 32 reaches
++$1.9{\times}10^{-3}$. Over a window three times longer, widths 24 and 32
++still meet all six targets ($4.0{\times}10^{-3}$ and $2.4{\times}10^{-3}$
++at step 1/800), while the best of six neural operators trained for this
++comparison meets three. At Reynolds 80 and 120, outside the band,
++width 32 meets five and four targets ($1.2{\times}10^{-2}$ against
++$10^{-2}$), narrower widths one to three and the best operator three and
++four (Table~\ref{tab:cyl-extra}). The bank's boundary factor is a product of
++distance factors, the inflow is in a lift function, the rollout is
++Galerkin (Appendix~\ref{app:method:cyl}), and a POD basis of equal width
++performs the same.
++Replacing the comparator's sparse LU with the tested CPU algebraic-multigrid
++variants preserves all targets but is slower, so LU remains the stronger
++measured baseline (Appendix~\ref{app:method:cyl}).
++\end{revblock}
++
++% ---------------------------------------------------------------------
++\subsection{Original Benchmarks against Matched Solvers}\label{sec:results:fom}
+ \label{sec:results:operators}\label{sec:exp:panel}
+ 
+ \begin{table}[t]
+ \centering
+-\caption{NM-ROM against the named full-order solver (FOM) at every problem
+-and mesh. \textbf{Both NM-ROM columns of a row come from one frozen model}:
+-\emph{accurate} is the most accurate tested setting and \emph{fast} the
+-cheapest tested setting whose worst error is below 5\,\% (except $R'=64$,
+-5.6\,\%, on the L-shape, Poisson on an L-shaped domain); settings and FOM tolerances are in
+-Table~\ref{tab:headline-times}. Error is the worst relative $L^2$ error
+-over the cases (\%). Speedup is the FOM's median time divided by the
+-NM-ROM's in the same GPU allocation, \textbf{bold} where the NM-ROM is
+-faster; the FOM is a standard iterative solver (CG, CN--CG, Newton--BiCGStab or
+-CNAB2) run at the loosest tested setting that is at least as accurate as
+-the accurate setting; looser settings we tested were less accurate than
+-the NM-ROM, so the FOM error is often below ours. Every row is on held-out test cases that were not used
+-to choose the accurate setting.}
++\color{blue}
++\caption{The submission's benchmarks, each setting against the solver
++matched to \emph{its own} error within that problem's original solver
++ladder. \textbf{Both NM-ROM columns of a row come from one frozen model}:
++\emph{accurate} is the most accurate tested setting, fixed before the
++test cases were opened. \emph{Fast$^\dagger$} is the cheapest tested
++width whose worst error on these test cases is below 5\,\% (L-shape
++5.6\,\%): \textbf{it was selected using the test errors}, so its error is
++not a held-out estimate. Error is the worst relative $L^2$ error over the
++test cases (\%). Speedup: matched solver's median time over the NM-ROM's,
++same GPU allocation, \textbf{bold} where the NM-ROM is faster; timing
++spread in Table~\ref{tab:spread-t1}. Box Poisson and heat are in
++Table~\ref{tab:boxes}. Burgers 2D uses a fixed $63{\times}63$ lattice for
++the nonlinear term (\S\ref{sec:method:precomp}).}
+ \label{tab:headline}
+-{%
+-% Side-by-side layout of the generated Table 1 (values unchanged).
+-\scriptsize\setlength{\tabcolsep}{2.6pt}
+-\resizebox{\linewidth}{!}{%
+-\begin{tabular}{@{}llrrrrr@{\hspace{9pt}}llrrrrr@{}}
++\scriptsize\setlength{\tabcolsep}{3pt}
++\begin{tabular}{@{}llrrrrr@{\hspace{10pt}}llrrrrr@{}}
+ \toprule
+-\multicolumn{7}{@{}c}{\emph{Two-dimensional}} & \multicolumn{7}{c@{}}{\emph{Three-dimensional}} \\
+-\cmidrule(r{6pt}){1-7}\cmidrule(l){8-14}
+- & & \multicolumn{2}{c}{Accurate} & \multicolumn{2}{c}{Fast} & FOM & & & \multicolumn{2}{c}{Accurate} & \multicolumn{2}{c}{Fast} & FOM \\
+-\cmidrule(lr){3-4}\cmidrule(lr){5-6}\cmidrule(r{6pt}){7-7}\cmidrule(lr){10-11}\cmidrule(lr){12-13}\cmidrule(l){14-14}
++ & & \multicolumn{2}{c}{Accurate} & \multicolumn{2}{c}{Fast$^\dagger$} & FOM & & & \multicolumn{2}{c}{Accurate} & \multicolumn{2}{c}{Fast$^\dagger$} & FOM \\
++\cmidrule(lr){3-4}\cmidrule(lr){5-6}\cmidrule(lr){10-11}\cmidrule(lr){12-13}
+ Problem & Mesh & Err. & Speedup & Err. & Speedup & Err. & Problem & Mesh & Err. & Speedup & Err. & Speedup & Err. \\
+ \midrule
+-Poisson & $256^{2}$ & 0.84 & \textbf{18.2$\times$} & 4.07 & \textbf{27.0$\times$} & 0.77 & Poisson & $32^3$ & 0.23 & \textbf{4.42$\times$} & 2.01 & \textbf{5.25$\times$} & 0.16 \\
+- & $1024^2$ & 0.83 & \textbf{31.1$\times$} & 4.06 & \textbf{82.0$\times$} & 0.33 &  & $64^3$ & 0.23 & \textbf{8.07$\times$} & 1.98 & \textbf{11.8$\times$} & 0.11 \\
+- & $2048^2$ & 0.83 & \textbf{64.4$\times$} & 4.06 & \textbf{221$\times$} & 0.22 &  & $128^3$ & 0.23 & \textbf{13.6$\times$} & 1.97 & \textbf{28.5$\times$} & 0.075 \\
+- & $4096^2$ & 0.83 & \textbf{108$\times$} & 4.06 & \textbf{372$\times$} & 0.58 &  & $256^3$ & 0.23 & \textbf{19.3$\times$} & 1.96 & \textbf{47.6$\times$} & 0.17 \\
+-\addlinespace[3pt]
+-L-shape & $256^2$ & 2.02 & \textbf{32.1$\times$} & 5.61 & \textbf{34.7$\times$} & 1.08 & Heat & $32^{3}$ & 0.080 & \textbf{10.9$\times$} & 1.11 & \textbf{15.2$\times$} & 0.078 \\
+- & $512^2$ & 2.00 & \textbf{50.1$\times$} & 5.60 & \textbf{58.5$\times$} & 0.74 &  & $64^{3}$ & 0.082 & \textbf{8.50$\times$} & 4.78 & \textbf{18.0$\times$} & 0.081 \\
+- & $1024^2$ & 1.99 & \textbf{41.6$\times$} & 5.60 & \textbf{49.4$\times$} & 1.77 &  & $128^{3}$ & 0.083 & \textbf{5.79$\times$} & 4.78 & \textbf{20.9$\times$} & 0.082 \\
+- & $2048^2$ & 1.99 & \textbf{78.4$\times$} & 5.60 & \textbf{97.5$\times$} & 1.18 &  & $256^3$ & 0.083 & \textbf{7.60$\times$} & 4.78 & \textbf{28.0$\times$} & 0.082 \\
+-\addlinespace[3pt]
+-Heat & $1024^2$ & 0.13 & \textbf{105$\times$} & 1.08 & \textbf{200$\times$} & 0.045 & Burgers & $64^3$ & 1.01 & 0.21$\times$ & 3.37 & \textbf{2.08$\times$} & 0.92 \\
+- & $2048^2$ & 0.13 & \textbf{216$\times$} & 1.08 & \textbf{512$\times$} & 0.045 &  & $128^3$ & 1.46 & 0.57$\times$ & 4.26 & \textbf{5.10$\times$} & 1.39 \\
+- & $4096^{2}$ & 0.13 & \textbf{231$\times$} & 1.08 & \textbf{491$\times$} & 0.054 &  & $256^3$ & 2.20 & \textbf{2.19$\times$} & 3.77 & \textbf{5.60$\times$} & 1.52 \\
+-\addlinespace[3pt]
+-Burgers & $256^2$ & 0.87 & 0.38$\times$ & 3.85 & \textbf{1.22$\times$} & 0.11 & Navier--Stokes & $32^3$ & 0.21 & 0.93$\times$ & 3.06 & \textbf{3.56$\times$} & 0.19 \\
+- & $512^2$ & 1.13 & 0.62$\times$ & 4.10 & \textbf{1.93$\times$} & 0.12 &  & $64^3$ & 0.21 & \textbf{2.92$\times$} & 3.06 & \textbf{8.53$\times$} & 0.12 \\
+- & $1024^2$ & 1.25 & \textbf{1.51$\times$} & 4.25 & \textbf{3.87$\times$} & 0.13 &  & $96^3$ & 0.21 & \textbf{8.01$\times$} & 3.24 & \textbf{14.4$\times$} & 0.056 \\
+- & $2048^2$ & 1.32 & \textbf{3.39$\times$} & 3.06 & \textbf{8.72$\times$} & 0.13 &  &  &  &  &  &  &  \\
+- & $4096^2$ & 1.35 & \textbf{10.7$\times$} & 3.11 & \textbf{27.5$\times$} & 0.14 &  &  &  &  &  &  &  \\
++L-shape & $256^2$ & 2.02 & \textbf{32.1$\times$} & 5.61 & \textbf{29.9$\times$} & 1.08 & Burgers 3D & $64^3$ & 1.01 & 0.21$\times$ & 3.37 & 0.93$\times$ & 0.92 \\
++ & $512^2$ & 2.00 & \textbf{50.1$\times$} & 5.60 & \textbf{48.7$\times$} & 0.74 & & $128^3$ & 1.46 & 0.57$\times$ & 4.26 & \textbf{2.87$\times$} & 1.39 \\
++ & $1024^2$ & 1.99 & \textbf{41.6$\times$} & 5.60 & \textbf{49.4$\times$} & 1.77 & & $256^3$ & 2.20 & \textbf{2.19$\times$} & 3.77 & \textbf{5.60$\times$} & 1.52 \\
++\cmidrule(l){8-14}
++ & $2048^2$ & 1.99 & \textbf{78.4$\times$} & 5.60 & \textbf{97.5$\times$} & 1.18 & Navier--Stokes & $32^3$ & 0.21 & 0.93$\times$ & 3.06 & \textbf{3.56$\times$} & 0.19 \\
++\cmidrule(r{10pt}){1-7}
++Burgers 2D & $256^2$ & 0.87 & 0.38$\times$ & 3.85 & 0.58$\times$ & 0.11 & (original & $64^3$ & 0.21 & \textbf{2.92$\times$} & 3.06 & \textbf{8.53$\times$} & 0.12 \\
++ & $512^2$ & 1.13 & 0.62$\times$ & 4.10 & 0.88$\times$ & 0.12 & family) & $96^3$ & 0.21 & \textbf{8.01$\times$} & 3.24 & \textbf{14.4$\times$} & 0.056 \\
++ & $1024^2$ & 1.25 & \textbf{1.51$\times$} & 4.25 & \textbf{1.70$\times$} & 0.13 & & & & & & & \\
++ & $2048^2$ & 1.32 & \textbf{3.39$\times$} & 3.06 & \textbf{4.43$\times$} & 0.13 & & & & & & & \\
++ & $4096^2$ & 1.35 & \textbf{10.7$\times$} & 3.11 & \textbf{13.9$\times$} & 0.14 & & & & & & & \\
+ \bottomrule
+-\end{tabular}}}
++\end{tabular}
+ \end{table}
+ 
+-Each row of Table~\ref{tab:headline} shows two settings of one trained
+-model, an accurate one and a fast one. The fast setting beats the
+-full-order solver on every problem and mesh; the accurate one beats it on
+-every linear problem and on the finer meshes of the nonlinear ones.
+-
+-\paragraph{Linear problems.}
+-On Poisson, the L-shape and heat both settings of a row are solves in the
+-span of the ordered bank. The head is less accurate there
+-(4.48\,\% against 0.83\,\% on Poisson at $4096^2$, Table~\ref{tab:tunability}): on a linear problem the best solve in the bank is the linear
+-one, and it is also the cheapest. Because the reduced query does not visit
+-the grid until it returns the field, the speedup grows with the mesh, to
+-108$\times$ over CG on Poisson at $4096^2$ and
+-$\nHeatWideBatchedAccS\times$ over CN--CG on heat at $2048^2$.
+-The accurate error is the same at every mesh because it is the bank's
+-projection floor, the best fit of the same-grid solution in the span of
+-the frozen bank; the reduced solve reaches that floor (0.83\,\% on
+-Poisson), and the floor does not change once the solution is resolved.
+-
+-\paragraph{Burgers.}
+-At coarse meshes the reduced solve is slower than Newton--BiCGStab, but its
+-cost barely changes with the mesh. On the 64 held-out test cases the
+-accurate setting (the span of 384) reaches 0.87--1.35\,\% (median
+-0.03\,\%) at 0.38--10.7$\times$ the speed of Newton--BiCGStab, and the fast
+-setting (the span of 96 up to $1024^2$ and of 128 beyond) 3.06--4.25\,\% at
+-1.22--27.5$\times$; the fast setting is faster than the FOM at every mesh and
+-the accurate one from $1024^2$.
+-
+-In three dimensions one frozen span model, trained on $32^3$--$128^3$
+-fields and used unchanged at $256^3$, reaches 2.20\,\% at 2.19$\times$
+-the speed of Newton--BiCGStab at $256^3$, with settings chosen on 64
+-validation cases; advection uses a precomputed quadratic tensor, and the
+-nonlinear head did not generalise on this family and is not used.
+-
+-\paragraph{Navier--Stokes.}
+-Here the head earns its place. On the held-out test cases the head with $k=\nNsHeadK$
+-reaches 0.21\,\% at every mesh, at 0.93$\times$, 2.92$\times$ and
+-8.01$\times$ the speed of CNAB2 at $32^3$, $64^3$ and $96^3$. The span of the same bank is
+-33$\times$ less accurate at the same number of unknowns, and
+-even the full rank-$\nNsBankR$ span reaches only 1.12\,\%:
+-the moving vortices lie on a curved manifold that no small span contains. The error stays flat from
+-$32^3$ to $96^3$ while the speedup rises.
+-
+-\paragraph{Where the speedup comes from.}
+-On the linear problems the query does not iterate: it is one
+-least-squares solve with a matrix factorised offline, and its time is
+-mostly writing the $O(NR')$ output field (41.8 of 42.4\,ms on the Poisson
+-development cases at $4096^2$, where CG needs about 5300 iterations over all nodes). On the
+-nonlinear problems the iteration count does not grow with the mesh: about
+-one Levenberg--Marquardt iteration per time step on Burgers and three
+-Gauss--Newton sweeps on Navier--Stokes, each costing \eqref{eq:cost}
+-(Table~\ref{tab:iterations}). The full-order solvers sweep all $N$ nodes
+-in every iteration and, for CG, need more iterations as the mesh is
+-refined \citep{Saad2003}. At the settings of Table~\ref{tab:headline},
+-time grows as $N^{p}$ with $p\approx0.2$ for our model on Burgers and $0.3$
+-on Navier--Stokes, against about $0.8$ and $0.9$ for the full-order solvers.
+-
+-\subsection{Comparison with Neural Operators and Other ROMs}\label{sec:results:neuralops}
+-
+-We next compare with the two alternatives a practitioner would consider
+-instead: neural operators and other reduced-order models. We train an FNO \citep{Li2020FNO}, a U-Net \citep{Ronneberger2015UNet}, a
+-DeepONet \citep{Lu2021DeepONet} and a Transolver \citep{WuTransolver2024}, widely used representatives of spectral, convolutional,
+-branch--trunk and attention-based operators,
+-on the evaluation mesh, on our model's training split (on Burgers, 128 trajectories of the
+-same family) with a 3000\,s wall budget per network, and time them with the NM-ROM and the full-order solver in one
+-allocation per problem (Table~\ref{tab:operators}).
++\begin{revblock}
++Against its own matched solver on the same mesh the fast setting is
++faster in 27 of the 30 cells of the submission's Table~1 (which include
++the box rows of Table~\ref{tab:boxes}); it is slower on Burgers 2D at
++$256^2$ and $512^2$ (0.58, 0.88$\times$) and Burgers 3D at $64^3$
++(0.93$\times$), and at Burgers 2D $4096^2$ it falls from 27.5 to
++13.9$\times$ (Figure~\ref{fig:matched}). On the original Navier--Stokes
++family a solver free to coarsen its mesh (RK4 on $32^3$--$48^3$) gives the
++head 0.63/1.65/0.94$\times$ at $32^3$/$64^3$/$96^3$, which is why we moved
++to the harder family: the advantage appears where a coarse mesh no longer
++suffices. Transform solvers are faster than our model on box Poisson 2D
++(0.14--5.05\,ms, 1.8--10$\times$ faster) and 3D and on heat 3D (fast
++setting at 0.50--0.61$\times$); our fast setting is 1.1--1.4$\times$
++ahead on heat 2D; on Burgers 2D a pseudo-spectral solver is faster up to
++$1024^2$ and slower from $2048^2$ (development cases). Box Poisson and heat
++are therefore correctness checks (Appendix~\ref{app:boxes}).
++\end{revblock}
++
++% ---------------------------------------------------------------------
++\subsection{Neural-Field ROMs and Neural Operators}\label{sec:results:baselines}
++\label{sec:results:neuralops}
+ 
+ \begin{table}[t]
+ \centering
+-\caption{Best NM-ROM against FNO, U-Net, Transolver and DeepONet at every
+-measured (PDE, $N$) cell. Both NM-ROM columns come from the same trained
+-model. Error and speedup as in Table~\ref{tab:headline}, one full-order
+-setting per cell; \emph{italic} marks speedups below $1\times$. \textbf{Bold} marks an NM-ROM setting that is both more accurate
+-and faster than every operator in the cell. Each operator family shows the size chosen on its
+-validation cases; most operator runs stopped at the 3000\,s wall
+-budget (Table~\ref{tab:development-training}). Timed separately from
+-Table~\ref{tab:headline} (Appendix~\ref{app:operators}).}
+-\label{tab:operators}
+-\resizebox{\linewidth}{!}{%
+-\scriptsize\setlength{\tabcolsep}{3pt}
+-\begin{tabular}{@{}llrrrrrrrrrrrr@{}}
++\color{blue}
++\caption{Burgers 2D at $256^2$, 64 held-out test cases, settings of every
++method frozen on validation data. The CROM- and CoLoRA-style models are
++our re-implementations. The CoLoRA-style model is given the five
++parameters that generate the initial condition and solves no equation
++online; ours takes an initial field. FNO and U-Net are trained on exactly
++the 4,608 trajectories our head uses, for up to 8.1 hours each (a
++4.6-hour run plus one 3.5-hour continuation); most of these runs reached their
++time budget before our convergence rule, so these measure budget-limited
++performance, not convergence. The 128-trajectory rows rerun the submission's data budget.}
++\label{tab:baselines}
++\scriptsize\setlength{\tabcolsep}{4pt}
++\begin{tabular}{@{}llrrr@{}}
+ \toprule
+- & & \multicolumn{2}{c}{NM-ROM accurate} & \multicolumn{2}{c}{NM-ROM second setting} & \multicolumn{2}{c}{FNO} & \multicolumn{2}{c}{U-Net} & \multicolumn{2}{c}{Transolver} & \multicolumn{2}{c}{DeepONet} \\
+-\cmidrule(lr){3-4}\cmidrule(lr){5-6}\cmidrule(lr){7-8}\cmidrule(lr){9-10}\cmidrule(lr){11-12}\cmidrule(l){13-14}
+-PDE & $N$ & Err.\ (\%) & Speedup & Err.\ (\%) & Speedup & Err.\ (\%) & Speedup & Err.\ (\%) & Speedup & Err.\ (\%) & Speedup & Err.\ (\%) & Speedup \\
+-\midrule
+-\multirow{3}{*}{Burgers 2D} & $256^2$ & --- & --- & 4.10 & \emph{0.58$\times$} & 8.76 & 2.53$\times$ & 5.98 & 1.83$\times$ & 6.83 & 1.64$\times$ & 64.2 & 4.79$\times$ \\
+- & $1024^2$ & 1.25 & \emph{0.24$\times$} & \textbf{8.42} & \textbf{2.15$\times$} & 14.8 & \emph{0.74$\times$} & 11.5 & 1.38$\times$ & 14.9 & \emph{0.55$\times$} & 68.2 & 1.44$\times$ \\
+- & $2048^2$ & 1.32 & 1.05$\times$ & \textbf{9.04} & \textbf{7.37$\times$} & 18.0 & \emph{0.31$\times$} & 22.6 & 1.42$\times$ & 33.8 & 1.43$\times$ & 67.1 & 1.96$\times$ \\
+-\midrule
+-\multirow{2}{*}{Heat 2D} & $1024^2$ & \textbf{0.13} & \textbf{87.4$\times$} & --- & --- & 3.59 & 1.07$\times$ & 1.56 & 1.93$\times$ & 2.57 & 6.22$\times$ & 4.60 & 2.09$\times$ \\
+- & $2048^2$ & \textbf{0.13} & \textbf{289$\times$} & --- & --- & 3.98 & \emph{0.93$\times$} & 2.76 & 2.76$\times$ & 3.66 & 40.5$\times$ & 10.9 & 5.11$\times$ \\
+-\midrule
+-\multirow{3}{*}{Navier--Stokes 3D} & $32^3$ & 0.21 & \emph{0.94$\times$} & 3.24 & 1.68$\times$ & 0.53 & 1.69$\times$ & 0.68 & \emph{0.37$\times$} & 0.78 & \emph{0.34$\times$} & 51.9 & 1.52$\times$ \\
+- & $64^3$ & \textbf{0.21} & \textbf{3.00$\times$} & 3.24 & 5.29$\times$ & 1.76 & 2.07$\times$ & 1.58 & \emph{0.75$\times$} & 1.80 & \emph{0.71$\times$} & 47.6 & 1.39$\times$ \\
+- & $96^3$ & \textbf{0.21} & \textbf{8.01$\times$} & 3.24 & 14.4$\times$ & 1.51 & 3.23$\times$ & 2.29 & 1.44$\times$ & 1.16 & 6.65$\times$ & 51.4 & 2.26$\times$ \\
++Method & Training trajectories & Worst (\%) & Median (\%) & ms / query \\
++\midrule
++Ours, linear span, width 384 & 576 (bank) + 4,608 & 0.875 & 0.026 & 45.2 \\
++Ours, nonlinear head, 16 coordinates & 4,608 & 4.10 & 0.67 & 32.4 \\
++CROM-style, 16 coordinates, accurate / fast setting & same & 22.4 / 16.9 & 0.43 / 1.11 & 2,818 / 507 \\
++CoLoRA-style regression, 16 & same & 0.240 & 0.104 & 49.9 \\
++FNO, variant selected on validation (one seed) & 4,608 & 0.48 & 0.19 & 6.6 \\
++FNO, paper architecture (three seeds) & 4,608 & 0.43--0.49 & 0.20--0.23 & 4.1 \\
++U-Net (three seeds) & 4,608 & 0.45--0.51 & 0.20--0.22 & 7.4 \\
++FNO / U-Net, rerun with 128 trajectories & 128 & 9.78 / 5.01 & 2.61 / 1.23 & 4.1 / 7.4 \\
++Full-order solver (Newton--BiCGStab) & --- & 0.109 & 0.030 & 17.4 \\
+ \bottomrule
+-\end{tabular}}
++\end{tabular}
+ \end{table}
+ 
+-\paragraph{Against neural operators, the NM-ROM wins as the mesh grows.}
+-On small meshes the operators are competitive, since a forward pass is
+-cheap: at $256^2$ on Burgers all four are faster than the NM-ROM, and at
+-$32^3$ on Navier--Stokes the FNO is faster than our accurate setting and
+-more accurate than our fast one. As the mesh grows, the NM-ROM's
+-advantage grows with it: its query does not visit the grid until it
+-returns the field, while every operator reads and writes the full grid,
+-and the FNO, U-Net and Transolver errors on Burgers grow 2--5$\times$
+-from $256^2$ to $2048^2$. From $1024^2$ on, and on Navier--Stokes from
+-$64^3$, one NM-ROM setting is both more accurate and faster than all four
+-operators (Table~\ref{tab:operators}, bold): on Burgers 8.42--9.04\,\%
+-against 11.5--68.2\,\% for the operators, on heat 0.13\,\% against
+-1.56--10.9\,\%, and on Navier--Stokes 0.21\,\% against 1.16--51.4\,\%.
+-
+-\paragraph{At the same number of unknowns, the learned manifold is far more accurate than prior ROMs.}
+-With 16 unknowns, a linear basis and a quadratic manifold cannot follow
+-the moving fronts of Burgers, and both run slower than the full-order
+-solver; our head follows them at a cost that does not grow with the
+-mesh. On the 64 test cases at $1024^2$ and $2048^2$, the head with
+-$k=16$ reaches 8.42--9.04\,\% at 2.17--4.79$\times$ the speed of
+-Newton--BiCGStab, against 34.1--41.7\,\% for POD-LSPG and a quadratic
+-manifold \citep{GeelenWrightWillcox2022} (Table~\ref{tab:nmrom-baselines}).
+-POD-LSPG approaches 1\,\% only with 256 or more unknowns, two orders of
+-magnitude slower, and its basis is rebuilt from 128 new full-order
+-trajectories at each mesh. A reproduced shallow masked-autoencoder
+-NM-ROM \citep{KimChoi2022NMROM} did not reach a usable accuracy in our
+-setting (145--175\,\%; Table~\ref{tab:nmrom-baselines}).
+-
+-
+-
+-\subsection{Which Knob to Turn}\label{sec:results:tunability}\label{sec:results:best}
+-
+-A user of the trained model can turn two knobs without retraining: the
+-bank width $R'$ and the choice between head and span (full ladders in
+-Table~\ref{tab:tunability}). The width changes what the model can
+-represent, so it is the accuracy knob. On Poisson at $4096^2$, narrowing the bank from
+-$R'=512$ to $32$ raises the error 18.6$\times$ and moves the
+-same model from 108$\times$ to 1136$\times$ the speed
+-of CG on the test cases. On heat at $2048^2$ the span runs from 0.13\,\% at 216$\times$
+-($R'=128$) to 1.08\,\% at 512$\times$ ($R'=32$), and on Burgers at
+-$4096^2$ from 1.35\,\% at 10.7$\times$ ($R'=384$) to 8.24\,\% at
+-44.5$\times$ ($R'=64$). The choice between head and span
+-depends on the problem: on the linear problems the span is both more
+-accurate and cheaper (\S\ref{sec:results:operators}), while on
+-Navier--Stokes the head is the accurate end, 33$\times$ more
+-accurate than the span at the same number of unknowns for about twice the
+-cost.
++\begin{revblock}
++Against the CROM-style model, the closest relative (a neural field evolved
++by the equations online), our head is 4--5.5 times more accurate in the
++worst case (its median error is higher, 0.67 against 0.43\,\%) and
++16--87 times faster (Table~\ref{tab:baselines}): the space/latent
++factorisation removes repeated differentiation of the spatial network.
++Against the CoLoRA-style regression the result is a trade-off: our median
++error is four times lower at slightly lower cost, and its worst-case error
++is 3.6 times lower. With matched data, our median error is 7--9 times
++lower than FNO's and U-Net's and below the full-order solver's own median
++error against the reference; the operators have the lower worst-case error
++(0.43--0.51\,\% against 0.875\,\%) and are 6--7 times faster (11 times for
++the smaller FNO). This replaces the submission's operator claim, which
++rested on 128 training trajectories (old comparison in
++Table~\ref{tab:operators}, whose heat rows, trained for only 6--7 epochs,
++support no claim). At $1024^2$ without retraining our model gives
++1.25\,\%, a zero-shot FNO 2.9--3.2\,\% and the U-Net about 53\,\%. On the harder Navier--Stokes family an FNO
++gives 2.41--2.52\,\% in 18--23\,ms against 0.90--1.39\,\% in 13--29\,ms
++for our coordinate bank with the head. On the cylinder's standard window the best operator (an FNO,
++180 minutes of final training) also meets all six targets, at
++$9.9{\times}10^{-3}$ at Reynolds 105 in 0.45\,s on a GPU, where our width
++32 reaches $1.9{\times}10^{-3}$ with a fine step and width 24 meets all
++six at $5.5{\times}10^{-3}$ in 0.83\,s on a CPU node; over the long window and outside the
++training band no operator meets all six (Appendix~\ref{app:operators}).
++\end{revblock}
++
++% ---------------------------------------------------------------------
++\subsection{What Each Component Contributes, and Which Knob to Turn}\label{sec:results:tunability}\label{sec:results:best}
++
++\begin{revblock}
++\emph{Head against closures.} At 16 coordinates on Burgers at $256^2$ the
++head gives 2.56\,\% against 56.9\,\% for a linear and 31.8\,\% for a
++quadratic closure on the same bank; at $1024^2$ the head gives 8.42\,\% in
++35.3\,ms, POD-LSPG with 16 modes 41.6\,\% in 186.5\,ms and a quadratic
++manifold 34.1\,\% in 758\,ms (Table~\ref{tab:ablation}). The fixed lattice
++takes the query from 1,263 to 49.3\,ms at unchanged error. On periodic
++boxes an interpolated POD basis transfers across meshes as well as the
++coordinate network, which there adds a single mesh-free object, not
++accuracy; a tuned POD basis with ECSW matched or beat our bank in an
++in-sample Burgers study (Appendix~\ref{app:podcontrols}).
++
++\emph{Which knob.} The width $R'$ is the accuracy knob
++(Figure~\ref{fig:tunability}, Table~\ref{tab:tunability}). The head is
++preferable when the linear span is inaccurate at affordable width, as on
++both Navier--Stokes families; the span when a few hundred coefficients are
++affordable (on Burgers, width 128 reaches 1.10\,\% in 0.59 of the head's
++time) and on linear problems.
++\end{revblock}
+ 
+ \paragraph{Limitations.}\label{sec:limitations}
+ \label{sec:results:head}\label{sec:results:collapse}\label{sec:exp:eq}
+-(i) Except for Navier--Stokes, speedups are against named iterative
+-full-order solvers at the stated tolerances. Fast direct and spectral
+-solvers exist for the square and the cube and would be faster than CG
+-there.
+-(ii) The Navier--Stokes bank is a POD basis built at each mesh and
+-evaluated in a moving frame, with a head trained at each mesh, and the
+-family has moderate Reynolds numbers; we make
+-no claim about turbulent flow.
+-(iii) On the L-shape the available tests limit the span to width 128.
+-(iv) Quadrature validation covers finitely many reached states and is not
+-a global certificate, and we changed the check once after seeing results
+-(\S\ref{sec:method:precomp}). Reduced
+-solves can converge to a wrong branch, and lower same-grid error does not
+-remove discretisation error.
+-(v) The evaluation cohorts are small (6--64 cases). Timings report medians without dispersion.
++\begin{revblock}
++(i) \emph{Out of band.} At cylinder Reynolds numbers 80 and 120 width 32
++meets five and four of six targets and narrower widths do not
++extrapolate. (ii) \emph{Steep data.} On Burgers data steeper than the
++training range the median error is 5.7 and 16.6\,\% on two exploratory
++development regimes; the bank cannot represent those states
++(Figure~\ref{fig:failure}). (iii) \emph{Scope.} The
++Navier--Stokes results cover one harder family and one horizon ($T=0.2$)
++at moderate Reynolds numbers; we make no claim about turbulent flow. (iv)
++\emph{Cylinder.} Its rollout is Galerkin with a lift function, not the
++solve of \S\ref{sec:method:weak}, and POD of equal width performs the
++same; Neumann and Robin conditions are untested. (v) \emph{Solvers.} On constant-coefficient boxes transform
++solvers beat our box Poisson and heat-3D models. Tested CPU AMG variants
++are slower than cylinder LU; GPU sparse-direct and GPU AMG results are not
++yet available. Mesh-flat reduced evolution does not imply mesh-flat
++input/output cost (Appendix~\ref{app:method:nshard}).
++(vi) \emph{Selection.} Table~\ref{tab:headline}'s fast
++column was selected on test errors; the quadrature check covers finitely
++many states and was changed once after seeing results
++(Appendix~\ref{app:method:eq}).
++\end{revblock}
+ 
+ \section{Conclusion and Future Work}\label{sec:conclusion}
+ 
+-We built an NM-ROM whose speedup grows with the mesh: it is up
+-to 27.5$\times$ faster than the full-order solver on nonlinear problems and
+-over 100$\times$ faster on linear ones. One trained model also offers
+-several accuracy settings at query time, through the width of its ordered
+-bank and the choice between head and span, whereas a trained neural
+-operator gives one fixed point at a given mesh. Next are higher-Reynolds-number
+-flows and a nonlinear head for three-dimensional Burgers.
++\begin{revblock}
++One trained NM-ROM gives a ladder of accuracy--cost settings at query
++time, and its head makes a small model accurate where the linear span of
++the same bank is not. Against the fastest solver of equal accuracy it is
++faster where that solver needs a fine mesh and the solution family is
++low-dimensional, and not where a coarse mesh or a fast transform suffices.
++Next are wider parameter bands, longer horizons and the least-squares
++Petrov--Galerkin solve on general geometry.
++\end{revblock}
++
+ 
+ \section*{Ethics statement}
+ This work develops numerical methods for solving partial differential
+@@ -1256,6 +1304,20 @@
+ \newblock Slimmable neural networks.
+ \newblock In \emph{International Conference on Learning Representations},
+ 2019.
++
++\bibitem[Farhat et~al.(2014)]{Farhat2014ECSW}
++C.~Farhat, P.~Avery, T.~Chapman, and J.~Cortial.
++\newblock Dimensional reduction of nonlinear finite element dynamic models with
++finite rotations and energy-based mesh sampling and weighting for computational
++efficiency.
++\newblock \emph{International Journal for Numerical Methods in Engineering},
++98(9):625--662, 2014.
++
++\bibitem[Sch{\"a}fer and Turek(1996)]{SchaeferTurek1996}
++M.~Sch{\"a}fer and S.~Turek.
++\newblock Benchmark computations of laminar flow around a cylinder.
++\newblock In \emph{Flow Simulation with High-Performance Computers II}, volume~52
++of \emph{Notes on Numerical Fluid Mechanics}, pages 547--566. Vieweg, 1996.
+ 
+ \end{thebibliography} {}
+ 
+@@ -1324,6 +1386,13 @@
+ $P\widehat G_{R'}$ is computed once per mesh and width, and a query is one
+ matrix--vector product and one triangular solve. At $R'=R$
+ the span solve reaches the bank floor in the tested norm.
++
++In the span,
++\begin{equation}
++  P\,R\big(\widehat G_{R'}c\big) = \big(PK\widehat G_{R'}\big)\,c - PF,
++  \label{eq:poisson-residual}
++\end{equation}
++so a query is one least-squares solve with a fixed $M\times R'$ matrix, factorised once per mesh and width. With the head, \eqref{eq:lm} iterates in $z$ with $J=PKG\,J_h(z)$.
+ 
+ \subsection{Heat}
+ \label{app:method:heat}
+@@ -1403,7 +1472,7 @@
+ three-component shift at every step together with the latent coordinates. All linear reduced operators are computed offline, and the advection term
+ is evaluated with a precomputed quadratic tensor (\S\ref{sec:method:precomp}). The head is trained as an
+ auto-decoder on the centred bank coefficients of training states. Bank and
+-head are built once per mesh ($32^3$, $64^3$, $96^3$) and frozen. The tests
++head are built once per mesh ($32^3$, $64^3$, $96^3$) and frozen. \rev{A coordinate network fitted once for all three meshes gives 0.18--0.20\,\% with the head on this family (per-mesh POD 0.15\,\%); the harder family is in Appendix~\ref{app:method:nshard}.} The tests
+ are the $M=292$ lowest divergence-free Fourier modes. A query centres the
+ initial field, projects it on the bank and, for the head, starts from a stored training code. It then takes 10 implicit-midpoint steps of
+ $\Delta t=0.02$, each solved by three damped Gauss--Newton sweeps with an
+@@ -1414,6 +1483,19 @@
+ 
+ \subsection{Empirical quadrature}
+ \label{app:method:eq}
++With $g_i^{(\ell)}=P_{:,i}A_i(\tilde u^{(\ell)})\in\Real^{M}$ the
++per-node contribution at a stored state $\tilde u^{(\ell)}$ that the solver
++reaches on training trajectories, the constraint at that state is
++$\sum_{i} w_i\,g_i^{(\ell)}=P A(\tilde u^{(\ell)})$. Stacking the
++constraints gives a matrix $E$ and a vector $b$, and we solve
++\begin{equation}
++  \min_{w\ge 0}\;\norm{E\,w-b}_2
++  \label{eq:nnls-main}
++\end{equation}
++by NNLS \citep{LawsonHanson1974NNLS}, which returns a sparse $w$ with
++support $\mathcal S$ of size $N_{\mathrm{eq}}\ll N$.
++Computing $A_i$ needs $\tilde u$ at node $i$ and its stencil neighbours, so $|\mathcal S^{+}|\le 5N_{\mathrm{eq}}$ in two dimensions and $7N_{\mathrm{eq}}$ in three. A convolutional or attention decoder would couple its output nodes, so one node would cost a pass over the whole grid; this is why the bank is a coordinate network.
++
+ On one state, a rule's error is
+ \begin{equation}
+   \rho(u)=\frac{\norm{\sum_{i\in\mathcal S}w_iP_{:,i}A_i(u)-PA(u)}_2}{\norm{PA(u)}_2},
+@@ -1433,7 +1515,7 @@
+ states are states the dense solver reaches on fit trajectories; the
+ test states come from trajectories disjoint from the fit and the
+ evaluation cases. A deployed rule is its node indices, weights and the
+-cached $N_{\mathrm{eq}}\times5\times R$ bank block. The Burgers rows of Table~\ref{tab:headline} use rules fitted this way.
++cached $N_{\mathrm{eq}}\times5\times R$ bank block. \rev{Correction: the Burgers rows of Table~\ref{tab:headline} do \emph{not} use a fitted rule. They use a rule that needs no fit: the uniform interior lattice with 64 intervals per axis, $63\times63=3969$ nodes with equal weights $(1/64)^2$, checked on reached states by \eqref{eq:rho}. At $1024^2$ with $R'=384$ it gives the dense-residual error (0.2108\,\%) in 49.3 instead of 1,263\,ms; sparser lattices (961 or 1,953 nodes) failed or did not confirm the check at $R'=384$.}
+ 
+ \subsection{Solver constants}
+ \label{app:method:codes}
+@@ -1456,6 +1538,39 @@
+ 
+ \section{Neural operators}
+ \label{app:operators}
++\begin{table}[htbp]
++\centering
++\caption{\rev{Submission's operator comparison, kept for the record: on Burgers the operators were trained on 128 trajectories, and this comparison is superseded by the matched-data Table~\ref{tab:baselines}; the heat operators completed only 6--7 epochs (Table~\ref{tab:development-training}) and support no claim.} Best NM-ROM against FNO, U-Net, Transolver and DeepONet at every
++measured (PDE, $N$) cell. Both NM-ROM columns come from the same trained
++model. Error and speedup as in Table~\ref{tab:headline}, one full-order
++setting per cell; \emph{italic} marks speedups below $1\times$. \textbf{Bold} marks an NM-ROM setting that is both more accurate
++and faster than every operator in the cell. Each operator family shows the size chosen on its
++validation cases; most operator runs stopped at the 3000\,s wall
++budget (Table~\ref{tab:development-training}). Timed separately from
++Table~\ref{tab:headline} (Appendix~\ref{app:operators}).}
++\label{tab:operators}
++\resizebox{\linewidth}{!}{%
++\scriptsize\setlength{\tabcolsep}{3pt}
++\begin{tabular}{@{}llrrrrrrrrrrrr@{}}
++\toprule
++ & & \multicolumn{2}{c}{NM-ROM accurate} & \multicolumn{2}{c}{NM-ROM second setting} & \multicolumn{2}{c}{FNO} & \multicolumn{2}{c}{U-Net} & \multicolumn{2}{c}{Transolver} & \multicolumn{2}{c}{DeepONet} \\
++\cmidrule(lr){3-4}\cmidrule(lr){5-6}\cmidrule(lr){7-8}\cmidrule(lr){9-10}\cmidrule(lr){11-12}\cmidrule(l){13-14}
++PDE & $N$ & Err.\ (\%) & Speedup & Err.\ (\%) & Speedup & Err.\ (\%) & Speedup & Err.\ (\%) & Speedup & Err.\ (\%) & Speedup & Err.\ (\%) & Speedup \\
++\midrule
++\multirow{3}{*}{Burgers 2D} & $256^2$ & --- & --- & 4.10 & \emph{0.58$\times$} & 8.76 & 2.53$\times$ & 5.98 & 1.83$\times$ & 6.83 & 1.64$\times$ & 64.2 & 4.79$\times$ \\
++ & $1024^2$ & 1.25 & \emph{0.24$\times$} & \textbf{8.42} & \textbf{2.15$\times$} & 14.8 & \emph{0.74$\times$} & 11.5 & 1.38$\times$ & 14.9 & \emph{0.55$\times$} & 68.2 & 1.44$\times$ \\
++ & $2048^2$ & 1.32 & 1.05$\times$ & \textbf{9.04} & \textbf{7.37$\times$} & 18.0 & \emph{0.31$\times$} & 22.6 & 1.42$\times$ & 33.8 & 1.43$\times$ & 67.1 & 1.96$\times$ \\
++\midrule
++\multirow{2}{*}{Heat 2D} & $1024^2$ & \textbf{0.13} & \textbf{87.4$\times$} & --- & --- & 3.59 & 1.07$\times$ & 1.56 & 1.93$\times$ & 2.57 & 6.22$\times$ & 4.60 & 2.09$\times$ \\
++ & $2048^2$ & \textbf{0.13} & \textbf{289$\times$} & --- & --- & 3.98 & \emph{0.93$\times$} & 2.76 & 2.76$\times$ & 3.66 & 40.5$\times$ & 10.9 & 5.11$\times$ \\
++\midrule
++\multirow{3}{*}{Navier--Stokes 3D} & $32^3$ & 0.21 & \emph{0.94$\times$} & 3.24 & 1.68$\times$ & 0.53 & 1.69$\times$ & 0.68 & \emph{0.37$\times$} & 0.78 & \emph{0.34$\times$} & 51.9 & 1.52$\times$ \\
++ & $64^3$ & \textbf{0.21} & \textbf{3.00$\times$} & 3.24 & 5.29$\times$ & 1.76 & 2.07$\times$ & 1.58 & \emph{0.75$\times$} & 1.80 & \emph{0.71$\times$} & 47.6 & 1.39$\times$ \\
++ & $96^3$ & \textbf{0.21} & \textbf{8.01$\times$} & 3.24 & 14.4$\times$ & 1.51 & 3.23$\times$ & 2.29 & 1.44$\times$ & 1.16 & 6.65$\times$ & 51.4 & 2.26$\times$ \\
++\bottomrule
++\end{tabular}}
++\end{table}
++
+ We trained an FNO \citep{Li2020FNO}, a U-Net \citep{Ronneberger2015UNet},
+ a DeepONet \citep{Lu2021DeepONet} and a Transolver \citep{WuTransolver2024}
+ on Burgers 2D, heat 2D and Navier--Stokes 3D, each at the mesh it is
+@@ -1523,7 +1638,7 @@
+ 
+ \begin{table}[htbp]
+ \centering
+-\caption{Burgers 2D at $1024^2$, one allocation (A100 80\,GB,
++\caption{\rev{Development table.} Burgers 2D at $1024^2$, one allocation (A100 80\,GB,
+ six development cases): worst and median evolved same-grid error, median
+ GPU query time, and speedup over one full-order setting chosen on these development cases
+ (Newton--BiCGStab, tol $3{\times}10^{-3}$, $\Delta t{=}0.005$, 70.5\,ms,
+@@ -1562,7 +1677,7 @@
+ 
+ \paragraph{How much data each side was given.}
+ On heat and Navier--Stokes both sides are trained on the same
+-trajectories. On Burgers the operators use 128 trajectories, while our bank
++trajectories. On Burgers the operators \rev{of Table~\ref{tab:operators}} use 128 trajectories\rev{ (the matched-data comparison is Table~\ref{tab:baselines})}, while our bank
+ is fitted on 576 and the head on 4608 of the same family
+ (Table~\ref{tab:training-all}). Both sides draw initial conditions from the
+ same family and are scored at the same output times. At $256^2$
+@@ -1668,6 +1783,7 @@
+ Heat 2D ($k=8$, $R=128$) & bank / head & 32 Fourier features (scale 1.5), width 256; head width 256 & Adam, clip 1, exact coefficient refit every 10000 steps; $10^{-3}$ bank, $5{\times}10^{-4}$ head & 80000 / 80000 & 64 states $\times$ 2048 points / 128 states & 512 training / 16 validation draws at $64^2$ \\
+ Heat 3D ($k=32$, $R=320$) & bank / head & 128 Fourier features (scale 2), width 512, 3 layers; head width 512, 2 layers + skip & bank: Adam, clip 1, warm-up + cosine $10^{-3}\to10^{-5}$; head: Adam, cosine from $5{\times}10^{-4}$ (floor 0.03) & 40000 (step 32000 kept) / 120000 & 512 states on the full $32^3$ grid / 256 states & 2048 training / 256 validation trajectories (6 times each) \\
+ Burgers 3D ($R=512$, span only) & bank & 128 Fourier features (scale 2), width 1024, 3 layers & Adam, clip 1, warm-up + cosine $10^{-3}\to10^{-5}$ & 12000 (step 7000 kept) & 128 states $\times$ 32768 points per mesh & 18432 states of 1536 trajectories at each of $32^3$, $64^3$, $128^3$; 96 validation trajectories \\
++\multicolumn{7}{@{}l}{\rev{Fourier features (\eqref{eq:coordnet}): frequencies trained for Burgers 2D, Poisson 2D and the L-shape, fixed for the others (Table~\ref{tab:bank-loss}).}} \\
+ Navier--Stokes 3D ($k=8$, $R=64$) & bank & POD of centred snapshots, built per mesh (no trained weights) & --- & --- & --- & 768 centred states of 128 trajectories \\
+  & head & width 256, 2 layers + skip, one per mesh & Adam, clip 1, warm-up + cosine $10^{-3}\to10^{-5}$ & 100000 (full batch) & all & 9408 training / 1344 validation states of 512 trajectories \\
+ \bottomrule
+@@ -1698,6 +1814,278 @@
+ \end{tabular}
+ \end{table}
+ 
++\begin{revblock}
++\subsection{Bank and head training losses}
++\label{app:bank-loss}
++The bank minimises the relative reconstruction error of the training
++states in its span, with a small conditioning penalty on its columns. With
++$u_i$, $i=1,\dots,S$, the training states of a batch, evaluated on a
++random batch of $P$ grid points, $\widehat G_\phi$ the bank columns on
++those points scaled by their training RMS, and
++\begin{equation}
++  e_i=\frac{\norm{G_\phi c_i-u_i}_2^2}{\norm{u_i}_2^2},
++  \label{eq:bank-err}
++\end{equation}
++two forms were used. \emph{Joint form} (Poisson 2D and 3D, the L-shape,
++heat 2D, Burgers 2D): the coefficients $c_i$ are trained together with the
++network,
++\begin{equation}
++  \mathcal L_{\mathrm{joint}}(\phi,\{c_i\})
++  =\frac1S\sum_{i=1}^{S}e_i
++  +\lambda\,\operatorname{mean}\Big[\big(\widehat G_\phi\T\widehat G_\phi/P-I\big)^{2}\Big]
++  +\gamma\,\frac1S\sum_{i=1}^{S}e_i^{2},
++  \label{eq:bank-loss-joint}
++\end{equation}
++where the mean is over the $R^2$ entries. The $c_i$ are free vectors for
++Poisson 3D and heat 2D (heat 2D resets them to the exact least-squares
++solution every 10,000 steps); for Burgers 2D they are head outputs
++$c_i=h(z_i)$ with free latent codes $z_i$, and $\norm{u_i}^2$ is replaced
++by a global mean square; Poisson 2D and the L-shape alternate head-output
++phases with a free-coefficient phase started from the exact least-squares
++solution. \emph{Variable-projection form} (heat 3D, Burgers 3D): the
++coefficients are eliminated exactly at every step,
++$c_i=G_\phi^{+}u_i$ through a differentiable thin QR factorisation
++\citep{GolubPereyra1973}, so $e_i$ is the projection error itself, and
++\begin{equation}
++  \mathcal L_{\mathrm{VP}}(\phi)
++  =\log\mathcal E_{\mathrm{mean}}
++  +\beta\,\log\Big(\frac1{|\mathcal B|}\sum_{i\in\mathcal B}e_i^{\,p}\Big)^{1/p}
++  +\lambda_c\,\operatorname{mean}\big[(C_\phi-I)^2\big],
++  \qquad p=4,
++  \label{eq:bank-loss-vp}
++\end{equation}
++where $\mathcal B$ is the snapshot minibatch, the power mean penalises its
++largest errors, and $C_\phi$ is the
++matrix of cosines between bank columns. For Burgers 3D,
++$\mathcal E_{\mathrm{mean}}=S^{-1}\sum_i e_i$ and the first two terms are
++summed over the three training meshes. \rev{For heat 3D, the mean term is
++evaluated through the leading POD modes of the unit-normalised training
++states, not a snapshot minibatch mean. If $v_\ell$ are those orthonormal
++modes, $\lambda_\ell$ their snapshot-Gram eigenvalues, $S$ the full training
++state count, and $Q$ the thin-QR
++basis of the current bank, the implemented term is}
++\[
++\rev{\mathcal E_{\mathrm{mean}}
++ =\sum_{\ell=1}^{1536}\frac{\lambda_\ell}{S}
++   \norm{(I-QQ\T)v_\ell}_2^2.}
++\]
++\rev{This retains the leading-mode contribution to the full training mean;
++the omitted POD tail is recorded in the training output. The power-mean term
++still uses a random minibatch of normalised snapshots.}
++Once the bank is frozen, the coefficients
++used to order it and as head-training targets are the exact least-squares
++solutions $c_i^\star=G^{+}u_i$, and the head (with one free code $z_i$ per
++state) minimises the relative field error
++\begin{equation}
++  \mathcal L_{\mathrm{head}}(\theta,\{z_i\})=\frac1S\sum_{i=1}^{S}\varepsilon_i
++  +\gamma_h\,\frac1S\sum_{i=1}^{S}\varepsilon_i^{2},
++  \qquad
++  \varepsilon_i=\frac{\norm{G\,(h(z_i)-c_i^\star)}_2}{\norm{u_i}_2},
++  \label{eq:head-loss}
++\end{equation}
++with $\gamma_h=0.1$ for heat and the three-dimensional problems and $0$
++otherwise. At query time the coefficients come from the projected PDE
++solve. The weights per problem are in Table~\ref{tab:bank-loss}.
++
++\begin{table}[htbp]
++\centering
++\caption{Bank-loss form and weights per problem, read from the training
++code of each frozen model. $P\times S$: grid points per batch $\times$
++states per batch. $\Omega$: Fourier-feature frequencies of
++\eqref{eq:coordnet}. Navier--Stokes banks are POD bases (no loss); the
++cylinder bank is described in Appendix~\ref{app:method:cyl}.}
++\label{tab:bank-loss}
++\scriptsize\setlength{\tabcolsep}{3pt}
++\begin{tabular}{@{}lllllll@{}}
++\toprule
++Problem & Form & Penalty weight & $P\times S$ & $\gamma$ / $\beta$ & Coefficient handling & $\Omega$ \\
++\midrule
++Poisson 2D & \eqref{eq:bank-loss-joint} & $\lambda=10^{-4}$ & $4096\times64$ & $\gamma=0$ & head phases + free phase & trained \\
++L-shape & \eqref{eq:bank-loss-joint} & $\lambda=10^{-4}$ & $4096\times64$ & $\gamma=0$ & as Poisson 2D & trained \\
++Poisson 3D & \eqref{eq:bank-loss-joint} & $\lambda=10^{-6}$ & $2048\times64$ & $\gamma=0$ & free vectors & fixed \\
++Heat 2D & \eqref{eq:bank-loss-joint} & $\lambda=10^{-6}$ & $2048\times64$ & $\gamma=0.1$ & free, exact reset every $10^4$ steps & fixed \\
++Burgers 2D & \eqref{eq:bank-loss-joint} & $\lambda=10^{-4}$ & $4096\times$ all states & $\gamma=0$ & head outputs, free codes; global norm & trained \\
++Heat 3D & \eqref{eq:bank-loss-vp} & $\lambda_c=10^{-3}$ & full $31^3$ grid $\times512$ & $\beta=0.5$ & eliminated (thin QR) & fixed \\
++Burgers 3D & \eqref{eq:bank-loss-vp} & $\lambda_c=10^{-3}$ & $32768\times128$ per mesh & $\beta=0.5$ & eliminated, three meshes & fixed \\
++\bottomrule
++\end{tabular}
++\end{table}
++
++\subsection{Total cost and break-even}
++\label{app:cost}
++Table~\ref{tab:breakeven} gives the number of queries needed to repay the
++recorded offline cost (training and setup, and data generation where
++recorded), each fast setting against its own accuracy-matched solver at
++the largest mesh. \rev{Offline training and setup are an upfront investment in
++repeated queries. The relevant comparison is total cost at the intended query
++count, with each measured saving tied to its comparator and output scope;
++a positive online speedup alone does not establish amortisation.}
++Cylinder: training trajectories at Reynolds 90/100/110
++with the high-order reference solver (66,400\,s), bank training
++(4,100\,s), export and reduced operators (about 440\,s); generating the
++training data with the cheapest passing finite-element setting would lower
++this. Navier--Stokes: training trajectories 0.45, bank 0.34, head data
++1.8, head fits 0.1, assembly and selection on three meshes 0.6 GPU-hours,
++which together cover all three meshes (33,000--53,000 queries at $64^3$ or
++$96^3$). Box Poisson never breaks even against the sine transform.
++Poisson and heat offline costs exclude data generation, which was not
++recorded; the per-problem components are in Table~\ref{tab:offline}.
++Figure~\ref{fig:breakeven} draws the cumulative cost at $1024^2$.
++
++\begin{table}[htbp]
++\centering
++\caption{Offline cost, saving per query and break-even, each fast
++setting against its own accuracy-matched solver at the largest mesh.}
++\label{tab:breakeven}
++\small\setlength{\tabcolsep}{4pt}
++\begin{tabular}{@{}lrrr@{}}
++\toprule
++Problem & Offline cost & Saved per query & Break-even (queries) \\
++\midrule
++Poisson $4096^2$, against conjugate gradients & 613\,s & 3.85\,s & 159 \\
++Heat 2D $4096^2$, against CN--CG & 1,443\,s & 1.02\,s & 1,417 \\
++\quad (against the modal solver, $R'=48$ arm) & & & about 370,000 \\
++Cylinder, held-out Reynolds 105 (width 32) & about 71,000 node-s & 40.5\,s & about 1,800 \\
++Burgers 2D $4096^2$, including data generation & 12,043\,s & 0.60\,s & about 20,000 \\
++Harder Navier--Stokes $128^3$, fast width 192 & about 3.3 GPU-h & 0.28\,s & about 43,000 \\
++\bottomrule
++\end{tabular}
++\end{table}
++
++\subsection{Box problems as correctness checks}
++\label{app:boxes}
++Poisson and heat on the square and cube have exact transform solvers.
++Table~\ref{tab:boxes} gives the submission's rows with the fast setting
++against its own matched solver and the ratio of a transform solver's time
++to the fast setting's (below 1: the transform solver is faster). The
++accurate error is the bank's projection floor at every mesh, which checks
++that the reduced solve reaches the best fit in the span.
++
++\begin{table}[htbp]
++\centering
++\caption{Box Poisson and heat (test cases). Accurate: against the
++submission's named iterative solver (CG, CN--CG). Fast$^\dagger$:
++test-selected width (as in Table~\ref{tab:headline}) against its own
++matched rung of the same solver. Transform: sine-transform (Poisson) or
++modal (heat) solver time over the fast setting's, timed in a separate job
++on development or held-out cases; $^\ast$ the arm timed there is $R'=64$
++(Poisson 3D), $R'=48$ (heat 2D) or $R'=128$ (heat 3D $64^3$--$256^3$)
++rather than the arm of this table. $^\ddagger$ timing gate failed (order
++effect up to 1.30); speedup indicative only.}
++\label{tab:boxes}
++\scriptsize\setlength{\tabcolsep}{3.5pt}
++\begin{tabular}{@{}llrrrrrr@{}}
++\toprule
++Problem & Mesh & Acc.\ err.\ (\%) & Acc.\ speedup & Fast err.\ (\%) & Fast speedup (matched) & FOM err.\ (\%) & Transform / fast \\
++\midrule
++Poisson 2D & $256^2$ & 0.84 & 18.2$\times^\ddagger$ & 4.07 & 27.0$\times^\ddagger$ & 0.77 & 0.57 \\
++ & $1024^2$ & 0.83 & 31.1$\times$ & 4.06 & 70.9$\times$ & 0.33 & 0.33 \\
++ & $2048^2$ & 0.83 & 64.4$\times$ & 4.06 & 174.5$\times$ & 0.22 & 0.36 \\
++ & $4096^2$ & 0.83 & 108$\times$ & 4.06 & 319$\times$ & 0.58 & 0.44 \\
++Poisson 3D & $32^3$ & 0.23 & 4.42$\times$ & 2.01 & 4.45$\times$ & 0.16 & 0.59$^\ast$ \\
++ & $64^3$ & 0.23 & 8.07$\times$ & 1.98 & 8.23$\times$ & 0.11 & 0.52$^\ast$ \\
++ & $128^3$ & 0.23 & 13.6$\times$ & 1.97 & 19.9$\times$ & 0.075 & 0.36$^\ast$ \\
++ & $256^3$ & 0.23 & 19.3$\times$ & 1.96 & 40.0$\times$ & 0.17 & 0.46$^\ast$ \\
++Heat 2D & $1024^2$ & 0.13 & 105$\times$ & 1.08 & 83.0$\times$ & 0.045 & 1.11$^\ast$ \\
++ & $2048^2$ & 0.13 & 216$\times$ & 1.08 & 213$\times$ & 0.045 & 1.20$^\ast$ \\
++ & $4096^2$ & 0.13 & 231$\times$ & 1.08 & 258$\times$ & 0.054 & 1.41$^\ast$ \\
++Heat 3D & $32^3$ & 0.080 & 10.9$\times$ & 1.11 & 11.1$\times$ & 0.078 & 0.56 \\
++ & $64^3$ & 0.082 & 8.50$\times$ & 4.78 & 8.25$\times$ & 0.081 & 0.51$^\ast$ \\
++ & $128^3$ & 0.083 & 5.79$\times$ & 4.78 & 8.47$\times$ & 0.082 & 0.50$^\ast$ \\
++ & $256^3$ & 0.083 & 7.60$\times$ & 4.78 & 11.2$\times$ & 0.082 & 0.61$^\ast$ \\
++\bottomrule
++\end{tabular}
++\end{table}
++
++\subsection{Timing spread}
++\label{app:spread}
++Tables~\ref{tab:spread-t1} and~\ref{tab:spread-g1} give the spread behind
++the medians of Tables~\ref{tab:headline}, \ref{tab:boxes}
++and~\ref{tab:g1}. Spread pools test cases and repetitions, so for
++iterative solvers it includes case-to-case variation in iteration count.
++Heat records store only the 10th and 90th percentiles. Burgers 2D
++full-order solves were timed once per case. Small meshes have heavy upper
++tails: at Burgers 2D $256^2$ the fastest full-order query (14.18\,ms) is
++faster than the median fast query (14.24\,ms).
++
++\begin{table}[htbp]
++\centering
++\caption{Timing spread for Tables~\ref{tab:headline}
++and~\ref{tab:boxes}: median [minimum, maximum] in ms (heat: [10th, 90th
++percentile]). \emph{Matched FOM} is the fast setting's own matched rung.}
++\label{tab:spread-t1}
++\tiny\setlength{\tabcolsep}{3pt}
++\begin{tabular}{@{}lllll@{}}
++\toprule
++Problem & Mesh & Accurate & Fast & Matched FOM (fast) \\
++\midrule
++Poisson 2D & $256^2$ & 0.56 [0.36, 2.52] & 0.38 [0.21, 0.84] & 10.3 [8.81, 11.6] \\
++ & $1024^2$ & 3.10 [2.86, 3.70] & 1.18 [0.92, 1.77] & 83.4 [74.3, 93.1] \\
++ & $2048^2$ & 11.7 [11.1, 12.3] & 3.41 [3.08, 3.99] & 594 [548, 678] \\
++ & $4096^2$ & 41.9 [41.2, 43.0] & 12.1 [11.4, 12.9] & 3866 [3584, 4421] \\
++L-shape & $256^2$ & 0.32 [0.28, 1.05] & 0.30 [0.26, 1.30] & 8.88 [7.27, 9.80] \\
++ & $512^2$ & 0.52 [0.51, 0.64] & 0.45 [0.44, 0.55] & 21.8 [18.9, 24.3] \\
++ & $1024^2$ & 2.05 [1.83, 2.47] & 1.73 [1.52, 1.93] & 85.2 [74.7, 94.0] \\
++ & $2048^2$ & 3.81 [3.66, 3.99] & 3.06 [2.91, 3.29] & 298 [269, 326] \\
++Poisson 3D & $32^3$ & 0.32 [0.25, 2.36] & 0.27 [0.21, 1.70] & 1.20 [1.03, 2.53] \\
++ & $64^3$ & 0.44 [0.40, 1.29] & 0.30 [0.25, 1.01] & 2.49 [1.89, 3.13] \\
++ & $128^3$ & 0.89 [0.88, 1.06] & 0.42 [0.42, 0.64] & 8.43 [7.19, 8.77] \\
++ & $256^3$ & 6.16 [5.98, 7.70] & 2.50 [2.37, 3.18] & 99.9 [91.4, 105] \\
++Heat 2D & $1024^2$ & 0.64 [0.62, 1.37] & 0.34 [0.32, 0.35] & 27.9 [26.9, 29.8] \\
++ & $2048^2$ & 1.96 [1.95, 2.81] & 0.83 [0.82, 0.86] & 176 [166, 183] \\
++ & $4096^2$ & 8.42 [8.02, 8.74] & 3.97 [3.59, 4.16] & 1022 [974, 1087] \\
++Heat 3D & $32^3$ & 0.31 [0.29, 1.27] & 0.22 [0.20, 0.25] & 2.48 [2.25, 2.60] \\
++ & $64^3$ & 0.64 [0.62, 1.52] & 0.30 [0.29, 0.31] & 2.48 (not extracted) \\
++ & $128^3$ & 2.99 [2.97, 3.44] & 0.83 [0.81, 0.85] & 7.03 (not extracted) \\
++ & $256^3$ & 23.6 [23.2, 23.9] & 6.41 [5.98, 6.67] & 71.9 (not extracted) \\
++Burgers 2D & $256^2$ & 45.2 [33.2, 51.6] & 14.2 [11.6, 17.8] & 8.28 [7.58, 13.2] \\
++ & $512^2$ & 46.7 [34.4, 53.7] & 15.1 [12.3, 18.7] & 13.3 [12.2, 21.9] \\
++ & $1024^2$ & 49.1 [47.0, 56.9] & 19.1 [16.8, 23.9] & 32.6 [29.9, 56.3] \\
++ & $2048^2$ & 90.4 [87.4, 102] & 35.2 [34.3, 37.3] & 156 [116, 306] \\
++ & $4096^2$ & 119 [115, 131] & 46.6 [45.4, 49.8] & 647 [480, 1331] \\
++Burgers 3D & $64^3$ & 81.1 [79.7, 93.5] & 8.28 [8.00, 14.6] & 7.72 [7.58, 8.23] \\
++ & $128^3$ & 85.0 [83.6, 96.6] & 9.54 [9.44, 15.4] & 27.4 [27.3, 28.2] \\
++ & $256^3$ & 90.7 [87.6, 103] & 35.5 [34.5, 46.2] & 199 [198, 217] \\
++Navier--Stokes & $32^3$ & 5.76 [5.63, 6.35] & 1.50 [1.48, 1.85] & 5.33 [5.20, 5.73] \\
++(original) & $64^3$ & 8.13 [8.03, 9.16] & 2.78 [2.74, 3.62] & 23.7 [23.3, 24.3] \\
++ & $96^3$ & 15.8 [15.5, 17.2] & 8.83 [8.70, 10.1] & 127 [126, 136] \\
++\bottomrule
++\end{tabular}
++\end{table}
++
++\begin{table}[htbp]
++\centering
++\caption{Timing spread for Table~\ref{tab:g1} (seed 0, 72 timed queries
++per cell: eight cases $\times$ nine repetitions): median [minimum,
++maximum] in ms, and the matched solver chosen for that cell.}
++\label{tab:spread-g1}
++\tiny\setlength{\tabcolsep}{3pt}
++\begin{tabular}{@{}llll@{}}
++\toprule
++Setting & $64^3$ & $96^3$ & $128^3$ \\
++\midrule
++Width 64 & 16.1 [15.0, 17.4]; RK4 $88^3$, 112\,ms & 17.5 [17.1, 18.5]; RK4 $88^3$, 112\,ms & 30.8 [29.7, 32.4]; RK4 $88^3$, 112\,ms \\
++Width 96 & 17.1 [16.0, 18.6]; CNAB2 $100^3$, 201\,ms & 26.3 [25.7, 27.0]; CNAB2 $108^3$, 251\,ms & 43.2 [42.7, 44.1]; CNAB2 $108^3$, 299\,ms \\
++Width 128 & 30.7 [29.6, 31.8]; CNAB2 $100^3$, 201\,ms & 47.8 [46.7, 49.4]; CNAB2 $112^3$, 333\,ms & 62.4 [60.9, 64.0]; CNAB2 $112^3$, 334\,ms \\
++Width 128, fast & 19.2 [18.3, 20.1]; CNAB2 $100^3$, 201\,ms & 30.6 [29.3, 31.7]; CNAB2 $112^3$, 333\,ms & 51.0 [49.7, 52.0]; RK4 $108^3$, 309\,ms \\
++Width 192 & 52.0 [50.8, 53.4]; RK4 $108^3$, 308\,ms & 67.2 [66.0, 68.4]; RK4 $120^3$, 414\,ms & 121 [120, 122]; RK4 $120^3$, 416\,ms \\
++Width 192, fast & 24.6 [23.5, 25.6]; CNAB2 $108^3$, 250\,ms & 39.8 [38.9, 40.8]; CNAB2 $120^3$, 398\,ms & 67.6 [66.2, 68.8]; RK4 $112^3$, 346\,ms \\
++\bottomrule
++\end{tabular}
++\end{table}
++
++\paragraph{Seeds.} The models of Table~\ref{tab:g1} were trained three
++times with independent training trajectories; median errors differ by
++less than 0.03 percentage points between seeds at widths 96 and above. No
++other model was retrained for this table. Three Burgers 2D retrains give
++0.93/0.99/0.95\,\% on development cases at one dense-ladder setting. In a
++seed audit with three retrains per setting, two deployed Burgers 2D
++settings did not requalify their quadrature check on every retrain
++($R'=128$ failed on all three retrains, $R'=384$ on two of three); they are marked
++$^\S$ in Table~\ref{tab:tunability}.
++\end{revblock}
++
++
+ %
+ % GENERATED by paper/gen_training_appendix.py -- do not edit.
+ \paragraph{Full-order and solver details.} The Burgers FOM is Newton's method with BiCGStab inner solves (at most 200 iterations, Jacobian--vector products by forward-mode differentiation) preconditioned by the exact inverse of the implicit Helmholtz operator $(I+\Delta t\,\nu\,\lambda)^{-1}$ (advection dropped); Newton stops when the residual norm falls below the nonlinear tolerance times the previous state's norm, or after 20 iterations, and always takes the full step (no line search or damping). Each named setting fixes $\Delta t$, the nonlinear and the linear tolerance.
+@@ -1718,6 +2106,8 @@
+ Poisson 2D & $-\Delta u=f$, $(0,1)^2$, $u|_{\partial\Omega}=0$ & $256^2$--$4096^2$ & none (elliptic) & 12 development / 32 test sources \\
+ Heat 2D, wide bank & $u_t=\kappa\Delta u$, $(0,1)^2$ & $1024^2$--$4096^2$ & Crank--Nicolson, $\Delta t=0.025$ & 16 validation cases (selection); 16 test cases \\
+ Poisson, L-shape & $-\Delta u=f$, $(0,1)^2\setminus[\tfrac12,1)^2$ & $256^2$--$2048^2$ & none & 3072 / 256 / 32 / 32 sources (train / selection / development / test) \\
++\rev{Navier--Stokes 3D, harder} & \rev{as Table~\ref{tab:spec}, $\beta=8$, $\nu/4$; periodic cube} & \rev{$64^3$--$128^3$} & \rev{implicit midpoint, 10--40 steps to $T=0.2$} & \rev{448 / 64 head trajectories per model; 64 development; 128 fresh test (32-case earlier cohort for Table~\ref{tab:coordnet})} \\
++\rev{Cylinder (DFG 2D-2)} & \rev{incompressible Navier--Stokes, Re 90--110} & \rev{P2/P1, 96,781 unknowns} & \rev{BDF2 Galerkin, step 1/400--1/3200} & \rev{train Re 90/100/110; development Re 95; held-out Re 105; out of band Re 80/120} \\
+ \bottomrule
+ \end{tabular} {}}
+ \end{table}
+@@ -1778,7 +2168,7 @@
+ \begin{table}[htbp]
+ \centering
+ \caption{Supporting data for Table~\ref{tab:headline}, including the full-order setting the rule selected for each row: the two settings
+-of each frozen model, median GPU query times (ms) and status. ``EQ'' is the empirical quadrature rule of Appendix~\ref{app:method:eq}; ``tensor'' is the precomputed quadratic advection tensor used in three dimensions. With the host
++of each frozen model, median GPU query times (ms) and status. \rev{``lattice'' is the fixed $63{\times}63$ lattice of Appendix~\ref{app:method:eq} (the submission labelled it ``EQ'')}; ``tensor'' is the precomputed quadratic advection tensor used in three dimensions. With the host
+ transfer of the full field included, the accurate and fast Poisson 2D speedups are
+ 7.05$\times$ and 7.72$\times$ at $256^2$ and 46.3$\times$ and 66.2$\times$ at $4096^2$, and the accurate
+ Poisson 3D speedups are 2.78--3.63$\times$ at $64^3$--$256^3$. Heat errors are measured against the exact time evolution on the
+@@ -1803,11 +2193,11 @@
+ Heat 2D & $1024^2$ & span, $R'{=}128$ & span, $R'{=}32$ & 0.64 & 0.34 & CN--CG, $\Delta t{=}0.025$, rtol $10^{-4}$ & 67.00 & test \\
+ Heat 2D & $2048^2$ & span, $R'{=}128$ & span, $R'{=}32$ & 1.96 & 0.83 & CN--CG, $\Delta t{=}0.025$, rtol $10^{-4}$ & 424.37 & test \\
+ Heat 2D & $4096^2$ & span, $R'{=}128$ & span, $R'{=}32$ & 8.42 & 3.97 & CN--CG, $\Delta t{=}0.025$, rtol $10^{-3}$ & 1945.97 & test \\
+-Burgers 2D & $256^2$ & span, $R'{=}384$, $M{=}1536$, EQ & span, $R'{=}96$, EQ & 45.2 & 14.2 & Newton--BiCGStab, tol $3{\times}10^{-3}$ & 17.4 & test \\
+-Burgers 2D & $512^2$ & span, $R'{=}384$, $M{=}1536$, EQ & span, $R'{=}96$, EQ & 46.7 & 15.1 & Newton--BiCGStab, tol $3{\times}10^{-3}$ & 29.1 & test \\
+-Burgers 2D & $1024^2$ & span, $R'{=}384$, $M{=}1536$, EQ & span, $R'{=}96$, EQ & 49.1 & 19.1 & Newton--BiCGStab, tol $3{\times}10^{-3}$ & 74.1 & test \\
+-Burgers 2D & $2048^2$ & span, $R'{=}384$, $M{=}1536$, EQ & span, $R'{=}128$, EQ & 90.4 & 35.2 & Newton--BiCGStab, tol $3{\times}10^{-3}$ & 306.8 & test \\
+-Burgers 2D & $4096^2$ & span, $R'{=}384$, $M{=}1536$, EQ & span, $R'{=}128$, EQ & 119.4 & 46.6 & Newton--BiCGStab, tol $3{\times}10^{-3}$ & 1282.5 & test \\
++Burgers 2D & $256^2$ & span, $R'{=}384$, $M{=}1536$, \rev{lattice} & span, $R'{=}96$, \rev{lattice} & 45.2 & 14.2 & Newton--BiCGStab, tol $3{\times}10^{-3}$ & 17.4 & test \\
++Burgers 2D & $512^2$ & span, $R'{=}384$, $M{=}1536$, \rev{lattice} & span, $R'{=}96$, \rev{lattice} & 46.7 & 15.1 & Newton--BiCGStab, tol $3{\times}10^{-3}$ & 29.1 & test \\
++Burgers 2D & $1024^2$ & span, $R'{=}384$, $M{=}1536$, \rev{lattice} & span, $R'{=}96$, \rev{lattice} & 49.1 & 19.1 & Newton--BiCGStab, tol $3{\times}10^{-3}$ & 74.1 & test \\
++Burgers 2D & $2048^2$ & span, $R'{=}384$, $M{=}1536$, \rev{lattice} & span, $R'{=}128$, \rev{lattice} & 90.4 & 35.2 & Newton--BiCGStab, tol $3{\times}10^{-3}$ & 306.8 & test \\
++Burgers 2D & $4096^2$ & span, $R'{=}384$, $M{=}1536$, \rev{lattice} & span, $R'{=}128$, \rev{lattice} & 119.4 & 46.6 & Newton--BiCGStab, tol $3{\times}10^{-3}$ & 1282.5 & test \\
+ Poisson 3D & $32^3$ & span, $R'{=}128$ & span, $R'{=}32$ & 0.32 & 0.27 & CG, rtol $10^{-2}$ & 1.41 & test \\
+ Poisson 3D & $64^3$ & span, $R'{=}128$ & span, $R'{=}32$ & 0.44 & 0.30 & CG, rtol $10^{-2}$ & 3.57 & test \\
+ Poisson 3D & $128^3$ & span, $R'{=}128$ & span, $R'{=}32$ & 0.89 & 0.42 & CG, rtol $10^{-2}$ & 12.1 & test \\
+@@ -1972,7 +2362,7 @@
+ validation cases on which its settings were chosen, and only the two
+ selected widths were run on the test cases. The Burgers 2D test
+ cases ran on an A100 GPU and the development cases on an H200 GPU.
+-Heat is shown at $2048^2$.}
++Heat is shown at $2048^2$. \rev{The Burgers 2D test column of $R'=128$ and $R'=64$ was run after the fast width was chosen on test errors (Table~\ref{tab:headline}). $^\S$~Setting that did not requalify its quadrature check on every one of three retrains (Appendix~\ref{app:spread}).}}
+ \label{tab:tunability}
+ %
+ % GENERATED by paper/gen_tunability_table.py from tables/headline-provenance.json -- do not edit.
+@@ -2005,9 +2395,9 @@
+ \multicolumn{7}{@{}l}{\emph{Burgers 2D, $4096^2$ (6 development / 64 test cases)}} \\
+ Head, $k{=}16$, $R'{=}512$ & 2.41 & 41.5 & 12.6$\times$ & --- & --- & --- \\
+ Bank span, $R'{=}512$ (quadrature rule failed its check) & 0.30 & 77.6 & 6.74$\times$ & --- & --- & --- \\
+-Bank span, $R'{=}384$ & 0.22 & 59.6 & 8.78$\times$ & 1.35 & 119 & 10.7$\times$ \\
++Bank span, $R'{=}384$\rev{$^\S$} & 0.22 & 59.6 & 8.78$\times$ & 1.35 & 119 & 10.7$\times$ \\
+ Bank span, $R'{=}256$ & 0.74 & 42.2 & 12.4$\times$ & --- & --- & --- \\
+-Bank span, $R'{=}128$ & 1.89 & 24.1 & 21.7$\times$ & 3.11 & 46.6 & 27.5$\times$ \\
++Bank span, $R'{=}128$\rev{$^\S$} & 1.89 & 24.1 & 21.7$\times$ & 3.11 & 46.6 & 27.5$\times$ \\
+ Bank span, $R'{=}64$ & 4.83 & 16.1 & 32.6$\times$ & 8.24 & 28.8 & 44.5$\times$ \\
+ Bank span, $R'{=}32$ & 10.7 & 12.1 & 43.2$\times$ & --- & --- & --- \\
+ \emph{FOM:} Newton--BiCGStab, tol.\ $3{\times}10^{-3}$ & 0.050 & 523 &  & 0.14 & 1282.5 &  \\
+@@ -2036,4 +2426,451 @@
+ \end{table}
+ 
+ 
++\begin{revblock}
++\section{Harder Navier--Stokes family and cylinder flow}
++\label{app:new-problems}
++
++\subsection{Harder Navier--Stokes family}
++\label{app:method:nshard}
++\emph{Family.} The initial field is the curl of two potentials
++$\exp\big(\beta\sum_i(\cos2\pi(x_i-c_i)-1)\big)$ as in
++Table~\ref{tab:spec}, with sharpness $\beta=8$ (original family:
++$\beta=2$), blob width scaled by $s=\sqrt{2/\beta}$, amplitude $0.2s$ and
++separation $(0.12,0.24)\,s$, and viscosity
++$\nu\sim\log U(5{\times}10^{-4},2.5{\times}10^{-3})$, a quarter of the
++original range; horizon $T=0.2$, outputs every $0.04$. It was chosen from
++five candidate families of increasing difficulty by two criteria fixed
++before any reduced model was run: the cheapest solver reaching 1\,\% on
++probe cases must need a fine mesh (here CNAB2 at $96^3$, 167\,ms; the
++original family needs RK4 at $32^3$, 3.8\,ms), and the held-out POD
++projection floor at rank 64 must stay near 1\,\%. The reference is CNAB2
++at $192^3$ with $\Delta t=2.5{\times}10^{-4}$, stored truncated to
++$128^3$.
++
++\emph{Model.} Per mesh ($64^3$, $96^3$, $128^3$) a POD bank of rank
++$R\in\{64,96,128,192\}$ is built from centred training snapshots and
++evaluated in the moving frame of Appendix~\ref{app:method:ns}; the head
++($k=8$, width 256, linear skip) is trained per mesh as an auto-decoder on
++512 training trajectories (448 training, 64 validation). Number of tests
++$M\in\{292,584,1168,2336\}$, step count $\{10,20,40\}$ and three
++Gauss--Newton sweeps per step were selected on 64 development cases by a
++rule fixed in advance (smallest error, then cheapest within 5\,\%); the
++\emph{fast} rows take the cheapest setting within the same rule's
++tolerance. Each of the three models re-draws its training trajectories,
++banks and heads; the fresh 128-case cohort was generated after the
++settings were frozen.
++
++\emph{Solver ladder and timing.} The comparator is a GPU Fourier
++pseudo-spectral solver (CNAB2 or RK4) on meshes $32^3$--$128^3$ with
++step counts from 5 to 640, 450 stable configurations in all, scored on the
++same 128 cases. For each setting the matched solver is the fastest
++configuration whose worst error on the cohort is at or below the
++setting's (any mesh); times are solve-only (initial field already on the
++solver's mesh, output left on it). Setting and solver are timed
++interleaved in one block on eight cases with nine repetitions, with
++sentinel arms re-timed alone before and after the block; a cell is
++admitted only if every sentinel ratio stays below 1.25. Seed 1's timing
++block failed this gate twice at $64^3$ and $96^3$ (one 2.3\,ms solver
++sentinel); each failed timing run was repeated once under the protocol's
++rule, and seed 1's errors are reported.
++
++\emph{One coordinate network.} Table~\ref{tab:coordnet} gives the earlier
++32-case test cohort on which one coordinate-network bank (a
++divergence-free potential network with a Fourier first layer, fitted once
++by variable projection to centred training snapshots)
++replaces the per-mesh POD banks. On the original family the same
++construction gives 0.18--0.20\,\% against 0.15\,\% for per-mesh POD.
++
++\begin{table}[htbp]
++\centering
++\caption{Harder Navier--Stokes family, earlier 32-case test cohort:
++coordinate network (fitted once, rank 64 or 96) with the head, against
++per-mesh POD with the head re-timed in the same block, and with the
++$64^3$ head reused unchanged on the finer meshes. Worst error (\%), time
++and speedup over the matched any-mesh solver. Settings frozen on
++development cases; the POD and interpolated-POD rows had been evaluated on
++this cohort once before. Every rank-64 variant missed the pre-set
++mesh-transfer tolerance on development cases (projection error 6--8\,\%
++higher at $128^3$ than at $64^3$, limit 5\,\%), so a fallback rule chose
++it.}
++\label{tab:coordnet}
++\scriptsize\setlength{\tabcolsep}{3pt}
++\begin{tabular}{@{}lllll@{}}
++\toprule
++Mesh & Coordinate bank + head & Per-mesh POD + head & Rank-96 coordinate bank + head & $64^3$ head reused (coord.\ / interp.\ POD) \\
++\midrule
++$64^3$ & 0.90\,\%, 12.7\,ms, 14.2$\times$ & 0.84\,\%, 12.1$\times$ & 0.72\,\%, 13.0$\times$ & --- \\
++$96^3$ & 1.23\,\%, 16.7\,ms, 6.7$\times$ & 1.23\,\%, 6.7$\times$ & 0.93\,\%, 11.4$\times$ & 1.05\,\%, 8.8$\times$ / 1.10\,\%, 7.7$\times$ \\
++$128^3$ & 1.39\,\%, 29.3\,ms, 3.8$\times$ & 1.17\,\%, 6.1$\times$ & 0.91\,\%, 6.4$\times$ & 1.06\,\%, 5.4$\times$ / 1.10\,\%, 4.9$\times$ \\
++\bottomrule
++\end{tabular}
++\end{table}
++
++\paragraph{\rev{Batched throughput.}}
++\rev{Both our model and the matched spectral solver were batched with
++\texttt{jax.vmap} on the same GPU (the solver also in a faster real-FFT
++version); every batched output matches the batch-one code to $2\times10^{-13}$
++and the fresh-cohort errors are reproduced. Solver time over our time per query
++for the fast width-192 head (seed 0, end-to-end for our model):}
++
++\begin{center}\rev{\small
++\begin{tabular}{lcccc}
++\toprule
++Mesh & $B=1$ & $B=8$ & $B=32$ & $B=128$ \\
++\midrule
++$64^3$ & $9.4\times$ & $39.8\times$ & $64.5\times$ & $75.1\times$ \\
++$96^3$ & $11.6\times$ & $35.7\times$ & $46.7\times$ & $48.4\times$ \\
++$128^3$ & $6.5\times$ & $15.4\times$ & $17.3\times$ & $17.1\times$ \\
++\bottomrule
++\end{tabular}}\end{center}
++
++\rev{The solver already saturates the GPU at one query; our reduced solve
++batches well, and at $128^3$ about 80\,\% of our batched time is output
++reconstruction. The $96^3$, $B=128$ cell was timed on an H200, all others on an
++A100.}
++
++\paragraph{\rev{Solve time against the mesh.}}
++\rev{At identical settings, reduced-solve time varies by 1--4\,\% from
++$64^3$ to $128^3$ within one A100 allocation. Extensions to $256^3$ use
++resampled $128^3$ banks with reduced operators identical to $10^{-15}$;
++their timings come from separate allocations. Input projection and output
++reconstruction grow with the mesh, so the full query is not flat: at $256^3$
++it has no consistent speed advantage over the matched solver running on its
++own coarser mesh ($0.56$--$1.27\times$). The cross-mesh timing study spans
++multiple allocations: matched-solver ratios are always formed within one
++allocation, and cross-mesh wall-clock differences are descriptive, not paired
++hardware-controlled speedups.}
++
++\subsection{Unsteady flow past a cylinder}
++\label{app:method:cyl}
++\emph{Problem.} DFG 2D-2 channel and cylinder \citep{SchaeferTurek1996},
++mean inflow 1, kinematic viscosity $0.1/\mathrm{Re}$, gradient-form outlet.
++Trajectories start from the steady state at Reynolds 20 with a ramped
++inflow and a one-off asymmetric kick; each records a window of 1.7\,s
++(about five shedding periods), saved every 1/400\,s. Training Reynolds
++numbers 90, 100, 110; development 95; held-out 105, opened once. The
++training data come from a curved P4/P3 Taylor--Hood reference with BDF2;
++the model lives on the P2/P1 export mesh with 96,781 unknowns.
++
++\emph{Model.} The bank represents the velocity minus a lift (the mean
++training velocity), which carries the inflow. Its boundary factor is a
++product of smooth distance factors to the inlet, the channel walls and the
++cylinder surface. The bank is trained on the transient training states
++and ordered as in \S\ref{sec:method:ordered}; widths 16 and 24 are
++prefixes of the width-32 bank. Each velocity width $r$ is paired with $r$
++pressure functions and one supremizer per pressure function, and the
++rollout is a fully implicit BDF2 Galerkin projection with all reduced
++operators assembled once. A POD basis of equal width, rolled out the same
++way, performs the same within 1\,\%.
++
++\emph{Targets.} Velocity RMS error $\le10^{-2}$ and maximum
++$\le3{\times}10^{-2}$, pressure RMS error $\le2{\times}10^{-2}$, relative
++Strouhal error $\le10^{-2}$, relative maximum-drag error
++$\le2{\times}10^{-2}$ and absolute maximum-lift error
++$\le2{\times}10^{-2}$, all fixed in advance.
++
++\emph{Comparator.} 62 finite-element configurations (mesh, element order
++P2/P1 or P3/P2, semi-implicit, Oseen or frozen-Oseen BDF2, step and
++refresh interval) were screened on the development case; the nine
++cheapest passing candidates were re-checked at Reynolds 105 and the
++passing ones timed with five repetitions. The cheapest is P3/P2 on a
++coarser mesh (16,912 unknowns), step 1/300, refresh every 30 steps:
++42.2\,s (37.5--49.4\,s), velocity error $9.4{\times}10^{-3}$. Model and
++finite element run on the same 16-thread CPU node, the model timed
++before and after the finite-element repetitions.
++
++\begin{table}[htbp]
++\centering
++\caption{Cylinder, step 1/800: velocity RMS error and targets met (of
++six). Long window: three times the standard window at Reynolds 105. Out
++of band: Reynolds 80 and 120. Operators: the best of six trained for this
++comparison (Table~\ref{tab:cyl-ops}).}
++\label{tab:cyl-extra}
++\small\setlength{\tabcolsep}{4pt}
++\begin{tabular}{@{}lccc@{}}
++\toprule
++ & Long window, Re 105 & Re 80 & Re 120 \\
++\midrule
++Width 32 & $2.4{\times}10^{-3}$, 6/6 & $1.2{\times}10^{-2}$, 5/6 & $1.3{\times}10^{-2}$, 4/6 \\
++Width 24 & $4.0{\times}10^{-3}$, 6/6 & $5.1{\times}10^{-2}$, 1/6 & $2.5{\times}10^{-2}$, 3/6 \\
++Width 16 & $1.9{\times}10^{-2}$, 3/6 & $7.2{\times}10^{-2}$, 1/6 & $3.0{\times}10^{-2}$, 3/6 \\
++Best operator & 3/6 & 3/6 & 4/6 \\
++\bottomrule
++\end{tabular}
++\end{table}
++
++\paragraph{\rev{Multigrid comparator.}}
++\rev{We replaced the sparse LU of the cheapest passing finite-element run by
++algebraic multigrid (pyamg smoothed aggregation): a block-triangular
++preconditioner with one V-cycle per velocity component and a Cahouet--Chabard
++pressure Schur-complement approximation inside flexible GMRES, with the
++hierarchies rebuilt exactly where the LU was refactored. At Reynolds number 105
++every variant met all six targets with values identical to LU. Against LU timed
++in the same job (five repeats, 16 threads, same node), the AMG-preconditioned
++solver was $2.38\times$ slower at the tolerance selected on the development case
++and $1.87\times$ slower at the loosest passing tolerance; AMG inner solves were
++$21\times$ slower. At this size the sparse direct solver is the faster
++comparator. Compiled multithreaded multigrid (hypre, PETSc) was not tested.}
++
++\section{Baselines added in the revision}
++\label{app:new-baselines}
++
++\subsection{Neural-field ROMs}
++The CROM-style model is a neural field of the coordinates conditioned on
++16 (or 32) latent coordinates, evolved online by solving the discretised
++PDE for the latent velocity at every step, which requires differentiating
++the spatial network at the quadrature nodes. The CoLoRA-style model is a
++hyper-network that maps the five parameters of the initial condition and
++time to low-rank adaptations of a neural field; it solves no equation
++online. Both are our re-implementations, trained on our Burgers 2D training
++data, with every choice made on validation data. A CoLoRA-style decoder
++driven by our online residual solve gave 31.4\,\% worst-case error and is
++not used. Disclosure: the first test job was cancelled for its time limit
++after printing two completed CROM-style rows, which we read before
++resubmitting; the selection file was unchanged and the rerun reproduced
++those rows.
++
++\subsection{Neural operators with matched data}
++Table~\ref{tab:ops-matched} gives every trained operator of
++Table~\ref{tab:baselines}. FNO and U-Net were trained on exactly the
++4,608 trajectories our head uses, for up to 8.1 hours each (a 4.6-hour
++run plus one 3.5-hour continuation), with the architecture selected on
++validation data. Most runs reached the time budget before our convergence
++rule, so these results hold under the stated budgets, not at convergence.
++
++\begin{table}[htbp]
++\centering
++\caption{Burgers 2D, 64 test cases. Left: $256^2$ (training resolution).
++Right: $1024^2$ without retraining (operators applied zero-shot). F0 is
++the submission's FNO architecture; F2 the variant selected on
++validation.}
++\label{tab:ops-matched}
++\scriptsize\setlength{\tabcolsep}{3pt}
++\begin{tabular}{@{}llrrr@{\hspace{10pt}}rr@{}}
++\toprule
++ & & \multicolumn{3}{c}{$256^2$} & \multicolumn{2}{c}{$1024^2$} \\
++\cmidrule(lr){3-5}\cmidrule(l){6-7}
++Method & Trajectories & Worst (\%) & Median (\%) & ms & Worst (\%) & ms \\
++\midrule
++Ours, span $R'=384$ & 576 + 4,608 & 0.875 & 0.026 & 45.2 & 1.25 & 49.1 \\
++Ours, span $R'=96$ & 576 + 4,608 & 3.85 & 0.53 & 14.2 & 4.25 & 19.1 \\
++FNO F0, seeds 0/1/2 & 4,608 & 0.48/0.44/0.49 & 0.22/0.20/0.23 & 4.1 & 3.17/2.99/3.04 & 52 \\
++FNO F2 (selected) & 4,608 & 0.48 & 0.19 & 6.6 & 2.98 & 85 \\
++U-Net, seeds 0/1/2 & 4,608 & 0.45/0.50/0.51 & 0.21/0.22/0.20 & 7.4 & 53.5/54.0/53.4 & 91 \\
++FNO F0 & 576 & 4.03 & 0.40 & 4.1 & & \\
++U-Net & 576 & 0.74 & 0.27 & 7.4 & & \\
++FNO F0 / U-Net, rerun & 128 & 9.78 / 5.01 & 2.61 / 1.23 & 4.1 / 7.4 & & \\
++\bottomrule
++\end{tabular}
++\end{table}
++
++\emph{Harder Navier--Stokes.} An FNO (81\,M parameters, the better on
++validation of two sizes) trained on the head's 448/64 trajectory split
++gives 2.41/2.51/2.52\,\% worst-case error on the 32-case cohort of
++Table~\ref{tab:coordnet} in 18.4/21.0/23.5\,ms; it is faster than our
++coordinate bank with the head only at $128^3$.
++
++\emph{Cylinder.} Table~\ref{tab:cyl-ops} gives the six operators trained
++on the same three training trajectories (60 and 180 minutes of final
++training each), timed on one GPU.
++
++\begin{table}[htbp]
++\centering
++\caption{Cylinder operators: velocity RMS error and targets met (of six)
++on the standard window, and targets met on the long window and out of
++band. Inference per window on an L40S GPU: Transolver-style 2.5\,s, FNO
++0.45\,s, DeepONet 2.8\,s.}
++\label{tab:cyl-ops}
++\scriptsize\setlength{\tabcolsep}{4pt}
++\begin{tabular}{@{}lccccc@{}}
++\toprule
++Operator, final training & Dev.\ Re 95 & Held-out Re 105 & Long window & Re 80 & Re 120 \\
++\midrule
++Transolver-style, 60 min & $8.3{\times}10^{-3}$, 4/6 & $6.9{\times}10^{-3}$, 4/6 & 2/6 & 2/6 & 3/6 \\
++Transolver-style, 180 min & $3.7{\times}10^{-3}$, 4/6 & $5.3{\times}10^{-3}$, 4/6 & 3/6 & 3/6 & 4/6 \\
++FNO, 60 min & $1.1{\times}10^{-2}$, 4/6 & $9.8{\times}10^{-3}$, 4/6 & 0/6 & 1/6 & 1/6 \\
++FNO, 180 min & $9.0{\times}10^{-3}$, 6/6 & $9.9{\times}10^{-3}$, 6/6 & 0/6 & 0/6 & 1/6 \\
++DeepONet, 60 min & $2.5{\times}10^{-2}$, 3/6 & $7.5{\times}10^{-3}$, 5/6 & 0/6 & 1/6 & 2/6 \\
++DeepONet, 180 min & $3.5{\times}10^{-2}$, 2/6 & $1.2{\times}10^{-2}$, 4/6 & 1/6 & 0/6 & 1/6 \\
++\bottomrule
++\end{tabular}
++\end{table}
++
++\subsection{Ablations and POD controls}
++\label{app:podcontrols}
++Table~\ref{tab:ablation} collects the component ablations. Two POD
++controls bound what the coordinate network adds. (i) On periodic boxes a
++POD basis built on one mesh and interpolated to the others, used with the
++same head, transfers as well as the coordinate network (harder
++Navier--Stokes: 1.10\,\% at $96^3$ and $128^3$ with the $64^3$ head,
++Table~\ref{tab:coordnet}); there the network provides a single mesh-free
++object, not accuracy. (ii) In an earlier in-sample study on Burgers 2D at
++$1024^2$, a tuned POD basis with ECSW hyper-reduction
++\citep{Farhat2014ECSW} matched or beat all eight bank settings tested,
++for example 1.35\,\% worst-case error in 0.14 of the time of our
++width-512 span at 2.17\,\%.
++
++\begin{table}[htbp]
++\centering
++\caption{Component ablations on Burgers 2D. Closures act on the same bank
++with 16 coordinates; POD-LSPG and the quadratic manifold use their own
++basis with 16 unknowns. Nonlinear term: the same span setting with the
++fixed lattice and with the dense residual (six development cases).}
++\label{tab:ablation}
++\small\setlength{\tabcolsep}{4pt}
++\begin{tabular}{@{}llrr@{}}
++\toprule
++Comparison & Setting & Worst (\%) & ms \\
++\midrule
++Latent map, 16 coordinates, $256^2$ & nonlinear head & 2.56 & \\
++ & linear closure & 56.9 & \\
++ & quadratic closure & 31.8 & \\
++ & POD-LSPG, 16 modes & 61.7 & \\
++Latent map, 16 unknowns, $1024^2$ (64 test cases) & nonlinear head & 8.42 & 35.3 \\
++ & POD-LSPG & 41.6 & 186.5 \\
++ & quadratic manifold & 34.1 & 758 \\
++Nonlinear term, span $R'=384$, $1024^2$ & fixed $63{\times}63$ lattice & 0.2108 & 49.3 \\
++ & dense residual & 0.2108 & 1,263 \\
++Head or span (development) & span $R'=128$ & 1.10 & 0.59$\times$ head \\
++\bottomrule
++\end{tabular}
++\end{table}
++
++\section{Figures}
++\label{app:figures}
++The figures below were drawn from the stored run records of the
++experiments they name; each caption states its cohort.
++
++\begin{figure}[htbp]
++\centering
++\includegraphics[width=0.8\linewidth]{figs/F1_tunability.pdf}
++\caption{Error against cost. Worst-case relative error against median
++online GPU time per query on four problems of the original benchmark set.
++Blue: span along its width ladder $R'$; orange: head; grey diamonds: the
++named full-order solver along its own ladder; violet: transform or
++pseudo-spectral solvers; green: neural operators (one point per trained
++model). Poisson 2D and Burgers 2D panels are development cohorts at
++$1024^2$ (held-out errors are higher), heat 2D at $1024^2$, original
++Navier--Stokes at $96^3$. Points come from more than one job (5--20\,\%
++cross-job timing differences). On these problems the transform and
++pseudo-spectral solvers are faster at equal error, which the figure
++shows.}
++\label{fig:tunability}
++\end{figure}
++
++\begin{figure}[htbp]
++\centering
++\includegraphics[width=\linewidth]{figs/F2_cost_vs_mesh.pdf}
++\caption{Cost against mesh. Median online time per query against the
++number of grid points for the problems of Tables~\ref{tab:headline}
++and~\ref{tab:boxes}. Blue solid: fast setting; blue dashed: accurate;
++grey solid: the submission's named solver; grey dashed: the fast
++setting's matched solver. Bars: minimum to maximum over stored repeats
++(heat: 10th to 90th percentile).}
++\label{fig:costmesh}
++\end{figure}
++
++\begin{figure}[htbp]
++\centering
++\rev{\includegraphics[width=\linewidth]{figs/F2b_mesh_flat_burgers2d.png}}
++\caption{\rev{The reduced evolution does not grow with the mesh. Burgers 2D,
++the submission's frozen bank with a later off-mesh solver variant (frozen sine
++tests), bank widths $r=128$--$384$ (two time integrators each), 50 time steps
++per query, six development cases with three repeats on one H200 GPU. Left: median solve time is
++unchanged from $256^2$ to $4096^2$ ($22.1/22.0/21.1$\,ms at $r=128$,
++$51.7/51.6/51.8$\,ms at $r=256$, $87.8/86.6/88.3$\,ms at $r=384$). Middle:
++Levenberg--Marquardt iterations per query are the same at every mesh. Right:
++only writing the six output fields grows with the mesh ($0.13$ to $5.7$\,ms at
++$r=128$). At width 384 with backward Euler the worst-case error changes by
++$0.014$ percentage points across these meshes. This is scaling evidence, not a
++speed claim: in the same study this variant was slower than the best full
++solver at matched accuracy at $4096^2$ ($0.05$--$0.71\times$), with the gap
++closing as the mesh grows. The width-512 bank was timed at $1024^2$ only.}}
++\label{fig:meshflat}
++\end{figure}
++
++\begin{figure}[htbp]
++\centering
++\includegraphics[width=0.7\linewidth]{figs/F3_matched_speedup.pdf}
++\caption{Matched speedups. For the 30 cells of the submission's Table~1:
++speedup of the fast setting over the submission's named solver (filled)
++and over the rung of the same solver matched to its own error (open).
++Violet: transform or pseudo-spectral solvers where measured. Three cells
++fall below 1 (Burgers 2D $256^2$ and $512^2$, Burgers 3D $64^3$). The
++Navier--Stokes cells are against CNAB2 on the same mesh; against a solver
++free to coarsen its mesh see \S\ref{sec:results:fom}.}
++\label{fig:matched}
++\end{figure}
++
++\begin{figure}[htbp]
++\centering
++\includegraphics[width=0.8\linewidth]{figs/F4a_fields_ns3d_96.pdf}
++\caption{Solution field and error map, original Navier--Stokes family at
++$96^3$: speed $|u|$ on the mid-plane at $t=0.2$ for the test case with the
++largest error. Top: reference, head ($k=8$), span ($R'=16$); bottom:
++$|u_{\mathrm{ROM}}-u_{\mathrm{ref}}|$, one shared scale.}
++\label{fig:fields-ns}
++\end{figure}
++
++\begin{figure}[htbp]
++\centering
++\includegraphics[width=0.8\linewidth]{figs/F4b_fields_burgers2d_1024.pdf}
++\caption{Solution field and error map, Burgers 2D at $1024^2$, $t=0.05$,
++held-out case 7 (the fast setting's worst case), on the stored $257^2$
++restriction. Top: reference, accurate ($R'=384$), fast ($R'=96$);
++bottom: signed pointwise error.}
++\label{fig:fields-b2d}
++\end{figure}
++
++\begin{figure}[htbp]
++\centering
++\includegraphics[width=\linewidth]{figs/F4c_fields_cylinder_re95.pdf}
++\caption{Solution field and error map, cylinder flow, development
++Reynolds number 95, last stored frame: reference, a width-16 bank and a
++width-16 POD basis (top), velocity error magnitude (bottom). This
++rendering uses the first retrained bank of an earlier campaign, which is
++less accurate than POD here (2.1 against 1.2\,\% at this frame); the bank
++of Table~\ref{tab:g2} matches POD within 1\,\%.}
++\label{fig:fields-cyl}
++\end{figure}
++
++\begin{figure}[htbp]
++\centering
++\includegraphics[width=0.85\linewidth]{figs/F5_basis_poisson2d.pdf}
++\caption{Learned basis functions: ordered bank functions 1--6, 32 and 128
++of the frozen $R=512$ Poisson 2D bank, each scaled by its own maximum, and
++the singular values that define the ordering. Low indices are smooth and
++large-scale; high indices carry fine scales.}
++\label{fig:basis}
++\end{figure}
++
++\begin{figure}[htbp]
++\centering
++\includegraphics[width=\linewidth]{figs/F6_failure_burgers2d_steep.pdf}
++\caption{Failure case: Burgers 2D at $1024^2$ on initial data steeper
++than the training range (steepness $s$ = amplitude/viscosity; training
++range shaded). Left: error per case of the accurate setting against $s$;
++hollow markers: regimes where the solve did not pass numerical
++qualification. Right: median to worst error per regime for the accurate
++and fast settings; grey: best fit in the bank's span. Medians rise to
++5.7\,\% and 16.6\,\% on the two steepest exploratory development regimes,
++and the fit floor rises with them: the bank cannot represent these
++states. Metric: maximum over saved times relative to the initial norm.}
++\label{fig:failure}
++\end{figure}
++
++\begin{figure}[htbp]
++\centering
++\includegraphics[width=\linewidth]{figs/F7_breakeven.pdf}
++\caption{Break-even curves: cumulative GPU time against number of queries
++at $1024^2$ for Poisson 2D, heat 2D and Burgers 2D. Blue: fast setting
++including offline cost; grey solid: the submission's solver; grey dashed:
++matched solver; violet: transform or pseudo-spectral solver (never
++crossed for Poisson and Burgers at this mesh). Largest-mesh counts are in
++Table~\ref{tab:breakeven}.}
++\label{fig:breakeven}
++\end{figure}
++\end{revblock}
++
++
+ \end{document}
+--- uploaded/preamble.tex
++++ revised/preamble.tex
+@@ -2,6 +2,7 @@
+ \usepackage[T1]{fontenc}
+ \usepackage{amsmath,amssymb,amsfonts}
+ \usepackage{graphicx}
++\usepackage{wrapfig}
+ \usepackage{booktabs}
+ \usepackage{multirow}
+ \usepackage{array}

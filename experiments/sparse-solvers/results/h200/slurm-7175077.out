@@ -1,0 +1,44 @@
+sources verified
+d5ff6ad02de2b7dfccb6b9028866d11c9cbe881c
+pax010
+Fri Nov 13 11:54:29 EST 2026
+name, memory.total [MiB], driver_version
+NVIDIA H200, 143771 MiB, 575.57.08
+cpu_model=INTEL(R) XEON(R) PLATINUM 8568Y+
+jax_backend=gpu
+cupy 14.2.0 numpy 2.5.0 scipy 1.18.0 pyamg 5.4.1 jax 0.10.2
+amgx_commit=91a8413ef267b1c32aff4014c02820e1c5897ac2
+11:54:47 cudss burgers 2d n=256: ok rc=0 wall=10s
+11:54:49 cudss heat 2d n=256: ok rc=0 wall=3s
+11:54:51 cudss poisson 2d n=256: ok rc=0 wall=2s
+11:54:55 cudss burgers 2d n=512: ok rc=0 wall=4s
+11:55:02 cudss burgers 3d n=64: ok rc=0 wall=7s
+11:55:06 cudss heat 2d n=512: ok rc=0 wall=3s
+11:55:11 cudss heat 3d n=64: ok rc=0 wall=6s
+11:55:15 cudss poisson 2d n=512: ok rc=0 wall=4s
+11:55:21 cudss poisson 3d n=64: ok rc=0 wall=5s
+11:55:41 cudss burgers 3d n=96: ok rc=0 wall=20s
+11:55:56 cudss heat 3d n=96: ok rc=0 wall=15s
+11:56:11 cudss poisson 3d n=96: ok rc=0 wall=16s
+11:56:21 cudss burgers 2d n=1024: ok rc=0 wall=10s
+11:56:29 cudss heat 2d n=1024: ok rc=0 wall=8s
+11:56:37 cudss poisson 2d n=1024: ok rc=0 wall=8s
+11:57:32 cudss burgers 3d n=128: ok rc=0 wall=55s
+11:58:12 cudss heat 3d n=128: ok rc=0 wall=40s
+11:58:52 cudss poisson 3d n=128: ok rc=0 wall=39s
+11:59:24 cudss burgers 2d n=2048: ok rc=0 wall=32s
+11:59:52 cudss heat 2d n=2048: ok rc=0 wall=28s
+12:00:19 cudss poisson 2d n=2048: ok rc=0 wall=27s
+12:05:12 cudss heat 3d n=192: ok rc=0 wall=293s
+12:10:04 cudss poisson 3d n=192: ok rc=0 wall=292s
+12:12:28 cudss burgers 2d n=4096: ok rc=0 wall=144s
+12:14:30 cudss heat 2d n=4096: ok rc=0 wall=121s
+12:15:12 cudss heat 3d n=256: failed rc=0 wall=43s
+RuntimeError('factor: cudss status 2 (ALLOC_FAILED)') 
+
+12:17:10 cudss poisson 2d n=4096: ok rc=0 wall=118s
+12:17:54 cudss poisson 3d n=256: failed rc=0 wall=44s
+RuntimeError('factor: cudss status 2 (ALLOC_FAILED)') 
+
+Fri Nov 13 12:17:54 EST 2026
+task_completed

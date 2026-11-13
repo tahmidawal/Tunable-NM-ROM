@@ -1,0 +1,61 @@
+host=pax050 source_commit=ccff81e3d3cc1aff50e4ac28f8af9e4acb3da8ea job=7161958
+NVIDIA A100 80GB PCIe, GPU-2fa16ce0-8cbb-a4bf-cedd-ac0436db49e7, 81920 MiB
+jax_backend=gpu
+mesh 128: 128 cases loaded (22s)
+B=32: 30 callables compiled (138s); chunked: ROM_SHARED|r96_head:16, ROM_DEC|r96_head:16, ROM_SHARED|r128_head_fast:16, ROM_DEC|r128_head_fast:16, ROM_SHARED|r192_head_fast:16, ROM_DEC|r192_head_fast:16, E2E_VMAP|cnab2|108|120:16, E2E_RFFT|cnab2|108|120:16, E2E_VMAP|rk4|108|30:16, E2E_RFFT|rk4|108|30:16, E2E_VMAP|rk4|112|30:16, E2E_RFFT|rk4|112|30:16
+B=32 ROM_VMAP|r96_head: 385.84 ms (82.9/s, 12.06 s per 1000)
+B=32 ROM_SHARED|r96_head: 334.07 ms (95.8/s, 10.44 s per 1000) chunk 16
+B=32 ROM_SHAREDR|r96_head: 195.13 ms (164.0/s, 6.10 s per 1000)
+B=32 ROM_ENC|r96_head: 45.53 ms (702.8/s, 1.42 s per 1000)
+B=32 ROM_LAT|r96_head: 21.35 ms (1498.6/s, 0.67 s per 1000)
+B=32 ROM_DEC|r96_head: 260.33 ms (122.9/s, 8.14 s per 1000) chunk 16
+B=32 ROM_VMAP|r128_head_fast: 430.49 ms (74.3/s, 13.45 s per 1000)
+B=32 ROM_SHARED|r128_head_fast: 349.26 ms (91.6/s, 10.91 s per 1000) chunk 16
+B=32 ROM_SHAREDR|r128_head_fast: 207.01 ms (154.6/s, 6.47 s per 1000)
+B=32 ROM_ENC|r128_head_fast: 46.03 ms (695.2/s, 1.44 s per 1000)
+B=32 ROM_LAT|r128_head_fast: 25.69 ms (1245.7/s, 0.80 s per 1000)
+B=32 ROM_DEC|r128_head_fast: 267.31 ms (119.7/s, 8.35 s per 1000) chunk 16
+B=32 ROM_VMAP|r192_head_fast: 552.51 ms (57.9/s, 17.27 s per 1000)
+B=32 ROM_SHARED|r192_head_fast: 377.81 ms (84.7/s, 11.81 s per 1000) chunk 16
+B=32 ROM_SHAREDR|r192_head_fast: 226.56 ms (141.2/s, 7.08 s per 1000)
+B=32 ROM_ENC|r192_head_fast: 48.80 ms (655.7/s, 1.53 s per 1000)
+B=32 ROM_LAT|r192_head_fast: 35.22 ms (908.5/s, 1.10 s per 1000)
+B=32 ROM_DEC|r192_head_fast: 279.72 ms (114.4/s, 8.74 s per 1000) chunk 16
+B=32 SOLVE_VMAP|cnab2|108|120: 11916.48 ms (2.7/s, 372.39 s per 1000)
+B=32 E2E_VMAP|cnab2|108|120: 11625.37 ms (2.8/s, 363.29 s per 1000) chunk 16
+B=32 SOLVE_RFFT|cnab2|108|120: 5778.26 ms (5.5/s, 180.57 s per 1000)
+B=32 E2E_RFFT|cnab2|108|120: 5737.68 ms (5.6/s, 179.30 s per 1000) chunk 16
+B=32 SOLVE_VMAP|rk4|108|30: 11902.95 ms (2.7/s, 371.97 s per 1000)
+B=32 E2E_VMAP|rk4|108|30: 12189.04 ms (2.6/s, 380.91 s per 1000) chunk 16
+B=32 SOLVE_RFFT|rk4|108|30: 5611.03 ms (5.7/s, 175.34 s per 1000)
+B=32 E2E_RFFT|rk4|108|30: 5795.58 ms (5.5/s, 181.11 s per 1000) chunk 16
+B=32 SOLVE_VMAP|rk4|112|30: 13493.97 ms (2.4/s, 421.69 s per 1000)
+B=32 E2E_VMAP|rk4|112|30: 13797.38 ms (2.3/s, 431.17 s per 1000) chunk 16
+B=32 SOLVE_RFFT|rk4|112|30: 6445.79 ms (5.0/s, 201.43 s per 1000)
+B=32 E2E_RFFT|rk4|112|30: 6766.46 ms (4.7/s, 211.45 s per 1000) chunk 16
+cohort ROM_VMAP|r96_head: {'max_abs_err_diff': 1.3678294608077124e-15, 'worst': 0.006159952349351845, 'fresh_worst': 0.006159952349350631, 'ok': True}
+cohort ROM_SHARED|r96_head: {'max_abs_err_diff': 1.4563003580825296e-15, 'worst': 0.0061599523493515666, 'fresh_worst': 0.006159952349350631, 'ok': True}
+cohort ROM_SHAREDR|r96_head: {'max_abs_err_diff': 1.2880321809127793e-15, 'worst': 0.006159952349351032, 'fresh_worst': 0.006159952349350631, 'ok': True}
+cohort ROM_VMAP|r128_head_fast: {'max_abs_err_diff': 2.530094189712173e-15, 'worst': 0.00586275880970133, 'fresh_worst': 0.005862758809701094, 'ok': True}
+cohort ROM_SHARED|r128_head_fast: {'max_abs_err_diff': 2.9689792291343053e-15, 'worst': 0.005862758809701451, 'fresh_worst': 0.005862758809701094, 'ok': True}
+cohort ROM_SHAREDR|r128_head_fast: {'max_abs_err_diff': 2.383943736861127e-15, 'worst': 0.005862758809701558, 'fresh_worst': 0.005862758809701094, 'ok': True}
+cohort ROM_VMAP|r192_head_fast: {'max_abs_err_diff': 2.3806911303436706e-15, 'worst': 0.004548814362692179, 'fresh_worst': 0.004548814362691385, 'ok': True}
+cohort ROM_SHARED|r192_head_fast: {'max_abs_err_diff': 1.964574336543734e-15, 'worst': 0.004548814362692138, 'fresh_worst': 0.004548814362691385, 'ok': True}
+cohort ROM_SHAREDR|r192_head_fast: {'max_abs_err_diff': 2.7688355080934812e-15, 'worst': 0.004548814362691422, 'fresh_worst': 0.004548814362691385, 'ok': True}
+cohort E2E_VMAP|cnab2|108|120: {'max_abs_err_diff': 4.2257630771327936e-13, 'worst': 0.006015601537747349, 'ladder_worst': 0.0060156015377488, 'ok': True}
+cohort E2E_RFFT|cnab2|108|120: {'max_abs_err_diff': 4.2255928573917134e-13, 'worst': 0.006015601537747344, 'ladder_worst': 0.0060156015377488, 'ok': True}
+cohort E2E_VMAP|rk4|108|30: {'max_abs_err_diff': 3.091733263176945e-12, 'worst': 0.005836924211590665, 'ladder_worst': 0.005836924211592684, 'ok': True}
+cohort E2E_RFFT|rk4|108|30: {'max_abs_err_diff': 3.09173404922352e-12, 'worst': 0.005836924211590666, 'ladder_worst': 0.005836924211592684, 'ok': True}
+cohort E2E_VMAP|rk4|112|30: {'max_abs_err_diff': 2.8997601574706072e-12, 'worst': 0.0045335060477801606, 'ladder_worst': 0.004533506047801055, 'ok': True}
+cohort E2E_RFFT|rk4|112|30: {'max_abs_err_diff': 2.8997316971635795e-12, 'worst': 0.004533506047780157, 'ladder_worst': 0.004533506047801055, 'ok': True}
+B=128: 30 callables compiled (3428s); chunked: ROM_VMAP|r96_head:32, ROM_SHARED|r96_head:16, ROM_SHAREDR|r96_head:16, ROM_DEC|r96_head:16, ROM_VMAP|r128_head_fast:32, ROM_SHARED|r128_head_fast:16, ROM_SHAREDR|r128_head_fast:16, ROM_DEC|r128_head_fast:16, ROM_VMAP|r192_head_fast:32, ROM_SHARED|r192_head_fast:16, ROM_SHAREDR|r192_head_fast:16, ROM_DEC|r192_head_fast:16, SOLVE_VMAP|cnab2|108|120:32, E2E_VMAP|cnab2|108|120:16, SOLVE_RFFT|cnab2|108|120:32, E2E_RFFT|cnab2|108|120:16, SOLVE_VMAP|rk4|108|30:32, E2E_VMAP|rk4|108|30:16, SOLVE_RFFT|rk4|108|30:32, E2E_RFFT|rk4|108|30:16, SOLVE_VMAP|rk4|112|30:32, E2E_VMAP|rk4|112|30:16, SOLVE_RFFT|rk4|112|30:32, E2E_RFFT|rk4|112|30:16
+dropped from timing block: ROM_LAT|r96_head: RuntimeError: ROM_LAT|r96_head: cannot shrink below 1
+dropped from timing block: ROM_DEC|r96_head: RuntimeError: ROM_DEC|r96_head: cannot shrink below 1
+dropped from timing block: ROM_LAT|r128_head_fast: RuntimeError: ROM_LAT|r128_head_fast: cannot shrink below 1
+dropped from timing block: ROM_DEC|r128_head_fast: RuntimeError: ROM_DEC|r128_head_fast: cannot shrink below 1
+dropped from timing block: ROM_LAT|r192_head_fast: RuntimeError: ROM_LAT|r192_head_fast: cannot shrink below 1
+dropped from timing block: ROM_DEC|r192_head_fast: RuntimeError: ROM_DEC|r192_head_fast: nothing fits
+B=128: timing failed: JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 4.50GiB. [tf-allocator-allocation-error=''] [executable_name='jit_e2e_b']
+B=128 agreement: ROM_VMAP|r96_head:JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 1.50GiB. [tf-allocator-allocation-error=''] [executable_name='jit_squeeze'], ROM_SHARED|r96_head:JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 4.50GiB. [tf-allocator-allocation-error=''] [executable_name='jit_squeeze'], ROM_SHAREDR|r96_head:JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 4.50GiB. [tf-allocator-allocation-error=''] [executable_name='jit_squeeze'], ROM_VMAP|r128_head_fast:JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 1.50GiB. [tf-allocator-allocation-error=''] [executable_name='jit_squeeze'], ROM_SHARED|r128_head_fast:JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 4.50GiB. [tf-allocator-allocation-error=''] [executable_name='jit_squeeze'], ROM_SHAREDR|r128_head_fast:JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 4.50GiB. [tf-allocator-allocation-error=''] [executable_name='jit_squeeze'], ROM_VMAP|r192_head_fast:JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 4.50GiB. [executable_name='jit_squeeze'] [tf-allocator-allocation-error=''], ROM_SHARED|r192_head_fast:JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 2.25GiB. [executable_name='jit_squeeze'] [tf-allocator-allocation-error=''], ROM_SHAREDR|r192_head_fast:JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 2.25GiB. [tf-allocator-allocation-error=''] [executable_name='jit_squeeze'], SOLVE_VMAP|cnab2|108|120:JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 1.95GiB. [executable_name='jit_squeeze'] [tf-allocator-allocation-error=''], E2E_VMAP|cnab2|108|120:JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 576.00MiB. [executable_name='jit_squeeze'] [tf-allocator-allocation-error=''], SOLVE_RFFT|cnab2|108|120:JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 1.35GiB. [executable_name='jit_squeeze'] [tf-allocator-allocation-error=''], E2E_RFFT|cnab2|108|120:JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 576.00MiB. [executable_name='jit_squeeze'] [tf-allocator-allocation-error=''], SOLVE_VMAP|rk4|108|30:JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 691.98MiB. [executable_name='jit_squeeze'] [tf-allocator-allocation-error=''], E2E_VMAP|rk4|108|30:JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 576.00MiB. [executable_name='jit_squeeze'] [tf-allocator-allocation-error=''], SOLVE_RFFT|rk4|108|30:JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 691.98MiB. [tf-allocator-allocation-error=''] [executable_name='jit_squeeze'], E2E_RFFT|rk4|108|30:JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 1.12GiB. [tf-allocator-allocation-error=''] [executable_name='jit_squeeze'], SOLVE_VMAP|rk4|112|30:JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 1.28GiB. [executable_name='jit_squeeze'] [tf-allocator-allocation-error=''], E2E_VMAP|rk4|112|30:JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 1.12GiB. [tf-allocator-allocation-error=''] [executable_name='jit_squeeze'], SOLVE_RFFT|rk4|112|30:JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 385.88MiB. [tf-allocator-allocation-error=''] [executable_name='jit_squeeze'], E2E_RFFT|rk4|112|30:JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 288.00MiB. [executable_name='jit_squeeze'] [tf-allocator-allocation-error='']
+DONE status with-failures failures ["B=128: timing failed: JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 4.50GiB. [tf-allocator-allocation-error=''] [executable_name='jit_e2e_b']"]
+RUN_EXIT=0

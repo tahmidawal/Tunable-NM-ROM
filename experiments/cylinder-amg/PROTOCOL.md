@@ -108,3 +108,11 @@ better asymptotic scaling may win. pyamg's kernels are single-threaded (so is UM
   partition/constraint, different directories) only for wall time, because amg2 costs ~2 s per step: dev-a = lu, amg1
   ladder, amg1rs, amg1m; dev-b = lu, amg2 1e-10, 1e-8; dev-c = lu, amg2 1e-6, 1e-4. Each repeats lu so that every job has
   its own paired LU timing; the accuracy rule uses the lu of dev-a (LU is deterministic, the three must agree, checked).
+- H1 (2026-11-13 ~02:20 EST, after dev-a 7161797 was read, before Re 105 is opened; Re 95 values in
+  artifacts/amg-deva). Rule applied to amg1: rtol 1e-8 is selected (all six metrics within 0.06 % of lu; 1e-6 meets
+  6/6 but CL_max differs by 2.0 % and e_p RMS by 1.0 %, outside the 1 % reproduction band; 1e-4 fails 4 targets). amg1rs
+  at 1e-6 fails three targets (pressure error 0.18), so it does not replace amg1; amg1m fails to converge (residual 2e-3
+  after 300 iterations). Changes, made because amg2 (dev-b/dev-c) needs much longer: the held-out timing is split into
+  two allocations, each with its own paired lu: ho-a = lu, amg1 r1e-8 (selected), amg1 r1e-6, lu_b; ho-b = lu, amg2
+  (selected when dev-b/dev-c finish), lu_b. amg1 r1e-6 is added as a DECLARED SECONDARY row: the loosest tolerance that
+  meets all six targets on Re 95 (the setting most favourable to AMG); it is reported whatever it shows on Re 105.

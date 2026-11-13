@@ -1,0 +1,918 @@
+{
+  "case": "re95",
+  "Re": 95,
+  "window": {
+    "t_start": 17.45000000000225,
+    "duration": 1.7
+  },
+  "reference": {
+    "run": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1-record-re95/results/record_re95_p4",
+    "velocity_order": 4,
+    "dt": 0.0003125,
+    "ndof": 437140,
+    "record_stage_wall_seconds": 8725.920302036218,
+    "cycles": {
+      "CD_max": 3.243052843969901,
+      "CL_max": 0.9162771453687487,
+      "CL_min": -0.9501134799316288,
+      "St": 0.3002380634599061,
+      "dp_at_t0_plus_half_period": 2.473340004452295,
+      "period": 0.3330690281186852,
+      "cycles": 4
+    }
+  },
+  "quadrature": {
+    "points": 1036497,
+    "order": 12,
+    "area": 0.8941460183660065
+  },
+  "targets": {
+    "e_u_rms": 0.01,
+    "e_u_max": 0.03,
+    "e_p_rms": 0.02,
+    "St_rel": 0.01,
+    "CD_max_rel": 0.02,
+    "CL_max_abs": 0.02
+  },
+  "threads": 16,
+  "meshes": {
+    "c4": {
+      "path": "/cluster/tufts/paralab/tawal01/cyl-amg-20261113/meshes/c4.vol.bin",
+      "sha256": "bd2f8d421b133886c46465ebd8cd76d725ed1b1febbeafdda66c062beb874c0e",
+      "elements": 1480,
+      "points_outside": 0,
+      "weight_outside": 0.0,
+      "locate_seconds": 1.3260192251764238
+    }
+  },
+  "entries": {
+    "c4_p3_dt300_frozen_oseen_K30_lu": {
+      "mesh": "c4",
+      "velocity_order": 3,
+      "pressure_order": 2,
+      "dt_inverse": 300,
+      "scheme": "frozen_oseen",
+      "refactor_every": 30,
+      "solver": {
+        "name": "lu",
+        "kind": "lu"
+      },
+      "entry": [
+        "c4",
+        3,
+        300,
+        "frozen_oseen",
+        30,
+        {
+          "name": "lu",
+          "kind": "lu"
+        }
+      ],
+      "start_projection": {
+        "e_u": 0.0012182302585908036,
+        "e_p": 0.0007751617421433678,
+        "evaluation_check": 6.661338147750939e-16
+      },
+      "ndof": 16912,
+      "timing": [
+        {
+          "warm_seconds": 49.80752141773701,
+          "construct_seconds": 0.2053382541052997,
+          "setup_seconds": 0.0024958420544862747,
+          "steps": 510,
+          "lu_refreshes": 18,
+          "timers": {
+            "conv_apply": 9.04288480989635,
+            "factor": 5.920135030057281,
+            "solve": 18.297270918264985,
+            "observe": 15.065943453460932,
+            "diagnostics": 0.0
+          },
+          "linear_checks_max": 3.7036163116581904e-16,
+          "solver_stats": {
+            "setups": 0,
+            "extract_seconds": 0.0,
+            "amg_setup_seconds": 0.0,
+            "krylov_seconds": 0.0,
+            "inner_iters": 0,
+            "levels": null,
+            "blocks_identical": null,
+            "pressure_setup_seconds": 0.0,
+            "solver": {
+              "name": "lu",
+              "kind": "lu"
+            }
+          }
+        }
+      ],
+      "warm_seconds_median": 49.80752141773701,
+      "warm_seconds_min": 49.80752141773701,
+      "warm_seconds_max": 49.80752141773701,
+      "force": {
+        "CD_maxabs_rel": 0.0033875799077108188,
+        "CL_maxabs": 0.04895539897425061
+      },
+      "cycles": {
+        "CD_max": 3.2502012168465457,
+        "CL_max": 0.9303222148130805,
+        "CL_min": -0.9658409091056084,
+        "St": 0.30078792691687684,
+        "dp_at_t0_plus_half_period": 2.4725665727020387,
+        "period": 0.33246018236748665,
+        "cycles": 4
+      },
+      "cycle_errors": {
+        "St_rel": 0.0018314248720970442,
+        "CD_max_rel": 0.0022042110383542514,
+        "CL_max_abs": 0.014045069444331815
+      },
+      "e_u": {
+        "rms": 0.00830756101313045,
+        "max": 0.010595437377483499,
+        "at_start": 0.0012182302491690292,
+        "saves": 171
+      },
+      "e_p": {
+        "rms": 0.004422301019185928,
+        "max": 0.005728925713793672,
+        "at_start": 0.0007751617490054003
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.00830756101313045,
+          "target": 0.01,
+          "met": true
+        },
+        "e_u_max": {
+          "value": 0.010595437377483499,
+          "target": 0.03,
+          "met": true
+        },
+        "e_p_rms": {
+          "value": 0.004422301019185928,
+          "target": 0.02,
+          "met": true
+        },
+        "St_rel": {
+          "value": 0.0018314248720970442,
+          "target": 0.01,
+          "met": true
+        },
+        "CD_max_rel": {
+          "value": 0.0022042110383542514,
+          "target": 0.02,
+          "met": true
+        },
+        "CL_max_abs": {
+          "value": 0.014045069444331815,
+          "target": 0.02,
+          "met": true
+        }
+      },
+      "targets_met": 6,
+      "status": "completed"
+    },
+    "c4_p3_dt300_frozen_oseen_K30_amg1_sa_cc_r1e-10": {
+      "mesh": "c4",
+      "velocity_order": 3,
+      "pressure_order": 2,
+      "dt_inverse": 300,
+      "scheme": "frozen_oseen",
+      "refactor_every": 30,
+      "solver": {
+        "name": "amg1_sa_cc_r1e-10",
+        "kind": "amg1",
+        "amg": "sa",
+        "schur": "cc",
+        "rtol": 1e-10
+      },
+      "entry": [
+        "c4",
+        3,
+        300,
+        "frozen_oseen",
+        30,
+        {
+          "name": "amg1_sa_cc_r1e-10",
+          "kind": "amg1",
+          "amg": "sa",
+          "schur": "cc",
+          "rtol": 1e-10
+        }
+      ],
+      "start_projection": {
+        "e_u": 0.0012182302585908036,
+        "e_p": 0.0007751617421433678,
+        "evaluation_check": 6.661338147750939e-16
+      },
+      "ndof": 16912,
+      "timing": [
+        {
+          "warm_seconds": 162.45865938207135,
+          "construct_seconds": 0.2877411600202322,
+          "setup_seconds": 0.002106193918734789,
+          "steps": 510,
+          "lu_refreshes": 18,
+          "timers": {
+            "conv_apply": 4.897991210222244,
+            "factor": 4.151809032540768,
+            "solve": 121.12285793107003,
+            "observe": 30.788599414285272,
+            "diagnostics": 0.0
+          },
+          "linear_checks_max": 9.986657386975258e-11,
+          "solver_stats": {
+            "setups": 18,
+            "extract_seconds": 0.36542807100340724,
+            "amg_setup_seconds": 2.255815378855914,
+            "krylov_seconds": 115.57685303641483,
+            "inner_iters": 0,
+            "levels": 3,
+            "blocks_identical": true,
+            "pressure_setup_seconds": 0.10444324789568782,
+            "pressure_levels": 3,
+            "solver": {
+              "name": "amg1_sa_cc_r1e-10",
+              "kind": "amg1",
+              "amg": "sa",
+              "schur": "cc",
+              "rtol": 1e-10
+            },
+            "outer_iters_mean": 40.528265107212476,
+            "outer_iters_max": 80,
+            "outer_iters_total": 20791,
+            "solves": 513,
+            "final_rel_max": 9.986657386975258e-11
+          }
+        }
+      ],
+      "warm_seconds_median": 162.45865938207135,
+      "warm_seconds_min": 162.45865938207135,
+      "warm_seconds_max": 162.45865938207135,
+      "force": {
+        "CD_maxabs_rel": 0.003387580622740674,
+        "CL_maxabs": 0.04895527332861327
+      },
+      "cycles": {
+        "CD_max": 3.2502012386873185,
+        "CL_max": 0.9303222986328684,
+        "CL_min": -0.965841003593864,
+        "St": 0.3007879242317898,
+        "dp_at_t0_plus_half_period": 2.4725665788917786,
+        "period": 0.33246018533636246,
+        "cycles": 4
+      },
+      "cycle_errors": {
+        "St_rel": 0.0018314159289037307,
+        "CD_max_rel": 0.0022042177729878812,
+        "CL_max_abs": 0.014045153264119703
+      },
+      "e_u": {
+        "rms": 0.00830755672992873,
+        "max": 0.010595407128501775,
+        "at_start": 0.0012182302491690292,
+        "saves": 171
+      },
+      "e_p": {
+        "rms": 0.00442229948589426,
+        "max": 0.005728914793783822,
+        "at_start": 0.0007751617490054003
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.00830755672992873,
+          "target": 0.01,
+          "met": true
+        },
+        "e_u_max": {
+          "value": 0.010595407128501775,
+          "target": 0.03,
+          "met": true
+        },
+        "e_p_rms": {
+          "value": 0.00442229948589426,
+          "target": 0.02,
+          "met": true
+        },
+        "St_rel": {
+          "value": 0.0018314159289037307,
+          "target": 0.01,
+          "met": true
+        },
+        "CD_max_rel": {
+          "value": 0.0022042177729878812,
+          "target": 0.02,
+          "met": true
+        },
+        "CL_max_abs": {
+          "value": 0.014045153264119703,
+          "target": 0.02,
+          "met": true
+        }
+      },
+      "targets_met": 6,
+      "status": "completed"
+    },
+    "c4_p3_dt300_frozen_oseen_K30_amg1_sa_cc_r1e-8": {
+      "mesh": "c4",
+      "velocity_order": 3,
+      "pressure_order": 2,
+      "dt_inverse": 300,
+      "scheme": "frozen_oseen",
+      "refactor_every": 30,
+      "solver": {
+        "name": "amg1_sa_cc_r1e-8",
+        "kind": "amg1",
+        "amg": "sa",
+        "schur": "cc",
+        "rtol": 1e-08
+      },
+      "entry": [
+        "c4",
+        3,
+        300,
+        "frozen_oseen",
+        30,
+        {
+          "name": "amg1_sa_cc_r1e-8",
+          "kind": "amg1",
+          "amg": "sa",
+          "schur": "cc",
+          "rtol": 1e-08
+        }
+      ],
+      "start_projection": {
+        "e_u": 0.0012182302585908036,
+        "e_p": 0.0007751617421433678,
+        "evaluation_check": 6.661338147750939e-16
+      },
+      "ndof": 16912,
+      "timing": [
+        {
+          "warm_seconds": 128.75587395066395,
+          "construct_seconds": 0.23043931275606155,
+          "setup_seconds": 0.003364990931004286,
+          "steps": 510,
+          "lu_refreshes": 18,
+          "timers": {
+            "conv_apply": 7.3930807346478105,
+            "factor": 3.956481236498803,
+            "solve": 86.38763499632478,
+            "observe": 29.281362185720354,
+            "diagnostics": 0.0
+          },
+          "linear_checks_max": 9.649088084694233e-09,
+          "solver_stats": {
+            "setups": 18,
+            "extract_seconds": 0.355230001732707,
+            "amg_setup_seconds": 2.2403113623149693,
+            "krylov_seconds": 80.48299350356683,
+            "inner_iters": 0,
+            "levels": 3,
+            "blocks_identical": true,
+            "pressure_setup_seconds": 0.02732440922409296,
+            "pressure_levels": 3,
+            "solver": {
+              "name": "amg1_sa_cc_r1e-8",
+              "kind": "amg1",
+              "amg": "sa",
+              "schur": "cc",
+              "rtol": 1e-08
+            },
+            "outer_iters_mean": 27.5458089668616,
+            "outer_iters_max": 50,
+            "outer_iters_total": 14131,
+            "solves": 513,
+            "final_rel_max": 9.997241639296066e-09
+          }
+        }
+      ],
+      "warm_seconds_median": 128.75587395066395,
+      "warm_seconds_min": 128.75587395066395,
+      "warm_seconds_max": 128.75587395066395,
+      "force": {
+        "CD_maxabs_rel": 0.0033879326997623247,
+        "CL_maxabs": 0.04895728394699905
+      },
+      "cycles": {
+        "CD_max": 3.2502024470837347,
+        "CL_max": 0.9303273172098387,
+        "CL_min": -0.9658444309103733,
+        "St": 0.3007876262990829,
+        "dp_at_t0_plus_half_period": 2.472567157236337,
+        "period": 0.3324605147105446,
+        "cycles": 4
+      },
+      "cycle_errors": {
+        "St_rel": 0.001830423607332439,
+        "CD_max_rel": 0.0022045903837575485,
+        "CL_max_abs": 0.014050171841090031
+      },
+      "e_u": {
+        "rms": 0.008307652367712125,
+        "max": 0.010594973757630102,
+        "at_start": 0.0012182302491690292,
+        "saves": 171
+      },
+      "e_p": {
+        "rms": 0.00442241447134878,
+        "max": 0.005728960988006756,
+        "at_start": 0.0007751617490054003
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.008307652367712125,
+          "target": 0.01,
+          "met": true
+        },
+        "e_u_max": {
+          "value": 0.010594973757630102,
+          "target": 0.03,
+          "met": true
+        },
+        "e_p_rms": {
+          "value": 0.00442241447134878,
+          "target": 0.02,
+          "met": true
+        },
+        "St_rel": {
+          "value": 0.001830423607332439,
+          "target": 0.01,
+          "met": true
+        },
+        "CD_max_rel": {
+          "value": 0.0022045903837575485,
+          "target": 0.02,
+          "met": true
+        },
+        "CL_max_abs": {
+          "value": 0.014050171841090031,
+          "target": 0.02,
+          "met": true
+        }
+      },
+      "targets_met": 6,
+      "status": "completed"
+    },
+    "c4_p3_dt300_frozen_oseen_K30_amg1_sa_cc_r1e-6": {
+      "mesh": "c4",
+      "velocity_order": 3,
+      "pressure_order": 2,
+      "dt_inverse": 300,
+      "scheme": "frozen_oseen",
+      "refactor_every": 30,
+      "solver": {
+        "name": "amg1_sa_cc_r1e-6",
+        "kind": "amg1",
+        "amg": "sa",
+        "schur": "cc",
+        "rtol": 1e-06
+      },
+      "entry": [
+        "c4",
+        3,
+        300,
+        "frozen_oseen",
+        30,
+        {
+          "name": "amg1_sa_cc_r1e-6",
+          "kind": "amg1",
+          "amg": "sa",
+          "schur": "cc",
+          "rtol": 1e-06
+        }
+      ],
+      "start_projection": {
+        "e_u": 0.0012182302585908036,
+        "e_p": 0.0007751617421433678,
+        "evaluation_check": 6.661338147750939e-16
+      },
+      "ndof": 16912,
+      "timing": [
+        {
+          "warm_seconds": 89.97280861763284,
+          "construct_seconds": 0.2531392900273204,
+          "setup_seconds": 0.002209713216871023,
+          "steps": 510,
+          "lu_refreshes": 18,
+          "timers": {
+            "conv_apply": 6.225175808183849,
+            "factor": 3.854459752794355,
+            "solve": 50.147554989904165,
+            "observe": 28.181191369425505,
+            "diagnostics": 0.0
+          },
+          "linear_checks_max": 9.945409996886038e-07,
+          "solver_stats": {
+            "setups": 18,
+            "extract_seconds": 0.369433150626719,
+            "amg_setup_seconds": 2.232476866338402,
+            "krylov_seconds": 44.572459182236344,
+            "inner_iters": 0,
+            "levels": 3,
+            "blocks_identical": true,
+            "pressure_setup_seconds": 0.028215314261615276,
+            "pressure_levels": 3,
+            "solver": {
+              "name": "amg1_sa_cc_r1e-6",
+              "kind": "amg1",
+              "amg": "sa",
+              "schur": "cc",
+              "rtol": 1e-06
+            },
+            "outer_iters_mean": 15.898635477582847,
+            "outer_iters_max": 34,
+            "outer_iters_total": 8156,
+            "solves": 513,
+            "final_rel_max": 9.997593469942982e-07
+          }
+        }
+      ],
+      "warm_seconds_median": 89.97280861763284,
+      "warm_seconds_min": 89.97280861763284,
+      "warm_seconds_max": 89.97280861763284,
+      "force": {
+        "CD_maxabs_rel": 0.003430980582889539,
+        "CL_maxabs": 0.049552006491488776
+      },
+      "cycles": {
+        "CD_max": 3.2502303039640115,
+        "CL_max": 0.9306048117385819,
+        "CL_min": -0.9660426706016984,
+        "St": 0.3007786108486557,
+        "dp_at_t0_plus_half_period": 2.472493962761672,
+        "period": 0.3324705990072214,
+        "cycles": 4
+      },
+      "cycle_errors": {
+        "St_rel": 0.0018003959342143016,
+        "CD_max_rel": 0.002213180092780801,
+        "CL_max_abs": 0.01432766636983318
+      },
+      "e_u": {
+        "rms": 0.00832330897283304,
+        "max": 0.010663941519619887,
+        "at_start": 0.0012182302491690292,
+        "saves": 171
+      },
+      "e_p": {
+        "rms": 0.004467480043907607,
+        "max": 0.005782934093084773,
+        "at_start": 0.0007751617490054003
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.00832330897283304,
+          "target": 0.01,
+          "met": true
+        },
+        "e_u_max": {
+          "value": 0.010663941519619887,
+          "target": 0.03,
+          "met": true
+        },
+        "e_p_rms": {
+          "value": 0.004467480043907607,
+          "target": 0.02,
+          "met": true
+        },
+        "St_rel": {
+          "value": 0.0018003959342143016,
+          "target": 0.01,
+          "met": true
+        },
+        "CD_max_rel": {
+          "value": 0.002213180092780801,
+          "target": 0.02,
+          "met": true
+        },
+        "CL_max_abs": {
+          "value": 0.01432766636983318,
+          "target": 0.02,
+          "met": true
+        }
+      },
+      "targets_met": 6,
+      "status": "completed"
+    },
+    "c4_p3_dt300_frozen_oseen_K30_amg1_sa_cc_r1e-4": {
+      "mesh": "c4",
+      "velocity_order": 3,
+      "pressure_order": 2,
+      "dt_inverse": 300,
+      "scheme": "frozen_oseen",
+      "refactor_every": 30,
+      "solver": {
+        "name": "amg1_sa_cc_r1e-4",
+        "kind": "amg1",
+        "amg": "sa",
+        "schur": "cc",
+        "rtol": 0.0001
+      },
+      "entry": [
+        "c4",
+        3,
+        300,
+        "frozen_oseen",
+        30,
+        {
+          "name": "amg1_sa_cc_r1e-4",
+          "kind": "amg1",
+          "amg": "sa",
+          "schur": "cc",
+          "rtol": 0.0001
+        }
+      ],
+      "start_projection": {
+        "e_u": 0.0012182302585908036,
+        "e_p": 0.0007751617421433678,
+        "evaluation_check": 6.661338147750939e-16
+      },
+      "ndof": 16912,
+      "timing": [
+        {
+          "warm_seconds": 91.77361737098545,
+          "construct_seconds": 0.2293429379351437,
+          "setup_seconds": 0.004009363707154989,
+          "steps": 510,
+          "lu_refreshes": 18,
+          "timers": {
+            "conv_apply": 5.617286654189229,
+            "factor": 3.7877648817375302,
+            "solve": 47.75095817213878,
+            "observe": 32.95769257331267,
+            "diagnostics": 0.0
+          },
+          "linear_checks_max": 9.864996144308606e-05,
+          "solver_stats": {
+            "setups": 18,
+            "extract_seconds": 0.3420009296387434,
+            "amg_setup_seconds": 2.0579165164381266,
+            "krylov_seconds": 41.55176202766597,
+            "inner_iters": 0,
+            "levels": 3,
+            "blocks_identical": true,
+            "pressure_setup_seconds": 0.02952892007306218,
+            "pressure_levels": 3,
+            "solver": {
+              "name": "amg1_sa_cc_r1e-4",
+              "kind": "amg1",
+              "amg": "sa",
+              "schur": "cc",
+              "rtol": 0.0001
+            },
+            "outer_iters_mean": 14.019493177387915,
+            "outer_iters_max": 20,
+            "outer_iters_total": 7192,
+            "solves": 513,
+            "final_rel_max": 9.990598115027498e-05
+          }
+        }
+      ],
+      "warm_seconds_median": 91.77361737098545,
+      "warm_seconds_min": 91.77361737098545,
+      "warm_seconds_max": 91.77361737098545,
+      "force": {
+        "CD_maxabs_rel": 0.19800490010006913,
+        "CL_maxabs": 0.19704148924806097
+      },
+      "cycles": {
+        "CD_max": 3.279859316565491,
+        "CL_max": 0.06842203838948235,
+        "CL_min": -0.37006707857752524,
+        "St": 8.37445955293783,
+        "dp_at_t0_plus_half_period": 2.4555897498016095,
+        "period": 0.03473518064321227,
+        "cycles": 48
+      },
+      "cycle_errors": {
+        "St_rel": 26.892731042931732,
+        "CD_max_rel": 0.011349328662351969,
+        "CL_max_abs": 0.8478551069792664
+      },
+      "e_u": {
+        "rms": 0.011647963909388506,
+        "max": 0.015157199157261358,
+        "at_start": 0.0012182302491690292,
+        "saves": 171
+      },
+      "e_p": {
+        "rms": 0.33250496556601417,
+        "max": 2.0808587087037083,
+        "at_start": 0.0007751617490054003
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.011647963909388506,
+          "target": 0.01,
+          "met": false
+        },
+        "e_u_max": {
+          "value": 0.015157199157261358,
+          "target": 0.03,
+          "met": true
+        },
+        "e_p_rms": {
+          "value": 0.33250496556601417,
+          "target": 0.02,
+          "met": false
+        },
+        "St_rel": {
+          "value": 26.892731042931732,
+          "target": 0.01,
+          "met": false
+        },
+        "CD_max_rel": {
+          "value": 0.011349328662351969,
+          "target": 0.02,
+          "met": true
+        },
+        "CL_max_abs": {
+          "value": 0.8478551069792664,
+          "target": 0.02,
+          "met": false
+        }
+      },
+      "targets_met": 2,
+      "status": "completed"
+    },
+    "c4_p3_dt300_frozen_oseen_K30_amg1_rs_cc_r1e-6": {
+      "mesh": "c4",
+      "velocity_order": 3,
+      "pressure_order": 2,
+      "dt_inverse": 300,
+      "scheme": "frozen_oseen",
+      "refactor_every": 30,
+      "solver": {
+        "name": "amg1_rs_cc_r1e-6",
+        "kind": "amg1",
+        "amg": "rs",
+        "schur": "cc",
+        "rtol": 1e-06
+      },
+      "entry": [
+        "c4",
+        3,
+        300,
+        "frozen_oseen",
+        30,
+        {
+          "name": "amg1_rs_cc_r1e-6",
+          "kind": "amg1",
+          "amg": "rs",
+          "schur": "cc",
+          "rtol": 1e-06
+        }
+      ],
+      "start_projection": {
+        "e_u": 0.0012182302585908036,
+        "e_p": 0.0007751617421433678,
+        "evaluation_check": 6.661338147750939e-16
+      },
+      "ndof": 16912,
+      "timing": [
+        {
+          "warm_seconds": 103.01339325075969,
+          "construct_seconds": 0.2286394671536982,
+          "setup_seconds": 0.0020423727110028267,
+          "steps": 510,
+          "lu_refreshes": 18,
+          "timers": {
+            "conv_apply": 6.530008172150701,
+            "factor": 1.4345559952780604,
+            "solve": 65.28057905752212,
+            "observe": 28.17958041280508,
+            "diagnostics": 0.0
+          },
+          "linear_checks_max": 9.99536965141554e-07,
+          "solver_stats": {
+            "setups": 18,
+            "extract_seconds": 0.34859748370945454,
+            "amg_setup_seconds": 0.10640732664614916,
+            "krylov_seconds": 59.46330270729959,
+            "inner_iters": 0,
+            "levels": 4,
+            "blocks_identical": true,
+            "pressure_setup_seconds": 0.02310490282252431,
+            "pressure_levels": 4,
+            "solver": {
+              "name": "amg1_rs_cc_r1e-6",
+              "kind": "amg1",
+              "amg": "rs",
+              "schur": "cc",
+              "rtol": 1e-06
+            },
+            "outer_iters_mean": 19.32943469785575,
+            "outer_iters_max": 44,
+            "outer_iters_total": 9916,
+            "solves": 513,
+            "final_rel_max": 9.998845056721727e-07
+          }
+        }
+      ],
+      "warm_seconds_median": 103.01339325075969,
+      "warm_seconds_min": 103.01339325075969,
+      "warm_seconds_max": 103.01339325075969,
+      "force": {
+        "CD_maxabs_rel": 0.02807677611944923,
+        "CL_maxabs": 0.05668423130567257
+      },
+      "cycles": {
+        "CD_max": 3.290914505480803,
+        "CL_max": 0.45986472886425145,
+        "CL_min": -0.9712712972073116,
+        "St": 2.94307558775109,
+        "dp_at_t0_plus_half_period": 2.4456981758843503,
+        "period": 0.16604062748355908,
+        "cycles": 8
+      },
+      "cycle_errors": {
+        "St_rel": 8.802473256839765,
+        "CD_max_rel": 0.01475821203465594,
+        "CL_max_abs": 0.45641241650449726
+      },
+      "e_u": {
+        "rms": 0.008317823686648584,
+        "max": 0.010592649085516133,
+        "at_start": 0.0012182302491690292,
+        "saves": 171
+      },
+      "e_p": {
+        "rms": 0.17945896754387583,
+        "max": 0.33390549475432313,
+        "at_start": 0.0007751617490054003
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.008317823686648584,
+          "target": 0.01,
+          "met": true
+        },
+        "e_u_max": {
+          "value": 0.010592649085516133,
+          "target": 0.03,
+          "met": true
+        },
+        "e_p_rms": {
+          "value": 0.17945896754387583,
+          "target": 0.02,
+          "met": false
+        },
+        "St_rel": {
+          "value": 8.802473256839765,
+          "target": 0.01,
+          "met": false
+        },
+        "CD_max_rel": {
+          "value": 0.01475821203465594,
+          "target": 0.02,
+          "met": true
+        },
+        "CL_max_abs": {
+          "value": 0.45641241650449726,
+          "target": 0.02,
+          "met": false
+        }
+      },
+      "targets_met": 3,
+      "status": "completed"
+    },
+    "c4_p3_dt300_frozen_oseen_K30_amg1_sa_mass_r1e-6": {
+      "mesh": "c4",
+      "velocity_order": 3,
+      "pressure_order": 2,
+      "dt_inverse": 300,
+      "scheme": "frozen_oseen",
+      "refactor_every": 30,
+      "solver": {
+        "name": "amg1_sa_mass_r1e-6",
+        "kind": "amg1",
+        "amg": "sa",
+        "schur": "mass",
+        "rtol": 1e-06
+      },
+      "entry": [
+        "c4",
+        3,
+        300,
+        "frozen_oseen",
+        30,
+        {
+          "name": "amg1_sa_mass_r1e-6",
+          "kind": "amg1",
+          "amg": "sa",
+          "schur": "mass",
+          "rtol": 1e-06
+        }
+      ],
+      "start_projection": {
+        "e_u": 0.0012182302585908036,
+        "e_p": 0.0007751617421433678,
+        "evaluation_check": 6.661338147750939e-16
+      },
+      "status": "failed",
+      "error": "ArithmeticError('AMG Krylov relative residual 1.977e-03 > 1e-06 at t=17.450833333335584 (info 300)')",
+      "traceback": "Traceback (most recent call last):\n  File \"/cluster/tufts/paralab/tawal01/cyl-amg-20261113/amg-deva/fe_amg.py\", line 258, in main\n    s.run()\n    ~~~~~^^\n  File \"/cluster/tufts/paralab/tawal01/cyl-amg-20261113/amg-deva/vendor/ref/transient.py\", line 474, in run\n    self._stages(c, x, t, sbdf, steady_start, rows, walls, diag_rows, stage_records, states, buf, flush, persist, t_wall0)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/cluster/tufts/paralab/tawal01/cyl-amg-20261113/amg-deva/vendor/ref/transient.py\", line 523, in _stages\n    xn = self.solve(1.0 / hs, rhs - (Ns - self.apply('Cf', xs)), tn, frozen=True)\n  File \"/cluster/tufts/paralab/tawal01/cyl-amg-20261113/amg-deva/amg_stepper.py\", line 192, in solve\n    raise ArithmeticError(f'AMG Krylov relative residual {rel:.3e} > {self.sv[\"rtol\"]} at t={t_new} (info {info})')\nArithmeticError: AMG Krylov relative residual 1.977e-03 > 1e-06 at t=17.450833333335584 (info 300)\n"
+    }
+  }
+}

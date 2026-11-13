@@ -1,1 +1,52 @@
-[]
+[
+ [
+  "c4",
+  3,
+  300,
+  "frozen_oseen",
+  30,
+  {
+   "name": "lu",
+   "kind": "lu"
+  }
+ ],
+ [
+  "c4",
+  3,
+  300,
+  "frozen_oseen",
+  30,
+  {
+   "name": "amg1_sa_cc_r1e-8",
+   "kind": "amg1",
+   "amg": "sa",
+   "schur": "cc",
+   "rtol": 1e-08
+  }
+ ],
+ [
+  "c4",
+  3,
+  300,
+  "frozen_oseen",
+  30,
+  {
+   "name": "amg1_sa_cc_r1e-6",
+   "kind": "amg1",
+   "amg": "sa",
+   "schur": "cc",
+   "rtol": 1e-06
+  }
+ ],
+ [
+  "c4",
+  3,
+  300,
+  "frozen_oseen",
+  30,
+  {
+   "name": "lu_b",
+   "kind": "lu"
+  }
+ ]
+]

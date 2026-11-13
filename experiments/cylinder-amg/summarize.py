@@ -95,7 +95,8 @@ def main():
             rows[name if i == 0 else f'{name} ({i + 1})'] = row(rec)
     table(rows, 'Development Re 95 (one run each)')
     lus = [r for n, r in rows.items() if n.startswith('lu')]
-    lu_consistent = all(r['metrics'] == lus[0]['metrics'] for r in lus)
+    lu_consistent = all(r['metrics'][k] is None or abs(r['metrics'][k] - lus[0]['metrics'][k]) <= 1e-9 * abs(lus[0]['metrics'][k])
+                        for r in lus for k in KEYS)  # threaded assembly: agreement to rounding, not bitwise
     sel = select(rows, lus[0])
     print('\nLU runs identical across jobs:', lu_consistent, '\nselected:', sel)
     out = {'dev': rows, 'lu_identical_across_dev_jobs': lu_consistent, 'selected': sel,

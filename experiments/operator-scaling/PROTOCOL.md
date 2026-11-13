@@ -139,4 +139,20 @@ hand), log–log figures of median error against parameters and against training
 
 ## Amendments
 
-(none yet)
+### 2026-11-12 ~21:45 EST, A1 — made after about one hour of training (validation histories of the six running runs seen), before any test evaluation
+
+What was seen: the validation curves of the first 0.5–1 h of the six runs (`status.py`). At the FNO's learning rate
+$10^{-3}$ the validation score of the large models is noisy, and the plateau scheduler of section 2 halved the rate
+six times in the first 34,000 steps of the priority FNO run (rate $1.6\times10^{-5}$, near the floor $10^{-5}$), well
+before its 400,000-step budget. A reviewer could argue that this schedule, not size or data, limits the operators.
+To give them that chance, **one additional run** is added, without changing any protocol run:
+
+- `Fw128m64L4` at the 36,864 rung, 400,000 steps, **cosine decay** of the learning rate from $10^{-3}$ to $10^{-6}$
+  over the 400,000 steps, no plateau scheduler and no early stopping, best-validation checkpoint as before (run name
+  suffix `-cosine`). Everything else as section 2. Started when one of this lane's six GPU slots frees (the account
+  cap is shared 6/6 with the other lane); if it cannot finish by the deadline it is stopped by the deadline rule and
+  flagged.
+- If a second slot frees before 2026-11-13 12:00 EST, the same for `Ub128` at the 36,864 rung with 200,000 steps
+  (lr $3\times10^{-4}\to10^{-6}$).
+- These runs are eligible for the per-family validation selection of section 6 and are reported in the full table,
+  labelled; they are **not** points of the fitted size or data ladders of section 7 (those keep one schedule).

@@ -82,7 +82,7 @@ def main():
         res = load(d / 'result.json') if (d / 'result.json').exists() else None
         key = f'{d.parent.name}/{d.name}'
         best = min(hist, key=lambda h: h['val_mean']) if hist else None
-        runs[key] = dict(key=key, arm=meta['arm'], family='FNO' if meta['arm'][0] == 'F' else 'U-Net', rung=meta['rung'],
+        runs[key] = dict(key=key, schedule=meta.get('schedule', 'plateau'), arm=meta['arm'], family='FNO' if meta['arm'][0] == 'F' else 'U-Net', rung=meta['rung'],
                          train_cases=meta['train_cases'], params=meta['real_parameters'], gpu=meta['gpu'], job=meta['job_id'],
                          steps=res['steps'] if res else hist[-1]['step'] if hist else 0,
                          stop=res['stop_reason'] if res else 'running', converged=bool(res and res['converged']),
@@ -128,7 +128,7 @@ def main():
                 continue
             rows.append(dict(r, checkpoint='best up to 200k' if ck else 'final best', test=t, test_key=k + ck))
             gpu = r['gpu'].replace('NVIDIA ', '').replace(' Blackwell Server Edition', '')
-            W(f"| {r['family']} | {r['arm']} | {r['params']:,} | {r['train_cases']:,} | {'best ≤200k' if ck else 'final best'} | "
+            W(f"| {r['family']} | {r['arm']}{' (cosine, A1)' if r['schedule'] == 'cosine' else ''} | {r['params']:,} | {r['train_cases']:,} | {'best ≤200k' if ck else 'final best'} | "
               f"{r['steps']:,} ({(t['best_step'] if t else r['best_step']) or 0:,}) | {r['stop']} | {'yes' if r['converged'] else '**no**'} | "
               f"{r['gpu_hours']:.1f} ({gpu}) | {fmt(r['val_mean'], 4)} | {fmt(r['val_worst'])} | "
               f"{fmt(t['median'], 3) if t else ''} | {fmt(t['worst'], 3) if t else ''} | "
@@ -161,7 +161,7 @@ def main():
             return None if not t else (t['median'] if which == 'median' else t['worst'])
         return r['val_mean'] if which == 'median' else r['val_worst']
     for fam in ('FNO', 'U-Net'):
-        size = [r for r in rows if r['family'] == fam and r['rung'] == 4608 and r['checkpoint'] == 'final best' and val_of(r, 'median')]
+        size = [r for r in rows if r['family'] == fam and r['rung'] == 4608 and r['schedule'] == 'plateau' and r['checkpoint'] == 'final best' and val_of(r, 'median')]
         for which in ('median', 'worst'):
             if len(size) >= 3:
                 xs, ys = [r['params'] for r in size], [val_of(r, which) for r in size]
@@ -169,10 +169,10 @@ def main():
                 fits[f'{fam} size, {which}'] = dict(points=list(zip(xs, ys)), fit=f,
                                                     extrapolation=extrapolate(f, xs, ys, TARGET) if which == 'median' else None)
         arm = 'Fw128m64L4' if fam == 'FNO' else 'Ub128'
-        data = [r for r in rows if r['arm'] == arm and val_of(r, 'median') and
+        data = [r for r in rows if r['arm'] == arm and r['schedule'] == 'plateau' and val_of(r, 'median') and
                 ((r['rung'] < 36864 and r['checkpoint'] == 'final best') or (r['rung'] == 36864 and r['checkpoint'] == 'best up to 200k'))]
         if not have_test:
-            data = [r for r in rows if r['arm'] == arm and r['checkpoint'] == 'final best' and r['val_mean']]
+            data = [r for r in rows if r['arm'] == arm and r['schedule'] == 'plateau' and r['checkpoint'] == 'final best' and r['val_mean']]
         for which in ('median', 'worst'):
             if len(data) >= 3:
                 xs, ys = [r['train_cases'] for r in data], [val_of(r, which) for r in data]

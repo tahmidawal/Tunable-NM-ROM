@@ -89,6 +89,8 @@ def main():
     a.add_argument('--extra', default=None, help='directory of gen_data.py extra chunks (rungs above 4,608)')
     a.add_argument('--deadline', type=float, default=1e18, help='unix time: stop (reason "deadline") at the next validation after it')
     a.add_argument('--snapshot-step', type=int, default=0, help='also keep the best checkpoint up to this step as best_upto_<step>.pt')
+    a.add_argument('--schedule', choices=('plateau', 'cosine'), default='plateau',
+                   help='plateau = protocol section 2; cosine = amendment A1 (cosine decay to 1e-6 over --max-steps, no early stopping)')
     a.add_argument('--continue-last', action='store_true', help='exact continuation from <out>/last.pt (same out dir)')
     a.add_argument('--data-device', choices=('cuda', 'cpu'), default='cuda')
     a = a.parse_args()
@@ -130,7 +132,7 @@ def main():
                                                        threshold_mode='rel', min_lr=MIN_LR)
     warm = 0 if prior else int(cfg.get('warmup_steps', 0))
     gen = torch.Generator(device='cuda').manual_seed(a.seed + (1000 if prior else 0))
-    meta = dict(arm=a.arm, config=cfg, rung=a.rung, data_device=a.data_device, extra_dir=a.extra, seed=a.seed, train_cases=ntrain, validation_cases=nval,
+    meta = dict(arm=a.arm, config=cfg, rung=a.rung, schedule=a.schedule, data_device=a.data_device, extra_dir=a.extra, seed=a.seed, train_cases=ntrain, validation_cases=nval,
                 train_layout='P[0:%d] ++ X[0:%d]' % (min(ntrain, 4352), max(0, a.rung - 4608)), validation_layout='P[4352:4608]', normalization=norm,
                 real_parameters=opnet.real_parameters(net), gpu=torch.cuda.get_device_name(),
                 job_id=os.environ.get('SLURM_JOB_ID'), node=os.environ.get('SLURMD_NODENAME'), torch=torch.__version__,
@@ -169,6 +171,10 @@ def main():
             if step < warm:
                 for g in opt.param_groups:
                     g['lr'] = cfg['lr'] * (step + 1) / warm
+            elif a.schedule == 'cosine':
+                import math
+                for g in opt.param_groups:
+                    g['lr'] = 1e-6 + .5 * (cfg['lr'] - 1e-6) * (1 + math.cos(math.pi * min(step, a.max_steps) / a.max_steps))
             yi = y[i.to(y.device)].cuda(non_blocking=True)
             pred = opnet.predict(net, yi[:, 0], nu[i], norm)
             loss = opnet.relative_errors(pred, yi[:, 1:], yi[:, 0]).square().mean()
@@ -183,7 +189,7 @@ def main():
             if step % EVAL_EVERY == 0:
                 m = evaluate(net, y, nu, val_ids, norm)
                 net.train()
-                if step >= warm:
+                if step >= warm and a.schedule == 'plateau':
                     sched.step(m['mean'])
                 if m['mean'] < best:
                     best = m['mean']
@@ -209,7 +215,7 @@ def main():
                                     best=best, best_thr=best_thr, stale=stale, history=history,
                                     wall_seconds=wall0 + time.monotonic() - started), out / 'last.tmp')
                     os.replace(out / 'last.tmp', out / 'last.pt')
-                if stale >= STOP_PATIENCE:
+                if stale >= STOP_PATIENCE and a.schedule == 'plateau':
                     stop_reason = 'early_stopping'
                 elif step >= a.max_steps:
                     stop_reason = 'step_cap'

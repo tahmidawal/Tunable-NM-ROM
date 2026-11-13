@@ -43,6 +43,12 @@ def mm(st):
     return f"{ms(st['median'])} ({ms(st['min'])}-{ms(st['max'])})"
 
 
+def cud(p, dm, n):
+    d = R.get((p, dm, n, 'cudss'))
+    h = R.get((p, dm, n, 'cudss_hybrid'))
+    return d if (d and d.get('times_s')) or not (h and h.get('times_s')) else h
+
+
 def amgx_best(d, tol):
     """Protocol headline: smallest median setup+solve among configs whose external residual <= tol."""
     best = None
@@ -87,6 +93,7 @@ P(f"- cuDSS {sorted({d.get('cudss_version') for d in R.values() if d['solver'] =
   f"AmgX commit {sorted({d.get('amgx_commit') for d in R.values() if d['solver'] == 'amgx'})}, CuPy {sorted({d.get('cupy') for d in R.values() if d.get('cupy')})}, "
   f"NumPy {g.get('numpy')}, SciPy {g.get('scipy')}; 16 CPU threads for the cuDSS reordering")
 P('- Right-hand side: all ones.  Matrix assembly and upload are not in any time.')
+P('- Where the in-device cuDSS run failed and the hybrid-memory run (amendment 2) succeeded, the growth exponents and the comparison tables use the hybrid-memory times for that size.')
 P('- Timing-noise caveat: AmgX solve times on the small matrices are bimodal across the timed repeats (the same solve takes either of two durations that differ by up to about 6x); '
   'the tables give median (min-max), the comparisons use the median as fixed in the protocol. Large sizes are stable.\n')
 
@@ -113,6 +120,19 @@ for (p, dm) in keys:
         src = d if d.get('times_s') else {'times_s': {k: {'median': v, 'min': v, 'max': v} for k, v in (d.get('first_call') or {}).items()}}
         note = '' if d.get('times_s') else ' (first call only)'
         P(f"| {n} | {n**dm:,} | {rng(src, 'analysis')} | {rng(src, 'factor')} | {rng(src, 'solve')} | {rng(src, 'refactor')} | "
+          f"{d.get('factor_nnz', '-'):,} | {'-' if not pk else f'{pk / 2**30:.2f}'} | {'-' if rr is None else f'{rr:.1e}'} | {d.get('reps', '-')}{note}{' FAILED' if f else ''} |")
+    for n in ns:
+        d = R.get((p, dm, n, 'cudss_hybrid'))
+        if d is None:
+            continue
+        f = fail(d)
+        if f:
+            fails.append(f'cuDSS hybrid memory mode {p} {dm}D n={n}: {f}')
+        pk = d.get('peak_device_bytes') or d.get('peak_device_bytes_first_cycle')
+        rr = d.get('relres_max') or (max(d['first_call_relres']) if d.get('first_call_relres') else None)
+        src = d if d.get('times_s') else {'times_s': {k: {'median': v, 'min': v, 'max': v} for k, v in (d.get('first_call') or {}).items()}}
+        note = '' if d.get('times_s') else ' (first call only)'
+        P(f"| {n}, hybrid memory mode (amendment 2) | {n**dm:,} | {rng(src, 'analysis')} | {rng(src, 'factor')} | {rng(src, 'solve')} | {rng(src, 'refactor')} | "
           f"{d.get('factor_nnz', '-'):,} | {'-' if not pk else f'{pk / 2**30:.2f}'} | {'-' if rr is None else f'{rr:.1e}'} | {d.get('reps', '-')}{note}{' FAILED' if f else ''} |")
     P('')
     P('### AmgX (fastest shipped configuration that reaches the tolerance) and Jacobi-CG\n')
@@ -149,10 +169,10 @@ for (p, dm) in keys:
         return xs, ys
 
     series = {
-        'cuDSS analysis': lambda n: med(R.get((p, dm, n, 'cudss')) or {}, 'analysis'),
-        'cuDSS factor': lambda n: med(R.get((p, dm, n, 'cudss')) or {}, 'factor'),
-        'cuDSS solve': lambda n: med(R.get((p, dm, n, 'cudss')) or {}, 'solve'),
-        'cuDSS refactor': lambda n: med(R.get((p, dm, n, 'cudss')) or {}, 'refactor'),
+        'cuDSS analysis': lambda n: med(cud(p, dm, n) or {}, 'analysis'),
+        'cuDSS factor': lambda n: med(cud(p, dm, n) or {}, 'factor'),
+        'cuDSS solve': lambda n: med(cud(p, dm, n) or {}, 'solve'),
+        'cuDSS refactor': lambda n: med(cud(p, dm, n) or {}, 'refactor'),
         'AmgX setup (1e-6)': lambda n: (amgx_best(R.get((p, dm, n, 'amgx')), 1e-6) or {}).get('setup_s', {}).get('median'),
         'AmgX solve (1e-6)': lambda n: (amgx_best(R.get((p, dm, n, 'amgx')), 1e-6) or {}).get('solve_s', {}).get('median'),
         'AmgX setup+solve (1e-6)': lambda n: (lambda b: b and b['setup_s']['median'] + b['solve_s']['median'])(amgx_best(R.get((p, dm, n, 'amgx')), 1e-6)),
@@ -178,7 +198,7 @@ for (p, dm) in keys:
     P('| n | ' + ' | '.join(hdr) + ' | reduced accurate | reduced fast | paper FOM |')
     P('|---|' + '---|' * (len(hdr) + 3))
     for n in ns:
-        d = R.get((p, dm, n, 'cudss')) or {}
+        d = cud(p, dm, n) or {}
         a, f_, s, rf = (med(d, k) for k in ('analysis', 'factor', 'solve', 'refactor'))
         b = amgx_best(R.get((p, dm, n, 'amgx')), 1e-6)
         bs, bv = (b['setup_s']['median'], b['solve_s']['median']) if b else (None, None)

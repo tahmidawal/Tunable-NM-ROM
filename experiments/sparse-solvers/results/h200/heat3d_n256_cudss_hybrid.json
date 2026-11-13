@@ -1,0 +1,110 @@
+{
+ "problem": "heat",
+ "dim": 3,
+ "n": 256,
+ "unknowns": 16777216,
+ "nnz": 117047296,
+ "spd": true,
+ "solver": "cudss_hybrid",
+ "rhs": "ones",
+ "dtype": "float64",
+ "build_seconds_cpu": 3.382412303239107,
+ "numpy": "2.5.0",
+ "scipy": "1.18.0",
+ "status": "ok",
+ "host": "pax008",
+ "gpu": "NVIDIA H200, 143771 MiB, 575.57.08",
+ "slurm_job": "7181622",
+ "cpus": "16",
+ "started": "2026-11-13 13:00:22 EST",
+ "cudss_version": "1.0.0",
+ "cupy": "14.2.0",
+ "mtype": "SPD",
+ "mview": "FULL",
+ "host_threads": 16,
+ "threading_layer": "libcudss_mtlayer_gomp.so.1",
+ "reordering": "default",
+ "refactor_values": "same values, same pattern",
+ "hybrid_memory_mode": 1,
+ "hybrid_device_memory_limit": "library default",
+ "first_call": {
+  "analysis": 32.4051093487069,
+  "factor": 367.94790531881154,
+  "solve": 13.2924540117383,
+  "refactor": 297.7274905061349,
+  "solve_after_refactor": 13.191039055585861
+ },
+ "cudss_memory_estimates_bytes": [
+  145681088492,
+  145681088492,
+  353980327024,
+  353980327024,
+  28496364268,
+  353980327024
+ ],
+ "factor_nnz": 43084870163,
+ "first_call_relres": [
+  3.742801369195697e-14,
+  3.742604942255413e-14
+ ],
+ "reps": 1,
+ "peak_device_bytes_first_cycle": 146381209600,
+ "device_bytes_held_after_factor": 146381209600,
+ "device_total_bytes": 150110273536,
+ "device_bytes_matrix_and_vectors": 2086666240,
+ "times_s": {
+  "analysis": {
+   "median": 32.27752086427063,
+   "min": 32.27752086427063,
+   "max": 32.27752086427063,
+   "n": 1,
+   "all": [
+    32.27752086427063
+   ]
+  },
+  "factor": {
+   "median": 355.35711717419326,
+   "min": 355.35711717419326,
+   "max": 355.35711717419326,
+   "n": 1,
+   "all": [
+    355.35711717419326
+   ]
+  },
+  "solve": {
+   "median": 13.238590572960675,
+   "min": 13.238590572960675,
+   "max": 13.238590572960675,
+   "n": 1,
+   "all": [
+    13.238590572960675
+   ]
+  },
+  "refactor": {
+   "median": 326.694179514423,
+   "min": 326.694179514423,
+   "max": 326.694179514423,
+   "n": 1,
+   "all": [
+    326.694179514423
+   ]
+  },
+  "solve_after_refactor": {
+   "median": 13.18113328050822,
+   "min": 13.18113328050822,
+   "max": 13.18113328050822,
+   "n": 1,
+   "all": [
+    13.18113328050822
+   ]
+  }
+ },
+ "relres": [
+  [
+   3.7425173683639807e-14,
+   3.742873029665399e-14
+  ]
+ ],
+ "peak_device_bytes": 146381209600,
+ "relres_max": 3.742873029665399e-14
+}

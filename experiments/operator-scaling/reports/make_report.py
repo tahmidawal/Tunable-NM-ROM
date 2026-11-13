@@ -179,6 +179,14 @@ def main():
                 f = ols(xs, ys)
                 fits[f'{fam} data ({arm}), {which}'] = dict(points=list(zip(xs, ys)), fit=f,
                                                            extrapolation=extrapolate(f, xs, ys, TARGET) if which == 'median' else None)
+        if fam == 'FNO':   # amendment A2: separate cosine data fit (3 points, no extrapolation by rule)
+            cdata = [r for r in rows if r['arm'] == arm and r['schedule'] == 'cosine' and r['checkpoint'] == 'final best' and val_of(r, 'median')]
+            for which in ('median', 'worst'):
+                if len(cdata) >= 3:
+                    xs, ys = [r['train_cases'] for r in cdata], [val_of(r, which) for r in cdata]
+                    f = ols(xs, ys)
+                    fits[f'FNO data, cosine ({arm}), {which}'] = dict(points=list(zip(xs, ys)), fit=f,
+                                                                    extrapolation=extrapolate(f, xs, ys, TARGET) if which == 'median' else None)
     # query time vs params (measured)
     tfit = {}
     if have_test:

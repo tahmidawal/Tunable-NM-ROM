@@ -32,16 +32,426 @@
   "max_iterations_per_step": 5,
   "invocations": 256
  },
- "runs": {},
+ "runs": {
+  "a1F/Fw128m64L4-n36864-s0-cosine": {
+   "key": "a1F/Fw128m64L4-n36864-s0-cosine",
+   "schedule": "cosine",
+   "arm": "Fw128m64L4",
+   "family": "FNO",
+   "rung": 36864,
+   "train_cases": 36608,
+   "params": 277025413,
+   "gpu": "NVIDIA H200",
+   "job": "7158479",
+   "steps": 198500,
+   "stop": "running",
+   "converged": false,
+   "best_step": 160500,
+   "val_mean": 0.16828314624035556,
+   "val_worst": 0.39000106044113636,
+   "final_lr": 0.0005063883824098106,
+   "gain10": 0.0,
+   "gain20": 0.0,
+   "gpu_hours": 5.555603163190082,
+   "ms_per_step": null
+  },
+  "p1F/Fw128m64L4-n36864-s0": {
+   "key": "p1F/Fw128m64L4-n36864-s0",
+   "schedule": "plateau",
+   "arm": "Fw128m64L4",
+   "family": "FNO",
+   "rung": 36864,
+   "train_cases": 36608,
+   "params": 277025413,
+   "gpu": "NVIDIA H200",
+   "job": "7157811",
+   "steps": 245000,
+   "stop": "running",
+   "converged": false,
+   "best_step": 242500,
+   "val_mean": 0.14692765707877697,
+   "val_worst": 0.4890856333076954,
+   "final_lr": 1e-05,
+   "gain10": 0.44615577377136756,
+   "gain20": 1.8350161720982257,
+   "gpu_hours": 6.928614358735116,
+   "ms_per_step": null
+  },
+  "p1U/Ub128-n36864-s0": {
+   "key": "p1U/Ub128-n36864-s0",
+   "schedule": "plateau",
+   "arm": "Ub128",
+   "family": "U-Net",
+   "rung": 36864,
+   "train_cases": 36608,
+   "params": 124123141,
+   "gpu": "NVIDIA H200",
+   "job": "7157812",
+   "steps": 97500,
+   "stop": "running",
+   "converged": false,
+   "best_step": 95000,
+   "val_mean": 0.27626652245089645,
+   "val_worst": 0.848049484193325,
+   "final_lr": 1e-05,
+   "gain10": 3.512165915553033,
+   "gain20": 5.525959870275804,
+   "gpu_hours": 6.8289121939301385,
+   "ms_per_step": null
+  },
+  "p3/Fw128m64L4-n18432-s0": {
+   "key": "p3/Fw128m64L4-n18432-s0",
+   "schedule": "plateau",
+   "arm": "Fw128m64L4",
+   "family": "FNO",
+   "rung": 18432,
+   "train_cases": 18176,
+   "params": 277025413,
+   "gpu": "NVIDIA H200",
+   "job": "7157948",
+   "steps": 200000,
+   "stop": "step_cap",
+   "converged": false,
+   "best_step": 199000,
+   "val_mean": 0.14362086747041758,
+   "val_worst": 0.48076193779706955,
+   "final_lr": 1e-05,
+   "gain10": 0.9997518741955363,
+   "gain20": 1.1825885952527273,
+   "gpu_hours": 5.627826357330195,
+   "ms_per_step": 101.30087445222307
+  },
+  "p3/Ub128-n18432-s0": {
+   "key": "p3/Ub128-n18432-s0",
+   "schedule": "plateau",
+   "arm": "Ub128",
+   "family": "U-Net",
+   "rung": 18432,
+   "train_cases": 18176,
+   "params": 124123141,
+   "gpu": "NVIDIA H200",
+   "job": "7157948",
+   "steps": 10500,
+   "stop": "running",
+   "converged": false,
+   "best_step": 8000,
+   "val_mean": 1.9051354560360778,
+   "val_worst": 4.689239338040352,
+   "final_lr": 0.0003,
+   "gain10": 30.26760831643254,
+   "gain20": 75.05480989468431,
+   "gpu_hours": 0.7478155523810225,
+   "ms_per_step": null
+  },
+  "szF2/Fw128m64L4-n4608-s0": {
+   "key": "szF2/Fw128m64L4-n4608-s0",
+   "schedule": "plateau",
+   "arm": "Fw128m64L4",
+   "family": "FNO",
+   "rung": 4608,
+   "train_cases": 4352,
+   "params": 277025413,
+   "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+   "job": "7157808",
+   "steps": 158500,
+   "stop": "running",
+   "converged": false,
+   "best_step": 154000,
+   "val_mean": 0.17275999662160757,
+   "val_worst": 0.6945927161723375,
+   "final_lr": 1e-05,
+   "gain10": 0.48180365099747036,
+   "gain20": 1.3579750289746297,
+   "gpu_hours": 6.96900532290831,
+   "ms_per_step": null
+  },
+  "szU192/Ub192-n4608-s0": {
+   "key": "szU192/Ub192-n4608-s0",
+   "schedule": "plateau",
+   "arm": "Ub192",
+   "family": "U-Net",
+   "rung": 4608,
+   "train_cases": 4352,
+   "params": 279254021,
+   "gpu": "NVIDIA H200",
+   "job": "7157949",
+   "steps": 41000,
+   "stop": "running",
+   "converged": false,
+   "best_step": 39000,
+   "val_mean": 0.5535110278287902,
+   "val_worst": 1.4535054564476013,
+   "final_lr": 1e-05,
+   "gain10": 2.5666247921971177,
+   "gain20": 14.315217906927042,
+   "gpu_hours": 5.979383786806009,
+   "ms_per_step": null
+  },
+  "szU2/Ub128-n4608-s0": {
+   "key": "szU2/Ub128-n4608-s0",
+   "schedule": "plateau",
+   "arm": "Ub128",
+   "family": "U-Net",
+   "rung": 4608,
+   "train_cases": 4352,
+   "params": 124123141,
+   "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+   "job": "7157810",
+   "steps": 113000,
+   "stop": "early_stopping",
+   "converged": true,
+   "best_step": 103000,
+   "val_mean": 0.3090362401508173,
+   "val_worst": 1.1058623902499676,
+   "final_lr": 1e-05,
+   "gain10": 0.0,
+   "gain20": 0.0,
+   "gpu_hours": 6.230481973914429,
+   "ms_per_step": 198.49323105559048
+  },
+  "szU2/Ub96-n4608-s0": {
+   "key": "szU2/Ub96-n4608-s0",
+   "schedule": "plateau",
+   "arm": "Ub96",
+   "family": "U-Net",
+   "rung": 4608,
+   "train_cases": 4352,
+   "params": 69825029,
+   "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+   "job": "7157810",
+   "steps": 19500,
+   "stop": "running",
+   "converged": false,
+   "best_step": 19500,
+   "val_mean": 0.6543902579323913,
+   "val_worst": 1.533790212124586,
+   "final_lr": 7.5e-05,
+   "gain10": 36.11189538165828,
+   "gain20": 67.34265008501119,
+   "gpu_hours": 0.7324975302290275,
+   "ms_per_step": null
+  }
+ },
  "tests": {},
  "test_jobs": [],
- "fits": {},
+ "fits": {
+  "FNO data (Fw128m64L4), median": {
+   "points": [
+    [
+     4352,
+     0.17275999662160757
+    ],
+    [
+     18176,
+     0.14362086747041758
+    ],
+    [
+     36608,
+     0.14692765707877697
+    ]
+   ],
+   "fit": {
+    "n": 3,
+    "slope": -0.08389432461932594,
+    "intercept": -0.4642548355669367,
+    "r2": 0.8173107399411763,
+    "resid_se_log10": 0.02644211291468671,
+    "slope_ci95": [
+     -0.5878720435415685,
+     0.4200833943029167
+    ],
+    "x_mean_log10": 4.153921067832653
+   },
+   "extrapolation": {
+    "criteria": {
+     "n_ge_4": false,
+     "r2_ge_0p9": false,
+     "slope_ci_below_0": false,
+     "monotone": false
+    },
+    "allowed": false
+   }
+  },
+  "FNO data (Fw128m64L4), worst": {
+   "points": [
+    [
+     4352,
+     0.6945927161723375
+    ],
+    [
+     18176,
+     0.48076193779706955
+    ],
+    [
+     36608,
+     0.4890856333076954
+    ]
+   ],
+   "fit": {
+    "n": 3,
+    "slope": -0.17838724238181894,
+    "intercept": 0.47868826022036576,
+    "r2": 0.869407950166494,
+    "resid_se_log10": 0.04609045819650164,
+    "slope_ci95": [
+     -1.0568557694960825,
+     0.7000812847324447
+    ],
+    "x_mean_log10": 4.153921067832653
+   },
+   "extrapolation": null
+  },
+  "U-Net size, median": {
+   "points": [
+    [
+     69825029,
+     0.6543902579323913
+    ],
+    [
+     124123141,
+     0.3090362401508173
+    ],
+    [
+     279254021,
+     0.5535110278287902
+    ]
+   ],
+   "fit": {
+    "n": 3,
+    "slope": -0.06567183556888784,
+    "intercept": 0.21676852562334673,
+    "r2": 0.013485400812802806,
+    "resid_se_log10": 0.2402439999040682,
+    "slope_ci95": [
+     -7.202657639843918,
+     7.071313968706142
+    ],
+    "x_mean_log10": 8.127954439038248
+   },
+   "extrapolation": {
+    "criteria": {
+     "n_ge_4": false,
+     "r2_ge_0p9": false,
+     "slope_ci_below_0": false,
+     "monotone": false
+    },
+    "allowed": false
+   }
+  },
+  "U-Net size, worst": {
+   "points": [
+    [
+     69825029,
+     1.533790212124586
+    ],
+    [
+     124123141,
+     1.1058623902499676
+    ],
+    [
+     279254021,
+     1.4535054564476013
+    ]
+   ],
+   "fit": {
+    "n": 3,
+    "slope": -0.01411110005668874,
+    "intercept": 0.24532228389413777,
+    "r2": 0.0031384037142770937,
+    "resid_se_log10": 0.10756660589129982,
+    "slope_ci95": [
+     -3.2096179163218372,
+     3.1813957162084594
+    ],
+    "x_mean_log10": 8.127954439038248
+   },
+   "extrapolation": null
+  },
+  "U-Net data (Ub128), median": {
+   "points": [
+    [
+     4352,
+     0.3090362401508173
+    ],
+    [
+     18176,
+     1.9051354560360778
+    ],
+    [
+     36608,
+     0.27626652245089645
+    ]
+   ],
+   "fit": {
+    "n": 3,
+    "slope": 0.1427784502623914,
+    "intercept": -0.8560025685749121,
+    "r2": 0.020442415382882606,
+    "resid_se_log10": 0.6588889330297935,
+    "slope_ci95": [
+     -12.41542151518088,
+     12.700978415705661
+    ],
+    "x_mean_log10": 4.153921067832653
+   },
+   "extrapolation": {
+    "criteria": {
+     "n_ge_4": false,
+     "r2_ge_0p9": false,
+     "slope_ci_below_0": false,
+     "monotone": false
+    },
+    "allowed": false
+   }
+  },
+  "U-Net data (Ub128), worst": {
+   "points": [
+    [
+     4352,
+     1.1058623902499676
+    ],
+    [
+     18176,
+     4.689239338040352
+    ],
+    [
+     36608,
+     0.848049484193325
+    ]
+   ],
+   "fit": {
+    "n": 3,
+    "slope": 0.04278382251713098,
+    "intercept": 0.036687605673468245,
+    "r2": 0.002546190510164137,
+    "resid_se_log10": 0.5645224281451398,
+    "slope_ci95": [
+     -10.716822512081416,
+     10.80239015711568
+    ],
+    "x_mean_log10": 4.153921067832653
+   },
+   "extrapolation": null
+  }
+ },
  "time_fits": {},
  "best": {
   "FNO": {
+   "key": "p3/Fw128m64L4-n18432-s0",
+   "arm": "Fw128m64L4",
+   "rung": 18432,
+   "params": 277025413,
+   "val_mean": 0.14362086747041758,
+   "test": null,
    "reached_target": []
   },
   "U-Net": {
+   "key": "p1U/Ub128-n36864-s0",
+   "arm": "Ub128",
+   "rung": 36864,
+   "params": 124123141,
+   "val_mean": 0.27626652245089645,
+   "test": null,
    "reached_target": []
   }
  },
@@ -60,6 +470,6 @@
    "solver_gpu_seconds": 444.59056721255183
   }
  },
- "training_gpu_hours": 0,
+ "training_gpu_hours": 45.60014023942433,
  "metric_for_fits": "validation"
 }

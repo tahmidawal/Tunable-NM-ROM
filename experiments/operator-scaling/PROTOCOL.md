@@ -156,3 +156,18 @@ To give them that chance, **one additional run** is added, without changing any 
   (lr $3\times10^{-4}\to10^{-6}$).
 - These runs are eligible for the per-family validation selection of section 6 and are reported in the full table,
   labelled; they are **not** points of the fitted size or data ladders of section 7 (those keep one schedule).
+
+### 2026-11-13 ~05:35 EST, A2 — made after ~8 h of training (validation only), before any test evaluation
+
+What was seen: validation histories of all runs. The cosine run of A1 is at 0.111 % validation mean at 263k of 400k
+steps (lr 2.6e-4), below every plateau-schedule FNO run (0.137–0.164 %). Since the question is how far the
+operators can be pushed, and the schedule evidently matters, the cosine schedule gets its own data axis:
+
+- `Fw128m64L4` with the A1 cosine schedule (400,000 steps, $10^{-3}\to10^{-6}$) at the **4,608** and **18,432** rungs,
+  so that, with the A1 run at 36,864, the cosine FNO has a three-point data trend. These are reported as a second,
+  separately labelled data fit ("FNO data, cosine"); the protocol fits of section 7 are unchanged. Three points do
+  not meet the extrapolation criteria of section 7 ($\ge 4$ points), so no extrapolation is attached to this fit.
+- The A1 U-Net cosine run (`Ub128`, 36,864, 200,000 steps) is started now (slot free before 2026-11-13 12:00, as A1
+  specified).
+- Cosine runs remain eligible for the per-family validation selection (section 6, as A1).
+- All under the same deadline rule.

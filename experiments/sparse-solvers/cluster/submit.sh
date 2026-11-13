@@ -6,7 +6,7 @@ cd "$(dirname "$0")/.."
 ATTEMPT=$1; WALL=$2; FEAT=$3; TASKS=$4; TMO=${5:-5400}
 NS=/cluster/tufts/paralab/tawal01/sparse-solvers-20261113
 DIR=$NS/jobs/$ATTEMPT
-[ -z "$(git status --porcelain -- .)" ] || { echo "uncommitted changes; commit first"; exit 2; }
+[ -z "$(git status --porcelain -- . ":!ledger")" ] || { echo "uncommitted changes; commit first"; exit 2; }
 COMMIT=$(git rev-parse HEAD)
 FILES=(bench.py matrices.py cluster/run_gpu.sh "$TASKS")
 mine=$(ssh tufts-login "squeue -u \$USER -h -p gpu -o '%j'" | grep -c '^ss_' || true)

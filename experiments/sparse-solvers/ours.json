@@ -1,0 +1,21 @@
+{
+ "source_file": "worktrees/2026-11-12-paper-revision/paper_revision/main.tex",
+ "headline_source": "Table tab:headline-times (main.tex line 2127): median online query time, columns Accurate ms / Fast ms / FOM ms",
+ "headline_note": "All Burgers 2D rows were timed on an A100 80 GB; Burgers 3D on an H200 (paper). FOM = the paper's accuracy-matched full solver.",
+ "headline": {
+  "poisson2d": {"256": [0.56, 0.38, 10.3], "1024": [3.10, 1.18, 96.4], "2048": [11.66, 3.40, 751.0], "4096": [41.92, 12.11, 4508.8]},
+  "heat2d": {"1024": [0.64, 0.34, 67.00], "2048": [1.96, 0.83, 424.37], "4096": [8.42, 3.97, 1945.97]},
+  "burgers2d": {"256": [45.2, 14.2, 17.4], "512": [46.7, 15.1, 29.1], "1024": [49.1, 19.1, 74.1], "2048": [90.4, 35.2, 306.8], "4096": [119.4, 46.6, 1282.5]},
+  "poisson3d": {"64": [0.44, 0.30, 3.57], "128": [0.89, 0.42, 12.1], "256": [6.16, 2.50, 118.8]},
+  "heat3d": {"64": [0.64, 0.30, 5.42], "128": [2.99, 0.83, 17.33], "256": [23.61, 6.41, 179.42]},
+  "burgers3d": {"64": [81.11, 8.28, 17.26], "128": [85.00, 9.54, 48.68]}
+ },
+ "meshflat_source": "Figure fig:meshflat caption (main.tex line 2735) and the mesh-scaling table of the rebuttal: Burgers 2D, backward Euler, 50 steps, frozen bank, one H200; reduced evolution ms and reconstruction of six fields ms",
+ "meshflat": {
+  "128": {"256": [22.1, 0.13], "1024": [22.0, 0.40], "4096": [21.1, 5.7]},
+  "256": {"256": [51.7, 0.15], "1024": [51.6, 0.67], "4096": [51.8, 10.0]},
+  "384": {"256": [87.8, 0.18], "1024": [86.6, 0.95], "4096": [88.3, 14.3]}
+ },
+ "steps": {"heat": 20, "burgers": 50},
+ "steps_source": "main.tex Table tab:spec / appendix app:method: heat Crank-Nicolson dt 0.025 to t 0.5 (20 steps); Burgers 2D backward Euler dt 0.005 to t 0.25 (50 steps); Burgers 3D FOM dt 0.005 or 0.01 (50 or 25 steps; 50 used here)"
+}

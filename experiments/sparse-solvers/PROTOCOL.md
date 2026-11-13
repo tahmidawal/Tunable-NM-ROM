@@ -95,3 +95,10 @@ Read from the revised paper source (table and line recorded in RESULTS.md); not 
 `summarize.py`.  Growth exponents are least-squares slopes of log(time) against log(unknowns).
 
 ## Amendments
+
+1. Fri 13 Nov 2026, 11:58 EST (after the smoke job 7174901, before any production run).  The smoke run
+   showed that `AMGX_solver_solve_with_0_initial_guess` does not zero the solution vector, so repeated
+   AmgX solves started from the previous solution while the library assumed zero (external residual
+   1, 2, ... 5 on repeats).  The solution vector is now set to zero before every solve, outside the timed
+   region.  The smoke AmgX numbers are invalid and are not used; smoke files are kept in `results/smoke1`.
+   No change to sizes, solvers, configurations, tolerances or the timing rule.

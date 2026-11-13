@@ -320,6 +320,8 @@ def run_amgx(a):
                     tset = time.perf_counter() - t
                     chk(rc, 'setup')
                     stage = 'solve'
+                    chk(lib.AMGX_vector_set_zero(vx, N, 1), 'x zero')  # the call below assumes x = 0, it does not zero it
+                    dev.synchronize()
                     t = time.perf_counter()
                     rc = lib.AMGX_solver_solve_with_0_initial_guess(solver, vb, vx)
                     dev.synchronize()

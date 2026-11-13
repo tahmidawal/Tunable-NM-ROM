@@ -10,6 +10,7 @@ import torch
 import opnet
 
 STOP = False
+VALIDATION_CASES = 256   # P[4352:4608] at every rung (the template's 4,608-rung validation cases)
 EVAL_EVERY, PLATEAU_PATIENCE, STOP_PATIENCE, THRESHOLD, MIN_LR, BATCH = 500, 6, 20, 1e-3, 1e-5, 8   # PROTOCOL amendment A2
 
 
@@ -24,18 +25,44 @@ def write_json(path, value):
     tmp.replace(path)
 
 
-def load_pool(pool, count):
-    parts, params, n = [], [], 0
-    for f in sorted(glob.glob(os.path.join(pool, 'pool-*.fields.npy'))):
-        if n >= count:
-            break
-        a = np.load(f, mmap_mode='r')
-        take = min(len(a), count - n)
-        parts.append(torch.from_numpy(np.array(a[:take])))
-        params.append(np.load(f.replace('.fields.npy', '.meta.npz'))['params'][:take])
-        n += take
-    assert n == count, (n, count)
-    return torch.cat(parts).cuda(), torch.from_numpy(np.concatenate(params)[:, 4].astype(np.float32)).cuda()
+def _chunks(directory, prefix):
+    out = []
+    for f in sorted(glob.glob(os.path.join(directory, f'{prefix}-*.fields.npy'))):
+        a, b = map(int, os.path.basename(f).split('.')[0].split('-')[1:3])
+        out.append((a, b, f))
+    return out
+
+
+def _take(chunks, start, stop, dst, at, nus):
+    """Copy cases [start, stop) of a chunked set into dst[at:...] without a second full-size copy."""
+    for a, b, f in chunks:
+        lo, hi = max(a, start), min(b, stop)
+        if lo >= hi:
+            continue
+        arr = np.load(f, mmap_mode='r')
+        dst[at:at + hi - lo] = torch.from_numpy(np.ascontiguousarray(arr[lo - a:hi - a]))
+        nus.append(np.load(f.replace('.fields.npy', '.meta.npz'))['params'][lo - a:hi - a, 4])
+        at += hi - lo
+    return at
+
+
+def load_pool(pool, count, extra=None, device='cuda'):
+    """Rung layout (operator-scaling PROTOCOL.md section 2). Returns y (count,6,257,257) float32, nu (count,), and
+    the number of training cases; the last VALIDATION_CASES rows are always the template's validation cases P[4352:4608].
+      count <= 4608: train P[0:count-256]                       (count = 4608 reproduces the template's P[0:4608] exactly)
+      count >  4608: train P[0:4352] ++ X[0:count-4608]          (X = gen_data.py extra draw)"""
+    nval = VALIDATION_CASES
+    npool = min(count - nval, 4352)
+    nextra = max(0, count - 4608)
+    y = torch.empty((count, 6, 257, 257), dtype=torch.float32, pin_memory=(device == 'cpu'))
+    nus = []
+    at = _take(_chunks(pool, 'pool'), 0, npool, y, 0, nus)
+    if nextra:
+        at = _take(_chunks(extra, 'extra'), 0, nextra, y, at, nus)
+    at = _take(_chunks(pool, 'pool'), 4352, 4608, y, at, nus)
+    assert at == count, (at, count)
+    nu = torch.from_numpy(np.concatenate(nus).astype(np.float32))
+    return (y.cuda() if device == 'cuda' else y), nu.cuda(), count - nval
 
 
 def evaluate(net, y, nu, ids, norm):
@@ -44,8 +71,9 @@ def evaluate(net, y, nu, ids, norm):
     with torch.no_grad():
         for s in range(0, len(ids), 32):
             i = ids[s:s + 32]
-            pred = opnet.predict(net, y[i, 0], nu[i], norm)
-            errs.append(opnet.relative_errors(pred, y[i, 1:], y[i, 0]))
+            yi = y[i.to(y.device)].cuda(non_blocking=True)
+            pred = opnet.predict(net, yi[:, 0], nu[i], norm)
+            errs.append(opnet.relative_errors(pred, yi[:, 1:], yi[:, 0]))
     per = torch.cat(errs).max(dim=1).values.double().cpu().numpy()
     assert np.isfinite(per).all()
     return dict(mean=float(per.mean()), median=float(np.median(per)), worst=float(per.max()))
@@ -58,20 +86,31 @@ def main():
     a.add_argument('--out', required=True); a.add_argument('--budget-hours', type=float, default=1e9)
     a.add_argument('--max-steps', type=int, default=400000)
     a.add_argument('--resume-from', default=None)
+    a.add_argument('--extra', default=None, help='directory of gen_data.py extra chunks (rungs above 4,608)')
+    a.add_argument('--deadline', type=float, default=1e18, help='unix time: stop (reason "deadline") at the next validation after it')
+    a.add_argument('--snapshot-step', type=int, default=0, help='also keep the best checkpoint up to this step as best_upto_<step>.pt')
+    a.add_argument('--continue-last', action='store_true', help='exact continuation from <out>/last.pt (same out dir)')
+    a.add_argument('--data-device', choices=('cuda', 'cpu'), default='cuda')
     a = a.parse_args()
     signal.signal(signal.SIGUSR1, on_signal); signal.signal(signal.SIGTERM, on_signal)
     opnet.configure()
     cfg = dict(opnet.ARMS[a.arm])
-    out = Path(a.out); out.mkdir(parents=True, exist_ok=False)
+    out = Path(a.out); out.mkdir(parents=True, exist_ok=a.continue_last)
     torch.manual_seed(a.seed); torch.cuda.manual_seed_all(a.seed); np.random.seed(a.seed)
-    y, nu = load_pool(a.pool, a.rung)
-    nval = opnet.VALIDATION[a.rung]
-    ntrain = a.rung - nval
+    t_load = time.monotonic()
+    y, nu, ntrain = load_pool(a.pool, a.rung, a.extra, a.data_device)
+    nval = a.rung - ntrain
+    print('LOADED', a.rung, ntrain, nval, a.data_device, round(time.monotonic() - t_load, 1), 's', flush=True)
     val_ids = torch.arange(ntrain, a.rung, device='cuda')
-    u0 = y[:ntrain, 0]
-    norm = dict(u_mean=float(u0.mean()), u_std=float(u0.std()), nu_mean=float(nu[:ntrain].mean()),
-                nu_std=float(nu[:ntrain].std()),
-                scale=float((sum(float(c.double().square().sum()) for c in y[:ntrain].split(64)) / y[:ntrain].numel()) ** .5))
+    # same statistics as the template, accumulated in float64 over chunks (identical definition; works for host data)
+    s1 = s2 = sq = 0.0
+    for c in y[:ntrain].split(256):
+        c = c.cuda().double()
+        s1 += float(c[:, 0].sum()); s2 += float(c[:, 0].square().sum()); sq += float(c.square().sum())
+    m0 = ntrain * y.shape[-1] * y.shape[-2]
+    u_mean = s1 / m0
+    norm = dict(u_mean=u_mean, u_std=((s2 - m0 * u_mean ** 2) / (m0 - 1)) ** .5, nu_mean=float(nu[:ntrain].mean()),
+                nu_std=float(nu[:ntrain].std()), scale=(sq / y[:ntrain].numel()) ** .5)
     net = opnet.make(cfg)
     prior = None
     if a.resume_from:
@@ -91,8 +130,8 @@ def main():
                                                        threshold_mode='rel', min_lr=MIN_LR)
     warm = 0 if prior else int(cfg.get('warmup_steps', 0))
     gen = torch.Generator(device='cuda').manual_seed(a.seed + (1000 if prior else 0))
-    meta = dict(arm=a.arm, config=cfg, rung=a.rung, seed=a.seed, train_cases=ntrain, validation_cases=nval,
-                train_slice=[0, ntrain], validation_slice=[ntrain, a.rung], normalization=norm,
+    meta = dict(arm=a.arm, config=cfg, rung=a.rung, data_device=a.data_device, extra_dir=a.extra, seed=a.seed, train_cases=ntrain, validation_cases=nval,
+                train_layout='P[0:%d] ++ X[0:%d]' % (min(ntrain, 4352), max(0, a.rung - 4608)), validation_layout='P[4352:4608]', normalization=norm,
                 real_parameters=opnet.real_parameters(net), gpu=torch.cuda.get_device_name(),
                 job_id=os.environ.get('SLURM_JOB_ID'), node=os.environ.get('SLURMD_NODENAME'), torch=torch.__version__,
                 eval_every=EVAL_EVERY, plateau_patience=PLATEAU_PATIENCE, stop_patience=STOP_PATIENCE,
@@ -107,6 +146,19 @@ def main():
     if prior:
         best = best_thr = prior['best_validation']['mean']
         history, step, step0, wall0 = prior_history, prior['best_step'], prior['best_step'], prior['training_seconds']
+    if a.continue_last:
+        st = torch.load(out / 'last.pt', map_location='cuda', weights_only=False)
+        assert st['config'] == cfg and (st['arm'], st['rung'], st['seed']) == (a.arm, a.rung, a.seed)
+        norm = st['normalization']
+        net.load_state_dict(st['model']); opt.load_state_dict(st['opt']); sched.load_state_dict(st['sched'])
+        gen.set_state(st['gen'].cpu() if hasattr(st['gen'], 'cpu') else st['gen'])
+        best, best_thr, stale, history, step = st['best'], st['best_thr'], st['stale'], st['history'], st['step']
+        step0, wall0 = step, st['wall_seconds']
+        meta = dict(meta, **{k: v for k, v in json.loads((out / 'meta.json').read_text()).items() if k in ('job_id', 'node', 'gpu', 'continued_from_last')})
+        meta.setdefault('continued_from_last', []).append(dict(step=step, job_id=os.environ.get('SLURM_JOB_ID'),
+                                                                 gpu=torch.cuda.get_device_name()))
+        write_json(out / 'meta.json', meta)
+        print('CONTINUE', out.name, step, flush=True)
     started = time.monotonic()
     stop_reason = None
     net.train()
@@ -117,8 +169,9 @@ def main():
             if step < warm:
                 for g in opt.param_groups:
                     g['lr'] = cfg['lr'] * (step + 1) / warm
-            pred = opnet.predict(net, y[i, 0], nu[i], norm)
-            loss = opnet.relative_errors(pred, y[i, 1:], y[i, 0]).square().mean()
+            yi = y[i.to(y.device)].cuda(non_blocking=True)
+            pred = opnet.predict(net, yi[:, 0], nu[i], norm)
+            loss = opnet.relative_errors(pred, yi[:, 1:], yi[:, 0]).square().mean()
             if not torch.isfinite(loss):
                 raise RuntimeError('nonfinite loss')
             opt.zero_grad(set_to_none=True)
@@ -146,14 +199,24 @@ def main():
                                     wall_seconds=wall0 + time.monotonic() - started, best=best))
                 losses = []
                 write_json(out / 'history.json', history)
+                if a.snapshot_step and step == a.snapshot_step:
+                    import shutil
+                    shutil.copyfile(out / 'best.pt', out / f'best_upto_{step}.tmp'); os.replace(out / f'best_upto_{step}.tmp', out / f'best_upto_{step}.pt')
                 if step % 5000 == 0:
                     print(json.dumps(dict(run=out.name, **history[-1])), flush=True)
+                    torch.save(dict(model=net.state_dict(), opt=opt.state_dict(), sched=sched.state_dict(), gen=gen.get_state(),
+                                    config=cfg, arm=a.arm, rung=a.rung, seed=a.seed, normalization=norm, step=step,
+                                    best=best, best_thr=best_thr, stale=stale, history=history,
+                                    wall_seconds=wall0 + time.monotonic() - started), out / 'last.tmp')
+                    os.replace(out / 'last.tmp', out / 'last.pt')
                 if stale >= STOP_PATIENCE:
                     stop_reason = 'early_stopping'
                 elif step >= a.max_steps:
                     stop_reason = 'step_cap'
                 elif STOP or time.monotonic() - started > a.budget_hours * 3600:
                     stop_reason = 'time_limit'
+                elif time.time() > a.deadline:
+                    stop_reason = 'deadline'
                 if stop_reason:
                     break
     ck = torch.load(out / 'best.pt', weights_only=False)

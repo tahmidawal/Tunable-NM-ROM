@@ -105,7 +105,8 @@ def main(paths):
         for B, chk in r["checks"].items():
             vals = [v.get("max_rel_diff") for v in chk.values() if v.get("max_rel_diff") is not None]
             errs = [k for k, v in chk.items() if "error" in v]
-            print(f"- B={B}: max {max(vals):.2e} over {len(vals)} callables" + (f"; errors: {errs}" if errs else ""))
+            print(f"- B={B}: " + (f"max {max(vals):.2e} over {len(vals)} callables" if vals else "no successful check")
+                  + (f"; errors: {errs}" if errs else ""))
         if r["cohort"]:
             print("\nCohort agreement (all cases, B=32 callables):\n")
             for k, v in r["cohort"].items():

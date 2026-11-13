@@ -1,0 +1,34 @@
+host=pax007 source_commit=2185a3c2107c8048478ff3a771787d4996af8855 job=7161935
+NVIDIA A100 80GB PCIe, GPU-ef0906da-ee15-780e-c19b-39842e183c5c, 81920 MiB
+jax_backend=gpu
+mesh 128: 128 cases loaded (17s)
+B=32: 27 callables compiled (101s); chunked: ROM_SHARED|r96_head:16, ROM_DEC|r96_head:16, ROM_SHARED|r128_head_fast:16, ROM_DEC|r128_head_fast:16, ROM_SHARED|r192_head_fast:16, ROM_DEC|r192_head_fast:16, E2E_VMAP|cnab2|108|120:16, E2E_RFFT|cnab2|108|120:16, E2E_VMAP|rk4|108|30:16, E2E_RFFT|rk4|108|30:16, E2E_VMAP|rk4|112|30:16, E2E_RFFT|rk4|112|30:16
+B=32 ROM_VMAP|r96_head: 384.16 ms (83.3/s, 12.01 s per 1000)
+B=32 ROM_SHARED|r96_head: 332.66 ms (96.2/s, 10.40 s per 1000) chunk 16
+B=32 ROM_ENC|r96_head: 45.23 ms (707.5/s, 1.41 s per 1000)
+B=32 ROM_LAT|r96_head: 21.18 ms (1510.8/s, 0.66 s per 1000)
+B=32 ROM_DEC|r96_head: 259.22 ms (123.4/s, 8.10 s per 1000) chunk 16
+B=32 ROM_VMAP|r128_head_fast: 429.30 ms (74.5/s, 13.42 s per 1000)
+B=32 ROM_SHARED|r128_head_fast: 347.06 ms (92.2/s, 10.85 s per 1000) chunk 16
+B=32 ROM_ENC|r128_head_fast: 46.03 ms (695.2/s, 1.44 s per 1000)
+B=32 ROM_LAT|r128_head_fast: 24.99 ms (1280.7/s, 0.78 s per 1000)
+B=32 ROM_DEC|r128_head_fast: 266.26 ms (120.2/s, 8.32 s per 1000) chunk 16
+B=32 ROM_VMAP|r192_head_fast: 550.73 ms (58.1/s, 17.21 s per 1000)
+B=32 ROM_SHARED|r192_head_fast: 376.21 ms (85.1/s, 11.76 s per 1000) chunk 16
+B=32 ROM_ENC|r192_head_fast: 48.47 ms (660.2/s, 1.51 s per 1000)
+B=32 ROM_LAT|r192_head_fast: 34.77 ms (920.4/s, 1.09 s per 1000)
+B=32 ROM_DEC|r192_head_fast: 277.33 ms (115.4/s, 8.67 s per 1000) chunk 16
+B=32 SOLVE_VMAP|cnab2|108|120: 11912.76 ms (2.7/s, 372.27 s per 1000)
+B=32 E2E_VMAP|cnab2|108|120: 11619.92 ms (2.8/s, 363.12 s per 1000) chunk 16
+B=32 SOLVE_RFFT|cnab2|108|120: 5772.50 ms (5.5/s, 180.39 s per 1000)
+B=32 E2E_RFFT|cnab2|108|120: 5731.18 ms (5.6/s, 179.10 s per 1000) chunk 16
+B=32 SOLVE_VMAP|rk4|108|30: 11902.69 ms (2.7/s, 371.96 s per 1000)
+B=32 E2E_VMAP|rk4|108|30: 12185.64 ms (2.6/s, 380.80 s per 1000) chunk 16
+B=32 SOLVE_RFFT|rk4|108|30: 5609.43 ms (5.7/s, 175.29 s per 1000)
+B=32 E2E_RFFT|rk4|108|30: 5793.35 ms (5.5/s, 181.04 s per 1000) chunk 16
+B=32 SOLVE_VMAP|rk4|112|30: 13492.23 ms (2.4/s, 421.63 s per 1000)
+B=32 E2E_VMAP|rk4|112|30: 13792.03 ms (2.3/s, 431.00 s per 1000) chunk 16
+B=32 SOLVE_RFFT|rk4|112|30: 6441.57 ms (5.0/s, 201.30 s per 1000)
+B=32 E2E_RFFT|rk4|112|30: 6761.40 ms (4.7/s, 211.29 s per 1000) chunk 16
+rematch failed: JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 7.42GiB. [executable_name='jit_run'] [tf-allocator-allocation-error='']
+RUN_EXIT=1

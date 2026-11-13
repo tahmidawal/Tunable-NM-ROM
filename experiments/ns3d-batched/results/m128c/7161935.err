@@ -1,0 +1,253 @@
+W1113 01:53:24.540819 1524929 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 26.06GiB (rounded to 27984401152)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1113 01:53:24.541424 1524929 bfc_allocator.cc:525] **********************************************___******************_________________________________
+W1113 01:53:55.581747 1524929 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 16.94GiB (rounded to 18184425984)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1113 01:53:55.582329 1524929 bfc_allocator.cc:525] **********************************************___******************************_____________________
+W1113 01:54:16.581051 1524929 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 26.06GiB (rounded to 27984401152)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1113 01:54:16.581319 1524929 bfc_allocator.cc:525] **********************************************___******************************************_________
+W1113 01:54:49.853996 1524929 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 9.00GiB (rounded to 9663676416)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1113 01:54:49.854601 1524929 bfc_allocator.cc:525] **********************************************___******************************************_________
+W1113 01:55:12.950141 1524929 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 18.34GiB (rounded to 19691820032)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1113 01:55:12.950404 1524929 bfc_allocator.cc:525] **********************************************___**************************************************_
+W1113 01:55:24.392406 1524929 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 4.59GiB (rounded to 4927995392)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1113 01:55:24.392673 1524929 bfc_allocator.cc:525] **********************************************___***************************************************
+W1113 01:55:46.832389 1524929 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 5.41GiB (rounded to 5804752896)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1113 01:55:46.832653 1524929 bfc_allocator.cc:525] **********************************************___***************************************************
+W1113 01:55:57.690355 1524978 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 2.70GiB (rounded to 2902376448)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1113 01:55:57.690700 1524978 bfc_allocator.cc:525] ****************************************************************************************************
+W1113 01:56:07.690929 1524978 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 2.70GiB (rounded to 2902376448)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1113 01:56:07.691165 1524978 bfc_allocator.cc:525] ****************************************************************************************************
+E1113 01:56:07.691398 1524929 config_assigner.cc:383] Could not get config for HLO: %input_concatenate_fusion = f64[16,6,3,108,108,108]{5,4,3,2,1,0} fusion(%while.17.0, %fft.174.0), kind=kInput, calls=
+(param_0.662: f64[5,16,3,108,108,108], param_1.820: f64[16,3,108,108,108]) -> f64[16,6,3,108,108,108] {
+  %param_1.820 = f64[16,3,108,108,108]{4,3,2,1,0} parameter(1)
+  %constant.55.1 = f64[] constant(1259712), metadata={op_name="jit(run)/vmap()/reduce_prod" stack_frame_id=265}
+  %mul.706.1 = f64[16,3,108,108,108]{4,3,2,1,0} broadcast(%constant.55.1), dimensions={}, metadata={op_name="jit(run)/vmap()/mul" stack_frame_id=265}
+  %mul.707.1 = f64[16,3,108,108,108]{4,3,2,1,0} multiply(%param_1.820, %mul.706.1), metadata={op_name="jit(run)/vmap()/mul" stack_frame_id=265}
+  %bitcast.28.1 = f64[16,1,3,108,108,108]{5,4,3,2,1,0} bitcast(%mul.707.1), metadata={op_name="jit(run)/vmap()/mul" stack_frame_id=265}
+  %param_0.662 = f64[5,16,3,108,108,108]{5,4,3,2,1,0} parameter(0)
+  %transpose.5.1 = f64[16,5,3,108,108,108]{5,4,3,2,1,0} transpose(%param_0.662), dimensions={1,0,2,3,4,5}, metadata={op_name="jit(run)/vmap()/while" stack_frame_id=262}
+  ROOT %concatenate.1.1 = f64[16,6,3,108,108,108]{5,4,3,2,1,0} concatenate(%bitcast.28.1, %transpose.5.1), dimensions={1}, metadata={op_name="jit(run)/vmap()/concatenate" stack_frame_id=273}
+}, metadata={op_name="jit(run)/vmap()/concatenate" stack_frame_id=273}. Status: INTERNAL: Autotuning failed for HLO: %input_concatenate_fusion = f64[16,6,3,108,108,108]{5,4,3,2,1,0} fusion(%while.17.0, %fft.174.0), kind=kInput, calls=%fused_concatenate, metadata={op_name="jit(run)/vmap()/concatenate" stack_frame_id=273}. Failed to pick best config: All configs failed during profiling.
+Failures (2):
+EXECUTION FAILED: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 2.70GiB. [tf-allocator-allocation-error='']
+EXECUTION FAILED: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 2.70GiB. [tf-allocator-allocation-error='']
+W1113 01:56:18.488419 1524978 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 1.35GiB (rounded to 1451188224)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1113 01:56:18.488673 1524978 bfc_allocator.cc:525] ************************************************_***************************************************
+W1113 01:56:28.997975 1524929 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 2.98GiB (rounded to 3202551808)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1113 01:56:28.998215 1524929 bfc_allocator.cc:525] ************************************************_***************************************************
+W1113 01:56:40.193555 1524929 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 1.50GiB (rounded to 1611862528)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1113 01:56:40.193788 1524929 bfc_allocator.cc:525] ************************************************_***************************************************
+W1113 01:56:57.498954 1524929 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 6.03GiB (rounded to 6473908224)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1113 01:56:57.499207 1524929 bfc_allocator.cc:525] ************************************************_***************************************************
+W1113 01:57:09.550872 1524929 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 2.56GiB (rounded to 2753660928)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1113 01:57:09.551114 1524929 bfc_allocator.cc:525] ************************************************_***************************************************
+W1113 01:57:33.771178 1524929 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 6.03GiB (rounded to 6473908224)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1113 01:57:33.771431 1524929 bfc_allocator.cc:525] ************************************************_***************************************************
+W1113 01:57:34.714150 1524980 bfc_allocator.cc:317] Allocator (GPU_0_bfc) ran out of memory trying to allocate 2.53GiB with freed_by_count=0. The caller indicates that this is not a failure, but this may mean that there could be performance gains if more memory were available.
+E1113 01:57:34.714263 1524929 config_assigner.cc:383] Could not get config for HLO: %input_concatenate_fusion = f64[16,6,3,112,112,112]{5,4,3,2,1,0} fusion(%while.17.0, %fft.174.0), kind=kInput, calls=
+(param_0.699: f64[5,16,3,112,112,112], param_1.845: f64[16,3,112,112,112]) -> f64[16,6,3,112,112,112] {
+  %param_1.845 = f64[16,3,112,112,112]{4,3,2,1,0} parameter(1)
+  %constant.55.1 = f64[] constant(1404928), metadata={op_name="jit(run)/vmap()/reduce_prod" stack_frame_id=265}
+  %mul.706.1 = f64[16,3,112,112,112]{4,3,2,1,0} broadcast(%constant.55.1), dimensions={}, metadata={op_name="jit(run)/vmap()/mul" stack_frame_id=265}
+  %mul.707.1 = f64[16,3,112,112,112]{4,3,2,1,0} multiply(%param_1.845, %mul.706.1), metadata={op_name="jit(run)/vmap()/mul" stack_frame_id=265}
+  %bitcast.28.1 = f64[16,1,3,112,112,112]{5,4,3,2,1,0} bitcast(%mul.707.1), metadata={op_name="jit(run)/vmap()/mul" stack_frame_id=265}
+  %param_0.699 = f64[5,16,3,112,112,112]{5,4,3,2,1,0} parameter(0)
+  %transpose.5.1 = f64[16,5,3,112,112,112]{5,4,3,2,1,0} transpose(%param_0.699), dimensions={1,0,2,3,4,5}, metadata={op_name="jit(run)/vmap()/while" stack_frame_id=262}
+  ROOT %concatenate.1.1 = f64[16,6,3,112,112,112]{5,4,3,2,1,0} concatenate(%bitcast.28.1, %transpose.5.1), dimensions={1}, metadata={op_name="jit(run)/vmap()/concatenate" stack_frame_id=273}
+}, metadata={op_name="jit(run)/vmap()/concatenate" stack_frame_id=273}. Status: INTERNAL: Autotuning failed for HLO: %input_concatenate_fusion = f64[16,6,3,112,112,112]{5,4,3,2,1,0} fusion(%while.17.0, %fft.174.0), kind=kInput, calls=%fused_concatenate, metadata={op_name="jit(run)/vmap()/concatenate" stack_frame_id=273}. Failed to profile configs: Out of memory while trying to allocate 2.53GiB.
+W1113 01:57:45.581958 1524977 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 1.51GiB (rounded to 1618477056)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1113 01:57:45.582296 1524977 bfc_allocator.cc:525] ****************************************************************************************************
+W1113 01:57:55.582466 1524977 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 1.51GiB (rounded to 1618477056)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1113 01:57:55.582697 1524977 bfc_allocator.cc:525] ****************************************************************************************************
+E1113 01:57:55.582892 1524929 config_assigner.cc:383] Could not get config for HLO: %input_concatenate_fusion = f64[8,6,3,112,112,112]{5,4,3,2,1,0} fusion(%while.17.0, %fft.174.0), kind=kInput, calls=
+(param_0.646: f64[5,8,3,112,112,112], param_1.784: f64[8,3,112,112,112]) -> f64[8,6,3,112,112,112] {
+  %param_1.784 = f64[8,3,112,112,112]{4,3,2,1,0} parameter(1)
+  %constant.55.1 = f64[] constant(1404928), metadata={op_name="jit(run)/vmap()/reduce_prod" stack_frame_id=265}
+  %mul.706.1 = f64[8,3,112,112,112]{4,3,2,1,0} broadcast(%constant.55.1), dimensions={}, metadata={op_name="jit(run)/vmap()/mul" stack_frame_id=265}
+  %mul.707.1 = f64[8,3,112,112,112]{4,3,2,1,0} multiply(%param_1.784, %mul.706.1), metadata={op_name="jit(run)/vmap()/mul" stack_frame_id=265}
+  %bitcast.28.1 = f64[8,1,3,112,112,112]{5,4,3,2,1,0} bitcast(%mul.707.1), metadata={op_name="jit(run)/vmap()/mul" stack_frame_id=265}
+  %param_0.646 = f64[5,8,3,112,112,112]{5,4,3,2,1,0} parameter(0)
+  %transpose.5.1 = f64[8,5,3,112,112,112]{5,4,3,2,1,0} transpose(%param_0.646), dimensions={1,0,2,3,4,5}, metadata={op_name="jit(run)/vmap()/while" stack_frame_id=262}
+  ROOT %concatenate.1.1 = f64[8,6,3,112,112,112]{5,4,3,2,1,0} concatenate(%bitcast.28.1, %transpose.5.1), dimensions={1}, metadata={op_name="jit(run)/vmap()/concatenate" stack_frame_id=273}
+}, metadata={op_name="jit(run)/vmap()/concatenate" stack_frame_id=273}. Status: INTERNAL: Autotuning failed for HLO: %input_concatenate_fusion = f64[8,6,3,112,112,112]{5,4,3,2,1,0} fusion(%while.17.0, %fft.174.0), kind=kInput, calls=%fused_concatenate, metadata={op_name="jit(run)/vmap()/concatenate" stack_frame_id=273}. Failed to pick best config: All configs failed during profiling.
+Failures (2):
+EXECUTION FAILED: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 1.51GiB. [tf-allocator-allocation-error='']
+EXECUTION FAILED: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 1.51GiB. [tf-allocator-allocation-error='']
+W1113 01:58:06.357176 1524976 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 771.75MiB (rounded to 809238528)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1113 01:58:06.357470 1524976 bfc_allocator.cc:525] ****************************************************************************************************
+W1113 01:58:16.839051 1524929 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 1.67GiB (rounded to 1797118208)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1113 01:58:16.839300 1524929 bfc_allocator.cc:525] ****************************************************************************************************
+W1113 01:58:34.902771 1524929 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 7.42GiB (rounded to 7962624000)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1113 01:58:34.903040 1524929 bfc_allocator.cc:525] ****************************************************************************************************
+W1113 01:58:47.674782 1524929 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 1.47GiB (rounded to 1575938048)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1113 01:58:47.675019 1524929 bfc_allocator.cc:525] ****************************************************************************************************
+W1113 01:59:10.923954 1524929 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 7.42GiB (rounded to 7962624000)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1113 01:59:10.924189 1524929 bfc_allocator.cc:525] ****************************************************************************************************
+W1113 01:59:11.925462 1524979 bfc_allocator.cc:317] Allocator (GPU_0_bfc) ran out of memory trying to allocate 3.11GiB with freed_by_count=0. The caller indicates that this is not a failure, but this may mean that there could be performance gains if more memory were available.
+E1113 01:59:11.925676 1524929 config_assigner.cc:383] Could not get config for HLO: %input_concatenate_fusion = f64[16,6,3,120,120,120]{5,4,3,2,1,0} fusion(%while.17.0, %fft.174.0), kind=kInput, calls=
+(param_0.599: f64[5,16,3,120,120,120], param_1.684: f64[16,3,120,120,120]) -> f64[16,6,3,120,120,120] {
+  %param_1.684 = f64[16,3,120,120,120]{4,3,2,1,0} parameter(1)
+  %constant.55.1 = f64[] constant(1728000), metadata={op_name="jit(run)/vmap()/reduce_prod" stack_frame_id=265}
+  %mul.706.1 = f64[16,3,120,120,120]{4,3,2,1,0} broadcast(%constant.55.1), dimensions={}, metadata={op_name="jit(run)/vmap()/mul" stack_frame_id=265}
+  %mul.707.1 = f64[16,3,120,120,120]{4,3,2,1,0} multiply(%param_1.684, %mul.706.1), metadata={op_name="jit(run)/vmap()/mul" stack_frame_id=265}
+  %bitcast.28.1 = f64[16,1,3,120,120,120]{5,4,3,2,1,0} bitcast(%mul.707.1), metadata={op_name="jit(run)/vmap()/mul" stack_frame_id=265}
+  %param_0.599 = f64[5,16,3,120,120,120]{5,4,3,2,1,0} parameter(0)
+  %transpose.5.1 = f64[16,5,3,120,120,120]{5,4,3,2,1,0} transpose(%param_0.599), dimensions={1,0,2,3,4,5}, metadata={op_name="jit(run)/vmap()/while" stack_frame_id=262}
+  ROOT %concatenate.1.1 = f64[16,6,3,120,120,120]{5,4,3,2,1,0} concatenate(%bitcast.28.1, %transpose.5.1), dimensions={1}, metadata={op_name="jit(run)/vmap()/concatenate" stack_frame_id=273}
+}, metadata={op_name="jit(run)/vmap()/concatenate" stack_frame_id=273}. Status: INTERNAL: Autotuning failed for HLO: %input_concatenate_fusion = f64[16,6,3,120,120,120]{5,4,3,2,1,0} fusion(%while.17.0, %fft.174.0), kind=kInput, calls=%fused_concatenate, metadata={op_name="jit(run)/vmap()/concatenate" stack_frame_id=273}. Failed to profile configs: Out of memory while trying to allocate 3.11GiB.
+W1113 01:59:12.761013 1524980 bfc_allocator.cc:317] Allocator (GPU_0_bfc) ran out of memory trying to allocate 1.56GiB with freed_by_count=0. The caller indicates that this is not a failure, but this may mean that there could be performance gains if more memory were available.
+E1113 01:59:12.761245 1524929 config_assigner.cc:383] Could not get config for HLO: %input_concatenate_fusion = f64[8,6,3,120,120,120]{5,4,3,2,1,0} fusion(%while.17.0, %fft.174.0), kind=kInput, calls=
+(param_0.588: f64[5,8,3,120,120,120], param_1.644: f64[8,3,120,120,120]) -> f64[8,6,3,120,120,120] {
+  %param_1.644 = f64[8,3,120,120,120]{4,3,2,1,0} parameter(1)
+  %constant.55.1 = f64[] constant(1728000), metadata={op_name="jit(run)/vmap()/reduce_prod" stack_frame_id=265}
+  %mul.706.1 = f64[8,3,120,120,120]{4,3,2,1,0} broadcast(%constant.55.1), dimensions={}, metadata={op_name="jit(run)/vmap()/mul" stack_frame_id=265}
+  %mul.707.1 = f64[8,3,120,120,120]{4,3,2,1,0} multiply(%param_1.644, %mul.706.1), metadata={op_name="jit(run)/vmap()/mul" stack_frame_id=265}
+  %bitcast.28.1 = f64[8,1,3,120,120,120]{5,4,3,2,1,0} bitcast(%mul.707.1), metadata={op_name="jit(run)/vmap()/mul" stack_frame_id=265}
+  %param_0.588 = f64[5,8,3,120,120,120]{5,4,3,2,1,0} parameter(0)
+  %transpose.5.1 = f64[8,5,3,120,120,120]{5,4,3,2,1,0} transpose(%param_0.588), dimensions={1,0,2,3,4,5}, metadata={op_name="jit(run)/vmap()/while" stack_frame_id=262}
+  ROOT %concatenate.1.1 = f64[8,6,3,120,120,120]{5,4,3,2,1,0} concatenate(%bitcast.28.1, %transpose.5.1), dimensions={1}, metadata={op_name="jit(run)/vmap()/concatenate" stack_frame_id=273}
+}, metadata={op_name="jit(run)/vmap()/concatenate" stack_frame_id=273}. Status: INTERNAL: Autotuning failed for HLO: %input_concatenate_fusion = f64[8,6,3,120,120,120]{5,4,3,2,1,0} fusion(%while.17.0, %fft.174.0), kind=kInput, calls=%fused_concatenate, metadata={op_name="jit(run)/vmap()/concatenate" stack_frame_id=273}. Failed to profile configs: Out of memory while trying to allocate 1.56GiB.
+W1113 01:59:23.488826 1524973 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 949.22MiB (rounded to 995328000)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1113 01:59:23.489146 1524973 bfc_allocator.cc:525] ****************************************************************************************************
+W1113 01:59:33.489356 1524973 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 949.22MiB (rounded to 995328000)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1113 01:59:33.489613 1524973 bfc_allocator.cc:525] ****************************************************************************************************
+E1113 01:59:33.489818 1524929 config_assigner.cc:383] Could not get config for HLO: %input_concatenate_fusion = f64[4,6,3,120,120,120]{5,4,3,2,1,0} fusion(%while.17.0, %fft.174.0), kind=kInput, calls=
+(param_0.617: f64[5,4,3,120,120,120], param_1.711: f64[4,3,120,120,120]) -> f64[4,6,3,120,120,120] {
+  %param_1.711 = f64[4,3,120,120,120]{4,3,2,1,0} parameter(1)
+  %constant.55.1 = f64[] constant(1728000), metadata={op_name="jit(run)/vmap()/reduce_prod" stack_frame_id=265}
+  %mul.706.1 = f64[4,3,120,120,120]{4,3,2,1,0} broadcast(%constant.55.1), dimensions={}, metadata={op_name="jit(run)/vmap()/mul" stack_frame_id=265}
+  %mul.707.1 = f64[4,3,120,120,120]{4,3,2,1,0} multiply(%param_1.711, %mul.706.1), metadata={op_name="jit(run)/vmap()/mul" stack_frame_id=265}
+  %bitcast.28.1 = f64[4,1,3,120,120,120]{5,4,3,2,1,0} bitcast(%mul.707.1), metadata={op_name="jit(run)/vmap()/mul" stack_frame_id=265}
+  %param_0.617 = f64[5,4,3,120,120,120]{5,4,3,2,1,0} parameter(0)
+  %transpose.5.1 = f64[4,5,3,120,120,120]{5,4,3,2,1,0} transpose(%param_0.617), dimensions={1,0,2,3,4,5}, metadata={op_name="jit(run)/vmap()/while" stack_frame_id=262}
+  ROOT %concatenate.1.1 = f64[4,6,3,120,120,120]{5,4,3,2,1,0} concatenate(%bitcast.28.1, %transpose.5.1), dimensions={1}, metadata={op_name="jit(run)/vmap()/concatenate" stack_frame_id=273}
+}, metadata={op_name="jit(run)/vmap()/concatenate" stack_frame_id=273}. Status: INTERNAL: Autotuning failed for HLO: %input_concatenate_fusion = f64[4,6,3,120,120,120]{5,4,3,2,1,0} fusion(%while.17.0, %fft.174.0), kind=kInput, calls=%fused_concatenate, metadata={op_name="jit(run)/vmap()/concatenate" stack_frame_id=273}. Failed to pick best config: All configs failed during profiling.
+Failures (2):
+EXECUTION FAILED: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 949.22MiB. [tf-allocator-allocation-error='']
+EXECUTION FAILED: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 949.22MiB. [tf-allocator-allocation-error='']
+W1113 01:59:44.117461 1524974 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 474.61MiB (rounded to 497664000)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1113 01:59:44.117729 1524974 bfc_allocator.cc:525] ****************************************************************************************************
+W1113 01:59:54.591223 1524929 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 1.04GiB (rounded to 1122583296)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1113 01:59:54.591487 1524929 bfc_allocator.cc:525] ****************************************************************************************************
+W1113 02:00:14.782972 1524929 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 7.42GiB (rounded to 7962624000)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1113 02:00:14.783224 1524929 bfc_allocator.cc:525] ****************************************************************************************************
+W1113 02:00:26.802414 1524929 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 6.00GiB (rounded to 6442450944)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1113 02:00:26.802752 1524929 bfc_allocator.cc:525] *******_*****************__****************__*****_*__**********************************************
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/rebuttal-ns3d-batched/m128c/experiments/ns3d-batched/batched.py", line 579, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/rebuttal-ns3d-batched/m128c/experiments/ns3d-batched/batched.py", line 432, in main
+    u0n = jnp.asarray(np.stack([truth[c][0] for c in idx])); nuB = jnp.asarray(nus[idx])
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/numpy/array_constructors.py", line 453, in asarray
+    return array(a, dtype=dtype, copy=bool(copy), order=order, device=device,
+                 out_sharding=out_sharding)
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/numpy/array_constructors.py", line 208, in array
+    return lax.stage(object)
+           ~~~~~~~~~^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/lax/lax.py", line 1626, in stage
+    return stage_p.bind(x)
+           ~~~~~~~~~~~~^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/core.py", line 705, in bind
+    return self.bind_with_trace(prev_trace, args, avals, params)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/lax/lax.py", line 5406, in _stage_bind_with_trace
+    return trace.stage_value(args[0])
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/core.py", line 1283, in stage_value
+    return self.process_primitive(stage_p, [val], {})
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/core.py", line 1294, in process_primitive
+    return primitive.impl(*args, **params)
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/lax/lax.py", line 5396, in _stage_impl
+    return dispatch.apply_primitive(stage_p, x)
+           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/dispatch.py", line 88, in apply_primitive
+    outs = fun(*args)
+jax.errors.JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 6.00GiB. [tf-allocator-allocation-error='']
+--------------------
+For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.

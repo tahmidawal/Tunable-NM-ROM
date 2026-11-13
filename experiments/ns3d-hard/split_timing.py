@@ -201,6 +201,7 @@ def cmd_split(a):
     solvers, e2es = {}, {}
     for n in ints(a.meshes):
         sn = str(n); native = n <= SRC; hm = n if native else SRC
+        use_decb = n <= a.decb_max          # the batched (6 x 3n^3) gemm fails XLA autotuning at 256^3 (memory)
         fz = json.loads((Path(a.frozen) / f"frozen_{hm}.json").read_text())["arms"]
         cfgs = {name: fz[name] for name in arm_names}
         # ---- matched solver configurations from the source comparison (per arm)
@@ -285,7 +286,8 @@ def cmd_split(a):
                     full = calls[name](u0, nu)
                     a0, c0 = pr["enc"](u0, pr["G"]); w0 = pr["fit"](a0, pr["p"], pr["Hc"], pr["Hn"], pr["Z"])
                     W, Cs = pr["solve"](w0, c0, nu, *pr["ops"], pr["p"])
-                    sp = pr["dec"](w0, c0, W, Cs, pr["G"], pr["p"]); sb = pr["decb"](w0, c0, W, Cs, pr["G"], pr["p"])
+                    sp = pr["dec"](w0, c0, W, Cs, pr["G"], pr["p"])
+                    sb = pr["decb"](w0, c0, W, Cs, pr["G"], pr["p"]) if use_decb else sp
                     den = float(jnp.linalg.norm(full))
                     agree = max(agree, float(jnp.linalg.norm(sp - full)) / den, float(jnp.linalg.norm(sb - full)) / den)
                     e_full.append(np.asarray(rel_err(full, jnp.asarray(truth[c]))).tolist())
@@ -324,7 +326,7 @@ def cmd_split(a):
                         cl[f"FIT|{name}"] = (lambda pr=pr, a0=a0: pr["fit"](a0, pr["p"], pr["Hc"], pr["Hn"], pr["Z"]))
                         cl[f"SOLVE|{name}"] = (lambda pr=pr, w0=w0, c0=c0: pr["solve"](w0, c0, nu, *pr["ops"], pr["p"]))
                         cl[f"DEC|{name}"] = (lambda pr=pr, w0=w0, c0=c0, W=W, Cs=Cs: pr["dec"](w0, c0, W, Cs, pr["G"], pr["p"]))
-                        cl[f"DECB|{name}"] = (lambda pr=pr, w0=w0, c0=c0, W=W, Cs=Cs: pr["decb"](w0, c0, W, Cs, pr["G"], pr["p"]))
+                        if use_decb: cl[f"DECB|{name}"] = (lambda pr=pr, w0=w0, c0=c0, W=W, Cs=Cs: pr["decb"](w0, c0, W, Cs, pr["G"], pr["p"]))
                     for key in fkeys:
                         scheme, m, s = key; solver = solvers[(scheme, s)]; geom = F.geometry(m)
                         u0m = jax.block_until_ready(spec_resample(uS, m)); tg = f"{scheme}|{m}|{s}"
@@ -378,7 +380,7 @@ def cmd_split(a):
                 samples=tim["cases"])
             if not tim["gate_passed"]: rep["failures"].append(f"mesh {n} group {grp}: timing gate failed in 3 attempts")
             for name in grp_arms:
-                st = {s: pooled[f"{s}|{name}"]["median_ms"] for s in ("FULL", "ENC", "FIT", "SOLVE", "DEC", "DECB")}
+                st = {s: pooled[f"{s}|{name}"]["median_ms"] for s in ("FULL", "ENC", "FIT", "SOLVE", "DEC", "DECB") if f"{s}|{name}" in pooled}
                 st["SUM"] = st["ENC"] + st["FIT"] + st["SOLVE"] + st["DEC"]
                 fa = fom[name]["any"]; tga = f"{fa[0]}|{fa[1]}|{fa[2]}"
                 st["FOM_any_solve"] = pooled["FOMSOLVE|" + tga]["median_ms"]
@@ -386,7 +388,7 @@ def cmd_split(a):
                 if fom[name]["same"]:
                     fs = fom[name]["same"]; st["FOM_same_solve"] = pooled[f"FOMSOLVE|{fs[0]}|{fs[1]}|{fs[2]}"]["median_ms"]
                 mrep["arms"][name]["ms"] = st
-                mrep["arms"][name]["ms_detail"] = {s: pooled[f"{s}|{name}"] for s in ("FULL", "ENC", "FIT", "SOLVE", "DEC", "DECB")}
+                mrep["arms"][name]["ms_detail"] = {s: pooled[f"{s}|{name}"] for s in ("FULL", "ENC", "FIT", "SOLVE", "DEC", "DECB") if f"{s}|{name}" in pooled}
                 log(f"mesh {n} {name}: " + " ".join(f"{s} {v:.2f}" for s, v in st.items()))
             dump()
             del calls, parts, arms_by_bank; gc.collect()
@@ -413,6 +415,7 @@ def main():
     p.add_argument("--timing-cases", default="0,16,32,48,64,80,96,112")
     p.add_argument("--gate", type=float, default=1.10); p.add_argument("--gate-block", type=float, default=1.25)
     p.add_argument("--sentinels", default="r64_head,r128_head"); p.add_argument("--budget", type=float, default=0.6)
+    p.add_argument("--decb-max", type=int, default=100000)
     p.add_argument("--asm-meshes", default=""); p.add_argument("--scaled-meshes", default="")
     p.add_argument("--modes", type=int, default=2336); p.add_argument("--tchunk", type=int, default=8)
     a = ap.parse_args()

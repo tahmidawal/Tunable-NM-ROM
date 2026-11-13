@@ -406,7 +406,7 @@ assembled: they are the 128^3 operators with T multiplied by (128/256)^{3/2}, us
 in-job 192^3 assembly confirms the invariance (A, Dd, lam equal and T equal after the factor
 to <= 1e-10). Reason: assembling the rank-192 tensor at 256^3 needs ~270 GB host and ~100 GB
 device memory, which no free node offers. Requests use 3 CPUs (the free H200 slot has 3).
-T2 note (2026-11-13, 02:35 EST). split_h200 (job 7161809) finished 64/96/128 (gates passed at
+T2 note (2026-11-13, ~02:15 EST). split_h200 (job 7161809) finished 64/96/128 (gates passed at
 the first attempt) and the 192^3 assembly, then died of GPU out-of-memory at 192^3 while all
 three banks (81.5 GB) shared one block (crash, not a measurement outcome). Technical fix only:
 banks are copied to the device in column chunks (jnp.asarray of a host array stages a second
@@ -414,3 +414,12 @@ full copy), and the memory budget for a single block is 45 % of the device. The 
 part is rerun as split_h200b (meshes 192, 256 only; one block per bank at these meshes; it
 reads the 192^3 operators and the invariance check from split_h200). Meshes 64/96/128 of
 split_h200 stand.
+T2 note 2 (2026-11-13, ~02:50 EST). split_a100 (job 7161810, A100 80 GB PCIe, pax007) finished
+64/96/128 (gates passed at the first attempt) and then died of GPU out-of-memory at 192^3
+(old, non-chunked device load; its in-job assembly of the rank-192 bank also ran out of memory
+and was recorded). The 192^3 A100 part is rerun as split_a100b (192 only, chunked load, one
+block per bank, operators and invariance check read from split_h200). 256^3 is H200 only.
+T2 note 3 (2026-11-13, ~03:08 EST). split_h200b (job 7162161) finished 192^3 (all three bank
+blocks passed the gate at the first attempt) and crashed at 256^3 compiling DECB (XLA
+autotuning of the 6 x 3n^3 batched gemm failed; DECB is the optional extra, not part of FULL).
+Rerun split_h200c: 256^3 only, DECB not timed at 256^3, everything else unchanged.

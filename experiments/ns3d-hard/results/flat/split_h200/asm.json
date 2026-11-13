@@ -1,0 +1,144 @@
+{
+ "schema": "ns3d-flat-asm-v1",
+ "args": {
+  "out": "output",
+  "banks": "r64=/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/bankB,r128=/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/bank128_s0b,r192=/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/bank192_s0",
+  "meshes": "192",
+  "modes": 2336,
+  "tchunk": 8,
+  "src": 128
+ },
+ "device": "cuda:0",
+ "job_id": "7161809",
+ "banks": {
+  "r64": {
+   "source": "/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/bankB",
+   "rank": 64,
+   "meshes": {
+    "192": {
+     "orthonormality": 1.554312234475219e-14,
+     "operator_checks": {
+      "modes": 2336,
+      "rank": 64,
+      "bank_orthonormality": 1.554312234475219e-14,
+      "pad_mesh": 208,
+      "kmax": 6,
+      "A_condition": 233.82008659712375,
+      "A_relative": 8.961803184426881e-14,
+      "derivative_relative": 1.7380972724789218e-14,
+      "tensor_relative": 4.5694403615989265e-14,
+      "tensor_vs_masked_mesh_product": 1.823445008269766e-15
+     },
+     "vs_128_operators": {
+      "A": {
+       "relative_difference": 3.090560365337908e-16,
+       "norm_ratio": 0.9999999999999997
+      },
+      "T": {
+       "relative_difference": 0.4556689460481816,
+       "norm_ratio": 0.5443310539518174
+      },
+      "Dd": {
+       "relative_difference": 3.310007905748841e-16,
+       "norm_ratio": 0.9999999999999998
+      },
+      "lam": {
+       "relative_difference": 0.0,
+       "norm_ratio": 1.0
+      },
+      "T_scaled": {
+       "relative_difference": 1.0472865110220692e-15
+      }
+     },
+     "seconds": 513.2704718112946
+    }
+   }
+  },
+  "r128": {
+   "source": "/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/bank128_s0b",
+   "rank": 128,
+   "meshes": {
+    "192": {
+     "orthonormality": 1.4432899320127035e-14,
+     "operator_checks": {
+      "modes": 2336,
+      "rank": 128,
+      "bank_orthonormality": 1.4432899320127035e-14,
+      "pad_mesh": 208,
+      "kmax": 6,
+      "A_condition": 1350.0275074730616,
+      "A_relative": 4.238571128940257e-14,
+      "derivative_relative": 8.619464788123067e-15,
+      "tensor_relative": 3.367186162213745e-14,
+      "tensor_vs_masked_mesh_product": 1.4846790412211865e-14
+     },
+     "vs_128_operators": {
+      "A": {
+       "relative_difference": 3.132081616210303e-16,
+       "norm_ratio": 0.9999999999999996
+      },
+      "T": {
+       "relative_difference": 0.4556689460481822,
+       "norm_ratio": 0.544331053951817
+      },
+      "Dd": {
+       "relative_difference": 3.352103159030682e-16,
+       "norm_ratio": 1.0
+      },
+      "lam": {
+       "relative_difference": 0.0,
+       "norm_ratio": 1.0
+      },
+      "T_scaled": {
+       "relative_difference": 1.0481623537970424e-15
+      }
+     },
+     "seconds": 1024.2233483791351
+    }
+   }
+  },
+  "r192": {
+   "source": "/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/bank192_s0",
+   "rank": 192,
+   "meshes": {
+    "192": {
+     "orthonormality": 1.554312234475219e-14,
+     "operator_checks": {
+      "modes": 2336,
+      "rank": 192,
+      "bank_orthonormality": 1.554312234475219e-14,
+      "pad_mesh": 208,
+      "kmax": 6,
+      "A_condition": 6247.599478099231,
+      "A_relative": 5.925609533476087e-14,
+      "derivative_relative": 8.275711324612509e-15,
+      "tensor_relative": 2.4050362496029745e-14,
+      "tensor_vs_masked_mesh_product": 5.0548464463874246e-14
+     },
+     "vs_128_operators": {
+      "A": {
+       "relative_difference": 3.150285086621399e-16,
+       "norm_ratio": 0.9999999999999998
+      },
+      "T": {
+       "relative_difference": 0.4556689460481813,
+       "norm_ratio": 0.544331053951817
+      },
+      "Dd": {
+       "relative_difference": 3.3662874143361106e-16,
+       "norm_ratio": 0.9999999999999997
+      },
+      "lam": {
+       "relative_difference": 0.0,
+       "norm_ratio": 1.0
+      },
+      "T_scaled": {
+       "relative_difference": 1.0476630592317526e-15
+      }
+     },
+     "seconds": 1650.6060111522675
+    }
+   }
+  }
+ }
+}

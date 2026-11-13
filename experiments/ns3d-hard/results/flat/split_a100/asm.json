@@ -1,0 +1,101 @@
+{
+ "schema": "ns3d-flat-asm-v1",
+ "args": {
+  "out": "output",
+  "banks": "r64=/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/bankB,r128=/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/bank128_s0b,r192=/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/bank192_s0",
+  "meshes": "192",
+  "modes": 2336,
+  "tchunk": 8,
+  "src": 128
+ },
+ "device": "cuda:0",
+ "job_id": "7161810",
+ "banks": {
+  "r64": {
+   "source": "/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/bankB",
+   "rank": 64,
+   "meshes": {
+    "192": {
+     "orthonormality": 1.554312234475219e-14,
+     "operator_checks": {
+      "modes": 2336,
+      "rank": 64,
+      "bank_orthonormality": 1.554312234475219e-14,
+      "pad_mesh": 208,
+      "kmax": 6,
+      "A_condition": 233.82008659712375,
+      "A_relative": 6.45677094645602e-14,
+      "derivative_relative": 1.7380972724789218e-14,
+      "tensor_relative": 4.785017120271134e-14,
+      "tensor_vs_masked_mesh_product": 1.8516252910604e-15
+     },
+     "vs_128_operators": {
+      "A": {
+       "relative_difference": 3.0905603653379085e-16,
+       "norm_ratio": 0.9999999999999998
+      },
+      "T": {
+       "relative_difference": 0.4556689460481818,
+       "norm_ratio": 0.5443310539518178
+      },
+      "Dd": {
+       "relative_difference": 3.3100079057488407e-16,
+       "norm_ratio": 0.9999999999999994
+      },
+      "lam": {
+       "relative_difference": 0.0,
+       "norm_ratio": 1.0
+      },
+      "T_scaled": {
+       "relative_difference": 1.0472865110220696e-15
+      }
+     },
+     "seconds": 556.1527156829834
+    }
+   }
+  },
+  "r128": {
+   "source": "/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/bank128_s0b",
+   "rank": 128,
+   "meshes": {
+    "192": {
+     "orthonormality": 1.4432899320127035e-14,
+     "operator_checks": {
+      "modes": 2336,
+      "rank": 128,
+      "bank_orthonormality": 1.4432899320127035e-14,
+      "pad_mesh": 208,
+      "kmax": 6,
+      "A_condition": 1350.0275074730616,
+      "A_relative": 4.119935729425519e-14,
+      "derivative_relative": 8.619464788123067e-15,
+      "tensor_relative": 2.846856105656482e-14,
+      "tensor_vs_masked_mesh_product": 1.4846790412211865e-14
+     },
+     "vs_128_operators": {
+      "A": {
+       "relative_difference": 3.1320816162103032e-16,
+       "norm_ratio": 0.9999999999999998
+      },
+      "T": {
+       "relative_difference": 0.45566894604818264,
+       "norm_ratio": 0.5443310539518188
+      },
+      "Dd": {
+       "relative_difference": 3.3521031590306807e-16,
+       "norm_ratio": 0.9999999999999996
+      },
+      "lam": {
+       "relative_difference": 0.0,
+       "norm_ratio": 1.0
+      },
+      "T_scaled": {
+       "relative_difference": 1.0481623537970437e-15
+      }
+     },
+     "seconds": 1054.9288775920868
+    }
+   }
+  }
+ }
+}

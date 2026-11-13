@@ -37,7 +37,7 @@ def split_tables(paths):
                 same = f"{s['FOM_same_solve']:.1f} ({ref['same'][0]} {ref['same'][1]}^3 x{ref['same'][2]})" if "FOM_same_solve" in s else "-"
                 out.append(f"| {arm} | {m}{'' if d['meshes'][m]['native_bank'] else '*'} | {c['M']} | {c['steps']} | "
                            f"{s['ENC']:.2f} | {s['FIT']:.2f} | {s['SOLVE']:.2f} | {s['DEC']:.2f} | {s['SUM']:.2f} | {s['FULL']:.2f} | "
-                           f"{s['DECB']:.2f} | {s['FOM_any_solve']:.1f} ({any_tag}) | {same} | "
+                           f"{s.get('DECB', float('nan')):.2f} | {s['FOM_any_solve']:.1f} ({any_tag}) | {same} | "
                            f"{s['FOM_any_solve'] / s['FULL']:.2f} | {s['FOM_any_solve'] / s['SOLVE']:.2f} |")
                 solves[m] = s["SOLVE"]; fulls[m] = s["FULL"]
             if solves:

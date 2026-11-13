@@ -1,0 +1,59 @@
+host=pax010 source_commit=0562372778c724668963b3fece6cb6bd460009ee job=7161809
+NVIDIA H200, GPU-ed0de067-982f-cc10-30d0-87166d249ed8, 143771 MiB
+jax_backend=gpu
+backend=gpu devices=[CudaDevice(id=0)] args={'cmd': 'split', 'out': 'output', 'family': 'B', 'smoke': False, 'src': 128, 'cohort': '/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/genF_0,/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/genF_1', 'meshes': '64,96,128,192,256', 'arms': 'r64_head,r96_head,r128_head,r128_head_fast,r192_head,r192_head_fast', 'banks': 'r64=/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/bankB,r128=/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/bank128_s0b,r192=/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/bank192_s0', 'heads': 'r64=/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/romdevB_64:/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/romdevB_96:/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/romdevB_128,r128=/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/rdev_s0_64:/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/rdev_s0_96:/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/rdev_s0_128,r192=/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/rdev192_s0_64:/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/rdev192_s0_96:/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/rdev192_s0_128', 'head_meshes': '64,96,128', 'asm': None, 'frozen': '/cluster/tufts/paralab/tawal01/rebuttal-ns3d-flat-timing/split_h200/experiments/ns3d-hard/frozen_rank', 'refcompare': '/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard-rank/fresh_s0b/output/compare.json', 'reps': 9, 'timing_cases': '0,16,32,48,64,80,96,112', 'gate': 1.1, 'gate_block': 1.25, 'sentinels': 'r64_head,r128_head', 'budget': 0.6, 'asm_meshes': '192', 'scaled_meshes': '256', 'modes': 2336, 'tchunk': 8}
+r64 128->192: orthonormality 1.55e-14 (38s)
+r64 mesh 192: 513s checks {'modes': 2336, 'rank': 64, 'bank_orthonormality': 1.554312234475219e-14, 'pad_mesh': 208, 'kmax': 6, 'A_condition': 233.82008659712375, 'A_relative': 8.961803184426881e-14, 'derivative_relative': 1.7380972724789218e-14, 'tensor_relative': 4.5694403615989265e-14, 'tensor_vs_masked_mesh_product': 1.823445008269766e-15} vs128 {'A': {'relative_difference': 3.090560365337908e-16, 'norm_ratio': 0.9999999999999997}, 'T': {'relative_difference': 0.4556689460481816, 'norm_ratio': 0.5443310539518174}, 'Dd': {'relative_difference': 3.310007905748841e-16, 'norm_ratio': 0.9999999999999998}, 'lam': {'relative_difference': 0.0, 'norm_ratio': 1.0}, 'T_scaled': {'relative_difference': 1.0472865110220692e-15}}
+r128 128->192: orthonormality 1.44e-14 (69s)
+r128 mesh 192: 1024s checks {'modes': 2336, 'rank': 128, 'bank_orthonormality': 1.4432899320127035e-14, 'pad_mesh': 208, 'kmax': 6, 'A_condition': 1350.0275074730616, 'A_relative': 4.238571128940257e-14, 'derivative_relative': 8.619464788123067e-15, 'tensor_relative': 3.367186162213745e-14, 'tensor_vs_masked_mesh_product': 1.4846790412211865e-14} vs128 {'A': {'relative_difference': 3.132081616210303e-16, 'norm_ratio': 0.9999999999999996}, 'T': {'relative_difference': 0.4556689460481822, 'norm_ratio': 0.544331053951817}, 'Dd': {'relative_difference': 3.352103159030682e-16, 'norm_ratio': 1.0}, 'lam': {'relative_difference': 0.0, 'norm_ratio': 1.0}, 'T_scaled': {'relative_difference': 1.0481623537970424e-15}}
+r192 128->192: orthonormality 1.55e-14 (100s)
+r192 mesh 192: 1651s checks {'modes': 2336, 'rank': 192, 'bank_orthonormality': 1.554312234475219e-14, 'pad_mesh': 208, 'kmax': 6, 'A_condition': 6247.599478099231, 'A_relative': 5.925609533476087e-14, 'derivative_relative': 8.275711324612509e-15, 'tensor_relative': 2.4050362496029745e-14, 'tensor_vs_masked_mesh_product': 5.0548464463874246e-14} vs128 {'A': {'relative_difference': 3.150285086621399e-16, 'norm_ratio': 0.9999999999999998}, 'T': {'relative_difference': 0.4556689460481813, 'norm_ratio': 0.544331053951817}, 'Dd': {'relative_difference': 3.3662874143361106e-16, 'norm_ratio': 0.9999999999999997}, 'lam': {'relative_difference': 0.0, 'norm_ratio': 1.0}, 'T_scaled': {'relative_difference': 1.0476630592317526e-15}}
+DONE
+mesh 64: basis bytes 3.0 GB, limit 138.1 GB, groups [['r128', 'r192', 'r64']]
+mesh 64 r64_head: timing-case worst 0.01054 (source mesh 64: 0.01054, max diff 4.21e-16); split vs full 1.84e-15
+mesh 64 r96_head: timing-case worst 0.00459 (source mesh 64: 0.00459, max diff 7.68e-16); split vs full 2.04e-15
+mesh 64 r128_head: timing-case worst 0.00308 (source mesh 64: 0.00308, max diff 7.26e-16); split vs full 2.09e-15
+mesh 64 r128_head_fast: timing-case worst 0.00312 (source mesh 64: 0.00312, max diff 6.00e-16); split vs full 1.83e-15
+mesh 64 r192_head: timing-case worst 0.00147 (source mesh 64: 0.00147, max diff 1.12e-15); split vs full 2.01e-15
+mesh 64 r192_head_fast: timing-case worst 0.00151 (source mesh 64: 0.00151, max diff 6.20e-16); split vs full 2.32e-15
+mesh 64 group ['r128', 'r192', 'r64'] timing attempt 1: gate True
+mesh 64 r64_head: FULL 8.52 ENC 0.31 FIT 0.84 SOLVE 6.01 DEC 1.37 DECB 0.70 SUM 8.53 FOM_any_solve 43.52 FOM_any_e2e 44.43
+mesh 64 r96_head: FULL 9.49 ENC 0.36 FIT 0.84 SOLVE 7.10 DEC 1.59 DECB 0.76 SUM 9.89 FOM_any_solve 83.48 FOM_any_e2e 84.46
+mesh 64 r128_head: FULL 17.96 ENC 0.40 FIT 0.84 SOLVE 15.18 DEC 1.86 DECB 0.80 SUM 18.29 FOM_any_solve 83.48 FOM_any_e2e 84.46
+mesh 64 r128_head_fast: FULL 10.51 ENC 0.40 FIT 0.85 SOLVE 7.76 DEC 1.86 DECB 0.80 SUM 10.87 FOM_any_solve 83.48 FOM_any_e2e 84.46
+mesh 64 r192_head: FULL 26.46 ENC 0.49 FIT 0.86 SOLVE 23.04 DEC 2.41 DECB 0.88 SUM 26.79 FOM_any_solve 120.78 FOM_any_e2e 118.48
+mesh 64 r192_head_fast: FULL 12.60 ENC 0.49 FIT 0.86 SOLVE 9.19 DEC 2.41 DECB 0.89 SUM 12.95 FOM_any_solve 106.34 FOM_any_e2e 107.06
+mesh 96: basis bytes 10.2 GB, limit 138.1 GB, groups [['r128', 'r192', 'r64']]
+mesh 96 r64_head: timing-case worst 0.01189 (source mesh 96: 0.01189, max diff 6.56e-16); split vs full 1.83e-15
+mesh 96 r96_head: timing-case worst 0.00496 (source mesh 96: 0.00496, max diff 4.59e-16); split vs full 1.77e-15
+mesh 96 r128_head: timing-case worst 0.00321 (source mesh 96: 0.00321, max diff 4.02e-16); split vs full 1.86e-15
+mesh 96 r128_head_fast: timing-case worst 0.00328 (source mesh 96: 0.00328, max diff 1.44e-15); split vs full 2.28e-15
+mesh 96 r192_head: timing-case worst 0.00169 (source mesh 96: 0.00169, max diff 1.45e-15); split vs full 2.01e-15
+mesh 96 r192_head_fast: timing-case worst 0.00175 (source mesh 96: 0.00175, max diff 6.36e-16); split vs full 1.86e-15
+mesh 96 group ['r128', 'r192', 'r64'] timing attempt 1: gate True
+mesh 96 r64_head: FULL 7.92 ENC 0.72 FIT 0.84 SOLVE 2.62 DEC 3.89 DECB 1.98 SUM 8.06 FOM_any_solve 43.54 FOM_any_e2e 45.09 FOM_same_solve 70.20
+mesh 96 r96_head: FULL 13.12 ENC 0.88 FIT 0.84 SOLVE 7.10 DEC 4.65 DECB 2.13 SUM 13.46 FOM_any_solve 106.01 FOM_any_e2e 107.30
+mesh 96 r128_head: FULL 24.58 ENC 1.01 FIT 0.84 SOLVE 17.52 DEC 5.55 DECB 2.28 SUM 24.93 FOM_any_solve 144.74 FOM_any_e2e 146.70
+mesh 96 r128_head_fast: FULL 14.84 ENC 1.01 FIT 0.84 SOLVE 7.75 DEC 5.55 DECB 2.29 SUM 15.15 FOM_any_solve 144.74 FOM_any_e2e 146.70
+mesh 96 r192_head: FULL 32.29 ENC 1.30 FIT 0.86 SOLVE 23.06 DEC 7.35 DECB 2.60 SUM 32.58 FOM_any_solve 161.13 FOM_any_e2e 163.17
+mesh 96 r192_head_fast: FULL 18.37 ENC 1.31 FIT 0.86 SOLVE 9.19 DEC 7.35 DECB 2.60 SUM 18.71 FOM_any_solve 165.33 FOM_any_e2e 167.68
+mesh 128: basis bytes 24.2 GB, limit 138.1 GB, groups [['r128', 'r192', 'r64']]
+mesh 128 r64_head: timing-case worst 0.01184 (source mesh 128: 0.01184, max diff 7.30e-16); split vs full 2.05e-15
+mesh 128 r96_head: timing-case worst 0.00498 (source mesh 128: 0.00498, max diff 7.51e-16); split vs full 2.07e-15
+mesh 128 r128_head: timing-case worst 0.00330 (source mesh 128: 0.00330, max diff 6.21e-16); split vs full 2.25e-15
+mesh 128 r128_head_fast: timing-case worst 0.00336 (source mesh 128: 0.00336, max diff 5.02e-16); split vs full 1.94e-15
+mesh 128 r192_head: timing-case worst 0.00174 (source mesh 128: 0.00174, max diff 7.48e-16); split vs full 2.40e-15
+mesh 128 r192_head_fast: timing-case worst 0.00178 (source mesh 128: 0.00178, max diff 5.12e-16); split vs full 2.23e-15
+mesh 128 group ['r128', 'r192', 'r64'] timing attempt 1: gate True
+mesh 128 r64_head: FULL 13.18 ENC 1.45 FIT 0.87 SOLVE 2.67 DEC 8.34 DECB 4.11 SUM 13.32 FOM_any_solve 43.74 FOM_any_e2e 46.22 FOM_same_solve 194.21
+mesh 128 r96_head: FULL 19.61 ENC 1.79 FIT 0.87 SOLVE 7.17 DEC 10.15 DECB 4.49 SUM 19.98 FOM_any_solve 126.62 FOM_any_e2e 128.87 FOM_same_solve 194.21
+mesh 128 r128_head: FULL 30.21 ENC 2.13 FIT 0.87 SOLVE 15.19 DEC 12.28 DECB 4.84 SUM 30.47 FOM_any_solve 145.00 FOM_any_e2e 147.70 FOM_same_solve 194.21
+mesh 128 r128_head_fast: FULL 22.75 ENC 2.13 FIT 0.86 SOLVE 7.81 DEC 12.28 DECB 4.84 SUM 23.07 FOM_any_solve 120.95 FOM_any_e2e 120.25 FOM_same_solve 194.21
+mesh 128 r192_head: FULL 52.90 ENC 2.81 FIT 0.88 SOLVE 32.80 DEC 16.56 DECB 5.59 SUM 53.05 FOM_any_solve 162.38 FOM_any_e2e 159.68 FOM_same_solve 225.85
+mesh 128 r192_head_fast: FULL 29.20 ENC 2.81 FIT 0.88 SOLVE 9.24 DEC 16.56 DECB 5.58 SUM 29.49 FOM_any_solve 140.23 FOM_any_e2e 138.67 FOM_same_solve 194.21
+mesh 192: basis bytes 81.5 GB, limit 138.1 GB, groups [['r128', 'r192', 'r64']]
+mesh 192 r64_head: timing-case worst 0.01184 (source mesh 128: 0.01184, max diff 1.89e-15); split vs full 1.85e-15
+mesh 192 r96_head: timing-case worst 0.00498 (source mesh 128: 0.00498, max diff 2.30e-15); split vs full 2.06e-15
+mesh 192 r128_head: timing-case worst 0.00330 (source mesh 128: 0.00330, max diff 1.13e-15); split vs full 1.96e-15
+mesh 192 r128_head_fast: timing-case worst 0.00336 (source mesh 128: 0.00336, max diff 9.33e-16); split vs full 1.84e-15
+RUN_EXIT=1

@@ -1,0 +1,41 @@
+W1113 02:10:27.078912 1532309 hlo_rematerialization.cc:3231] Can't reduce memory use below 68.88GiB (73961942032 bytes) by rematerialization; only reduced to 72.48GiB (77824000561 bytes), down from 78.23GiB (84000002641 bytes) originally
+W1113 02:10:28.343578 1532309 hlo_rematerialization.cc:3231] Can't reduce memory use below 65.27GiB (70080005545 bytes) by rematerialization; only reduced to 73.16GiB (78559838208 bytes), down from 73.16GiB (78559838208 bytes) originally
+W1113 02:10:40.491268 1532358 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 17.17GiB (rounded to 18432000000)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1113 02:10:40.492080 1532358 bfc_allocator.cc:525] **************___************************************************************_______________________
+W1113 02:10:42.834419 1532309 hlo_rematerialization.cc:3231] Can't reduce memory use below 65.28GiB (70095367045 bytes) by rematerialization; only reduced to 73.16GiB (78559838208 bytes), down from 73.16GiB (78559838208 bytes) originally
+W1113 02:10:44.409579 1532309 hlo_rematerialization.cc:3231] Can't reduce memory use below 68.39GiB (73435207139 bytes) by rematerialization; only reduced to 91.32GiB (98055984641 bytes), down from 98.55GiB (105815810641 bytes) originally
+W1113 02:10:45.779791 1532309 hlo_rematerialization.cc:3231] Can't reduce memory use below 65.26GiB (70071863574 bytes) by rematerialization; only reduced to 91.00GiB (97707884544 bytes), down from 91.00GiB (97707884544 bytes) originally
+W1113 02:10:58.073343 1532357 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 21.62GiB (rounded to 23219011584)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1113 02:10:58.073575 1532357 bfc_allocator.cc:525] ***************__***********************************************************************____________
+W1113 02:10:58.094567 1532309 hlo_rematerialization.cc:3231] Can't reduce memory use below 68.41GiB (73454587458 bytes) by rematerialization; only reduced to 69.58GiB (74706602529 bytes), down from 69.59GiB (74727133265 bytes) originally
+W1113 02:11:00.291191 1532309 hlo_rematerialization.cc:3231] Can't reduce memory use below 65.28GiB (70091243893 bytes) by rematerialization; only reduced to 91.00GiB (97707884544 bytes), down from 91.00GiB (97707884544 bytes) originally
+W1113 02:33:39.354772 1532309 hlo_rematerialization.cc:3231] Can't reduce memory use below 68.24GiB (73271680233 bytes) by rematerialization; only reduced to 90.01GiB (96646201344 bytes), down from 90.01GiB (96646201344 bytes) originally
+W1113 02:33:48.175330 1532309 hlo_rematerialization.cc:3231] Can't reduce memory use below 71.14GiB (76381642124 bytes) by rematerialization; only reduced to 90.01GiB (96646201296 bytes), down from 90.01GiB (96646201344 bytes) originally
+W1113 02:33:53.237641 1532309 hlo_rematerialization.cc:3231] Can't reduce memory use below 68.03GiB (73045684931 bytes) by rematerialization; only reduced to 83.21GiB (89345626344 bytes), down from 83.21GiB (89350345056 bytes) originally
+W1113 02:34:02.955151 1532309 hlo_rematerialization.cc:3231] Can't reduce memory use below 68.03GiB (73045684931 bytes) by rematerialization; only reduced to 90.01GiB (96646201344 bytes), down from 90.01GiB (96646201344 bytes) originally
+W1113 02:34:12.656059 1532309 hlo_rematerialization.cc:3231] Can't reduce memory use below 70.96GiB (76190317414 bytes) by rematerialization; only reduced to 90.01GiB (96646201296 bytes), down from 90.01GiB (96646201344 bytes) originally
+E1113 02:34:16.841498 1532357 gpu_hlo_schedule.cc:968] The byte size of input/output arguments (88641110016) exceeds the base limit (68075860787). This indicates an error in the calculation!
+E1113 02:34:17.340263 1532357 gpu_hlo_schedule.cc:968] The byte size of input/output arguments (88641110016) exceeds the base limit (68075860787). This indicates an error in the calculation!
+W1113 02:34:19.792817 1532357 bfc_allocator.cc:317] Allocator (GPU_0_bfc) ran out of memory trying to allocate 82.14GiB with freed_by_count=0. The caller indicates that this is not a failure, but this may mean that there could be performance gains if more memory were available.
+E1113 02:34:19.792940 1532309 config_assigner.cc:383] Could not get config for HLO: %input_reduce_fusion = f64[512,584,192]{2,1,0} fusion(%get-tuple-element.85.0, %get-tuple-element.54), kind=kInput, calls=
+(param_0.675: f64[512,584,192,192], param_1.842: f64[512,192]) -> f64[512,584,192] {
+  %param_0.675 = f64[512,584,192,192]{3,2,1,0} parameter(0)
+  %param_1.842 = f64[512,192]{1,0} parameter(1)
+  %broadcast.243.3 = f64[512,584,192,192]{3,2,1,0} broadcast(%param_1.842), dimensions={0,3}, metadata={op_name="jit(run)/vmap(jit(run))/while/body/closed_call/closed_call/msk,k->ms/dot_general" stack_frame_id=659}
+  %multiply.53.3 = f64[512,584,192,192]{3,2,1,0} multiply(%param_0.675, %broadcast.243.3), metadata={op_name="jit(run)/vmap(jit(run))/while/body/closed_call/closed_call/msk,k->ms/dot_general" stack_frame_id=659}
+  %constant.263.8 = f64[] constant(0), metadata={op_name="jit(run)/vmap(jit(run))/while/body/closed_call/closed_call/jit(_diag)" stack_frame_id=692}
+  ROOT %reduce.41.1 = f64[512,584,192]{2,1,0} reduce(%multiply.53.3, %constant.263.8), dimensions={3}, to_apply=
+  (reduce_sum.64: f64[], reduce_sum.65: f64[]) -> f64[] {
+    %reduce_sum.64 = f64[] parameter(0), metadata={op_name="reduce_sum"}
+    %reduce_sum.65 = f64[] parameter(1), metadata={op_name="reduce_sum"}
+    ROOT %reduce_sum.69.0 = f64[] add(%reduce_sum.64, %reduce_sum.65), metadata={op_name="reduce_sum" stack_frame_id=3}
+  }, metadata={op_name="jit(run)/vmap(jit(run))/while/body/closed_call/closed_call/msk,k->ms/dot_general" stack_frame_id=659}
+}, metadata={op_name="jit(run)/vmap(jit(run))/while/body/closed_call/closed_call/msk,k->ms/dot_general" deduplicated_name="input_reduce_fusion" stack_frame_id=659}. Status: INTERNAL: Autotuning failed for HLO: %input_reduce_fusion = f64[512,584,192]{2,1,0} fusion(%get-tuple-element.85.0, %get-tuple-element.54), kind=kInput, calls=%fused_reduce, metadata={op_name="jit(run)/vmap(jit(run))/while/body/closed_call/closed_call/msk,k->ms/dot_general" deduplicated_name="input_reduce_fusion" stack_frame_id=659}. Failed to profile configs: Out of memory while trying to allocate 82.14GiB.
+W1113 02:34:32.185922 1532309 hlo_rematerialization.cc:3231] Can't reduce memory use below 67.58GiB (72566424796 bytes) by rematerialization; only reduced to 90.01GiB (96646201344 bytes), down from 90.01GiB (96646201344 bytes) originally
+W1113 02:34:41.798323 1532309 hlo_rematerialization.cc:3231] Can't reduce memory use below 70.60GiB (75807667993 bytes) by rematerialization; only reduced to 90.01GiB (96646201296 bytes), down from 90.01GiB (96646201344 bytes) originally

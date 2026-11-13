@@ -1,0 +1,42 @@
+host=pax105 source_commit=13bbedaa7df5f7a34cc3ba677b62cb1d21820d9e job=7118579
+NVIDIA A100 80GB PCIe, GPU-c52a7f04-fc38-6157-cf19-5c7ff0945752, 81920 MiB
+jax_backend=gpu
+backend=gpu devices=[CudaDevice(id=0)] args={'cmd': 'bank', 'family': 'B', 'out': 'output', 'truth_n': 192, 'truth_dt': 0.00025, 'store_n': 128, 'smoke': False, 'meshes': '64,96,128', 'cases': 0, 'fom_meshes': '32,48,64,80,96,112,128', 'cn_steps': '5,10,20,40,60,80,120,160,240,320,640', 'rk_steps': '5,10,20,40,60,80,120,160', 'inputs': '/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/genB_bank0,/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/genB_bank1', 'rank': 64, 'modes': 2336, 'gram_block': 96}
+mesh 64: centred snapshots (768, 786432) 90s
+gram rows 96/768
+gram rows 192/768
+gram rows 288/768
+gram rows 384/768
+gram rows 480/768
+gram rows 576/768
+gram rows 672/768
+gram rows 768/768
+eigh dimension 768
+pod rank=64 orth=1.161e-10 energy_tail=4.821e-07
+mesh 64: bank + operators done 140s checks {'modes': 2336, 'rank': 64, 'bank_orthonormality': 3.9968028886505635e-15, 'pad_mesh': 80, 'kmax': 6, 'A_condition': 223.2668678052219, 'A_relative': 2.063834136299253e-15, 'derivative_relative': 2.0138650221313016e-15, 'tensor_relative': 1.0034174164324888e-14, 'tensor_vs_masked_mesh_product': 0.23305223888111226}
+mesh 96: centred snapshots (768, 2654208) 27s
+gram rows 96/768
+gram rows 192/768
+gram rows 288/768
+gram rows 384/768
+gram rows 480/768
+gram rows 576/768
+gram rows 672/768
+gram rows 768/768
+eigh dimension 768
+pod rank=64 orth=1.750e-10 energy_tail=4.989e-07
+mesh 96: bank + operators done 231s checks {'modes': 2336, 'rank': 64, 'bank_orthonormality': 5.773159728050814e-15, 'pad_mesh': 112, 'kmax': 6, 'A_condition': 233.86297361239667, 'A_relative': 1.24016779970439e-14, 'derivative_relative': 3.922414935605683e-15, 'tensor_relative': 1.1633448556065148e-14, 'tensor_vs_masked_mesh_product': 0.023998113550534692}
+mesh 128: centred snapshots (768, 6291456) 79s
+gram rows 96/768
+gram rows 192/768
+gram rows 288/768
+gram rows 384/768
+gram rows 480/768
+gram rows 576/768
+gram rows 672/768
+gram rows 768/768
+eigh dimension 768
+pod rank=64 orth=1.745e-10 energy_tail=4.991e-07
+mesh 128: bank + operators done 758s checks {'modes': 2336, 'rank': 64, 'bank_orthonormality': 9.547918011776346e-15, 'pad_mesh': 144, 'kmax': 6, 'A_condition': 233.8200865971241, 'A_relative': 2.0562110362191508e-14, 'derivative_relative': 8.526950295448392e-15, 'tensor_relative': 2.3473023822238312e-14, 'tensor_vs_masked_mesh_product': 0.004779073892324213}
+DONE
+RUN_EXIT=0

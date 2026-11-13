@@ -1,0 +1,40 @@
+host=pax049 source_commit=13bbedaa7df5f7a34cc3ba677b62cb1d21820d9e job=7118716
+NVIDIA A100 80GB PCIe, GPU-ddaed0e6-973b-70bc-7131-3e8516bfa534, 81920 MiB
+jax_backend=gpu
+backend=gpu devices=[CudaDevice(id=0)] args={'cmd': 'fom', 'family': 'B', 'out': 'output', 'truth_n': 192, 'truth_dt': 0.00025, 'store_n': 128, 'smoke': False, 'meshes': '64,96,128', 'cases': 0, 'fom_meshes': '32,48,64,80,96,112,128', 'cn_steps': '5,10,20,40,60,80,120,160,240,320,640', 'rk_steps': '5,10,20,40,60,80,120,160', 'cohort': '/cluster/tufts/paralab/tawal01/rebuttal-ns3d-hard/genB_dev'}
+fom ladder case 1/64
+fom ladder case 5/64
+fom ladder case 9/64
+fom ladder case 13/64
+fom ladder case 17/64
+fom ladder case 21/64
+fom ladder case 25/64
+fom ladder case 29/64
+fom ladder case 33/64
+fom ladder case 37/64
+fom ladder case 41/64
+fom ladder case 45/64
+fom ladder case 49/64
+fom ladder case 53/64
+fom ladder case 57/64
+fom ladder case 61/64
+eval 64 target 0.002: {'scheme': 'cnab2', 'n': 112, 'steps': 120, 'ms': 322.5858755176887, 'worst': 0.0019294588816905261}
+eval 64 target 0.005: {'scheme': 'cnab2', 'n': 112, 'steps': 120, 'ms': 322.5858755176887, 'worst': 0.0019294588816905261}
+eval 64 target 0.01: {'scheme': 'cnab2', 'n': 96, 'steps': 120, 'ms': 207.28121313732117, 'worst': 0.0061073605037963675}
+eval 64 target 0.02: {'scheme': 'cnab2', 'n': 80, 'steps': 80, 'ms': 74.81613545678556, 'worst': 0.016202273072888185}
+eval 64 target 0.03: {'scheme': 'cnab2', 'n': 80, 'steps': 80, 'ms': 74.81613545678556, 'worst': 0.016202273072888185}
+eval 64 target 0.05: {'scheme': 'cnab2', 'n': 64, 'steps': 60, 'ms': 27.95593743212521, 'worst': 0.03393936232996668}
+eval 96 target 0.002: None
+eval 96 target 0.005: {'scheme': 'cnab2', 'n': 112, 'steps': 120, 'ms': 322.5858755176887, 'worst': 0.0042982171198350004}
+eval 96 target 0.01: {'scheme': 'cnab2', 'n': 96, 'steps': 120, 'ms': 207.28121313732117, 'worst': 0.00911002388303763}
+eval 96 target 0.02: {'scheme': 'cnab2', 'n': 80, 'steps': 80, 'ms': 74.81613545678556, 'worst': 0.017555806320264006}
+eval 96 target 0.03: {'scheme': 'cnab2', 'n': 80, 'steps': 80, 'ms': 74.81613545678556, 'worst': 0.017555806320264006}
+eval 96 target 0.05: {'scheme': 'cnab2', 'n': 64, 'steps': 60, 'ms': 27.95593743212521, 'worst': 0.03460596766730802}
+eval 128 target 0.002: None
+eval 128 target 0.005: {'scheme': 'cnab2', 'n': 112, 'steps': 120, 'ms': 322.5858755176887, 'worst': 0.004400230287743984}
+eval 128 target 0.01: {'scheme': 'cnab2', 'n': 96, 'steps': 120, 'ms': 207.28121313732117, 'worst': 0.00915859658055073}
+eval 128 target 0.02: {'scheme': 'cnab2', 'n': 80, 'steps': 80, 'ms': 74.81613545678556, 'worst': 0.01758106059742646}
+eval 128 target 0.03: {'scheme': 'cnab2', 'n': 80, 'steps': 80, 'ms': 74.81613545678556, 'worst': 0.01758106059742646}
+eval 128 target 0.05: {'scheme': 'cnab2', 'n': 64, 'steps': 60, 'ms': 27.95593743212521, 'worst': 0.03461878614808047}
+DONE
+RUN_EXIT=0

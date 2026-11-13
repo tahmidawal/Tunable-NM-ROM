@@ -103,3 +103,10 @@ the headline (it only lowers the ROM's ratio).
 
 Per mesh, arm and B: ROM and solver times (both variants), samples/s, time per 1,000
 queries, peak memory, ratios, chunking, agreement checks, failures, job ids, GPU model.
+
+## Amendments
+A1 (2026-11-13, 01:50 EST, before any batched timing). The cluster queue is saturated
+(~900 pending jobs). Each mesh job may run on an A100 80 GB or an H200 141 GB, whichever
+starts first; every ratio is still formed within one job on one GPU, and the GPU model is
+reported per mesh. Wall times are not compared across meshes run on different GPU models.
+make_table.py builds the tables from the job JSONs.

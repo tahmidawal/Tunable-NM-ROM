@@ -2,6 +2,8 @@
 # Run training runs sequentially in priority order. Each argument is one run: "ARM RUNG CAP [SNAPSHOT]".
 # Every run gets the protocol deadline. On the job's USR1 (wall limit near) the running trainer stops cleanly and no
 # further run starts.
+PY=${PY:-/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python}
+[ -x "$PY" ] || { echo "no python at $PY"; exit 3; }
 DEADLINE=1794754800
 STOPPED=0
 trap 'STOPPED=1; kill -USR1 $CHILD 2>/dev/null' USR1

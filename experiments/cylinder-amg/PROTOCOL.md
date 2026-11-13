@@ -116,3 +116,8 @@ better asymptotic scaling may win. pyamg's kernels are single-threaded (so is UM
   two allocations, each with its own paired lu: ho-a = lu, amg1 r1e-8 (selected), amg1 r1e-6, lu_b; ho-b = lu, amg2
   (selected when dev-b/dev-c finish), lu_b. amg1 r1e-6 is added as a DECLARED SECONDARY row: the loosest tolerance that
   meets all six targets on Re 95 (the setting most favourable to AMG); it is reported whatever it shows on Re 105.
+- H2 (2026-11-13 ~02:55 EST, after dev-b 7161798 and dev-c 7161799, before ho-b; artifacts/SUMMARY-dev.md). Rule
+  applied to amg2: rtol 1e-8 is selected (all six metrics within 0.007 % of lu; 1e-6 meets 6/6 but St rel differs by
+  2.0 % from lu's; 1e-4 fails 4 targets). LU agrees across the three dev jobs to rounding. ho-b = lu, amg2 r1e-8, lu_b.
+  No secondary amg2 row is timed on Re 105: on Re 95 its loosest passing setting (1e-6) costs 824 s, 16x the paired LU,
+  so it cannot change the conclusion and would cost another ~70 min of a 16-core allocation.

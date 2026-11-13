@@ -1,0 +1,31 @@
+sources verified
+06037b9340d70fe0934a3c9a940d74a6f7c6239b
+cpu_model=Intel(R) Xeon(R) Gold 6438M
+pax031
+16
+{"wheel": "ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl", "sha256": "4e02591fe98a1068b4f7ca094aec36844da1f6ddf826088b060e5a8e7780efff"}
+{"wheel": "netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", "sha256": "d8118835e2aec5739ee5755d61e866505313d92e3d4c6b947be7835f9fbf5122"}
+{"wheel": "netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", "sha256": "db71d77f56f79c0768489e76dde8febdeb25b95777986587a5d09575fa112f94"}
+{"wheel": "ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl", "sha256": "8d3266615c7b099e78c5891a41971c6bffe5d6014d13d736cef0cc119d1ca141"}
+Processing ./wheels/ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+Processing ./wheels/ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl
+Installing collected packages: ngsolve-openblas, ngsolve, netgen-occt, netgen-mesher
+
+Successfully installed netgen-mesher-6.2.2608 netgen-occt-7.8.1 ngsolve-6.2.2608 ngsolve-openblas-0.3.33
+{"prefix_layout_verified": true, "occt_libraries": 47, "site_packages": "/cluster/tufts/paralab/tawal01/cyl-amg-20261113/amg-devc/deps/lib/python3.13/site-packages"}
+ngsolve 6.2.2608 pyamg 5.4.1 scipy 1.18.0
+reference on Q 171 saves 1036497 points 19.6 s
+space c4 3 16912 check 6.661338147750939e-16 4.9 s
+{"scalar_return_contract": {"label": "normal_P0_constant", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "oriented_normal_moment", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "normal_geometry_volume", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "probe", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+  rep 0 c4_p3_dt300_frozen_oseen_K30_lu 49.73 {'conv_apply': 8.698467181064188, 'factor': 8.371585989370942, 'solve': 17.973674316890538, 'observe': 13.28668047580868, 'diagnostics': 0.0} {'setups': 0, 'extract_seconds': 0.0, 'amg_setup_seconds': 0.0, 'krylov_seconds': 0.0, 'inner_iters': 0, 'levels': None, 'blocks_identical': None, 'pressure_setup_seconds': 0.0}
+c4_p3_dt300_frozen_oseen_K30_lu completed 16912 49.72819786146283 {'rms': 0.008307561013130054, 'max': 0.010595437377483436, 'at_start': 0.0012182302491690292, 'saves': 171} {'rms': 0.0044223010191858985, 'max': 0.005728925713815141, 'at_start': 0.0007751617490054003} {'St_rel': 0.0018314248720942708, 'CD_max_rel': 0.0022042110383520604, 'CL_max_abs': 0.01404506944432049} 6 
+  rep 0 c4_p3_dt300_frozen_oseen_K30_amg2_sa_cc_r1e-6 823.7 {'conv_apply': 0.8310238188132644, 'factor': 3.4387236880138516, 'solve': 800.0819901721552, 'observe': 18.286520681343973, 'diagnostics': 0.0} {'setups': 18, 'extract_seconds': 0.3568959003314376, 'amg_setup_seconds': 2.04416061937809, 'krylov_seconds': 794.5356837622821, 'inner_iters': 570582, 'levels': 3, 'blocks_identical': True, 'pressure_setup_seconds': 0.09509461559355259, 'pressure_levels': 3, 'outer_iters_mean': 13.75438596491228, 'outer_iters_max': 19, 'outer_iters_total': 7056, 'solves': 513, 'final_rel_max': 9.997527794105044e-07}
+c4_p3_dt300_frozen_oseen_K30_amg2_sa_cc_r1e-6 completed 16912 823.7048007864505 {'rms': 0.008307613852133399, 'max': 0.01059420130035881, 'at_start': 0.0012182302491690292, 'saves': 171} {'rms': 0.004451482802006073, 'max': 0.005729078006286896, 'at_start': 0.0007751617490054003} {'St_rel': 0.0017940235487095748, 'CD_max_rel': 0.002207763791073135, 'CL_max_abs': 0.014009662849965077} 6 
+  rep 0 c4_p3_dt300_frozen_oseen_K30_amg2_sa_cc_r1e-4 754.63 {'conv_apply': 1.9842617698013783, 'factor': 3.6472056936472654, 'solve': 730.6940634241328, 'observe': 16.80842320434749, 'diagnostics': 0.0} {'setups': 18, 'extract_seconds': 0.36466971691697836, 'amg_setup_seconds': 2.1835880437865853, 'krylov_seconds': 725.5143858091906, 'inner_iters': 519165, 'levels': 3, 'blocks_identical': True, 'pressure_setup_seconds': 0.027483214624226093, 'pressure_levels': 3, 'outer_iters_mean': 12.653021442495128, 'outer_iters_max': 18, 'outer_iters_total': 6491, 'solves': 513, 'final_rel_max': 9.999314684283882e-05}
+c4_p3_dt300_frozen_oseen_K30_amg2_sa_cc_r1e-4 completed 16912 754.626686193049 {'rms': 0.012307474748735777, 'max': 0.01597607560934609, 'at_start': 0.0012182302491690292, 'saves': 171} {'rms': 0.5689787411591463, 'max': 7.117020048961969, 'at_start': 0.0007751617490054003} {'St_rel': 17.99260308062968, 'CD_max_rel': 0.006682563318846356, 'CL_max_abs': 0.6546797491143275} 2 
+task_completed

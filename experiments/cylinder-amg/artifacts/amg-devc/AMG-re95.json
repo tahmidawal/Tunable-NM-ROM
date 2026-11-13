@@ -1,0 +1,458 @@
+{
+  "case": "re95",
+  "Re": 95,
+  "window": {
+    "t_start": 17.45000000000225,
+    "duration": 1.7
+  },
+  "reference": {
+    "run": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1-record-re95/results/record_re95_p4",
+    "velocity_order": 4,
+    "dt": 0.0003125,
+    "ndof": 437140,
+    "record_stage_wall_seconds": 8725.920302036218,
+    "cycles": {
+      "CD_max": 3.243052843969901,
+      "CL_max": 0.9162771453687487,
+      "CL_min": -0.9501134799316288,
+      "St": 0.3002380634599061,
+      "dp_at_t0_plus_half_period": 2.473340004452295,
+      "period": 0.3330690281186852,
+      "cycles": 4
+    }
+  },
+  "quadrature": {
+    "points": 1036497,
+    "order": 12,
+    "area": 0.8941460183660065
+  },
+  "targets": {
+    "e_u_rms": 0.01,
+    "e_u_max": 0.03,
+    "e_p_rms": 0.02,
+    "St_rel": 0.01,
+    "CD_max_rel": 0.02,
+    "CL_max_abs": 0.02
+  },
+  "threads": 16,
+  "meshes": {
+    "c4": {
+      "path": "/cluster/tufts/paralab/tawal01/cyl-amg-20261113/meshes/c4.vol.bin",
+      "sha256": "bd2f8d421b133886c46465ebd8cd76d725ed1b1febbeafdda66c062beb874c0e",
+      "elements": 1480,
+      "points_outside": 0,
+      "weight_outside": 0.0,
+      "locate_seconds": 1.3305853782221675
+    }
+  },
+  "entries": {
+    "c4_p3_dt300_frozen_oseen_K30_lu": {
+      "mesh": "c4",
+      "velocity_order": 3,
+      "pressure_order": 2,
+      "dt_inverse": 300,
+      "scheme": "frozen_oseen",
+      "refactor_every": 30,
+      "solver": {
+        "name": "lu",
+        "kind": "lu"
+      },
+      "entry": [
+        "c4",
+        3,
+        300,
+        "frozen_oseen",
+        30,
+        {
+          "name": "lu",
+          "kind": "lu"
+        }
+      ],
+      "start_projection": {
+        "e_u": 0.0012182302585908036,
+        "e_p": 0.0007751617421433678,
+        "evaluation_check": 6.661338147750939e-16
+      },
+      "ndof": 16912,
+      "timing": [
+        {
+          "warm_seconds": 49.72819786146283,
+          "construct_seconds": 0.22455974947661161,
+          "setup_seconds": 0.0020548244938254356,
+          "steps": 510,
+          "lu_refreshes": 18,
+          "timers": {
+            "conv_apply": 8.698467181064188,
+            "factor": 8.371585989370942,
+            "solve": 17.973674316890538,
+            "observe": 13.28668047580868,
+            "diagnostics": 0.0
+          },
+          "linear_checks_max": 3.5700858831930444e-16,
+          "solver_stats": {
+            "setups": 0,
+            "extract_seconds": 0.0,
+            "amg_setup_seconds": 0.0,
+            "krylov_seconds": 0.0,
+            "inner_iters": 0,
+            "levels": null,
+            "blocks_identical": null,
+            "pressure_setup_seconds": 0.0,
+            "solver": {
+              "name": "lu",
+              "kind": "lu"
+            }
+          }
+        }
+      ],
+      "warm_seconds_median": 49.72819786146283,
+      "warm_seconds_min": 49.72819786146283,
+      "warm_seconds_max": 49.72819786146283,
+      "force": {
+        "CD_maxabs_rel": 0.003387579907711777,
+        "CL_maxabs": 0.04895539897425788
+      },
+      "cycles": {
+        "CD_max": 3.2502012168465386,
+        "CL_max": 0.9303222148130692,
+        "CL_min": -0.9658409091055971,
+        "St": 0.300787926916876,
+        "dp_at_t0_plus_half_period": 2.4725665727020476,
+        "period": 0.33246018236748753,
+        "cycles": 4
+      },
+      "cycle_errors": {
+        "St_rel": 0.0018314248720942708,
+        "CD_max_rel": 0.0022042110383520604,
+        "CL_max_abs": 0.01404506944432049
+      },
+      "e_u": {
+        "rms": 0.008307561013130054,
+        "max": 0.010595437377483436,
+        "at_start": 0.0012182302491690292,
+        "saves": 171
+      },
+      "e_p": {
+        "rms": 0.0044223010191858985,
+        "max": 0.005728925713815141,
+        "at_start": 0.0007751617490054003
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.008307561013130054,
+          "target": 0.01,
+          "met": true
+        },
+        "e_u_max": {
+          "value": 0.010595437377483436,
+          "target": 0.03,
+          "met": true
+        },
+        "e_p_rms": {
+          "value": 0.0044223010191858985,
+          "target": 0.02,
+          "met": true
+        },
+        "St_rel": {
+          "value": 0.0018314248720942708,
+          "target": 0.01,
+          "met": true
+        },
+        "CD_max_rel": {
+          "value": 0.0022042110383520604,
+          "target": 0.02,
+          "met": true
+        },
+        "CL_max_abs": {
+          "value": 0.01404506944432049,
+          "target": 0.02,
+          "met": true
+        }
+      },
+      "targets_met": 6,
+      "status": "completed"
+    },
+    "c4_p3_dt300_frozen_oseen_K30_amg2_sa_cc_r1e-6": {
+      "mesh": "c4",
+      "velocity_order": 3,
+      "pressure_order": 2,
+      "dt_inverse": 300,
+      "scheme": "frozen_oseen",
+      "refactor_every": 30,
+      "solver": {
+        "name": "amg2_sa_cc_r1e-6",
+        "kind": "amg2",
+        "amg": "sa",
+        "schur": "cc",
+        "rtol": 1e-06
+      },
+      "entry": [
+        "c4",
+        3,
+        300,
+        "frozen_oseen",
+        30,
+        {
+          "name": "amg2_sa_cc_r1e-6",
+          "kind": "amg2",
+          "amg": "sa",
+          "schur": "cc",
+          "rtol": 1e-06
+        }
+      ],
+      "start_projection": {
+        "e_u": 0.0012182302585908036,
+        "e_p": 0.0007751617421433678,
+        "evaluation_check": 6.661338147750939e-16
+      },
+      "ndof": 16912,
+      "timing": [
+        {
+          "warm_seconds": 823.7048007864505,
+          "construct_seconds": 0.3175282748416066,
+          "setup_seconds": 0.002586270682513714,
+          "steps": 510,
+          "lu_refreshes": 18,
+          "timers": {
+            "conv_apply": 0.8310238188132644,
+            "factor": 3.4387236880138516,
+            "solve": 800.0819901721552,
+            "observe": 18.286520681343973,
+            "diagnostics": 0.0
+          },
+          "linear_checks_max": 9.8658739375208e-07,
+          "solver_stats": {
+            "setups": 18,
+            "extract_seconds": 0.3568959003314376,
+            "amg_setup_seconds": 2.04416061937809,
+            "krylov_seconds": 794.5356837622821,
+            "inner_iters": 570582,
+            "levels": 3,
+            "blocks_identical": true,
+            "pressure_setup_seconds": 0.09509461559355259,
+            "pressure_levels": 3,
+            "solver": {
+              "name": "amg2_sa_cc_r1e-6",
+              "kind": "amg2",
+              "amg": "sa",
+              "schur": "cc",
+              "rtol": 1e-06
+            },
+            "outer_iters_mean": 13.75438596491228,
+            "outer_iters_max": 19,
+            "outer_iters_total": 7056,
+            "solves": 513,
+            "final_rel_max": 9.997527794105044e-07
+          }
+        }
+      ],
+      "warm_seconds_median": 823.7048007864505,
+      "warm_seconds_min": 823.7048007864505,
+      "warm_seconds_max": 823.7048007864505,
+      "force": {
+        "CD_maxabs_rel": 0.0033866026582838192,
+        "CL_maxabs": 0.04891007116479723
+      },
+      "cycles": {
+        "CD_max": 3.2502127386113546,
+        "CL_max": 0.9302868082187138,
+        "CL_min": -0.9658393925308958,
+        "St": 0.30077669761597214,
+        "dp_at_t0_plus_half_period": 2.4724943202375496,
+        "period": 0.3324727283046336,
+        "cycles": 4
+      },
+      "cycle_errors": {
+        "St_rel": 0.0017940235487095748,
+        "CD_max_rel": 0.002207763791073135,
+        "CL_max_abs": 0.014009662849965077
+      },
+      "e_u": {
+        "rms": 0.008307613852133399,
+        "max": 0.01059420130035881,
+        "at_start": 0.0012182302491690292,
+        "saves": 171
+      },
+      "e_p": {
+        "rms": 0.004451482802006073,
+        "max": 0.005729078006286896,
+        "at_start": 0.0007751617490054003
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.008307613852133399,
+          "target": 0.01,
+          "met": true
+        },
+        "e_u_max": {
+          "value": 0.01059420130035881,
+          "target": 0.03,
+          "met": true
+        },
+        "e_p_rms": {
+          "value": 0.004451482802006073,
+          "target": 0.02,
+          "met": true
+        },
+        "St_rel": {
+          "value": 0.0017940235487095748,
+          "target": 0.01,
+          "met": true
+        },
+        "CD_max_rel": {
+          "value": 0.002207763791073135,
+          "target": 0.02,
+          "met": true
+        },
+        "CL_max_abs": {
+          "value": 0.014009662849965077,
+          "target": 0.02,
+          "met": true
+        }
+      },
+      "targets_met": 6,
+      "status": "completed"
+    },
+    "c4_p3_dt300_frozen_oseen_K30_amg2_sa_cc_r1e-4": {
+      "mesh": "c4",
+      "velocity_order": 3,
+      "pressure_order": 2,
+      "dt_inverse": 300,
+      "scheme": "frozen_oseen",
+      "refactor_every": 30,
+      "solver": {
+        "name": "amg2_sa_cc_r1e-4",
+        "kind": "amg2",
+        "amg": "sa",
+        "schur": "cc",
+        "rtol": 0.0001
+      },
+      "entry": [
+        "c4",
+        3,
+        300,
+        "frozen_oseen",
+        30,
+        {
+          "name": "amg2_sa_cc_r1e-4",
+          "kind": "amg2",
+          "amg": "sa",
+          "schur": "cc",
+          "rtol": 0.0001
+        }
+      ],
+      "start_projection": {
+        "e_u": 0.0012182302585908036,
+        "e_p": 0.0007751617421433678,
+        "evaluation_check": 6.661338147750939e-16
+      },
+      "ndof": 16912,
+      "timing": [
+        {
+          "warm_seconds": 754.626686193049,
+          "construct_seconds": 0.20123677141964436,
+          "setup_seconds": 0.002096620388329029,
+          "steps": 510,
+          "lu_refreshes": 18,
+          "timers": {
+            "conv_apply": 1.9842617698013783,
+            "factor": 3.6472056936472654,
+            "solve": 730.6940634241328,
+            "observe": 16.80842320434749,
+            "diagnostics": 0.0
+          },
+          "linear_checks_max": 9.925041206595423e-05,
+          "solver_stats": {
+            "setups": 18,
+            "extract_seconds": 0.36466971691697836,
+            "amg_setup_seconds": 2.1835880437865853,
+            "krylov_seconds": 725.5143858091906,
+            "inner_iters": 519165,
+            "levels": 3,
+            "blocks_identical": true,
+            "pressure_setup_seconds": 0.027483214624226093,
+            "pressure_levels": 3,
+            "solver": {
+              "name": "amg2_sa_cc_r1e-4",
+              "kind": "amg2",
+              "amg": "sa",
+              "schur": "cc",
+              "rtol": 0.0001
+            },
+            "outer_iters_mean": 12.653021442495128,
+            "outer_iters_max": 18,
+            "outer_iters_total": 6491,
+            "solves": 513,
+            "final_rel_max": 9.999314684283882e-05
+          }
+        }
+      ],
+      "warm_seconds_median": 754.626686193049,
+      "warm_seconds_min": 754.626686193049,
+      "warm_seconds_max": 754.626686193049,
+      "force": {
+        "CD_maxabs_rel": 1.2589765374395165,
+        "CL_maxabs": 0.05653845318589068
+      },
+      "cycles": {
+        "CD_max": 3.2647247499460947,
+        "CL_max": 0.2615973962544212,
+        "CL_min": -0.6946343154038114,
+        "St": 5.702302368990902,
+        "dp_at_t0_plus_half_period": 2.4574357331522267,
+        "period": 0.09522433444669229,
+        "cycles": 14
+      },
+      "cycle_errors": {
+        "St_rel": 17.99260308062968,
+        "CD_max_rel": 0.006682563318846356,
+        "CL_max_abs": 0.6546797491143275
+      },
+      "e_u": {
+        "rms": 0.012307474748735777,
+        "max": 0.01597607560934609,
+        "at_start": 0.0012182302491690292,
+        "saves": 171
+      },
+      "e_p": {
+        "rms": 0.5689787411591463,
+        "max": 7.117020048961969,
+        "at_start": 0.0007751617490054003
+      },
+      "targets": {
+        "e_u_rms": {
+          "value": 0.012307474748735777,
+          "target": 0.01,
+          "met": false
+        },
+        "e_u_max": {
+          "value": 0.01597607560934609,
+          "target": 0.03,
+          "met": true
+        },
+        "e_p_rms": {
+          "value": 0.5689787411591463,
+          "target": 0.02,
+          "met": false
+        },
+        "St_rel": {
+          "value": 17.99260308062968,
+          "target": 0.01,
+          "met": false
+        },
+        "CD_max_rel": {
+          "value": 0.006682563318846356,
+          "target": 0.02,
+          "met": true
+        },
+        "CL_max_abs": {
+          "value": 0.6546797491143275,
+          "target": 0.02,
+          "met": false
+        }
+      },
+      "targets_met": 2,
+      "status": "completed"
+    }
+  }
+}

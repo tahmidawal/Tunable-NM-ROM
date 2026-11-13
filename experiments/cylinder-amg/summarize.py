@@ -39,6 +39,7 @@ def row(rec):
         'solve_median': med(lambda i: tim[i]['solve']),
         'conv_apply_median': med(lambda i: tim[i]['conv_apply']),
         'observe_median': med(lambda i: tim[i]['observe']),
+        'outside_linear_solver_median': med(lambda i: t[i]['warm_seconds'] - tim[i]['factor'] - tim[i]['solve']),
         'amg_setup_median': med(lambda i: st[i]['amg_setup_seconds'] + st[i]['extract_seconds']),
         'krylov_median': med(lambda i: st[i]['krylov_seconds']),
         'outer_iters_mean': st[0].get('outer_iters_mean') if st else None,
@@ -108,6 +109,8 @@ def main():
         lu_med = [r['wall_median'] for n, r in hrows.items() if n.startswith('lu') and r['wall_median']]
         ratio = {n: r['wall_median'] / min(lu_med) for n, r in hrows.items() if r['wall_median'] and lu_med}
         print('\nwall / paired LU (faster LU block):', {n: round(v, 3) for n, v in ratio.items()})
+        print('wall minus (factor/setup + solve) timers, i.e. the part no linear solver can remove:',
+              {n: round(r['outside_linear_solver_median'], 2) for n, r in hrows.items() if r['wall_median']})
         print('wall / record 42.25 s:', {n: round(r['wall_median'] / RECORD_LU_SECONDS, 3) for n, r in hrows.items() if r['wall_median']})
         out.update(heldout=hrows, ratio_to_paired_lu=ratio)
     Path(a.out).write_text(json.dumps(out, indent=2, default=float) + '\n')

@@ -4,13 +4,12 @@ Thank you for your review. We have strengthened the solver comparisons, clarifie
 
 **W1. Motivation and comparisons with modern solvers**
 
-We disagree that fast GPU solvers remove the motivation for reduced models. Our learned representation retains an online projected-PDE solve and targets repeated queries with query-time accuracy–cost control. The comparison is complete-query cost at matched accuracy.
+We disagree that fast GPU solvers remove the motivation for reduced models. Our target is repeated PDE queries after offline training and assembly, with query-time accuracy–cost control. We compare against accuracy-matched GPU solvers and distinguish reduced-solve cost from full-query cost.
 
 Our Navier–Stokes head is 3.3–11.7× faster than the fastest accuracy-matched solver from a 450-entry GPU pseudo-spectral ladder; the fast width-192 setting gives 5.1–10.2× (Table 1; Appendix E.1). Incompressibility already uses modewise projection, so there is no sparse pressure system for multigrid or cuDSS to accelerate. Batching both codes gives 17× at 128³ and 75× at 64³ for batch 128, including our input/output work.
 
-The scaling distinction matters: FFT diagonalisation requires compatible operators and geometry, and nonlinear evolution still requires time stepping. Multigrid and sparse-direct methods retain mesh-based systems. Our reduced solve is mesh-independent at fixed settings after assembly (Figure G.3); comparators may coarsen their mesh wherever accuracy permits.
+Figure G.3 demonstrates the scaling advantage on a GPU: increasing the Burgers 2D resolution from 256² to 4096², a 256-fold increase in grid points, leaves reduced-solve time essentially unchanged at fixed bank width and solver settings on one H200. Input projection and full-field output remain mesh-dependent; our flat-cost claim concerns the reduced solve.
 
-For cylinder flow, we obtain 25–54× in rollout and 11–18× with output against the cheapest passing finite-element configuration on the same CPU node. Tested CPU AMG variants pass the same targets but are slower than reused sparse LU (Table 2; Appendix E.2).
 
 We retain the measured limits: transforms win on box Poisson/3D heat, and input/output cost removes a consistent full-query advantage at 256³. We will report the pending cuDSS/AmgX single-solve results by tomorrow (14 November), separately from complete PDE-query comparisons.
 

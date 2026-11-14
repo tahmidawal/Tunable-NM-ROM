@@ -44,6 +44,8 @@ def analyse(d):
     ncase = len(r['physical_cases'])
     setup = {s['arm']: s for s in r['arm_setup']}
     rows = []
+    spec = {f"R{a['Rp']}_lin_M{a['M']}_{a['rule']}__qs_{a['tag']}" + ('_graphs' if a['graphs'] else ''): a
+            for a in r['config']['arms'] if a.get('impl') == 'qs'}
     rejected = [x['name'] for x in r.get('rejected_nonfinite', [])]
     for name, s in setup.items():
         if name in rejected:
@@ -55,7 +57,7 @@ def analyse(d):
             continue
         a = arm_stats(r, name, ncase)
         a.update(width=s['R_prime'], M=s['M'], rule=s['rule'], role=s.get('role'), impl=s['impl'], graphs=s['graphs'],
-                 gtol=s.get('gtol'), qs=s.get('qs'), tag=s.get('tag'))
+                 gtol=s.get('gtol'), qs=spec.get(name, {}).get('qs'), tag=spec.get(name, {}).get('tag'))
         rows.append(a)
     base = {}
     for a in rows:

@@ -32,6 +32,10 @@ def qs_arm(Rp, tag, graphs=True, M=None, rule='lat64', **qs):
                 family='lin', certify=False, role='qs')
 
 
+def arm_name(a):
+    return f"R{a['Rp']}_lin_M{a['M']}_{a['rule']}__qs_{a['tag']}" + ('_graphs' if a['graphs'] else '')
+
+
 def qs_grid(Rp):
     a = []
     for k in (1, 2, 3):
@@ -138,6 +142,26 @@ def build(name):
                 arms.append(qs_arm(Rp, 'c_k2_s50_P', M=6 * Rp, k=2, s=50))
         cfg['diagnostics'] = dict(rule='lat64', width_M=[[384, 2304], [384, 3072], [512, 3072]], jac_cases=[0])
         cfg['purpose'] = 'dev38: second width-512 diagnosis, more tests than 4R\' (PROTOCOL.md section 9, amendment A1)'
+    elif name in ('ftest64', 'ffresh64'):
+        fz = json.loads((HERE / 'frozen.json').read_text())
+        arms, batch = [], []
+        for Rp in fz['final_widths']:
+            w = fz['widths'][str(Rp)]
+            arms.append(B(Rp))
+            for kind in ('accurate', 'fast'):
+                if w[kind]:
+                    a = qs_arm(Rp, w[kind]['tag'], graphs=w[kind]['graphs'], **w[kind]['qs'])
+                    a['role'] = kind
+                    arms.append(a)
+                    assert arm_name(a) == w[kind]['name'], (arm_name(a), w[kind]['name'])
+                    if kind == 'accurate' and Rp in (128, fz['equal_error_width'], 384):
+                        batch.append(w[kind]['name'])
+        test = name == 'ftest64'
+        cfg.update(eval_draws=TEST64 if test else FRESH64, expected_physical_sha256=TEST_SHA if test else None,
+                   disjoint_draws=DEV38 + (FRESH64 if test else TEST64),
+                   cohort_name='test64 = params_draw(20260916,64)' if test else 'fresh64 = params_draw(2026111402,64)',
+                   batch=dict(arms=batch, sizes=[1, 8, 64], reps=7), frozen=fz,
+                   purpose='FINAL single evaluation of the frozen settings (PROTOCOL.md section 7)')
     else:
         raise SystemExit(f'unknown config {name}')
     cfg['arms'] = arms

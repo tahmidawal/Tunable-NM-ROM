@@ -154,8 +154,11 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 1,
+    "s": 1
+   },
+   "tag": "c_k1_s1_P",
    "vs_baseline": {
     "accurate_ok": true,
     "fast_ok": true,
@@ -231,8 +234,11 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 1,
+    "s": 5
+   },
+   "tag": "c_k1_s5_P",
    "vs_baseline": {
     "accurate_ok": true,
     "fast_ok": true,
@@ -308,8 +314,11 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 1,
+    "s": 10
+   },
+   "tag": "c_k1_s10_P",
    "vs_baseline": {
     "accurate_ok": false,
     "fast_ok": true,
@@ -385,8 +394,11 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 1,
+    "s": 50
+   },
+   "tag": "c_k1_s50_P",
    "vs_baseline": {
     "accurate_ok": false,
     "fast_ok": true,
@@ -462,8 +474,11 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 2,
+    "s": 1
+   },
+   "tag": "c_k2_s1_P",
    "vs_baseline": {
     "accurate_ok": true,
     "fast_ok": true,
@@ -539,8 +554,11 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 2,
+    "s": 5
+   },
+   "tag": "c_k2_s5_P",
    "vs_baseline": {
     "accurate_ok": true,
     "fast_ok": true,
@@ -616,8 +634,11 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 2,
+    "s": 10
+   },
+   "tag": "c_k2_s10_P",
    "vs_baseline": {
     "accurate_ok": true,
     "fast_ok": true,
@@ -693,8 +714,11 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 2,
+    "s": 50
+   },
+   "tag": "c_k2_s50_P",
    "vs_baseline": {
     "accurate_ok": true,
     "fast_ok": true,
@@ -770,8 +794,11 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 3,
+    "s": 1
+   },
+   "tag": "c_k3_s1_P",
    "vs_baseline": {
     "accurate_ok": true,
     "fast_ok": true,
@@ -847,8 +874,11 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 3,
+    "s": 5
+   },
+   "tag": "c_k3_s5_P",
    "vs_baseline": {
     "accurate_ok": true,
     "fast_ok": true,
@@ -924,8 +954,11 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 3,
+    "s": 10
+   },
+   "tag": "c_k3_s10_P",
    "vs_baseline": {
     "accurate_ok": true,
     "fast_ok": true,
@@ -1001,8 +1034,11 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 3,
+    "s": 50
+   },
+   "tag": "c_k3_s50_P",
    "vs_baseline": {
     "accurate_ok": true,
     "fast_ok": true,
@@ -1078,8 +1114,12 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 1,
+    "s": 10,
+    "form": "fused"
+   },
+   "tag": "c_k1_s10_fused",
    "vs_baseline": {
     "accurate_ok": false,
     "fast_ok": true,
@@ -1155,8 +1195,12 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 1,
+    "s": 50,
+    "form": "fused"
+   },
+   "tag": "c_k1_s50_fused",
    "vs_baseline": {
     "accurate_ok": false,
     "fast_ok": true,
@@ -1232,8 +1276,12 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 1,
+    "s": 1,
+    "form": "chol"
+   },
+   "tag": "c_k1_s1_chol",
    "vs_baseline": {
     "accurate_ok": true,
     "fast_ok": true,
@@ -1309,8 +1357,12 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 1,
+    "s": 50,
+    "form": "chol"
+   },
+   "tag": "c_k1_s50_chol",
    "vs_baseline": {
     "accurate_ok": false,
     "fast_ok": true,
@@ -1386,8 +1438,12 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 2,
+    "s": 10,
+    "form": "fused"
+   },
+   "tag": "c_k2_s10_fused",
    "vs_baseline": {
     "accurate_ok": true,
     "fast_ok": true,
@@ -1463,8 +1519,12 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 2,
+    "s": 50,
+    "form": "fused"
+   },
+   "tag": "c_k2_s50_fused",
    "vs_baseline": {
     "accurate_ok": true,
     "fast_ok": true,
@@ -1540,8 +1600,12 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 2,
+    "s": 1,
+    "form": "chol"
+   },
+   "tag": "c_k2_s1_chol",
    "vs_baseline": {
     "accurate_ok": true,
     "fast_ok": true,
@@ -1617,8 +1681,12 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 2,
+    "s": 50,
+    "form": "chol"
+   },
+   "tag": "c_k2_s50_chol",
    "vs_baseline": {
     "accurate_ok": true,
     "fast_ok": true,
@@ -1694,8 +1762,12 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 1,
+    "s": 50,
+    "jref": "A"
+   },
+   "tag": "pic_k1_P",
    "vs_baseline": {
     "accurate_ok": false,
     "fast_ok": false,
@@ -1771,8 +1843,12 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 2,
+    "s": 50,
+    "jref": "A"
+   },
+   "tag": "pic_k2_P",
    "vs_baseline": {
     "accurate_ok": false,
     "fast_ok": true,
@@ -1848,8 +1924,12 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 3,
+    "s": 50,
+    "jref": "A"
+   },
+   "tag": "pic_k3_P",
    "vs_baseline": {
     "accurate_ok": false,
     "fast_ok": true,
@@ -1925,8 +2005,12 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 4,
+    "s": 50,
+    "jref": "A"
+   },
+   "tag": "pic_k4_P",
    "vs_baseline": {
     "accurate_ok": false,
     "fast_ok": true,
@@ -2002,8 +2086,13 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 1,
+    "s": 50,
+    "jref": "A",
+    "form": "fused"
+   },
+   "tag": "pic_k1_fused",
    "vs_baseline": {
     "accurate_ok": false,
     "fast_ok": false,
@@ -2079,8 +2168,13 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 2,
+    "s": 50,
+    "jref": "A",
+    "form": "fused"
+   },
+   "tag": "pic_k2_fused",
    "vs_baseline": {
     "accurate_ok": false,
     "fast_ok": true,
@@ -2156,8 +2250,12 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 1,
+    "s": 10,
+    "mode": "grad"
+   },
+   "tag": "g_k1_s10_P",
    "vs_baseline": {
     "accurate_ok": true,
     "fast_ok": true,
@@ -2233,8 +2331,12 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 1,
+    "s": 50,
+    "mode": "grad"
+   },
+   "tag": "g_k1_s50_P",
    "vs_baseline": {
     "accurate_ok": true,
     "fast_ok": true,
@@ -2310,8 +2412,12 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 2,
+    "s": 10,
+    "mode": "grad"
+   },
+   "tag": "g_k2_s10_P",
    "vs_baseline": {
     "accurate_ok": true,
     "fast_ok": true,
@@ -2387,8 +2493,12 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 2,
+    "s": 50,
+    "mode": "grad"
+   },
+   "tag": "g_k2_s50_P",
    "vs_baseline": {
     "accurate_ok": true,
     "fast_ok": true,
@@ -2464,8 +2574,12 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 3,
+    "s": 10,
+    "mode": "grad"
+   },
+   "tag": "g_k3_s10_P",
    "vs_baseline": {
     "accurate_ok": true,
     "fast_ok": true,
@@ -2541,8 +2655,12 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 3,
+    "s": 50,
+    "mode": "grad"
+   },
+   "tag": "g_k3_s50_P",
    "vs_baseline": {
     "accurate_ok": true,
     "fast_ok": true,
@@ -2618,8 +2736,12 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 1,
+    "s": 50,
+    "stencil32": true
+   },
+   "tag": "c_k1_s50_P_f32",
    "vs_baseline": {
     "accurate_ok": false,
     "fast_ok": true,
@@ -2695,8 +2817,13 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 1,
+    "s": 50,
+    "form": "fused",
+    "stencil32": true
+   },
+   "tag": "c_k1_s50_fused_f32",
    "vs_baseline": {
     "accurate_ok": false,
     "fast_ok": true,
@@ -2772,8 +2899,12 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 2,
+    "s": 50,
+    "stencil32": true
+   },
+   "tag": "c_k2_s50_P_f32",
    "vs_baseline": {
     "accurate_ok": true,
     "fast_ok": true,
@@ -2849,8 +2980,13 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 2,
+    "s": 50,
+    "form": "fused",
+    "stencil32": true
+   },
+   "tag": "c_k2_s50_fused_f32",
    "vs_baseline": {
     "accurate_ok": true,
     "fast_ok": true,
@@ -2926,8 +3062,12 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 2,
+    "s": 50,
+    "emit": "unroll"
+   },
+   "tag": "c_k2_s50_P_unroll",
    "vs_baseline": {
     "accurate_ok": true,
     "fast_ok": true,
@@ -3003,8 +3143,13 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 1,
+    "s": 50,
+    "form": "fused",
+    "emit": "unroll"
+   },
+   "tag": "c_k1_s50_fused_unroll",
    "vs_baseline": {
     "accurate_ok": false,
     "fast_ok": true,
@@ -3080,8 +3225,13 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 2,
+    "s": 50,
+    "form": "fused",
+    "emit": "unroll"
+   },
+   "tag": "c_k2_s50_fused_unroll",
    "vs_baseline": {
     "accurate_ok": true,
     "fast_ok": true,
@@ -3157,8 +3307,11 @@
    "impl": "qs",
    "graphs": false,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 2,
+    "s": 50
+   },
+   "tag": "c_k2_s50_P",
    "vs_baseline": {
     "accurate_ok": true,
     "fast_ok": true,
@@ -3234,8 +3387,12 @@
    "impl": "qs",
    "graphs": false,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 2,
+    "s": 50,
+    "form": "fused"
+   },
+   "tag": "c_k2_s50_fused",
    "vs_baseline": {
     "accurate_ok": true,
     "fast_ok": true,
@@ -3311,8 +3468,12 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 2,
+    "s": 50,
+    "pred": "lin"
+   },
+   "tag": "c_k2_s50_P_lin",
    "vs_baseline": {
     "accurate_ok": true,
     "fast_ok": true,
@@ -3388,8 +3549,12 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 3,
+    "s": 50,
+    "pred": "none"
+   },
+   "tag": "c_k3_s50_P_nopred",
    "vs_baseline": {
     "accurate_ok": true,
     "fast_ok": true,
@@ -3465,8 +3630,12 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 1,
+    "s": 50,
+    "kfirst": 3
+   },
+   "tag": "c_k1_s50_P_first3",
    "vs_baseline": {
     "accurate_ok": false,
     "fast_ok": true,
@@ -3542,8 +3711,12 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 2,
+    "s": 50,
+    "kfirst": 4
+   },
+   "tag": "c_k2_s50_P_first4",
    "vs_baseline": {
     "accurate_ok": true,
     "fast_ok": true,
@@ -3619,8 +3792,12 @@
    "impl": "qs",
    "graphs": true,
    "gtol": 0.0,
-   "qs": null,
-   "tag": null,
+   "qs": {
+    "k": 2,
+    "s": 50,
+    "ridge": 1e-06
+   },
+   "tag": "c_k2_s50_P_ridge1em6",
    "vs_baseline": {
     "accurate_ok": true,
     "fast_ok": true,

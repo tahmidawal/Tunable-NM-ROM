@@ -1,0 +1,51 @@
+sources verified
+host=pax106 source_commit=cc7917c2e7045daf49d4457692dc2d844270be28
+Sat Nov 14 17:13:28 EST 2026
+NVIDIA A100 80GB PCIe, GPU-93ae5f8d-299a-28bc-9b53-07a050aa9da5, 81920 MiB, 575.57.08
+jax_backend=gpu
+012561a11790436bf64e163cb38e09869ac10c5e379abfaf07aacc605c7a74e2  frozen/a100-80G.json
+=== test mesh 4096 ===
+jax_backend=gpu x64=True precision=highest
+BANK 39.4
+COMPRESS 14.5 {'128': 1.3923924485213606e-07, '512': 1.5136840691108616e-07}
+WARMUP 26.8
+DEV R512_linear__T_tau0.0001_f64_full 1.321e-06 True
+DEV R512_linear__T_tau0.0001_f64_sub256 2.691e-06 True
+DEV R512_linear__T_tau1e-08_f64_full 1.778e-10 True
+DEV R512_linear__T_tau1e-08_f32_full 3.445e-07 True
+DEV R128_linear__T_tau0.0001_f64_full 6.383e-06 True
+DEV R128_linear__T_tau0.0001_f64_sub256 6.383e-06 True
+DEV R128_linear__T_tau1e-08_f64_full 6.835e-10 True
+DEV R128_linear__T_tau1e-08_f32_full 3.306e-07 True
+REPRO [('R512_linear', 0.008347992954697186, 0.0, True), ('R128_linear', 0.04056973574919411, 0.0, True)]
+PHASE paperA1 0 218.9
+PHASE paperA1 1 252.3
+PHASE paperA1 2 285.7
+PHASE paperA1 3 319.1
+PHASE paperA1 4 352.6
+PHASE variants 0 551.6
+PHASE variants 1 719.5
+PHASE variants 2 888.2
+PHASE variants 3 1057.7
+PHASE variants 4 1227.8
+PHASE paperA2 0 1268.7
+PHASE paperA2 1 1302.4
+PHASE paperA2 2 1336.1
+PHASE paperA2 3 1370.2
+PHASE paperA2 4 1404.6
+SUMMARY R512_linear 44.348 ms err 0.008348 dev 0.00e+00
+SUMMARY R128_linear 12.955 ms err 0.040570 dev 0.00e+00
+SUMMARY R512_linear__T_tau0.0001_f64_full 0.778 ms err 0.008348 dev 1.44e-06
+SUMMARY R512_linear__T_tau0.0001_f64_sub256 0.429 ms err 0.008348 dev 5.49e-06
+SUMMARY R512_linear__T_tau1e-08_f64_full 0.873 ms err 0.008348 dev 2.55e-10
+SUMMARY R512_linear__T_tau1e-08_f32_full 0.935 ms err 0.008348 dev 3.43e-07
+SUMMARY R128_linear__T_tau0.0001_f64_full 0.667 ms err 0.040570 dev 8.85e-06
+SUMMARY R128_linear__T_tau0.0001_f64_sub256 0.364 ms err 0.040570 dev 8.85e-06
+SUMMARY R128_linear__T_tau1e-08_f64_full 0.740 ms err 0.040570 dev 9.75e-10
+SUMMARY R128_linear__T_tau1e-08_f32_full 0.827 ms err 0.040570 dev 3.46e-07
+SUMMARY R512_linear__solve_only_sub256 0.189 ms err nan dev nan
+SUMMARY R512_linear__solve_only_full 0.541 ms err nan dev nan
+SUMMARY R128_linear__solve_only_sub256 0.173 ms err nan dev nan
+SUMMARY R128_linear__solve_only_full 0.471 ms err nan dev nan
+Sat Nov 14 17:37:43 EST 2026
+task_completed

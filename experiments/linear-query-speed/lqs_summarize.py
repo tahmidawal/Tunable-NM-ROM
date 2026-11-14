@@ -28,6 +28,7 @@ def f(x, nd=3):
 
 def main():
     res, gpu, out = Path(sys.argv[1]), sys.argv[2], Path(sys.argv[3])
+    extra = [Path(x) for x in sys.argv[4:]]          # further result dirs of the same GPU type (later jobs)
     comp = load(HERE / 'comparators.json')
     frozen = load(res / 'frozen.json') if (res / 'frozen.json').exists() else None
     L = [f'# Poisson 2D query time, GPU type `{gpu}` (job results `{res.name}`)', '']
@@ -35,10 +36,16 @@ def main():
         L += [f"Frozen from development cases only: F = `{frozen['F']['variant']}`, "
               f"S = `{(frozen.get('S') or {}).get('variant')}` "
               f"(selection meshes {frozen.get('selection_meshes')}, timing mesh {frozen.get('timing_mesh')}).", '']
-    meshes = sorted(int(p.name.split('-')[-1]) for p in res.glob('p2d-*') if (p / 'COMPLETE').exists())
+    where = {}
+    for d in [res] + extra:
+        for p in d.glob('p2d-*'):
+            if (p / 'COMPLETE').exists():
+                where[int(p.name.split('-')[-1])] = p
+    meshes = sorted(where)
+    head = []
     rows_main, rows_stage, rows_gate, notes = [], [], [], []
     for n in meshes:
-        R = load(res / f'p2d-{n}' / 'result.json')
+        R = load(where[n] / 'result.json')
         S = {s['name']: s for s in R['summary']}
         sub = {s['name']: s for s in R['subjects']}
         prof = R.get('profile_median_ms', {})
@@ -66,6 +73,19 @@ def main():
             pp = prof.get(base, {})
             rows_stage.append(f"| {n}^2 | {arm['label']} | paper path | "
                               f"{f(pp.get('project_and_start'))} | - | {f(pp.get('reconstruction'))} | - |")
+            fz = {k: next((v for v in var if frozen and frozen.get(k) and v['variant'] == frozen[k]['variant']), None)
+                  for k in ('F', 'S')}
+            so_full = next((v for v in so if v['name'].endswith('solve_only_full')), None)
+            st = stored['arms'][base] if stored else None
+            Fv, Sv = fz['F'], fz['S']
+            head.append(
+                f"| {n}^2 | {arm['label']} | {P['worst_error']:.6f} | {Fv['worst_error']:.6f} | "
+                f"{f(1e3 * st['median_fused_device_seconds']) if st else '-'} | {f(P['median_fused_device_ms'])} | "
+                f"**{f(Fv['median_fused_device_ms'])}** | {f(cud)} | {f(amg)} | "
+                f"{f(P['median_fused_device_ms'] / Fv['median_fused_device_ms'], 1)}x | "
+                f"{f(cud / Fv['median_fused_device_ms'], 1) if cud else '-'}x | "
+                f"{f(Sv['median_fused_device_ms']) if Sv is not None and Sv is not Fv else '-'} | "
+                f"{f(so_full['median_fused_device_ms']) if so_full else '-'} | {R.get('job_id')} |")
             for v in var:
                 tag = v['variant']
                 role = []
@@ -95,6 +115,13 @@ def main():
         notes.append(f"- {n}^2 offline: bank build + compression {c.get('seconds')} s for the compression; "
                      f"range-finder residual {c.get('range_finder_relative_residual')}; "
                      f"device memory {R.get('device_memory')}")
+    L += ['## Headline: full-field output, full-source input (configuration F), test cohort of 32 cases', '',
+          'Times are the median GPU-query in ms (device float64 nodal source -> device float64 nodal field of '
+          'the whole mesh, synced).  S (source read on a 256-interval sub-lattice) and solve-only (reduced '
+          'coefficients, no field) are separate measurements and are not the headline.', '',
+          '| mesh | arm | worst err, paper path | worst err, F | paper stored (A100) | paper path, this job | '
+          'F, this job | cuDSS solve (quoted) | AmgX solve (quoted) | F vs paper path | F vs cuDSS | '
+          'S (sampled input) | solve only (no field) | job |', '|' + '---|' * 14] + head + ['']
     L += ['## Query time and error (test cohort, 32 cases; GPU-query = device f64 source -> device f64 full field)',
           '',
           '| mesh | arm | path | worst err | mean err | max field dev. from paper path | ms (median) | '

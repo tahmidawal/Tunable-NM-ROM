@@ -1,6 +1,7 @@
 #!/bin/bash -l
 # One GPU allocation of the linear-query-speed lane: preflight, then one process per mesh.
 # Usage: sbatch ... cluster/run_gpu.sh auto "<selection meshes>" "<test meshes>" ["<paper-driver meshes>"]
+#        sbatch ... cluster/run_gpu.sh heat2d "<meshes, selection mesh first>"
 #        sbatch ... cluster/run_gpu.sh testfrozen <frozen file> "<test meshes>" ["<extra driver arguments>"]
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:1
@@ -57,6 +58,11 @@ elif [ "$MODE" = testfrozen ]; then
     "$PY" lqs_p2d.py --config "$(cfg_of $n)" --intervals "$n" --mode test --frozen results/frozen.json --out "results/p2d-$n" $EXTRA \
       || echo "MESH-FAILED test $n exit=$?"
   done
+elif [ "$MODE" = heat2d ]; then
+  # heat2d "<meshes, selection mesh first>"   (PROTOCOL.md amendment A3; selection and freeze inside the driver)
+  echo "=== heat 2D meshes $2 ==="
+  "$PY" lqs_h2d.py --out results/h2d --meshes "$2" --select-mesh "${2%% *}" || echo "MESH-FAILED heat2d exit=$?"
+  sha256sum results/h2d/frozen-h2d.json || true
 else
   echo "unknown mode $MODE"; exit 65
 fi

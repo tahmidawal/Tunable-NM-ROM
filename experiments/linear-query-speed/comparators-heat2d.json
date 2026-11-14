@@ -1,0 +1,9 @@
+{
+ "source": "worktrees/2026-11-13-sparse-solvers/experiments/sparse-solvers/RESULTS-h200.md at 93c9e4b7a, section 'heat 2D' (quoted, not rerun)",
+ "units": "ms; H200; float64; n x n unknowns (the reduced model's mesh has (n-1)^2); per trajectory = 20 Crank-Nicolson solves; ARITHMETIC ESTIMATE from single-solve timings, not a measured end-to-end stepper (that lane's own wording)",
+ "h200": {
+  "1024": {"cudss_single_solve": 2.95, "cudss_20_solves_factor_reused": 59, "amgx_single_solve_1e-6": 15.6, "amgx_setup_plus_20_solves_1e-6": 330, "paper_fom": 67.0},
+  "2048": {"cudss_single_solve": 9.35, "cudss_20_solves_factor_reused": 187, "amgx_single_solve_1e-6": 35, "amgx_setup_plus_20_solves_1e-6": 749, "paper_fom": 424.37},
+  "4096": {"cudss_single_solve": 36.5, "cudss_20_solves_factor_reused": 730, "amgx_single_solve_1e-6": 107, "amgx_setup_plus_20_solves_1e-6": 2318, "paper_fom": 1945.97}
+ }
+}

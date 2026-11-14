@@ -5,12 +5,12 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 ATTEMPT=$1; WALL=$2; FEAT=$3; SEL=$4; MESHES=$5; PAPER=${6:-}
 # if <selection meshes> is the word "testfrozen": submit.sh <attempt> <wall> <feature> testfrozen <frozen file> "<meshes>" ["<extra args>"]
-if [ "$SEL" = testfrozen ]; then RUNARGS="testfrozen '$5' '${6:-}' '${7:-}'"; MESHES="${6:-}"; PAPER="frozen=$5 extra=${7:-}"; else RUNARGS="auto '$SEL' '$MESHES' '$PAPER'"; fi
+if [ "$SEL" = testfrozen ]; then RUNARGS="testfrozen '$5' '${6:-}' '${7:-}'"; MESHES="${6:-}"; PAPER="frozen=$5 extra=${7:-}"; elif [ "$SEL" = heat2d ]; then RUNARGS="heat2d '$5'"; PAPER=""; else RUNARGS="auto '$SEL' '$MESHES' '$PAPER'"; fi
 NS=/cluster/tufts/paralab/tawal01/linear-query-speed-20261114
 DIR=$NS/jobs/$ATTEMPT
 [ -z "$(git status --porcelain -- . ":!ledger" ":!LEDGER.md")" ] || { echo "uncommitted changes; commit first"; exit 2; }
 COMMIT=$(git rev-parse HEAD)
-mapfile -t FILES < <(git ls-files -- '*.py' '*.json' paper_code cluster/run_gpu.sh | sort -u)
+mapfile -t FILES < <(git ls-files -- '*.py' '*.json' paper_code paper_code_heat cluster/run_gpu.sh | sort -u)
 mine=$(ssh tufts-login "squeue -u \$USER -h -p gpu -o '%j'" | grep -c '^lqs_' || true)
 [ "$mine" -lt 2 ] || { echo "already $mine GPU jobs of this lane queued or running"; exit 6; }
 ssh tufts-login "test ! -e $DIR && mkdir -p $DIR" || { echo "attempt directory exists: $DIR"; exit 4; }

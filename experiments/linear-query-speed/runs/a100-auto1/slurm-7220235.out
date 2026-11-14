@@ -1,0 +1,341 @@
+sources verified
+host=pax050 source_commit=fda0acbc14712532ae8c402407d35a3d4ce661bf
+Sat Nov 14 15:59:44 EST 2026
+NVIDIA A100 80GB PCIe, GPU-fe5316fb-35a6-78ef-4c0b-da5c343c936d, 81920 MiB, 575.57.08
+jax_backend=gpu
+=== select mesh 256 ===
+jax_backend=gpu x64=True precision=highest
+BANK 7.0
+COMPRESS 6.0 {'128': 1.4543064970192752e-07, '512': 1.5136900991128923e-07}
+WARMUP 46.9
+DEV R512_linear__T_tau0.0001_f64_full 1.312e-06 True
+DEV R512_linear__T_tau0.0001_f32_full 1.341e-06 True
+DEV R512_linear__T_tau1e-06_f64_full 1.270e-08 True
+DEV R512_linear__T_tau1e-06_f32_full 3.041e-07 True
+DEV R512_linear__T_tau1e-08_f64_full 1.850e-10 True
+DEV R512_linear__T_tau1e-08_f32_full 3.579e-07 True
+DEV R128_linear__T_tau0.0001_f64_full 6.375e-06 True
+DEV R128_linear__T_tau0.0001_f32_full 6.382e-06 True
+DEV R128_linear__T_tau1e-06_f64_full 6.899e-08 True
+DEV R128_linear__T_tau1e-06_f32_full 2.708e-07 True
+DEV R128_linear__T_tau1e-08_f64_full 7.060e-10 True
+DEV R128_linear__T_tau1e-08_f32_full 3.155e-07 True
+PHASE paperA1 0 80.1
+PHASE paperA1 1 87.5
+PHASE paperA1 2 94.9
+PHASE variants 0 155.5
+PHASE variants 1 207.3
+PHASE variants 2 259.1
+PHASE paperA2 0 273.7
+PHASE paperA2 1 281.1
+PHASE paperA2 2 288.5
+SUMMARY R512_linear 0.891 ms err 0.007459 dev 0.00e+00
+SUMMARY R128_linear 0.610 ms err 0.023141 dev 0.00e+00
+SUMMARY R512_linear__T_tau0.0001_f64_full 0.155 ms err 0.007459 dev 1.31e-06
+SUMMARY R512_linear__T_tau0.0001_f32_full 0.151 ms err 0.007459 dev 1.34e-06
+SUMMARY R512_linear__T_tau1e-06_f64_full 0.168 ms err 0.007459 dev 1.27e-08
+SUMMARY R512_linear__T_tau1e-06_f32_full 0.160 ms err 0.007459 dev 3.04e-07
+SUMMARY R512_linear__T_tau1e-08_f64_full 0.176 ms err 0.007459 dev 1.85e-10
+SUMMARY R512_linear__T_tau1e-08_f32_full 0.167 ms err 0.007459 dev 3.58e-07
+SUMMARY R128_linear__T_tau0.0001_f64_full 0.138 ms err 0.023141 dev 6.38e-06
+SUMMARY R128_linear__T_tau0.0001_f32_full 0.141 ms err 0.023141 dev 6.38e-06
+SUMMARY R128_linear__T_tau1e-06_f64_full 0.143 ms err 0.023141 dev 6.90e-08
+SUMMARY R128_linear__T_tau1e-06_f32_full 0.145 ms err 0.023141 dev 2.71e-07
+SUMMARY R128_linear__T_tau1e-08_f64_full 0.145 ms err 0.023141 dev 7.06e-10
+SUMMARY R128_linear__T_tau1e-08_f32_full 0.144 ms err 0.023141 dev 3.16e-07
+SUMMARY R512_linear__solve_only_full 0.116 ms err nan dev nan
+SUMMARY R128_linear__solve_only_full 0.114 ms err nan dev nan
+=== select mesh 2048 ===
+jax_backend=gpu x64=True precision=highest
+BANK 16.2
+COMPRESS 13.0 {'128': 1.4543064816576098e-07, '512': 1.5353608407757974e-07}
+WARMUP 63.5
+DEV R512_linear__T_tau0.0001_f64_full 1.321e-06 True
+DEV R512_linear__T_tau0.0001_f64_sub256 2.660e-06 True
+DEV R512_linear__T_tau0.0001_f64_sub512 1.321e-06 True
+DEV R512_linear__T_tau0.0001_f64_sub1024 1.321e-06 True
+DEV R512_linear__T_tau0.0001_f32_full 1.345e-06 True
+DEV R512_linear__T_tau0.0001_f32_sub256 2.675e-06 True
+DEV R512_linear__T_tau0.0001_f32_sub512 1.345e-06 True
+DEV R512_linear__T_tau0.0001_f32_sub1024 1.345e-06 True
+DEV R512_linear__T_tau1e-06_f64_full 1.345e-08 True
+DEV R512_linear__T_tau1e-06_f64_sub256 2.601e-06 True
+DEV R512_linear__T_tau1e-06_f64_sub512 6.195e-07 True
+DEV R512_linear__T_tau1e-06_f64_sub1024 1.242e-07 True
+DEV R512_linear__T_tau1e-06_f32_full 3.249e-07 True
+DEV R512_linear__T_tau1e-06_f32_sub256 2.630e-06 True
+DEV R512_linear__T_tau1e-06_f32_sub512 6.558e-07 True
+DEV R512_linear__T_tau1e-06_f32_sub1024 3.249e-07 True
+DEV R512_linear__T_tau1e-08_f64_full 2.101e-10 True
+DEV R512_linear__T_tau1e-08_f64_sub256 2.601e-06 True
+DEV R512_linear__T_tau1e-08_f64_sub512 6.194e-07 True
+DEV R512_linear__T_tau1e-08_f64_sub1024 1.239e-07 True
+DEV R512_linear__T_tau1e-08_f32_full 3.427e-07 True
+DEV R512_linear__T_tau1e-08_f32_sub256 2.621e-06 True
+DEV R512_linear__T_tau1e-08_f32_sub512 6.447e-07 True
+DEV R512_linear__T_tau1e-08_f32_sub1024 3.596e-07 True
+DEV R128_linear__T_tau0.0001_f64_full 6.383e-06 True
+DEV R128_linear__T_tau0.0001_f64_sub256 6.383e-06 True
+DEV R128_linear__T_tau0.0001_f64_sub512 6.383e-06 True
+DEV R128_linear__T_tau0.0001_f64_sub1024 6.383e-06 True
+DEV R128_linear__T_tau0.0001_f32_full 6.388e-06 True
+DEV R128_linear__T_tau0.0001_f32_sub256 6.388e-06 True
+DEV R128_linear__T_tau0.0001_f32_sub512 6.388e-06 True
+DEV R128_linear__T_tau0.0001_f32_sub1024 6.388e-06 True
+DEV R128_linear__T_tau1e-06_f64_full 7.010e-08 True
+DEV R128_linear__T_tau1e-06_f64_sub256 2.384e-06 True
+DEV R128_linear__T_tau1e-06_f64_sub512 5.691e-07 True
+DEV R128_linear__T_tau1e-06_f64_sub1024 1.205e-07 True
+DEV R128_linear__T_tau1e-06_f32_full 2.930e-07 True
+DEV R128_linear__T_tau1e-06_f32_sub256 2.354e-06 True
+DEV R128_linear__T_tau1e-06_f32_sub512 6.502e-07 True
+DEV R128_linear__T_tau1e-06_f32_sub1024 2.936e-07 True
+DEV R128_linear__T_tau1e-08_f64_full 6.613e-10 True
+DEV R128_linear__T_tau1e-08_f64_sub256 2.384e-06 True
+DEV R128_linear__T_tau1e-08_f64_sub512 5.677e-07 True
+DEV R128_linear__T_tau1e-08_f64_sub1024 1.135e-07 True
+DEV R128_linear__T_tau1e-08_f32_full 2.970e-07 True
+DEV R128_linear__T_tau1e-08_f32_sub256 2.354e-06 True
+DEV R128_linear__T_tau1e-08_f32_sub512 6.403e-07 True
+DEV R128_linear__T_tau1e-08_f32_sub1024 2.970e-07 True
+PHASE paperA1 0 135.9
+PHASE paperA1 1 144.7
+PHASE paperA1 2 153.5
+PHASE variants 0 413.8
+PHASE variants 1 651.0
+PHASE variants 2 887.6
+PHASE paperA2 0 903.6
+PHASE paperA2 1 912.4
+PHASE paperA2 2 921.3
+SUMMARY R512_linear 11.872 ms err 0.007419 dev 0.00e+00
+SUMMARY R128_linear 3.643 ms err 0.023060 dev 0.00e+00
+SUMMARY R512_linear__T_tau0.0001_f64_full 0.351 ms err 0.007419 dev 1.32e-06
+SUMMARY R512_linear__T_tau0.0001_f64_sub256 0.243 ms err 0.007419 dev 2.66e-06
+SUMMARY R512_linear__T_tau0.0001_f64_sub512 0.253 ms err 0.007419 dev 1.32e-06
+SUMMARY R512_linear__T_tau0.0001_f64_sub1024 0.274 ms err 0.007419 dev 1.32e-06
+SUMMARY R512_linear__T_tau0.0001_f32_full 0.360 ms err 0.007419 dev 1.35e-06
+SUMMARY R512_linear__T_tau0.0001_f32_sub256 0.249 ms err 0.007419 dev 2.68e-06
+SUMMARY R512_linear__T_tau0.0001_f32_sub512 0.260 ms err 0.007419 dev 1.35e-06
+SUMMARY R512_linear__T_tau0.0001_f32_sub1024 0.281 ms err 0.007419 dev 1.35e-06
+SUMMARY R512_linear__T_tau1e-06_f64_full 0.367 ms err 0.007419 dev 1.35e-08
+SUMMARY R512_linear__T_tau1e-06_f64_sub256 0.263 ms err 0.007419 dev 2.60e-06
+SUMMARY R512_linear__T_tau1e-06_f64_sub512 0.272 ms err 0.007419 dev 6.19e-07
+SUMMARY R512_linear__T_tau1e-06_f64_sub1024 0.292 ms err 0.007419 dev 1.24e-07
+SUMMARY R512_linear__T_tau1e-06_f32_full 0.377 ms err 0.007419 dev 3.25e-07
+SUMMARY R512_linear__T_tau1e-06_f32_sub256 0.267 ms err 0.007419 dev 2.63e-06
+SUMMARY R512_linear__T_tau1e-06_f32_sub512 0.278 ms err 0.007419 dev 6.56e-07
+SUMMARY R512_linear__T_tau1e-06_f32_sub1024 0.297 ms err 0.007419 dev 3.25e-07
+SUMMARY R512_linear__T_tau1e-08_f64_full 0.391 ms err 0.007419 dev 2.10e-10
+SUMMARY R512_linear__T_tau1e-08_f64_sub256 0.288 ms err 0.007419 dev 2.60e-06
+SUMMARY R512_linear__T_tau1e-08_f64_sub512 0.298 ms err 0.007419 dev 6.19e-07
+SUMMARY R512_linear__T_tau1e-08_f64_sub1024 0.316 ms err 0.007419 dev 1.24e-07
+SUMMARY R512_linear__T_tau1e-08_f32_full 0.397 ms err 0.007419 dev 3.43e-07
+SUMMARY R512_linear__T_tau1e-08_f32_sub256 0.288 ms err 0.007419 dev 2.62e-06
+SUMMARY R512_linear__T_tau1e-08_f32_sub512 0.299 ms err 0.007419 dev 6.45e-07
+SUMMARY R512_linear__T_tau1e-08_f32_sub1024 0.320 ms err 0.007419 dev 3.60e-07
+SUMMARY R128_linear__T_tau0.0001_f64_full 0.300 ms err 0.023060 dev 6.38e-06
+SUMMARY R128_linear__T_tau0.0001_f64_sub256 0.208 ms err 0.023060 dev 6.38e-06
+SUMMARY R128_linear__T_tau0.0001_f64_sub512 0.214 ms err 0.023060 dev 6.38e-06
+SUMMARY R128_linear__T_tau0.0001_f64_sub1024 0.227 ms err 0.023060 dev 6.38e-06
+SUMMARY R128_linear__T_tau0.0001_f32_full 0.319 ms err 0.023060 dev 6.39e-06
+SUMMARY R128_linear__T_tau0.0001_f32_sub256 0.229 ms err 0.023060 dev 6.39e-06
+SUMMARY R128_linear__T_tau0.0001_f32_sub512 0.234 ms err 0.023060 dev 6.39e-06
+SUMMARY R128_linear__T_tau0.0001_f32_sub1024 0.248 ms err 0.023060 dev 6.39e-06
+SUMMARY R128_linear__T_tau1e-06_f64_full 0.321 ms err 0.023060 dev 7.01e-08
+SUMMARY R128_linear__T_tau1e-06_f64_sub256 0.228 ms err 0.023060 dev 2.38e-06
+SUMMARY R128_linear__T_tau1e-06_f64_sub512 0.235 ms err 0.023060 dev 5.69e-07
+SUMMARY R128_linear__T_tau1e-06_f64_sub1024 0.248 ms err 0.023060 dev 1.20e-07
+SUMMARY R128_linear__T_tau1e-06_f32_full 0.333 ms err 0.023060 dev 2.93e-07
+SUMMARY R128_linear__T_tau1e-06_f32_sub256 0.243 ms err 0.023060 dev 2.35e-06
+SUMMARY R128_linear__T_tau1e-06_f32_sub512 0.248 ms err 0.023060 dev 6.50e-07
+SUMMARY R128_linear__T_tau1e-06_f32_sub1024 0.262 ms err 0.023060 dev 2.94e-07
+SUMMARY R128_linear__T_tau1e-08_f64_full 0.328 ms err 0.023060 dev 6.61e-10
+SUMMARY R128_linear__T_tau1e-08_f64_sub256 0.236 ms err 0.023060 dev 2.38e-06
+SUMMARY R128_linear__T_tau1e-08_f64_sub512 0.241 ms err 0.023060 dev 5.68e-07
+SUMMARY R128_linear__T_tau1e-08_f64_sub1024 0.257 ms err 0.023060 dev 1.14e-07
+SUMMARY R128_linear__T_tau1e-08_f32_full 0.345 ms err 0.023060 dev 2.97e-07
+SUMMARY R128_linear__T_tau1e-08_f32_sub256 0.255 ms err 0.023060 dev 2.35e-06
+SUMMARY R128_linear__T_tau1e-08_f32_sub512 0.260 ms err 0.023060 dev 6.40e-07
+SUMMARY R128_linear__T_tau1e-08_f32_sub1024 0.272 ms err 0.023060 dev 2.97e-07
+SUMMARY R512_linear__solve_only_sub256 0.139 ms err nan dev nan
+SUMMARY R512_linear__solve_only_sub512 0.150 ms err nan dev nan
+SUMMARY R512_linear__solve_only_sub1024 0.171 ms err nan dev nan
+SUMMARY R512_linear__solve_only_full 0.252 ms err nan dev nan
+SUMMARY R128_linear__solve_only_sub256 0.136 ms err nan dev nan
+SUMMARY R128_linear__solve_only_sub512 0.141 ms err nan dev nan
+SUMMARY R128_linear__solve_only_sub1024 0.153 ms err nan dev nan
+SUMMARY R128_linear__solve_only_full 0.228 ms err nan dev nan
+FROZEN {"F": "T_tau0.0001_f64_full", "S": "T_tau0.0001_f64_sub256"} 012561a11790436bf64e163cb38e09869ac10c5e379abfaf07aacc605c7a74e2
+012561a11790436bf64e163cb38e09869ac10c5e379abfaf07aacc605c7a74e2  results/frozen.json
+=== test mesh 256 ===
+jax_backend=gpu x64=True precision=highest
+BANK 6.1
+COMPRESS 6.0 {'128': 1.4543064970192752e-07, '512': 1.5136900991128923e-07}
+WARMUP 23.4
+DEV R512_linear__T_tau0.0001_f64_full 1.312e-06 True
+DEV R512_linear__T_tau1e-08_f64_full 1.850e-10 True
+DEV R512_linear__T_tau1e-08_f32_full 3.085e-07 True
+DEV R128_linear__T_tau0.0001_f64_full 6.375e-06 True
+DEV R128_linear__T_tau1e-08_f64_full 7.060e-10 True
+DEV R128_linear__T_tau1e-08_f32_full 2.689e-07 True
+REPRO [('R512_linear', 0.008378866617227667, 0.0, True), ('R128_linear', 0.040667799754386565, 5.204170427930421e-18, True)]
+PHASE paperA1 0 56.5
+PHASE paperA1 1 66.0
+PHASE paperA1 2 75.4
+PHASE paperA1 3 84.8
+PHASE paperA1 4 94.1
+PHASE variants 0 138.7
+PHASE variants 1 176.2
+PHASE variants 2 213.6
+PHASE variants 3 251.1
+PHASE variants 4 289.4
+PHASE paperA2 0 305.8
+PHASE paperA2 1 315.2
+PHASE paperA2 2 324.6
+PHASE paperA2 3 334.0
+PHASE paperA2 4 343.9
+SUMMARY R512_linear 1.042 ms err 0.008379 dev 0.00e+00
+SUMMARY R128_linear 0.791 ms err 0.040668 dev 0.00e+00
+SUMMARY R512_linear__T_tau0.0001_f64_full 0.152 ms err 0.008379 dev 1.43e-06
+SUMMARY R512_linear__T_tau1e-08_f64_full 0.174 ms err 0.008379 dev 2.44e-10
+SUMMARY R512_linear__T_tau1e-08_f32_full 0.162 ms err 0.008379 dev 3.03e-07
+SUMMARY R128_linear__T_tau0.0001_f64_full 0.136 ms err 0.040668 dev 8.83e-06
+SUMMARY R128_linear__T_tau1e-08_f64_full 0.142 ms err 0.040668 dev 1.07e-09
+SUMMARY R128_linear__T_tau1e-08_f32_full 0.141 ms err 0.040668 dev 3.16e-07
+SUMMARY R512_linear__solve_only_full 0.114 ms err nan dev nan
+SUMMARY R128_linear__solve_only_full 0.111 ms err nan dev nan
+=== test mesh 512 ===
+jax_backend=gpu x64=True precision=highest
+BANK 9.4
+COMPRESS 11.2 {'128': 1.4081261968644108e-07, '512': 1.4916927049661354e-07}
+WARMUP 27.1
+DEV R512_linear__T_tau0.0001_f64_full 1.321e-06 True
+DEV R512_linear__T_tau0.0001_f64_sub256 2.059e-06 True
+DEV R512_linear__T_tau1e-08_f64_full 2.024e-10 True
+DEV R512_linear__T_tau1e-08_f32_full 2.869e-07 True
+DEV R128_linear__T_tau0.0001_f64_full 6.384e-06 True
+DEV R128_linear__T_tau0.0001_f64_sub256 6.384e-06 True
+DEV R128_linear__T_tau1e-08_f64_full 7.433e-10 True
+DEV R128_linear__T_tau1e-08_f32_full 3.266e-07 True
+REPRO [('R512_linear', 0.00835562017187096, None, None), ('R128_linear', 0.04059393210787593, None, None)]
+PHASE paperA1 0 69.5
+PHASE paperA1 1 79.0
+PHASE paperA1 2 88.5
+PHASE paperA1 3 98.1
+PHASE paperA1 4 107.7
+PHASE variants 0 172.2
+PHASE variants 1 229.0
+PHASE variants 2 285.9
+PHASE variants 3 342.6
+PHASE variants 4 399.4
+PHASE paperA2 0 416.1
+PHASE paperA2 1 425.7
+PHASE paperA2 2 435.3
+PHASE paperA2 3 445.3
+PHASE paperA2 4 454.9
+SUMMARY R512_linear 1.615 ms err 0.008356 dev 0.00e+00
+SUMMARY R128_linear 1.070 ms err 0.040594 dev 0.00e+00
+SUMMARY R512_linear__T_tau0.0001_f64_full 0.171 ms err 0.008356 dev 1.44e-06
+SUMMARY R512_linear__T_tau0.0001_f64_sub256 0.160 ms err 0.008356 dev 4.16e-06
+SUMMARY R512_linear__T_tau1e-08_f64_full 0.191 ms err 0.008356 dev 2.43e-10
+SUMMARY R512_linear__T_tau1e-08_f32_full 0.186 ms err 0.008356 dev 2.84e-07
+SUMMARY R128_linear__T_tau0.0001_f64_full 0.149 ms err 0.040594 dev 8.85e-06
+SUMMARY R128_linear__T_tau0.0001_f64_sub256 0.141 ms err 0.040594 dev 8.85e-06
+SUMMARY R128_linear__T_tau1e-08_f64_full 0.154 ms err 0.040594 dev 1.11e-09
+SUMMARY R128_linear__T_tau1e-08_f32_full 0.157 ms err 0.040594 dev 3.26e-07
+SUMMARY R512_linear__solve_only_sub256 0.125 ms err nan dev nan
+SUMMARY R512_linear__solve_only_full 0.131 ms err nan dev nan
+SUMMARY R128_linear__solve_only_sub256 0.112 ms err nan dev nan
+SUMMARY R128_linear__solve_only_full 0.125 ms err nan dev nan
+=== test mesh 1024 ===
+jax_backend=gpu x64=True precision=highest
+BANK 10.8
+COMPRESS 12.1 {'128': 1.4314025860303998e-07, '512': 1.5136840926582595e-07}
+WARMUP 24.6
+DEV R512_linear__T_tau0.0001_f64_full 1.321e-06 True
+DEV R512_linear__T_tau0.0001_f64_sub256 2.539e-06 True
+DEV R512_linear__T_tau1e-08_f64_full 1.863e-10 True
+DEV R512_linear__T_tau1e-08_f32_full 2.790e-07 True
+DEV R128_linear__T_tau0.0001_f64_full 6.383e-06 True
+DEV R128_linear__T_tau0.0001_f64_sub256 6.383e-06 True
+DEV R128_linear__T_tau1e-08_f64_full 6.568e-10 True
+DEV R128_linear__T_tau1e-08_f32_full 2.723e-07 True
+REPRO [('R512_linear', 0.008349808939792404, 0.0, True), ('R128_linear', 0.04057549493242833, 6.938893903907228e-18, True)]
+PHASE paperA1 0 72.6
+PHASE paperA1 1 82.8
+PHASE paperA1 2 93.0
+PHASE paperA1 3 103.2
+PHASE paperA1 4 113.3
+PHASE variants 0 180.6
+PHASE variants 1 240.1
+PHASE variants 2 299.5
+PHASE variants 3 358.8
+PHASE variants 4 418.9
+PHASE paperA2 0 436.3
+PHASE paperA2 1 446.5
+PHASE paperA2 2 456.8
+PHASE paperA2 3 467.1
+PHASE paperA2 4 477.7
+SUMMARY R512_linear 3.703 ms err 0.008350 dev 0.00e+00
+SUMMARY R128_linear 1.633 ms err 0.040575 dev 0.00e+00
+SUMMARY R512_linear__T_tau0.0001_f64_full 0.210 ms err 0.008350 dev 1.44e-06
+SUMMARY R512_linear__T_tau0.0001_f64_sub256 0.181 ms err 0.008350 dev 5.17e-06
+SUMMARY R512_linear__T_tau1e-08_f64_full 0.237 ms err 0.008350 dev 2.35e-10
+SUMMARY R512_linear__T_tau1e-08_f32_full 0.227 ms err 0.008350 dev 3.06e-07
+SUMMARY R128_linear__T_tau0.0001_f64_full 0.170 ms err 0.040575 dev 8.85e-06
+SUMMARY R128_linear__T_tau0.0001_f64_sub256 0.154 ms err 0.040575 dev 8.85e-06
+SUMMARY R128_linear__T_tau1e-08_f64_full 0.185 ms err 0.040575 dev 1.08e-09
+SUMMARY R128_linear__T_tau1e-08_f32_full 0.188 ms err 0.040575 dev 2.82e-07
+SUMMARY R512_linear__solve_only_sub256 0.123 ms err nan dev nan
+SUMMARY R512_linear__solve_only_full 0.152 ms err nan dev nan
+SUMMARY R128_linear__solve_only_sub256 0.114 ms err nan dev nan
+SUMMARY R128_linear__solve_only_full 0.134 ms err nan dev nan
+=== test mesh 2048 ===
+jax_backend=gpu x64=True precision=highest
+BANK 16.4
+COMPRESS 12.7 {'128': 1.4543064816576098e-07, '512': 1.5281694155698855e-07}
+WARMUP 25.5
+DEV R512_linear__T_tau0.0001_f64_full 1.321e-06 True
+DEV R512_linear__T_tau0.0001_f64_sub256 2.660e-06 True
+DEV R512_linear__T_tau1e-08_f64_full 2.101e-10 True
+DEV R512_linear__T_tau1e-08_f32_full 3.427e-07 True
+DEV R128_linear__T_tau0.0001_f64_full 6.383e-06 True
+DEV R128_linear__T_tau0.0001_f64_sub256 6.383e-06 True
+DEV R128_linear__T_tau1e-08_f64_full 6.613e-10 True
+DEV R128_linear__T_tau1e-08_f32_full 2.970e-07 True
+REPRO [('R512_linear', 0.008348356150836013, 0.0, True), ('R128_linear', 0.04057088749316021, 0.0, True)]
+PHASE paperA1 0 105.9
+PHASE paperA1 1 129.2
+PHASE paperA1 2 153.0
+PHASE paperA1 3 176.3
+PHASE paperA1 4 199.6
+PHASE variants 0 345.7
+PHASE variants 1 478.3
+PHASE variants 2 610.3
+PHASE variants 3 742.0
+PHASE variants 4 873.7
+PHASE paperA2 0 904.3
+PHASE paperA2 1 927.7
+PHASE paperA2 2 951.5
+PHASE paperA2 3 974.9
+PHASE paperA2 4 998.3
+SUMMARY R512_linear 11.927 ms err 0.008348 dev 0.00e+00
+SUMMARY R128_linear 3.673 ms err 0.040571 dev 0.00e+00
+SUMMARY R512_linear__T_tau0.0001_f64_full 0.346 ms err 0.008348 dev 1.44e-06
+SUMMARY R512_linear__T_tau0.0001_f64_sub256 0.237 ms err 0.008348 dev 5.42e-06
+SUMMARY R512_linear__T_tau1e-08_f64_full 0.388 ms err 0.008348 dev 2.62e-10
+SUMMARY R512_linear__T_tau1e-08_f32_full 0.387 ms err 0.008348 dev 3.48e-07
+SUMMARY R128_linear__T_tau0.0001_f64_full 0.295 ms err 0.040571 dev 8.85e-06
+SUMMARY R128_linear__T_tau0.0001_f64_sub256 0.203 ms err 0.040571 dev 8.85e-06
+SUMMARY R128_linear__T_tau1e-08_f64_full 0.319 ms err 0.040571 dev 1.01e-09
+SUMMARY R128_linear__T_tau1e-08_f32_full 0.340 ms err 0.040571 dev 2.82e-07
+SUMMARY R512_linear__solve_only_sub256 0.136 ms err nan dev nan
+SUMMARY R512_linear__solve_only_full 0.249 ms err nan dev nan
+SUMMARY R128_linear__solve_only_sub256 0.127 ms err nan dev nan
+SUMMARY R128_linear__solve_only_full 0.221 ms err nan dev nan
+=== test mesh 4096 ===
+jax_backend=gpu x64=True precision=highest
+BANK 35.2
+MESH-FAILED test 4096 exit=1
+Sat Nov 14 17:05:53 EST 2026
+task_completed

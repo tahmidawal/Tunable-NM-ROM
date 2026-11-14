@@ -150,3 +150,58 @@ algebra) on the host instead of the device.  The frozen pair of job 7220235 is k
 job runs the 4096^2 test only, with that file and `--host-compress`.  The development gate and the
 reproduction gate are re-checked in that job as at every mesh.  If it fails again, 4096^2 on the A100 is
 reported as not obtained.
+
+Note, Sat 14 Nov 2026 17:43 EST: the heading of A2 carries the time 17:25 by mistake; A2 was committed at
+17:12 EST (commit 45d737762), before job 7221131 was submitted (from commit cc7917c2e).
+
+Record of the freezes (written after the test runs; nothing was chosen by hand):
+- A100 80GB, job 7220235: F = `T_tau0.0001_f64_full`, S = `T_tau0.0001_f64_sub256`
+  (`results/frozen.json` SHA256 012561a11790436b...).  Reused unchanged by job 7221131 (4096^2 only).
+- H200, job 7220234: the same pair, F = `T_tau0.0001_f64_full`, S = `T_tau0.0001_f64_sub256`
+  (`results/frozen.json` SHA256 9f04a36c32d880aa...).
+- Every development gate and every reproduction gate passed at every mesh on both GPU types.
+- The raw result JSON files and job logs of the three jobs are committed under `runs/` (no field arrays).
+
+### A3, Sat 14 Nov 2026 17:45 EST: heat 2D (written before any heat number of this lane exists)
+
+Poisson 2D is finished on both GPU types (apart from the paper's whole driver still running as a
+cross-check in job 7220234).  The same offline compression is now applied to heat 2D.  Poisson 3D and
+heat 3D are not attempted in this lane unless a later amendment says so.
+
+- Paper path: lane `2026-09-23-heat-bank-knob` at cc92aca81, vendored unmodified in `paper_code_heat/`
+  (`core.py`, `hbk_core.py`, `configs/h2d.json`, `prep_2d.npz`, `inputs/wide2d/`).  Arms of the paper's
+  heat 2D rows: accurate `lin_R128_cn`, fast `lin_R48_cn` (linear rung, moment initialisation, reduced
+  Crank-Nicolson composed offline, six output times).  Stored values: `paper_reference/h2d-stored.json`
+  (job 4197350, H200, results.json SHA256 39f4cd8f...).
+- Timing scope: the paper's heat scope, unchanged: supplied initial field on the device -> all six output
+  fields on the device, blocked; no host copies for any subject.  0.1 s burn before every invocation,
+  random order within a case, phases paper / variants / paper, 5 repetitions, median over cases x
+  repetitions.  "Coefficients only" (the six reduced coefficient vectors, no field) is a separate column.
+- New path (model, coefficients and output unchanged up to round-off and the compression tolerance):
+  (i) the 256 moments of the initial field from two products with a sine table instead of a full
+  transform; (ii) moments -> coefficients at the six times as one precomputed matrix; (iii) the six
+  fields from the bank compressed in the two mesh directions (same routine, probes and seed as Poisson).
+- Variants: tau in {1e-4, 1e-6, 1e-8} x reconstruction in {f64, f32}.  No sampled-input variant.
+- Cohorts as in the paper: development = `validation_791001` (16 cases), test = `heldout_sealed_791099`
+  (16 cases).  Development gate: max over cases and the six times of the relative L2 deviation of the
+  new field from the paper-path field <= 1e-5, for both arms.
+- Selection: on the development cohort only, at 4096^2, by the Poisson rule (fastest passing accurate-arm
+  median; ties within 2 % -> f64, then smaller tau), applied by the driver itself, which writes and
+  hashes `frozen-h2d.json` before the test cohort is touched.  The frozen variant is then used at 1024^2,
+  2048^2 and 4096^2; tau = 1e-8 (f64 and f32) is timed alongside as an ablation, not selectable.
+- Reproduction gate before any timing is trusted: the paper path's same-grid errors (six times, all 32
+  cases) against the stored values, absolute difference <= 1e-9.
+- GPU: H200 only (the paper's heat 2D numbers are from an H200).  Comparators (cuDSS, AmgX; the
+  sparse-solvers lane's estimate for 20 Crank-Nicolson solves) are quoted, not rerun.
+- The paper's own modal/transform full-order control is not a target.
+
+(Clock times in the A3 heading and in the note above it were first typed from memory as 18:20 and 17:48;
+they were corrected to the wall-clock times 17:45 and 17:43 in the next commit, before any heat job.)
+
+### A3a, Sat 14 Nov 2026 17:48 EST (before any heat job has started)
+
+Correction of A3: the paper's fast heat 2D arm is `lin_R32_cn` (stored test medians 0.336 / 0.829 /
+3.966 ms, the 0.34 / 0.83 / 3.97 of the paper's table), not `lin_R48_cn` as A3 says (that is the lane
+summary's rule-selected arm, not the one in the paper's table).  The arms are therefore accurate
+`lin_R128_cn` and fast `lin_R32_cn`.  Job 7221749, submitted with the wrong fast arm, was cancelled while
+pending and never started.  Nothing else in A3 changes.

@@ -20,6 +20,34 @@
  "neighbour_passed": true,
  "arms": [
   {
+   "name": "fft_tight",
+   "cases": 6,
+   "finite": true,
+   "median": 0.0,
+   "worst": 0.0,
+   "worst_case": 0,
+   "per_case": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "invocations": 6,
+   "ms_median": 91.80169831961393,
+   "ms_min": 74.90074448287487,
+   "ms_max": 131.02481048554182,
+   "ms_case_p05": 75.56297979317605,
+   "ms_case_p95": 127.68142926506698,
+   "ms_phase": {
+    "fomB": 91.80169831961393
+   },
+   "identical_to_quick": true,
+   "width": null,
+   "role": "fom"
+  },
+  {
    "name": "R128_lin_M512_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs",
    "cases": 6,
    "finite": true,

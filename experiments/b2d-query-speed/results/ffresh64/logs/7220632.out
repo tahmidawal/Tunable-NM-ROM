@@ -1,0 +1,52 @@
+host=pax106 source_commit=03ad8cf6d02604d2dea623f8920b03a0f276f81a vendor_commit=1b7b7f96bcf5808d397d467b5e99ae287f775d07
+NVIDIA A100 80GB PCIe, GPU-93ae5f8d-299a-28bc-9b53-07a050aa9da5, 81920 MiB
+10.235.106.24:/projects/paralab  4.6T  2.2T  2.5T  47% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+BANK 65025 rows 1 row blocks 7.6
+TRUTH done 15.0
+QUICK fft_tight evolved% 0.0 median% 0.0 stalled 0 iters [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None] sec 0.0888 6.2 39.2
+QUICK R96_lin_M384_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs evolved% 4.9703 median% 0.3765 stalled 0 iters [44, 38, 37, 38, 39, 40, 44, 49, 32, 37, 29, 28, 37, 50, 46, 40, 52, 23, 37, 36, 47, 48, 35, 32, 31, 33, 29, 41, 31, 33, 29, 41, 25, 47, 38, 42, 40, 32, 50, 33, 38, 30, 32, 48, 48, 43, 33, 41, 41, 37, 25, 32, 35, 24, 41, 33, 39, 33, 53, 41, 30, 36, 51, 30] sec 0.0148 5.2 57.6
+QUICK R96_lin_M384_lat64__qs_c_k1_s50_fused_f32_graphs evolved% 4.9792 median% 0.3768 stalled 0 iters [50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50] sec 0.0023 2.7 60.5
+QUICK R128_lin_M512_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs evolved% 3.4245 median% 0.212 stalled 0 iters [49, 43, 42, 42, 42, 46, 46, 52, 32, 44, 33, 33, 41, 54, 47, 60, 52, 26, 41, 41, 49, 52, 37, 40, 34, 37, 29, 44, 39, 35, 34, 45, 24, 51, 43, 47, 46, 37, 53, 37, 46, 36, 44, 51, 50, 61, 35, 45, 43, 40, 24, 34, 38, 28, 45, 36, 41, 34, 53, 45, 33, 42, 51, 32] sec 0.018 5.5 72.7
+QUICK R128_lin_M512_lat64__qs_c_k1_s50_fused_f32_first5x2_graphs evolved% 3.4299 median% 0.2152 stalled 0 iters [55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55] sec 0.0025 3.1 76.1
+QUICK R176_lin_M704_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs evolved% 1.7016 median% 0.1055 stalled 0 iters [50, 48, 45, 46, 45, 52, 52, 53, 38, 49, 34, 42, 41, 54, 51, 61, 52, 31, 45, 48, 53, 52, 39, 51, 38, 45, 35, 45, 51, 40, 44, 55, 25, 58, 52, 51, 55, 40, 53, 38, 52, 38, 50, 51, 52, 62, 42, 50, 48, 53, 30, 38, 49, 48, 51, 44, 49, 38, 53, 54, 42, 49, 51, 34] sec 0.025 6.4 89.9
+QUICK R176_lin_M704_lat64__qs_c_k1_s50_fused_f32_first10x2_graphs evolved% 1.7004 median% 0.106 stalled 0 iters [60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60] sec 0.0029 3.5 93.7
+QUICK R192_lin_M768_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng evolved% 1.528 median% 0.0888 stalled 0 iters [51, 49, 46, 48, 45, 52, 52, 53, 41, 51, 36, 44, 42, 54, 51, 61, 52, 32, 50, 50, 53, 52, 39, 51, 40, 45, 34, 47, 51, 43, 47, 55, 31, 59, 54, 52, 55, 40, 53, 43, 52, 41, 54, 51, 52, 62, 42, 51, 50, 57, 31, 39, 52, 50, 52, 45, 52, 40, 53, 54, 47, 52, 51, 35] sec 0.0261 6.6 108.2
+QUICK R192_lin_M768_lat64__qs_c_k1_s50_fused_f32_first10x2_graphs evolved% 1.5267 median% 0.0889 stalled 0 iters [60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60] sec 0.0029 3.4 111.8
+QUICK R256_lin_M1024_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng evolved% 0.8718 median% 0.0393 stalled 0 iters [51, 52, 49, 52, 48, 53, 52, 53, 47, 56, 45, 47, 47, 54, 51, 61, 52, 40, 55, 54, 53, 53, 43, 51, 45, 50, 38, 51, 51, 48, 51, 55, 35, 59, 55, 52, 57, 43, 54, 46, 52, 49, 56, 51, 52, 63, 45, 51, 53, 59, 44, 41, 52, 50, 53, 52, 57, 45, 54, 55, 51, 56, 51, 38] sec 0.034 7.5 127.4
+QUICK R256_lin_M1024_lat64__qs_c_k1_s50_fused_f32_first10x2_graphs evolved% 0.8709 median% 0.0396 stalled 0 iters [60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60] sec 0.0035 4.2 131.9
+QUICK R256_lin_M1024_lat64__qs_c_k1_s50_P_f32_graphs evolved% 0.872 median% 0.0456 stalled 0 iters [50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50] sec 0.0033 1.9 133.9
+QUICK R384_lin_M1536_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs evolved% 0.5037 median% 0.024 stalled 0 iters [51, 52, 52, 52, 50, 53, 52, 53, 52, 63, 52, 49, 52, 54, 51, 61, 53, 38, 56, 56, 53, 53, 48, 51, 52, 51, 42, 51, 51, 50, 51, 55, 33, 58, 56, 53, 57, 48, 54, 52, 52, 56, 56, 51, 52, 61, 48, 51, 53, 59, 50, 50, 52, 50, 53, 58, 57, 51, 54, 55, 52, 57, 51, 41] sec 0.046 8.8 152.6
+QUICK R384_lin_M1536_lat64__qs_c_k1_s50_fused_f32_first10x2_graphs evolved% 0.5021 median% 0.0243 stalled 0 iters [60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60] sec 0.0057 4.4 157.3
+QUICK R384_lin_M1536_lat64__qs_c_k1_s50_P_f32_graphs evolved% 0.5021 median% 0.0288 stalled 0 iters [50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50] sec 0.0047 2.1 159.5
+QUICK R512_lin_M2048_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs evolved% 1.0194 median% 0.0313 stalled 0 iters [51, 53, 52, 52, 51, 53, 52, 53, 53, 63, 50, 45, 52, 54, 51, 60, 53, 35, 56, 56, 53, 53, 46, 50, 49, 51, 42, 50, 51, 50, 51, 55, 31, 58, 56, 53, 58, 48, 53, 52, 52, 56, 56, 51, 52, 61, 49, 51, 53, 59, 49, 47, 52, 51, 53, 59, 57, 49, 54, 55, 52, 57, 51, 40] sec 0.0607 10.3 175.5
+QUICK R512_lin_M2048_lat64__qs_c_k3_s50_fused_f32_graphs evolved% 1.0167 median% 0.0312 stalled 0 iters [150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150] sec 0.0111 4.2 180.0
+QUICK R512_lin_M2048_lat64__qs_c_k1_s50_P_f32_graphs evolved% 1.0132 median% 0.0388 stalled 0 iters [50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50] sec 0.0057 2.1 182.3
+TIMED romA1 rep 0 323.4
+TIMED romA1 rep 1 456.9
+TIMED fomB rep 0 476.8
+TIMED romA2 rep 0 617.4
+TIMED romA2 rep 1 751.8
+BATCH R128_lin_M512_lat64__qs_c_k1_s50_fused_f32_first5x2_graphs 1 ms/batch 2.114 ms/query 2.1139 err dev 0.00e+00
+BATCH R128_lin_M512_lat64__qs_c_k1_s50_fused_f32_first5x2_graphs 8 ms/batch 5.354 ms/query 0.6692 err dev 4.46e-10
+BATCH R128_lin_M512_lat64__qs_c_k1_s50_fused_f32_first5x2_graphs 64 ms/batch 19.413 ms/query 0.3033 err dev 4.60e-10
+BATCH R176_lin_M704_lat64__qs_c_k1_s50_fused_f32_first10x2_graphs 1 ms/batch 2.552 ms/query 2.5521 err dev 1.29e-17
+BATCH R176_lin_M704_lat64__qs_c_k1_s50_fused_f32_first10x2_graphs 8 ms/batch 6.862 ms/query 0.8578 err dev 2.96e-10
+BATCH R176_lin_M704_lat64__qs_c_k1_s50_fused_f32_first10x2_graphs 64 ms/batch 29.047 ms/query 0.4539 err dev 7.11e-10
+BATCH R384_lin_M1536_lat64__qs_c_k1_s50_fused_f32_first10x2_graphs 1 ms/batch 5.347 ms/query 5.3467 err dev 1.32e-16
+BATCH R384_lin_M1536_lat64__qs_c_k1_s50_fused_f32_first10x2_graphs 8 ms/batch 17.014 ms/query 2.1267 err dev 2.28e-09
+BATCH R384_lin_M1536_lat64__qs_c_k1_s50_fused_f32_first10x2_graphs 64 ms/batch 94.054 ms/query 1.4696 err dev 4.87e-09
+DRIFT True 0.9879776104503182 1.0062796623575259 NEIGHBOUR True 1.0079464063475088
+B2TEST COMPLETE
+torch 2.11.0+cu128 cuda True
+MANIFEST ['c1/U0-n4608-s0', 'c1/U0-n4608-s2', 'c2/F0-n4608-s0', 'c2/F0-n4608-s1', 'c2/F0-n4608-s2', 'tr2/U0-n4608-s1']
+COHORT DONE {"name": "fresh64", "seed": 2026111402, "cases": 64, "physical_sha256": "47199514b3ad8b9a4064061362a1fe4465f09b4365f279b516f02e655b9aa1a3", "max_relative_residual": 9.97965363320122e-07, "fields_sha256": "6b56980290d96a32f7cbd55e05c0e6b30ecd0713dcfbe487461f0095b7155433", "job_id": "7220632"}
+EVAL c2/F0-n4608-s0 256 {'L256': (0.635, 0.214, 4.07)}
+EVAL c2/F0-n4608-s1 256 {'L256': (0.55, 0.201, 4.06)}
+EVAL c2/F0-n4608-s2 256 {'L256': (0.756, 0.246, 4.07)}
+EVAL c1/U0-n4608-s0 256 {'L256': (0.548, 0.216, 7.4)}
+EVAL tr2/U0-n4608-s1 256 {'L256': (0.53, 0.24, 7.39)}
+EVAL c1/U0-n4608-s2 256 {'L256': (0.515, 0.216, 7.39)}
+EVALUATION DONE output/ops-fresh64
+ALL-DONE

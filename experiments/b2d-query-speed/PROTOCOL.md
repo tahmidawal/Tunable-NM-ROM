@@ -136,3 +136,27 @@ Every job log must show `jax_backend=gpu`. GPU jobs: at most 3 queued or running
 section 4 a non-finite candidate is rejected, so the driver now records such an arm in `rejected_nonfinite`,
 excludes it from scoring and timing and continues (qsdrive.py Q5). The quick-pass log of 7220123 is kept in
 `results/explore384-crashed/`; its single-shot seconds are not used for selection.
+**A3 (2026-11-14, recorded with the final results).**
+- Selection tolerance of section 5 as coded (`analyse.py`): the absolute per-case slack is 1e-5 in relative error,
+  i.e. 1e-3 in percent. Widths 144, 160, 176 were added to the selection job so that the equal-error width could be
+  frozen; the final jobs carry widths 96, 128, 176 (the frozen equal-error width), 192, 256, 384, 512.
+- Job `sello` (7220300) failed the drift gate (A-B-A ratios 0.89-1.07) on arms with corrections on the first 25
+  steps; none of them was selected. All frozen settings were within the 1.1 gate in `sello`/`selhi` and both final
+  jobs passed both gates.
+- Rehearsal `fdev` (7220606): the final job text on six dev38 cases, to verify the batched phase and the operator
+  step before the single sealed evaluation; not a reported result. After it the batched phase records a failure per
+  (setting, B) instead of stopping, and a failing operator step no longer discards the driver output.
+- Operators: the equal-error table in RESULTS.md compares against the median over the three seeds of each
+  operator, measured in the final job, in addition to listing every seed.
+- Mesh extension jobs `x512`, `x1024` (test64, once each): frozen settings at widths 96, 128, 384; the baseline
+  tolerance and compile mode per width are those of burgers2d-test `config-t512.json` / `config-t1024.json`
+  @ 1b7b7f96 (gtol 0.01 at 512^2, 0.001 at 1024^2).
+- Section 7 did not include our own full-order solver. Added after the final jobs, on dev38 only (test64 and
+  fresh64 are not opened again at 256^2): jobs `fom256`, `fom512`, `fom1024` time the frozen settings next to the
+  full-order settings paired with each width in the burgers2d-test Table 1 (`nt1e-2_dt01` for 96,
+  `lean_nt1e-2_l1e-2_dt01` for 128, `lean_nt3e-3_l3e-3_dt005` for 384; unchanged, both compile modes, the faster
+  one reported), same job, same GPU. Reported as a dev38 measurement.
+- The realised "fast" settings met the 10 % bar on dev38 but are 12-26 % above the baseline median on test64 and
+  fresh64; they are reported as their own accuracy point as section 5 requires. The "accurate" settings exceed the
+  2 % worst-case bar of dev38 on test64 at widths 176, 192, 256 (worst ratio 1.04-1.05) and 512 (1.03); reported
+  as measured, no re-selection.

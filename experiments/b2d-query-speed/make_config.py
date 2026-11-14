@@ -187,6 +187,31 @@ def build(name):
         cfg.update(intervals=L, target_chunk=chunk, population=pop, eval_draws=TEST64, expected_physical_sha256=TEST_SHA,
                    disjoint_draws=DEV38 + FRESH64, cohort_name=f'test64 = params_draw(20260916,64) on the {L}^2 mesh',
                    frozen=fz, purpose=f'mesh extension {L}^2: frozen 256^2 settings, evaluated once on test64')
+    elif name in ('fom256', 'fom512', 'fom1024'):
+        # dev38 only (PROTOCOL.md section 9, amendment A3): the frozen settings next to the accuracy-matched full-order
+        # settings of the burgers2d-test Table 1 (unchanged settings from the iso-error config, both compile modes),
+        # timed in the same job on the same GPU. Baseline tolerances / compile modes per mesh as in x512 / x1024.
+        L = int(name[3:])
+        gt, gr, chunk = {256: (0.01, {}, None), 512: (0.01, {384: False, 96: False, 128: False}, 8),
+                         1024: (0.001, {384: False, 96: True, 128: True}, 4)}[L]
+        fz = json.loads((HERE / 'frozen.json').read_text())
+        arms = []
+        for Rp in (96, 128, 384):
+            w = fz['widths'][str(Rp)]
+            arms.append(B(Rp, gtol=gt, graphs=gr.get(Rp)))
+            for kind in ('accurate', 'fast'):
+                if w[kind]:
+                    a = qs_arm(Rp, w[kind]['tag'], graphs=w[kind]['graphs'], **w[kind]['qs'])
+                    a['role'] = kind
+                    arms.append(a)
+        keep = ('fft_tight', 'lean_nt3e-3_l3e-3_dt005', 'nt1e-2_dt01', 'lean_nt1e-2_l1e-2_dt01')
+        cfg.update(fom_settings=[fs for fs in base['fom_settings'] if fs['name'] in keep], fom_both_modes=True, frozen=fz,
+                   cohort_name=cfg['cohort_name'] + (f' on the {L}^2 mesh' if L != 256 else ''),
+                   purpose=f'dev38, {L}^2: frozen settings and the Table-1 full-order settings timed in one job (amendment A3)')
+        if L != 256:
+            pop = copy.deepcopy(cfg['population'])
+            pop['source_draw'] = [20260921, 56]
+            cfg.update(intervals=L, target_chunk=chunk, population=pop)
     else:
         raise SystemExit(f'unknown config {name}')
     cfg['arms'] = arms

@@ -62,10 +62,15 @@ def table(j, widths=None, label=None):
                          ms_min=a['ms_min'], ms_max=a['ms_max'], identical_to_quick=a['identical_to_quick'],
                          **({k: v[k] for k in ('speedup', 'median_ratio', 'worst_ratio', 'max_case_ratio')} if v else {})))
     fom = [a for a in j['arms'] if a['role'] == 'fom']
-    for a in fom:
-        P(f"\nReference solver `{a['name']}` in the same job: {a['ms_median']:.2f} ms median "
-          f"(5-95 % of cases {a['ms_case_p05']:.2f}-{a['ms_case_p95']:.2f}).")
-        rows.append(dict(role='fom', name=a['name'], ms=a['ms_median']))
+    if fom:
+        P('\nFull-order solver settings in the same job on the same GPU (unchanged settings; `fft_tight` is the error '
+          'reference itself; `__graphs` is the second compile mode of the same setting):\n')
+        P('| full-order setting | median % | worst % | ms (median) | ms 5-95 % of cases |')
+        P('|---|---|---|---|---|')
+    for a in sorted(fom, key=lambda a: a['name']):
+        P(f"| `{a['name']}` | {a['median']:.4f} | {a['worst']:.3f} | {a['ms_median']:.2f} | {a['ms_case_p05']:.2f}-{a['ms_case_p95']:.2f} |")
+        rows.append(dict(role='fom', name=a['name'], median=a['median'], worst=a['worst'], ms=a['ms_median'],
+                         p05=a['ms_case_p05'], p95=a['ms_case_p95']))
     if label:
         summary[label] = dict(provenance=prov(j), cohort=j['cohort_name'], cohort_sha256=j['cohort_sha256'], rows=rows)
     return rows
@@ -138,6 +143,44 @@ for att, title in (('ftest64', 'test64 = params_draw(20260916, 64)'), ('ffresh64
                 P(f"| {b['name']} | {b['batch']} | {1e3 * b['median_seconds']:.2f} | {b['per_query_ms']:.3f} | "
                   f"{100 * b['worst_error']:.3f} | {b['max_error_deviation_from_single']:.1e} |")
         summary[att]['batched'] = j['batched']
+    P('')
+
+# ------------------------------------------------------------------ mesh extension
+for att, L in (('x512', 512), ('x1024', 1024)):
+    j = load(att)
+    if not j:
+        P(f'## Mesh extension {L}^2: not run\n')
+        continue
+    P(f'## Mesh extension {L}^2 (frozen 256^2 settings, evaluated once on test64; `results/{att}`)\n')
+    P(prov(j) + '. Baseline tolerance and compile mode per width as in the burgers2d-test config of this mesh.\n')
+    rows = table(j, label=att)
+    bad = [r['tag'] for r in rows if r.get('identical_to_quick') is False]
+    P(f"\nTimed outputs bitwise identical to the scored outputs: {'all arms' if not bad else 'NOT for ' + ', '.join(map(str, bad))}.\n")
+
+# ------------------------------------------------------------------ own full-order solver (dev38)
+FOM_MATCH = {96: 'nt1e-2_dt01', 128: 'lean_nt1e-2_l1e-2_dt01', 384: 'lean_nt3e-3_l3e-3_dt005'}   # burgers2d-test Table 1 pairing
+for att, L in (('fom256', 256), ('fom512', 512), ('fom1024', 1024)):
+    j = load(att)
+    if not j:
+        continue
+    P(f'## Ours against our own full-order solver, {L}^2, dev38 (`results/{att}`)\n')
+    P(prov(j) + '. Development cohort (not sealed); the full-order settings are those paired with each width in the '
+      'burgers2d-test Table 1 and are unchanged.\n')
+    rows = table(j, label=att)
+    P('\n| width | full-order setting (faster compile mode) | FOM median % | FOM worst % | FOM ms | our setting | our median % | our worst % | our ms | FOM ms / our ms |')
+    P('|---|---|---|---|---|---|---|---|---|---|')
+    cmpr = []
+    for Rp, fs in FOM_MATCH.items():
+        f = min((r for r in rows if r['role'] == 'fom' and r['name'] in (fs, fs + '__graphs')), key=lambda r: r['ms'], default=None)
+        if not f:
+            continue
+        for r in rows:
+            if r.get('width') == Rp and r['role'] in ('baseline', 'accurate', 'fast'):
+                P(f"| {Rp} | `{f['name']}` | {f['median']:.4f} | {f['worst']:.3f} | {f['ms']:.2f} | {r['role']} | {r['median']:.4f} | "
+                  f"{r['worst']:.3f} | {r['ms']:.2f} | {f['ms'] / r['ms']:.2f} |")
+                cmpr.append(dict(width=Rp, fom=f['name'], fom_median=f['median'], fom_worst=f['worst'], fom_ms=f['ms'],
+                                 role=r['role'], median=r['median'], worst=r['worst'], ms=r['ms'], ratio=f['ms'] / r['ms']))
+    summary[att]['vs_fom'] = cmpr
     P('')
 
 # ------------------------------------------------------------------ freeze

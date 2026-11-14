@@ -1,0 +1,147 @@
+{
+ "test_cohort_seen": false,
+ "runs": {
+  "c2/F0-n4608-s0": {
+   "path": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/c2/runs/F0-n4608-s0",
+   "best_sha256": "a6c72792fb2efa45a88f830b37c2f1b2f8253f515a6dc62708538fa387de2a08",
+   "arm": "F0",
+   "rung": 4608,
+   "seed": 0,
+   "steps": 123000,
+   "best_step": 121000,
+   "stop_reason": "time_limit",
+   "converged": false,
+   "job_id": "7133029",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "continuation_of": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/tr1/runs/F0-n4608-s0",
+   "validation": {
+    "mean": 0.0024955019798653666,
+    "median": 0.0022032151464372873,
+    "worst": 0.008783764205873013
+   }
+  },
+  "c2/F0-n4608-s1": {
+   "path": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/c2/runs/F0-n4608-s1",
+   "best_sha256": "76eae292447c7811fac96226a8e7f10e740eeee4773d92e0109addd5e2bc2034",
+   "arm": "F0",
+   "rung": 4608,
+   "seed": 1,
+   "steps": 95000,
+   "best_step": 92500,
+   "stop_reason": "time_limit",
+   "converged": false,
+   "job_id": "7133029",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "continuation_of": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/tr2/runs/F0-n4608-s1",
+   "validation": {
+    "mean": 0.0022681940399706946,
+    "median": 0.0019531247671693563,
+    "worst": 0.00829982478171587
+   }
+  },
+  "c2/F0-n4608-s2": {
+   "path": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/c2/runs/F0-n4608-s2",
+   "best_sha256": "d946f7726e2399193291e767720f35d5410305d4070655ca587e75cd7dc78116",
+   "arm": "F0",
+   "rung": 4608,
+   "seed": 2,
+   "steps": 94000,
+   "best_step": 91500,
+   "stop_reason": "time_limit",
+   "converged": false,
+   "job_id": "7133029",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "continuation_of": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/tr3/runs/F0-n4608-s2",
+   "validation": {
+    "mean": 0.00271782520439956,
+    "median": 0.002411296241916716,
+    "worst": 0.00860781129449606
+   }
+  },
+  "c1/U0-n4608-s0": {
+   "path": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/c1/runs/U0-n4608-s0",
+   "best_sha256": "6ba8a47bb011f82645116282f87891e7d4f1cb8c1ebf61b4ff31a1c9597867cf",
+   "arm": "U0",
+   "rung": 4608,
+   "seed": 0,
+   "steps": 106500,
+   "best_step": 99500,
+   "stop_reason": "time_limit",
+   "converged": false,
+   "job_id": "7133028",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "continuation_of": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/tr1/runs/U0-n4608-s0",
+   "validation": {
+    "mean": 0.0023115913531910337,
+    "median": 0.002115802839398384,
+    "worst": 0.005960292648524046
+   }
+  },
+  "tr2/U0-n4608-s1": {
+   "path": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/tr2/runs/U0-n4608-s1",
+   "best_sha256": "bcc0a7f4886f9489a4ef8c6de808534a7486a0a4c1bb60426463429bc8bfb4b1",
+   "arm": "U0",
+   "rung": 4608,
+   "seed": 1,
+   "steps": 107500,
+   "best_step": 98500,
+   "stop_reason": "early_stopping",
+   "converged": true,
+   "job_id": "7117218",
+   "gpu": "NVIDIA L40S",
+   "continuation_of": null,
+   "validation": {
+    "mean": 0.002655837030033581,
+    "median": 0.0023433261085301638,
+    "worst": 0.007170982658863068
+   }
+  },
+  "c1/U0-n4608-s2": {
+   "path": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/c1/runs/U0-n4608-s2",
+   "best_sha256": "b511512c38a8b31ebc159bcd6f90c089e14fa2177b930620209b5db5edad4c89",
+   "arm": "U0",
+   "rung": 4608,
+   "seed": 2,
+   "steps": 138500,
+   "best_step": 138500,
+   "stop_reason": "time_limit",
+   "converged": false,
+   "job_id": "7133028",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "continuation_of": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/tr3/runs/U0-n4608-s2",
+   "validation": {
+    "mean": 0.002341558853004244,
+    "median": 0.0020771947456523776,
+    "worst": 0.006119889207184315
+   }
+  }
+ },
+ "selection": {
+  "FNO": {
+   "rule": "lowest validation mean at the 4,608 rung, seed 0",
+   "candidates": {
+    "F0": 0.0024955019798653666,
+    "F1": 0.0022561369069080683,
+    "F2": 0.002118680181865784
+   },
+   "selected_arm": "F2",
+   "seeds_available": [
+    0
+   ]
+  },
+  "U-Net": {
+   "rule": "lowest validation mean at the 4,608 rung, seed 0",
+   "candidates": {
+    "U0": 0.0023115913531910337,
+    "U1": 0.0024724450740905013,
+    "U2": 0.003590473032090813
+   },
+   "selected_arm": "U0",
+   "seeds_available": [
+    0,
+    1,
+    2
+   ]
+  }
+ }
+}

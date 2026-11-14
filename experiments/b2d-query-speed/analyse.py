@@ -47,6 +47,10 @@ def analyse(d):
     spec = {f"R{a['Rp']}_lin_M{a['M']}_{a['rule']}__qs_{a['tag']}" + ('_graphs' if a['graphs'] else ''): a
             for a in r['config']['arms'] if a.get('impl') == 'qs'}
     rejected = [x['name'] for x in r.get('rejected_nonfinite', [])]
+    for name in sorted({x['name'] for x in r['quick'] if x['family'] == 'fom'}):
+        a = arm_stats(r, name, ncase)
+        a.update(width=None, role='fom')
+        rows.append(a)
     for name, s in setup.items():
         if name in rejected:
             continue

@@ -59,7 +59,7 @@ export PYTHONPATH="\$E/mr-burgers2d:\$E/separable-decoder:\$E/head-ablation:\$E/
 "\$PY" $D/qsdrive.py --config $CONFIG --checkpoint $CK \\
   --rotation experiments/burgers-bank-knob/inputs/rotation_R512.npz \\
   --inputs experiments/b-panel/inputs --out output
-${POST:+export PY; bash $POST}
+${POST:+export PY; bash $POST || echo "POST-STEP-FAILED rc=\$?"}
 find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
 echo ALL-DONE
 EOF

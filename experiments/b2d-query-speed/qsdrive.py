@@ -830,31 +830,35 @@ def main():
             fb = QS.make_query(int(sp['Rp']), L, dt, batch=True,
                                compiler_options=graphs_opts if sp.get('graphs') else None, **sp['qs'])
             for B in bc['sizes']:
-                idx = [i % ncase for i in range(B)]
-                ub = np.stack([inputs_u[i] for i in idx])
-                nub = jnp.asarray(physical[idx, 4])
-                v = fb(jnp.asarray(ub), nub, b['data'], b['cold'], b['tab'])
-                jax.block_until_ready(v)
-                f = np.asarray(v[0])
-                errs = [score(f[i_], c_)['same_grid_evolved'] for i_, c_ in enumerate(idx)]
-                dev = max(abs(e_ - quick_err[(name, c_)]) for e_, c_ in zip(errs, idx))
-                secs = []
-                for r_ in range(int(bc['reps'])):
-                    e.burn(cfg['burn_seconds'])
-                    u = jax.device_put(np.array(ub, copy=True))
-                    jax.block_until_ready(u)
-                    g0_ = time.perf_counter()
-                    v = fb(u, nub, b['data'], b['cold'], b['tab'])
-                    jax.block_until_ready(v)
-                    secs.append(time.perf_counter() - g0_)
-                del v
-                rep['batched'].append(dict(name=name, batch=B, seconds=secs, median_seconds=float(np.median(secs)),
-                                           per_query_ms=1e3 * float(np.median(secs)) / B,
-                                           worst_error=float(max(errs)), median_error=float(np.median(errs)),
-                                           max_error_deviation_from_single=float(dev)))
-                print('BATCH', name, B, 'ms/batch', round(1e3 * float(np.median(secs)), 3), 'ms/query',
-                      round(1e3 * float(np.median(secs)) / B, 4), 'err dev', f'{dev:.2e}', flush=True)
-                save()
+              try:                                                         # a failure here must not lose the job
+                  idx = [i % ncase for i in range(B)]
+                  ub = np.stack([inputs_u[i] for i in idx])
+                  nub = jnp.asarray(physical[idx, 4])
+                  v = fb(jnp.asarray(ub), nub, b['data'], b['cold'], b['tab'])
+                  jax.block_until_ready(v)
+                  f = np.asarray(v[0])
+                  errs = [score(f[i_], c_)['same_grid_evolved'] for i_, c_ in enumerate(idx)]
+                  dev = max(abs(e_ - quick_err[(name, c_)]) for e_, c_ in zip(errs, idx))
+                  secs = []
+                  for r_ in range(int(bc['reps'])):
+                      e.burn(cfg['burn_seconds'])
+                      u = jax.device_put(np.array(ub, copy=True))
+                      jax.block_until_ready(u)
+                      g0_ = time.perf_counter()
+                      v = fb(u, nub, b['data'], b['cold'], b['tab'])
+                      jax.block_until_ready(v)
+                      secs.append(time.perf_counter() - g0_)
+                  del v
+                  rep['batched'].append(dict(name=name, batch=B, seconds=secs, median_seconds=float(np.median(secs)),
+                                             per_query_ms=1e3 * float(np.median(secs)) / B,
+                                             worst_error=float(max(errs)), median_error=float(np.median(errs)),
+                                             max_error_deviation_from_single=float(dev)))
+                  print('BATCH', name, B, 'ms/batch', round(1e3 * float(np.median(secs)), 3), 'ms/query',
+                        round(1e3 * float(np.median(secs)) / B, 4), 'err dev', f'{dev:.2e}', flush=True)
+              except Exception as ex_:                                    # noqa: BLE001
+                rep['batched'].append(dict(name=name, batch=B, failed=repr(ex_)[:300]))
+                print('BATCH-FAILED', name, B, repr(ex_)[:200], flush=True)
+              save()
 
     inv = rep['invocations']
     lim = cfg['gate_limit']

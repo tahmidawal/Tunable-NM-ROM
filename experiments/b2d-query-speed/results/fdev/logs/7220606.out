@@ -1,0 +1,42 @@
+host=pax106 source_commit=4b1e63bbf2247f83686ea241a88e081ea25bb67e vendor_commit=1b7b7f96bcf5808d397d467b5e99ae287f775d07
+NVIDIA A100 80GB PCIe, GPU-93ae5f8d-299a-28bc-9b53-07a050aa9da5, 81920 MiB
+10.235.106.24:/projects/paralab  4.6T  2.2T  2.5T  47% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+BANK 65025 rows 1 row blocks 7.4
+TRUTH done 9.4
+QUICK fft_tight evolved% 0.0 median% 0.0 stalled 0 iters [None, None, None, None, None, None] sec 0.0879 0.6 24.5
+QUICK R128_lin_M512_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs evolved% 1.5968 median% 0.6186 stalled 0 iters [42, 47, 32, 40, 32, 37] sec 0.0168 3.9 41.7
+QUICK R128_lin_M512_lat64__qs_c_k1_s50_fused_f32_first5x2_graphs evolved% 1.6 median% 0.6191 stalled 0 iters [55, 55, 55, 55, 55, 55] sec 0.0024 2.6 44.4
+QUICK R176_lin_M704_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs evolved% 0.8822 median% 0.2889 stalled 0 iters [48, 52, 35, 45, 34, 44] sec 0.0232 4.7 56.6
+QUICK R176_lin_M704_lat64__qs_c_k1_s50_fused_f32_first10x2_graphs evolved% 0.8821 median% 0.289 stalled 0 iters [60, 60, 60, 60, 60, 60] sec 0.0028 2.8 59.6
+QUICK R384_lin_M1536_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs evolved% 0.1656 median% 0.0611 stalled 0 iters [53, 53, 50, 54, 45, 51] sec 0.0449 5.6 70.9
+QUICK R384_lin_M1536_lat64__qs_c_k1_s50_fused_f32_first10x2_graphs evolved% 0.1671 median% 0.0611 stalled 0 iters [60, 60, 60, 60, 60, 60] sec 0.0058 3.6 74.7
+QUICK R384_lin_M1536_lat64__qs_c_k1_s50_P_f32_graphs evolved% 0.1674 median% 0.0626 stalled 0 iters [50, 50, 50, 50, 50, 50] sec 0.0047 1.3 76.1
+TIMED romA1 rep 0 88.5
+TIMED romA1 rep 1 94.1
+TIMED fomB rep 0 102.3
+TIMED romA2 rep 0 114.4
+TIMED romA2 rep 1 119.6
+BATCH R128_lin_M512_lat64__qs_c_k1_s50_fused_f32_first5x2_graphs 1 ms/batch 2.12 ms/query 2.1199 err dev 0.00e+00
+BATCH R128_lin_M512_lat64__qs_c_k1_s50_fused_f32_first5x2_graphs 8 ms/batch 5.322 ms/query 0.6653 err dev 2.46e-10
+BATCH R128_lin_M512_lat64__qs_c_k1_s50_fused_f32_first5x2_graphs 64 ms/batch 19.358 ms/query 0.3025 err dev 3.01e-10
+BATCH R176_lin_M704_lat64__qs_c_k1_s50_fused_f32_first10x2_graphs 1 ms/batch 2.548 ms/query 2.5478 err dev 0.00e+00
+BATCH R176_lin_M704_lat64__qs_c_k1_s50_fused_f32_first10x2_graphs 8 ms/batch 6.883 ms/query 0.8603 err dev 4.87e-10
+BATCH R176_lin_M704_lat64__qs_c_k1_s50_fused_f32_first10x2_graphs 64 ms/batch 29.013 ms/query 0.4533 err dev 3.36e-10
+BATCH R384_lin_M1536_lat64__qs_c_k1_s50_fused_f32_first10x2_graphs 1 ms/batch 5.294 ms/query 5.2935 err dev 5.47e-11
+BATCH R384_lin_M1536_lat64__qs_c_k1_s50_fused_f32_first10x2_graphs 8 ms/batch 16.496 ms/query 2.062 err dev 2.12e-09
+BATCH R384_lin_M1536_lat64__qs_c_k1_s50_fused_f32_first10x2_graphs 64 ms/batch 94.12 ms/query 1.4706 err dev 9.19e-10
+DRIFT True 0.9924979752037247 1.0340452743790611 NEIGHBOUR True 1.0193639667088519
+B2TEST COMPLETE
+torch 2.11.0+cu128 cuda True
+MANIFEST ['c1/U0-n4608-s0', 'c1/U0-n4608-s2', 'c2/F0-n4608-s0', 'c2/F0-n4608-s1', 'c2/F0-n4608-s2', 'tr2/U0-n4608-s1']
+COHORT DONE {"name": "dev8", "seed": 2026111401, "cases": 8, "physical_sha256": "be5dad5cbf794bd17764690df9d0459ed8be5c779dcf1d3cfbcf0b88305aa118", "max_relative_residual": 9.929551873181285e-07, "fields_sha256": "f69e4d54455f6fbfbb84db03b5df0555992cde53eb6cabcc8800b1a8bacc03ca", "job_id": "7220606"}
+EVAL c2/F0-n4608-s0 256 {'L256': (0.213, 0.183, 4.08)}
+EVAL c2/F0-n4608-s1 256 {'L256': (0.229, 0.17, 4.07)}
+EVAL c2/F0-n4608-s2 256 {'L256': (0.27, 0.209, 4.08)}
+EVAL c1/U0-n4608-s0 256 {'L256': (0.252, 0.199, 7.52)}
+EVAL tr2/U0-n4608-s1 256 {'L256': (0.286, 0.222, 7.39)}
+EVAL c1/U0-n4608-s2 256 {'L256': (0.306, 0.209, 7.38)}
+EVALUATION DONE output/ops-dev8
+ALL-DONE

@@ -113,3 +113,26 @@ Cluster namespace `/cluster/tufts/paralab/tawal01/linear-query-speed-20261114/`,
 two jobs queued or running, in-job preflight `jax_backend=gpu`.  GPU-hours are tallied in `LEDGER.md`.
 
 ## Amendments
+
+### A1, Sat 14 Nov 2026 15:58 EST (before any outcome; no job of this lane has started)
+
+Reason: the GPU queue estimated a five-hour wait per job, so selection and test cannot be separate jobs
+within the time available.  The two first submissions (7220222, 7220223) were cancelled while pending and
+produced nothing.
+
+- Selection and test run in ONE job per GPU type.  The job runs `--mode select` (dev12 only), then
+  `lqs_select.py` applies the selection rule above mechanically to those development-only outputs and
+  writes `results/frozen.json` (its SHA256 is printed in the job log), and only then runs `--mode test`
+  with that file.  No person sees a test number before the freeze, and nothing is chosen after it.
+- Selection is therefore done per GPU type, by the same rule, on the GPU that is being timed.  The frozen
+  pair may differ between the H200 and the A100 jobs; both are reported.
+- Selection meshes: H200 256^2 and 4096^2 as fixed above; A100 80GB 256^2 and 2048^2 (the 4096^2 bank
+  alone is 68.7 GB of the 80 GB device, so the 24-variant selection run is not attempted there; the timing
+  mesh of the rule is then 2048^2).  The A100 test still includes 4096^2; if it does not fit, that is
+  reported.
+- If no `sub-m` variant passes, S is reported as "none passed" and the S column repeats F.
+- On the H200 job, after the tests, the paper's whole unmodified driver (`paper_code/p2t_solve.py`, all
+  arms and the CG reference) is also run at 256^2 and 1024^2 as a second, stricter reproduction.
+
+Note, 16:02 EST: the heading of A1 first carried the time 16:10 by mistake; the amendment was committed
+at 15:58 EST (commit fda0acbc1), before the two jobs 7220234 / 7220235 were submitted from that commit.

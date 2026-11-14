@@ -1,0 +1,10 @@
+{
+ "source": "worktrees/2026-11-13-sparse-solvers/experiments/sparse-solvers/RESULTS-h200.md and RESULTS-a100.md at a81bd3a1f (quoted, not rerun)",
+ "units": "ms; float64; device in / device out; matrix upload and factorisation excluded for 'cuDSS solve' (factorisation reused); AmgX = solve only, relative tolerance 1e-6, best shipped configuration",
+ "poisson2d": {
+  "h200": {"cudss_solve": {"256": 0.448, "512": 1.0, "1024": 2.96, "2048": 9.36, "4096": 36.5},
+           "amgx_solve_1e-6": {"256": 13.9, "512": 27.2, "1024": 23.9, "2048": 48.4, "4096": 140}},
+  "a100-80G": {"cudss_solve": {"256": 0.623, "512": 1.52, "1024": 4.96, "2048": 16.5, "4096": 66.8},
+               "amgx_solve_1e-6": {"256": 10.7, "512": 19, "1024": 34.6, "2048": 96.6, "4096": 333}}
+ }
+}

@@ -3,6 +3,7 @@ the final-evaluation configs. Reads validation results only.   python freeze.py 
 Rows:  primary    lowest validation worst, standard solve, admissible, time <= 1.25 x deployed (same job)
        in_budget  the same over banks trained on the original 4,352 trajectories only (written if primary used extra data)
        fast       lowest validation worst over the fast-solve arms (admissible; no time cap needed)
+       fast_in_budget  the same over banks trained on the original 4,352 trajectories only (if fast used extra data; A3)
 Ties: all configurations within 5 % of the lowest validation worst are tied; the fastest of them is taken."""
 import json, sys
 import make_config as mc
@@ -49,7 +50,10 @@ std = [r for r in rows if r['admissible'] and r['within_time'] and not r['fast']
 sel = dict(primary=pick(std))
 if sel['primary']['extra_trajectories']:
     sel['in_budget'] = pick([r for r in std if r['extra_trajectories'] == 0 and r['bank'] != 'deployed'])
-sel['fast'] = pick([r for r in rows if r['admissible'] and r['fast'] and r['bank'] != 'deployed'])
+fast = [r for r in rows if r['admissible'] and r['fast'] and r['bank'] != 'deployed']
+sel['fast'] = pick(fast)
+if sel['fast']['extra_trajectories']:      # amendment A3
+    sel['fast_in_budget'] = pick([r for r in fast if r['extra_trajectories'] == 0])
 out = dict(rule='PROTOCOL.md selection rule + amendment A1', validation_cohort_sha256=VAL_SHA, selected=sel,
            candidates=sorted(rows, key=lambda r: r['worst']),
            banks={k: dict(attempt=b['attempt'], job_id=b['job_id'], args=b['args'], seconds=b['seconds'],

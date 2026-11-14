@@ -120,3 +120,10 @@ the fast solve the query time leaves room for more tests. The fast-solve row of 
 M = 8R', 12R' or 16R' on the finer quadrature lattice lat128 (settings qsk3 and qsk1P only; the lat64 lattice has
 63^2 = 3969 nodes, so it cannot carry more than about 8R' independent tests at these widths). The selection of that row is otherwise unchanged (lowest validation
 worst, median <= 0.10 %, no failed solve, ties within 5 % to the faster). The Primary and In-budget rows are unchanged.
+
+### A3 (before any final evaluation; validation only)
+
+Reason: validation run v5 shows that a bank trained on the original 4,352 trajectories only (width 512) reaches about
+the same validation worst case as the extra-data bank once the fast solve is given 16R' tests. So that the report can
+separate "more data" from "same data", a fourth row is frozen: Fast solve, in budget = the fast-solve row's rule
+restricted to banks trained on the original 4,352 trajectories (written only if the fast-solve row used extra data).

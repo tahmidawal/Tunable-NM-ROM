@@ -1,0 +1,89 @@
+{
+ "source": "worktrees/2026-09-25-poisson2d-test/experiments/poisson2d-test/reports/summary.json meshes[].table1",
+ "poisson2d": {
+  "256": {
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "accurate": {
+    "arm": "R512_linear",
+    "worst_percent": 0.8378866617227667,
+    "median_percent": 0.09476358566398894,
+    "ms": 0.5648075602948666
+   },
+   "fast": {
+    "arm": "R128_linear",
+    "worst_percent": 4.066779975438656,
+    "median_percent": 0.3904659604435784,
+    "ms": 0.38066995330154896
+   },
+   "fom": {
+    "cg_0.03": {
+     "ms": 10.274664033204317,
+     "worst_percent": 0.7740173886543673
+    }
+   }
+  },
+  "1024": {
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "accurate": {
+    "arm": "R512_linear",
+    "worst_percent": 0.8349808939792404,
+    "median_percent": 0.09463435991763326,
+    "ms": 3.1026711221784353
+   },
+   "fast": {
+    "arm": "R128_linear",
+    "worst_percent": 4.057549493242832,
+    "median_percent": 0.3895247006503475,
+    "ms": 1.176533056423068
+   },
+   "fom": {
+    "cg_0.03": {
+     "ms": 96.44699492491782,
+     "worst_percent": 0.32767099429433144
+    }
+   }
+  },
+  "2048": {
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "accurate": {
+    "arm": "R512_linear",
+    "worst_percent": 0.8348356150836014,
+    "median_percent": 0.09462781743002709,
+    "ms": 11.662853648886085
+   },
+   "fast": {
+    "arm": "R128_linear",
+    "worst_percent": 4.057088749316021,
+    "median_percent": 0.3894777222847799,
+    "ms": 3.404956543818116
+   },
+   "fom": {
+    "cg_0.03": {
+     "ms": 750.983357662335,
+     "worst_percent": 0.21655888602147536
+    }
+   }
+  },
+  "4096": {
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "accurate": {
+    "arm": "R512_linear",
+    "worst_percent": 0.8347992954697186,
+    "median_percent": 0.09462618058827285,
+    "ms": 41.915921960026026
+   },
+   "fast": {
+    "arm": "R128_linear",
+    "worst_percent": 4.056973574919411,
+    "median_percent": 0.38946597894501295,
+    "ms": 12.110298499464989
+   },
+   "fom": {
+    "cg_0.1": {
+     "ms": 4508.816706947982,
+     "worst_percent": 0.578002468820175
+    }
+   }
+  }
+ }
+}

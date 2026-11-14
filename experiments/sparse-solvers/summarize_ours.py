@@ -6,7 +6,7 @@ for the rest), writes results/ours/same_gpu.json and prints RESULTS-ours-same-gp
   python summarize_ours.py > RESULTS-ours-same-gpu.md
 
 A timing is marked usable only if the worst-case and median errors reproduce the paper's values (relative
-difference <= 1e-6; Burgers paths are deterministic).
+difference <= 1e-6; the paths are deterministic).
 """
 import json
 from pathlib import Path
@@ -17,6 +17,7 @@ HERE = Path(__file__).resolve().parent
 D = HERE / 'results' / 'ours'
 B2 = {'t256': 256, 't512': 512, 't1024': 1024, 't2048': 2048, 't4096': 4096}
 B3 = {'ho65': 64, 'ho129': 128}
+P2 = {'p2t256': 256, 'p2t1024': 1024, 'p2t2048': 2048, 'p2t4096': 4096}
 
 
 def close(a, b, tol=1e-6):
@@ -64,8 +65,27 @@ def b3d(r, paper):
     return out, foms
 
 
+def p2d(r, paper):
+    """Poisson 2D (the logic of poisson2d-test/make_report.py one()): per arm, error = same_grid_error per case, time =
+    median fused_device_seconds over all timed invocations including the slow ones."""
+    inv = r['invocations'] + r['slow_invocations']
+    def arm(nm):
+        rows = [x for x in inv if x['name'] == nm]
+        if not rows:
+            return None
+        errs = list({x['case']: x['same_grid_error'] for x in rows}.values())
+        secs = [x['fused_device_seconds'] for x in rows]
+        return dict(arm=nm, worst_percent=100 * max(errs), median_percent=100 * st.median(errs), ms=1e3 * st.median(secs),
+                    ms_min=1e3 * min(secs), ms_max=1e3 * max(secs), invocations=len(rows), cases=len(errs))
+    out = {role: arm(paper[role]['arm']) or dict(arm=paper[role]['arm'], status='arm not in this result')
+           for role in ('accurate', 'fast')}
+    foms = {nm: arm(nm) for nm in paper['fom'] if arm(nm)}
+    return out, foms
+
+
 def main():
     paper = json.loads((HERE / 'ours_burgers.json').read_text())
+    paper.update({k: v for k, v in json.loads((HERE / 'ours_poisson2d.json').read_text()).items() if k != 'source'})
     same, rows, fom_rows = {}, [], []
     for gdir in sorted(p for p in D.iterdir() if p.is_dir()) if D.exists() else []:
         for f in sorted(gdir.glob('*.json')):
@@ -77,6 +97,9 @@ def main():
             elif label in B3:
                 prob, L = 'burgers3d', B3[label]
                 got, foms = b3d(r, paper[prob][str(L)])
+            elif label in P2:
+                prob, L = 'poisson2d', P2[label]
+                got, foms = p2d(r, paper[prob][str(L)])
             else:
                 continue
             gpu = r.get('gpu', gdir.name)

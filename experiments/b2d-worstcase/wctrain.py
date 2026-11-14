@@ -98,11 +98,11 @@ def main():
     inter = (np.arange(1, L)[:, None] * (L + 1) + np.arange(1, L)[None, :]).reshape(-1)
 
     def load(lo, hi, levels):
-        parts = []
+        host = np.empty(((hi - lo) * len(levels), n), np.float32)             # one host buffer, one device transfer
         for s in range(lo, hi, 64):
             blk = np.asarray(F[s:min(s + 64, hi)])[:, levels][:, :, inter]
-            parts.append(jnp.asarray(blk.reshape(-1, n)))
-        return jnp.concatenate(parts)
+            host[(s - lo) * len(levels):(s - lo + blk.shape[0]) * len(levels)] = blk.reshape(-1, n)
+        return jnp.asarray(host)
 
     Utr = load(a.train_lo, a.train_hi, lv)                                   # (Ntr * len(lv), n) float32 on device
     ntr = a.train_hi - a.train_lo

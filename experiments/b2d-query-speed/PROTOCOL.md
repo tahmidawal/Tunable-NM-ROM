@@ -118,4 +118,21 @@ Every job log must show `jax_backend=gpu`. GPU jobs: at most 3 queued or running
 
 ## 9. Amendments
 
-(none yet)
+**A1 (2026-11-14, after jobs 7220122 explore128, 7220123 explore384 (crashed, see A2) and the quick pass of
+7220124 diag512; all dev38; test64 and fresh64 untouched).**
+- Second diagnosis job `diag2`. Reason: in diag512 tolerance (gtol 1e-4, 1e-6) and quadrature (lat128) left the
+  width-512 error unchanged, and FEWER tests (M = 3R', 2R') made it worse at both 384 and 512, while the projection
+  floor at 512 is below that at 384. Section 6 did not list arms with MORE tests than 4R'; `diag2` adds M = 6R' and
+  8R' (lat64 where M <= 3969 nodes, and lat128) at widths 256, 384, 512. These are different reduced models and are
+  reported as diagnosis, not as speedups.
+- Selection jobs `sello` (widths 96-176) and `selhi` (192-512) carry a shortlist fixed from the two exploration
+  jobs: s = 50 (one Jacobian and factorisation per query), k in {1, 2, 3}, forms P / fused, float32 stencil, and k = 1
+  with 2 or 3 corrections on the first 2-25 steps only. Dropped after exploration, with the measured reason:
+  refresh periods s < 50 (no accuracy gain, slower), kept-factor form (slower), "grad" mode (slower; non-finite at
+  width 384 for k = 1, s = 10), Picard (k = 1 inaccurate, k >= 2 not faster than chord), scan unrolling and the
+  compile-mode flag (no gain).
+**A2 (2026-11-14).** Job 7220123 (explore384) stopped on the driver's finiteness assertion at the arm
+`g_k1_s10_P` (grad mode, width 384), after 27 candidate arms had passed the quick pass; no timing phase ran. By
+section 4 a non-finite candidate is rejected, so the driver now records such an arm in `rejected_nonfinite`,
+excludes it from scoring and timing and continues (qsdrive.py Q5). The quick-pass log of 7220123 is kept in
+`results/explore384-crashed/`; its single-shot seconds are not used for selection.

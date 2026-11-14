@@ -1,0 +1,584 @@
+{
+ "attempt": "diag2",
+ "intervals": 256,
+ "dt": 0.005,
+ "eval_seed": 7090702,
+ "eval_cases": 4,
+ "eval_fresh_seed": 911702,
+ "eval_fresh_cases": 2,
+ "expected_physical_sha256": null,
+ "cohort_name": "dev38 = params_draw(7090702,4) ++ params_draw(911702,2) ++ params_draw(2026111401,32)",
+ "train_seed": 0,
+ "train_trajectories": 128,
+ "decoder_code_subsample": 8192,
+ "cold_axis_points": 48,
+ "strict": {
+  "ic_budget": 400,
+  "step_budget": 600
+ },
+ "ic_gtol": 1e-06,
+ "inner_damping": 1e-10,
+ "rho_bar": 0.116,
+ "directions_file": "directions_qtd02.npz",
+ "directions_sha256": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+ "rotation_sha256": "51149166b53dad386c93fa0682079aec96b61276801d9a6d4f622453d6426772",
+ "ladder": [
+  32,
+  64,
+  96,
+  128,
+  144,
+  160,
+  176,
+  192,
+  256,
+  384,
+  512
+ ],
+ "population": {
+  "source_draw": [
+   20260922,
+   56
+  ],
+  "cert_draws": [
+   [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   [
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23
+   ],
+   [
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+   ],
+   [
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39
+   ]
+  ],
+  "confirm_draw": [
+   40,
+   41,
+   42,
+   43,
+   44,
+   45,
+   46,
+   47,
+   48,
+   49,
+   50,
+   51,
+   52,
+   53,
+   54,
+   55
+  ],
+  "note": "burgers-eqcert populations (as the parent lane): 256^2 params_draw(20260922,56), else params_draw(20260921,56); 5 certification draws x 8 + 1 confirmation draw x 16"
+ },
+ "rules": {
+  "lat64": {
+   "lattice": 64,
+   "note": "uniform 63x63 interior sub-lattice, equal weights; the paper accurate rule (burgers-eqcert: certified at 256^2 (bc256b, x1), 512^2 (x1), 1024^2; 2048^2 certificate-only; 4096^2 NOT confirmed)"
+  },
+  "lat128": {
+   "lattice": 128,
+   "note": "uniform 127x127 interior sub-lattice (diagnosis only)"
+  }
+ },
+ "arms": [
+  {
+   "model": "lin",
+   "Rp": 256,
+   "M": 1024,
+   "rule": "lat64",
+   "gtol": 0.01,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": false,
+   "family": "lin",
+   "certify": false,
+   "role": "baseline",
+   "primary": true
+  },
+  {
+   "model": "lin",
+   "Rp": 256,
+   "M": 1536,
+   "rule": "lat64",
+   "gtol": 0.01,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": false,
+   "family": "lin",
+   "certify": false,
+   "role": "baseline",
+   "primary": true
+  },
+  {
+   "model": "lin",
+   "Rp": 256,
+   "M": 1536,
+   "rule": "lat128",
+   "gtol": 0.01,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": false,
+   "family": "lin",
+   "certify": false,
+   "role": "baseline",
+   "primary": true
+  },
+  {
+   "model": "lin",
+   "Rp": 256,
+   "M": 2048,
+   "rule": "lat64",
+   "gtol": 0.01,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": false,
+   "family": "lin",
+   "certify": false,
+   "role": "baseline",
+   "primary": true
+  },
+  {
+   "model": "lin",
+   "Rp": 256,
+   "M": 2048,
+   "rule": "lat128",
+   "gtol": 0.01,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": false,
+   "family": "lin",
+   "certify": false,
+   "role": "baseline",
+   "primary": true
+  },
+  {
+   "model": "lin",
+   "Rp": 256,
+   "M": 1024,
+   "rule": "lat64",
+   "impl": "qs",
+   "graphs": true,
+   "tag": "c_k2_s50_P",
+   "qs": {
+    "k": 2,
+    "s": 50
+   },
+   "family": "lin",
+   "certify": false,
+   "role": "qs"
+  },
+  {
+   "model": "lin",
+   "Rp": 256,
+   "M": 1536,
+   "rule": "lat64",
+   "impl": "qs",
+   "graphs": true,
+   "tag": "c_k2_s50_P",
+   "qs": {
+    "k": 2,
+    "s": 50
+   },
+   "family": "lin",
+   "certify": false,
+   "role": "qs"
+  },
+  {
+   "model": "lin",
+   "Rp": 384,
+   "M": 1536,
+   "rule": "lat64",
+   "gtol": 0.01,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": true,
+   "family": "lin",
+   "certify": false,
+   "role": "baseline",
+   "primary": true
+  },
+  {
+   "model": "lin",
+   "Rp": 384,
+   "M": 2304,
+   "rule": "lat64",
+   "gtol": 0.01,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": true,
+   "family": "lin",
+   "certify": false,
+   "role": "baseline",
+   "primary": true
+  },
+  {
+   "model": "lin",
+   "Rp": 384,
+   "M": 2304,
+   "rule": "lat128",
+   "gtol": 0.01,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": true,
+   "family": "lin",
+   "certify": false,
+   "role": "baseline",
+   "primary": true
+  },
+  {
+   "model": "lin",
+   "Rp": 384,
+   "M": 3072,
+   "rule": "lat64",
+   "gtol": 0.01,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": true,
+   "family": "lin",
+   "certify": false,
+   "role": "baseline",
+   "primary": true
+  },
+  {
+   "model": "lin",
+   "Rp": 384,
+   "M": 3072,
+   "rule": "lat128",
+   "gtol": 0.01,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": true,
+   "family": "lin",
+   "certify": false,
+   "role": "baseline",
+   "primary": true
+  },
+  {
+   "model": "lin",
+   "Rp": 384,
+   "M": 1536,
+   "rule": "lat64",
+   "impl": "qs",
+   "graphs": true,
+   "tag": "c_k2_s50_P",
+   "qs": {
+    "k": 2,
+    "s": 50
+   },
+   "family": "lin",
+   "certify": false,
+   "role": "qs"
+  },
+  {
+   "model": "lin",
+   "Rp": 384,
+   "M": 2304,
+   "rule": "lat64",
+   "impl": "qs",
+   "graphs": true,
+   "tag": "c_k2_s50_P",
+   "qs": {
+    "k": 2,
+    "s": 50
+   },
+   "family": "lin",
+   "certify": false,
+   "role": "qs"
+  },
+  {
+   "model": "lin",
+   "Rp": 512,
+   "M": 2048,
+   "rule": "lat64",
+   "gtol": 0.01,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": true,
+   "family": "lin",
+   "certify": false,
+   "role": "baseline",
+   "primary": true
+  },
+  {
+   "model": "lin",
+   "Rp": 512,
+   "M": 3072,
+   "rule": "lat64",
+   "gtol": 0.01,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": true,
+   "family": "lin",
+   "certify": false,
+   "role": "baseline",
+   "primary": true
+  },
+  {
+   "model": "lin",
+   "Rp": 512,
+   "M": 3072,
+   "rule": "lat128",
+   "gtol": 0.01,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": true,
+   "family": "lin",
+   "certify": false,
+   "role": "baseline",
+   "primary": true
+  },
+  {
+   "model": "lin",
+   "Rp": 512,
+   "M": 4096,
+   "rule": "lat128",
+   "gtol": 0.01,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": true,
+   "family": "lin",
+   "certify": false,
+   "role": "baseline",
+   "primary": true
+  },
+  {
+   "model": "lin",
+   "Rp": 512,
+   "M": 2048,
+   "rule": "lat64",
+   "impl": "qs",
+   "graphs": true,
+   "tag": "c_k2_s50_P",
+   "qs": {
+    "k": 2,
+    "s": 50
+   },
+   "family": "lin",
+   "certify": false,
+   "role": "qs"
+  },
+  {
+   "model": "lin",
+   "Rp": 512,
+   "M": 3072,
+   "rule": "lat64",
+   "impl": "qs",
+   "graphs": true,
+   "tag": "c_k2_s50_P",
+   "qs": {
+    "k": 2,
+    "s": 50
+   },
+   "family": "lin",
+   "certify": false,
+   "role": "qs"
+  }
+ ],
+ "parity_pairs": [],
+ "parity_bar": 1e-10,
+ "fom_settings": [
+  {
+   "name": "fft_tight",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 1e-08
+  }
+ ],
+ "fom_both_modes": false,
+ "same_grid_reference": "fft_tight",
+ "audit_cases": [],
+ "audit_arms": [],
+ "restrict_to": 256,
+ "target_chunk": 16,
+ "dense_tangent_group": 34,
+ "phi_gate_max_mesh": 512,
+ "rom_reps": 2,
+ "fom_reps": 1,
+ "order_seed": 20260924,
+ "burn_seconds": 0.1,
+ "phase_cooldown_seconds": 5.0,
+ "phase_dummy_seconds": 2.0,
+ "gate_limit": 1.1,
+ "parent_fast_bar": {
+  "percent": null,
+  "arm": null,
+  "source": "not used (test panel: no selection)"
+ },
+ "purpose": "dev38: second width-512 diagnosis, more tests than 4R' (PROTOCOL.md section 9, amendment A1)",
+ "eval_draws": [
+  [
+   7090702,
+   4
+  ],
+  [
+   911702,
+   2
+  ],
+  [
+   2026111401,
+   32
+  ]
+ ],
+ "skip_certificates": true,
+ "fom_mode_parity": false,
+ "save_restricted_skip_graphs_fom": true,
+ "timed_full_sha_every": 1,
+ "save_restricted": false,
+ "recon_reps": 0,
+ "disjoint_draws": [
+  [
+   20260916,
+   64
+  ],
+  [
+   2026111402,
+   64
+  ]
+ ],
+ "diagnostics": {
+  "rule": "lat64",
+  "width_M": [
+   [
+    384,
+    2304
+   ],
+   [
+    384,
+    3072
+   ],
+   [
+    512,
+    3072
+   ]
+  ],
+  "jac_cases": [
+   0
+  ]
+ }
+}

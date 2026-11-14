@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/b2d-query-speed-20261114/explore384/experiments/b2d-query-speed/qsdrive.py", line 893, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/b2d-query-speed-20261114/explore384/experiments/b2d-query-speed/qsdrive.py", line 630, in main
+    run_quick([build_arm(s)])
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/b2d-query-speed-20261114/explore384/experiments/b2d-query-speed/qsdrive.py", line 594, in run_quick
+    assert np.isfinite(f).all(), name
+           ~~~~~~~~~~~~~~~~~~^^
+AssertionError: R384_lin_M1536_lat64__qs_g_k1_s10_P_graphs

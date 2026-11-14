@@ -194,7 +194,7 @@ def make_query(Rp, L, dt, k=2, s=50, mode='chord', jref='J', form='P', pred='qua
         fields = decode_fields(W, data)
         z = jnp.zeros(())
         zs = jnp.zeros(steps)
-        return (fields, jnp.full(steps, k, jnp.int32), dn, jnp.ones(steps, jnp.int32), W, jnp.int32(0), jnp.int32(1),
+        return (fields, jnp.where(jnp.arange(steps) < nfirst, kfirst, k).astype(jnp.int32), dn, jnp.ones(steps, jnp.int32), W, jnp.int32(0), jnp.int32(1),
                 internal, zs, z, icrn, uin, zs, z, zs, jnp.zeros(steps, jnp.int32))
 
     def query_batch(u0, nu, data, cold, tab):

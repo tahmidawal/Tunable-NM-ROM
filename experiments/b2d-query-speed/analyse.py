@@ -44,7 +44,10 @@ def analyse(d):
     ncase = len(r['physical_cases'])
     setup = {s['arm']: s for s in r['arm_setup']}
     rows = []
+    rejected = [x['name'] for x in r.get('rejected_nonfinite', [])]
     for name, s in setup.items():
+        if name in rejected:
+            continue
         if s['family'] != 'rom':
             a = arm_stats(r, name, ncase)
             a.update(width=None, role='fom')
@@ -67,7 +70,7 @@ def analyse(d):
                cohort_sha256=r['physical_sha256'], cohort_name=r.get('cohort_name'), cases=ncase,
                drift=dict(passed=g['drift']['passed'], ratios=[min(x['ratio'] for x in g['drift']['rows']),
                                                                max(x['ratio'] for x in g['drift']['rows'])]),
-               neighbour_passed=g['neighbour']['passed'], arms=rows, diagnostics=r.get('diagnostics'),
+               neighbour_passed=g['neighbour']['passed'], arms=rows, rejected_nonfinite=r.get('rejected_nonfinite', []), diagnostics=r.get('diagnostics'),
                batched=r.get('batched'))
     (Path(d) / 'arms.json').write_text(json.dumps(out, indent=1) + '\n')
     return out

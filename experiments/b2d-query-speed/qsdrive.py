@@ -585,12 +585,16 @@ def main():
             b = built[name]
             t_arm = time.perf_counter()
             secs = []
+            bad = None
             for c in range(ncase):
                 t0 = time.perf_counter()
                 v = invoke(b, jnp.asarray(inputs_u[c]), c)
                 jax.block_until_ready(v)
                 secs.append(time.perf_counter() - t0)
                 f = np.asarray(v[0])
+                if '__qs_' in name and not np.isfinite(f).all():           # Q5: PROTOCOL.md section 4 rejection
+                    bad = c
+                    break
                 assert np.isfinite(f).all(), name
                 vh = (None,) + tuple(host(v[1:]))
                 row = dict(name=name, case=c, family=b['family'], field_sha256=sha_array(f),
@@ -609,6 +613,15 @@ def main():
                     np.savez_compressed(out / f'restricted_{name}_case{c}.npz', fields=f[:, ::sub, ::sub], **extra)
                 if c in cfg['audit_cases'] and name in cfg['audit_arms']:
                     np.save(out / f'full_{name}_case{c}.npy', f)
+            if bad is not None:                                             # Q5: recorded, not scored, not timed
+                rep['quick'] = [x_ for x_ in rep['quick'] if x_['name'] != name]
+                rep.setdefault('rejected_nonfinite', []).append(dict(name=name, first_nonfinite_case=bad))
+                for a_ in rep['arm_setup']:
+                    if a_['arm'] == name:
+                        a_['rejected_nonfinite'] = True
+                print('REJECT non-finite', name, 'case', bad, flush=True)
+                save()
+                continue
             b['quick_seconds'] = float(np.median(secs[1:] if len(secs) > 1 else secs))
             subjects.append(name)
             rows = [x_ for x_ in rep['quick'] if x_['name'] == name]

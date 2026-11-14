@@ -65,6 +65,22 @@ def qs_grid(Rp):
     return a
 
 
+def shortlist(Rp):
+    """Round 2 (after explore128/explore384, dev38): one refresh per query (s = 50) throughout."""
+    a = []
+    for form in ('P', 'fused'):
+        for k in (1, 2):
+            a.append(qs_arm(Rp, f'c_k{k}_s50_{form}', k=k, s=50, form=form))
+            a.append(qs_arm(Rp, f'c_k{k}_s50_{form}_f32', k=k, s=50, form=form, stencil32=True))
+    for n in (5, 10, 25):
+        a.append(qs_arm(Rp, f'c_k1_s50_fused_f32_first{n}x2', k=1, s=50, form='fused', stencil32=True, kfirst=2, nfirst=n))
+    a.append(qs_arm(Rp, 'c_k1_s50_fused_f32_first2x3', k=1, s=50, form='fused', stencil32=True, kfirst=3, nfirst=2))
+    a.append(qs_arm(Rp, 'c_k1_s50_fused_f32_first5x3', k=1, s=50, form='fused', stencil32=True, kfirst=3, nfirst=5))
+    a.append(qs_arm(Rp, 'c_k3_s50_fused_f32', k=3, s=50, form='fused', stencil32=True))
+    a.append(qs_arm(Rp, 'c_k1_s25_fused_f32', k=1, s=25, form='fused', stencil32=True))
+    return a
+
+
 def build(name):
     base = json.loads((HERE / '../iso-error/config-sweep256.json').read_text())
     proto = base['arms'][0]
@@ -104,6 +120,24 @@ def build(name):
         cfg['diagnostics'] = dict(rule='lat64', width_M=[[192, 768], [256, 1024], [384, 1536], [512, 2048], [512, 1536],
                                                          [384, 1152]], jac_cases=[0, 1, 2, 3, 4, 5])
         cfg['purpose'] = 'dev38: baseline at all widths; width-512 diagnosis arms (PROTOCOL.md section 6)'
+    elif name in ('sello', 'selhi'):
+        arms = []
+        for Rp in ((96, 128, 144, 160, 176) if name == 'sello' else (192, 256, 384, 512)):
+            arms += [B(Rp)] + shortlist(Rp)
+        cfg['purpose'] = 'dev38 selection run: baseline and the shortlisted qs settings per width (PROTOCOL.md section 5)'
+    elif name == 'diag2':
+        arms = []
+        for Rp in (256, 384, 512):
+            arms.append(B(Rp))
+            for f in (6, 8):
+                if f * Rp <= 3969:
+                    arms.append(B(Rp, M=f * Rp))
+                arms.append(B(Rp, M=f * Rp, rule='lat128'))
+            arms.append(qs_arm(Rp, 'c_k2_s50_P', k=2, s=50))
+            if 6 * Rp <= 3969:
+                arms.append(qs_arm(Rp, 'c_k2_s50_P', M=6 * Rp, k=2, s=50))
+        cfg['diagnostics'] = dict(rule='lat64', width_M=[[384, 2304], [384, 3072], [512, 3072]], jac_cases=[0])
+        cfg['purpose'] = 'dev38: second width-512 diagnosis, more tests than 4R\' (PROTOCOL.md section 9, amendment A1)'
     else:
         raise SystemExit(f'unknown config {name}')
     cfg['arms'] = arms

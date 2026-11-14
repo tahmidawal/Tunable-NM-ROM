@@ -45,7 +45,8 @@ QS_SET = dict(qsk1f10=dict(k=1, s=50, form='fused', stencil32=True, kfirst=2, nf
 for R in (384, 448, 512):
     write(f'nat{R}', cohort=VAL, projection_widths=[R], ladder=sorted(set(LADDER[:8] + [R])),
           arms=[arm(R, M=m * R) for m in (4, 6, 8)]
-          + [arm(R, M=m * R, qs=q, tag=t) for m in (4, 8) for t, q in QS_SET.items()])
+          + [arm(R, M=m * R, qs=q, tag=t) for m in (4, 8) for t, q in QS_SET.items()]
+          + [arm(R, M=m * R, qs=QS_SET[t], tag=t) for m in (12, 16) for t in ('qsk3', 'qsk1P')])   # amendment A2
 
 # Final evaluation (run once, after selection.json is committed): arms are written by freeze.py
 TEST = dict(name='test64 = params_draw(20260916, 64)', draws=[[20260916, 64]],

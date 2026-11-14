@@ -112,3 +112,70 @@ minimum device memory in that mode is 91.8 GiB, which fits.  To give the direct 
 once more as solver `cudss_hybrid` (same phases, same timing rule, device memory limit left at the library default, host
 memory request raised to 600 GiB), on 256^3 Poisson and heat and on 192^3 Poisson as a cross-check against the in-device run.
 The in-device failure stays in the record.  Written before the hybrid run; the outcome is not known.
+
+### Amendment 3 (Sat 14 Nov 2026): Task A, a measured implicit Burgers stepper on cuDSS; Task B, re-timing the reduced model on the same GPU type
+
+Written before any Task A or Task B job is submitted; no outcome of either is known.  Reason: the per-trajectory figures
+above are arithmetic estimates from single solves, and the reduced-model times were copied from the paper, part of them
+measured on a different GPU type.  Both are replaced by measurements.
+
+**Task A.  Stepper (`stepper.py`).**  Backward Euler for the paper's Burgers full-order discretisation (2D:
+`mr-burgers2d/engines.py` residual, L intervals, (L-1)^2 unknowns; 3D: `paper-b3d` sign-upwind residual, n = L+1 nodes per
+axis), float64, CuPy arrays, cuDSS through ctypes as in `bench.py` (general LU, default reordering and pivoting, 16 host
+threads).  The CSR pattern is fixed; residual and Jacobian values are computed on the device by two CUDA kernels.  The
+Jacobian kernel is checked against a finite-difference directional derivative of the residual kernel, and the tight
+stepper against the paper's reference solution, before any timing is used.
+Newton rule, as the paper's full solver: start a step from the previous state, stop when ||r|| <= ntol ||u_prev||, test
+before each iteration.  Iteration cap 20 for full Newton (the paper's cap) and 100 for the variants that reuse a
+factorisation; a step that hits the cap or goes non-finite is recorded as not converged and the trajectory continues.
+Variants, each reported separately:
+- `full`: Jacobian assembled and numerically refactorised at every Newton iteration (symbolic analysis reused);
+- `k1`: modified Newton, refactorised once per time step at the previous state, then reused within the step;
+- `k5`, `k10`: refactorised once every 5 / 10 time steps;
+- `frozen`: factorised once per trajectory, at the initial state;
+- `lin1`: linearly implicit, exactly one Newton iteration per step with a fresh factorisation and no residual test.
+Sizes: 2D L = 256, 512, 1024, 2048, 4096; 3D L = 64, 96, 128.  An out-of-memory or library failure is a result.
+
+*Cases and reference.*  2D: the first K cases of the paper's test cohort `params_draw(20260916, 64)` (checksum verified),
+K = 64 at 256 and 512, 16 at 1024, 8 at 2048, 6 at 4096.  3D: the first K cases of the paper's held-out cohort
+`table(923901, 32)`, K = 16 at 64, 8 at 96, 6 at 128.  The reduced model's worst-case error in the paper is over all 64
+(2D) or 32 (3D) cases; where K is smaller the cuDSS worst case is over fewer cases, which can only favour cuDSS, and is
+stated.  Reference: the paper's own reference solver, unchanged vendored code, run in the same job on the same mesh
+(2D `iterative_paths.make_fom(L, 0.005, 'fft')`, ntol 1e-6, ltol 1e-8; 3D `common.make_fom(n, 0.005, 1e-10, 1e-11)`).
+Error of a trajectory, as in the paper: max over the five evolved output times of ||u - u_ref|| / ||u_ref(t=0)|| on the
+full target mesh.  At 3D L = 96 the paper has no reduced model; cuDSS is still measured there.
+
+*Timing.*  One trajectory = from the initial field on the target mesh, on the device, to the six output fields
+(t = 0, 0.05, ..., 0.25) on the target mesh, on the device, device synchronised at both clock reads.  It includes
+Jacobian assembly, every numerical refactorisation (also the one of `frozen`), solves, residuals, and for coarse meshes
+the restriction of the input and the interpolation of the output.  Excluded and reported separately as one-off setup:
+pattern construction, cuDSS symbolic analysis, the first numerical factorisation (needed before a refactorisation),
+kernel compilation.  Warm-up: one two-step trajectory per setting, untimed.  Repeats: 3 timed trajectories per case if
+the first takes at most 5 s, otherwise 1; median and min-max are over all (case, repeat) timings.  Newton iterations,
+refactorisations, solves and unconverged steps are counted per trajectory; an extra instrumented trajectory (case 0)
+gives the split refactorise / solve / rest for the same-mesh settings.
+
+*Same-mesh comparison.*  dt = 0.005 (50 steps), the six variants, ntol 1e-6 and 3e-3 (the paper's lean setting), next to
+the reduced model's accurate and fast settings.
+
+*Accuracy-matched comparison.*  cuDSS may choose variant in {k1, frozen, lin1}, ntol in {1e-3, 1e-2}, dt in
+{0.005, 0.01, 0.025, 0.05}, and a mesh coarsened by 1, 2 or 4 per axis (input subsampled, output interpolated to the
+target mesh by aligned multilinear interpolation, the paper's coarse-mesh rule), plus all same-mesh settings.  For each
+reduced-model setting (accurate, fast) the matched cuDSS setting is the one with the smallest median trajectory time among
+settings whose worst-case error over the cuDSS cases is no larger than the reduced model's worst-case error; settings with
+any unconverged step are eligible only if flagged.  The selection uses the same cases as the report (there is no separate
+cohort for cuDSS, which favours cuDSS).  Settings run coarsest and cheapest first under a per-size wall budget; a setting
+not run for budget is listed as not run, never as failed.
+
+*AmgX stepper* (setup per step / reused): only if time allows; if not run it is reported as not run.
+
+**Task B.  Reduced model on the same GPU type.**  The paper's own drivers, configurations and frozen checkpoints are
+re-staged unchanged (checksums against the original run manifests) into this lane's cluster namespace and re-run on an
+H200 node of the `gpu` partition, the node type of the cuDSS runs (and on an A100 80 GB if a slot allows): Burgers 2D
+(256 to 4096), Burgers 3D (64, 128), Poisson 2D, Poisson 3D, heat 2D, heat 3D, in that priority.  Only job name, paths,
+GPU constraint, memory and wall-time requests change; nothing in the model, its settings or the timing code.  A re-run
+timing is used only if the re-run reproduces the paper's worst-case and median errors for that row (same cases; agreement
+to the printed digits, small floating-point differences between GPU types reported); otherwise the row is reported as
+not reproduced.  Rows not re-run for lack of time or slots keep the paper value and are marked as not re-measured.
+`RESULTS-ours-same-gpu.md` is generated from the result JSON by script.  At most 3 GPU jobs of this lane queued or
+running at any time.

@@ -33,6 +33,13 @@ for e in evs:
             extra_trajectories=0 if dep else int(b['args'].get('extra_count') or 0),
             fast=bool(s.get('qs')), worst=a['worst'], median=a['median'], p95=a['p95'], ms=a['ms'], failed=a['failed'],
             deployed_ms=ref_ms[job] if same else min(ref_ms.values()), deployed_ms_same_job=same))
+# a (bank, arm) validated in several jobs counts once: its latest job
+latest = {}
+for r in rows:
+    k = (r['bank_sha256'], r['arm'])
+    if k not in latest or int(r['validation_job']) > int(latest[k]['validation_job']):
+        latest[k] = r
+rows = list(latest.values())
 for r in rows:
     r['admissible'] = bool(r['median'] <= 1e-3 and r['failed'] == 0)
     r['within_time'] = bool(r['ms'] <= 1.25 * r['deployed_ms'])

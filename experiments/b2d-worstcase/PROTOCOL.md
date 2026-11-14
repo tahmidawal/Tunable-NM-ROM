@@ -83,3 +83,31 @@ reported as not done. No configuration is changed after a test or fresh number h
 At most 4 GPU jobs of this lane queued or running; `gpu` partition; A100 80GB; no local GPU work.
 
 ## Amendments
+
+### A1 (2026-11-14, before any validation run of a fast-solve arm; test64 and fresh64 unopened)
+
+- **Fresh cohort.** fresh64 of this lane = `params_draw(20261114, 64)`, sha256 of the parameter bytes (cluster
+  numpy 2.5.0) `1116b7080643b2b2ea96662f6bd3592d5c51b963b3e2e3c45fc5fb22711db2f8`. The seed was fixed in the lane brief
+  and in the committed `make_config.py` before the query-speed lane published its own fresh cohort
+  (`params_draw(2026111402, 64)`), so this lane keeps its own seed; the two fresh cohorts are different draws.
+- **Timing.** Final query times are measured with this lane's driver `wc.py` (median over the 64 cases of the per-case
+  median of 5 warm calls), deployed bank and new configurations in the same A100-80GB job. This is not the iso-error
+  lane's A-B-A harness; the deployed-bank row measured in the same job is the reference.
+- **Extra training data (disclosure).** The diagnosis shows a train/validation gap for narrow, low-viscosity bumps.
+  One lever therefore uses EXTRA full-order trajectories beyond the 4,608 that the baselines were given:
+  `gen_extra.py --seed 20261115 --count 2304`, parameters inside the training box (w in [0.05, 0.11], a in [1, 2],
+  nu in [0.01, 0.03], centres as in the box), same solver; runs may use the first 1,152 or all 2,304. Any
+  configuration that used them is labelled "+extra data" wherever it is reported.
+- **Rows frozen before the final evaluation** (replaces "one configuration plus at most one speed alternative"):
+  1. *Primary*: the selection rule above, unchanged (standard solve, time cap 1.25x the deployed width-384 time).
+  2. *In-budget*: if the Primary used extra data, the configuration with the lowest validation worst among admissible
+     configurations (same rule, same time cap) trained on the original 4,352 training trajectories only.
+  3. *Fast solve* (requested by the coordinator after the query-speed lane froze its solver; this takes the place of
+     the speed alternative): the query-speed lane's `qsfast.make_query` (byte-identical copy in `fastsolve/`) with one
+     of that lane's frozen settings (k1 first10x2 fused f32; k3 fused f32; k1 P f32), M in {4R', 8R'}, on one of this
+     lane's banks at its native width (any width: the time cap is met by a wide margin). Chosen on validation only:
+     lowest validation worst among combinations with validation median <= 0.10 % and no failed solve; ties within
+     5 % go to the faster one. If the fast solve degrades the worst case relative to the standard solve on the same
+     bank, that is reported as measured.
+- **Levers tried and dropped on validation** are listed in the status file with their job ids (power-mean exponent,
+  symmetry/translation augmentation).

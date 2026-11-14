@@ -28,3 +28,10 @@ arms += [arm(256, gtol=1e-6, ic='grid'), arm(192, gtol=1e-6, ic='grid')]
 write('diag', cohort=VAL, projection_widths=[128, 192, 256, 384, 512], arms=arms)
 write('smoke', cohort=dict(VAL, take=2), projection_widths=[32, 64], allow_cpu_smoke=True, intervals=64,
       arms=[dict(arm(32), graphs=False), dict(arm(64, ic='grid', gtol=1e-6, exact_steps=50), graphs=False)], time_cases=1)
+
+# Step 2: validation of candidate banks (native width R; nested rungs below), next to the deployed setting in the same job
+write('ref', cohort=VAL, projection_widths=[384], arms=[arm(384), arm(384, M=8 * 384)])
+for R in (256, 384, 512):
+    sub = [r for r in (192, 256, 384, 512) if r <= R][-3:]
+    write(f'val{R}', cohort=VAL, projection_widths=sub,
+          arms=[arm(r, M=m * r) for r in reversed(sub) for m in (4, 8)])

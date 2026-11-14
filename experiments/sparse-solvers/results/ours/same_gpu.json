@@ -1,0 +1,624 @@
+{
+ "burgers2d": {
+  "1024": {
+   "accurate": {
+    "arm": "R384_lin_M1536_lat64_g0p001_fast_chol_clip_lamcarry_pred2__eng",
+    "worst_percent": 1.249860116883415,
+    "median_percent": 0.02921942663320993,
+    "ms": 30.761633533984423,
+    "ms_min": 29.460255056619644,
+    "ms_max": 35.901594907045364,
+    "invocations": 256,
+    "cases": 64,
+    "gpu": "NVIDIA H200",
+    "job_id": "7220106",
+    "host": "pax009",
+    "complete": true,
+    "errors_reproduce": true,
+    "paper_ms": 49.07379043288529,
+    "paper_gpu": "NVIDIA A100 80GB PCIe",
+    "paper_worst_percent": 1.249860116883402
+   },
+   "fast": {
+    "arm": "R96_lin_M384_lat64_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs",
+    "worst_percent": 4.254809510664416,
+    "median_percent": 0.5580023133037494,
+    "ms": 12.50652177259326,
+    "ms_min": 11.365746147930622,
+    "ms_max": 14.386127702891827,
+    "invocations": 256,
+    "cases": 64,
+    "gpu": "NVIDIA H200",
+    "job_id": "7220106",
+    "host": "pax009",
+    "complete": true,
+    "errors_reproduce": true,
+    "paper_ms": 19.144739490002394,
+    "paper_gpu": "NVIDIA A100 80GB PCIe",
+    "paper_worst_percent": 4.254809510664357
+   }
+  },
+  "256": {
+   "accurate": {
+    "arm": "R384_lin_M1536_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs",
+    "worst_percent": 0.8748597576173384,
+    "median_percent": 0.02641921794844566,
+    "ms": 29.296159744262695,
+    "ms_min": 21.216703578829765,
+    "ms_max": 33.820344135165215,
+    "invocations": 256,
+    "cases": 64,
+    "gpu": "NVIDIA H200",
+    "job_id": "7220106",
+    "host": "pax009",
+    "complete": true,
+    "errors_reproduce": true,
+    "paper_ms": 45.23743106983602,
+    "paper_gpu": "NVIDIA A100 80GB PCIe",
+    "paper_worst_percent": 0.8748597576173374
+   },
+   "fast": {
+    "arm": "R96_lin_M384_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs",
+    "worst_percent": 3.8456440879539144,
+    "median_percent": 0.529332482759056,
+    "ms": 10.213436558842659,
+    "ms_min": 8.245905861258507,
+    "ms_max": 12.630203738808632,
+    "invocations": 256,
+    "cases": 64,
+    "gpu": "NVIDIA H200",
+    "job_id": "7220106",
+    "host": "pax009",
+    "complete": true,
+    "errors_reproduce": true,
+    "paper_ms": 14.244350837543607,
+    "paper_gpu": "NVIDIA A100 80GB PCIe",
+    "paper_worst_percent": 3.8456440879539118
+   }
+  },
+  "512": {
+   "accurate": {
+    "arm": "R384_lin_M1536_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng",
+    "worst_percent": 1.1283896859166,
+    "median_percent": 0.028552470018645602,
+    "ms": 29.34988820925355,
+    "ms_min": 21.210884675383568,
+    "ms_max": 33.66722632199526,
+    "invocations": 256,
+    "cases": 64,
+    "gpu": "NVIDIA H200",
+    "job_id": "7220106",
+    "host": "pax009",
+    "complete": true,
+    "errors_reproduce": true,
+    "paper_ms": 46.664934838190675,
+    "paper_gpu": "NVIDIA A100 80GB PCIe",
+    "paper_worst_percent": 1.128389685916577
+   },
+   "fast": {
+    "arm": "R96_lin_M384_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng",
+    "worst_percent": 4.103055322673386,
+    "median_percent": 0.548476923680237,
+    "ms": 9.971854276955128,
+    "ms_min": 8.168147876858711,
+    "ms_max": 12.380645610392094,
+    "invocations": 256,
+    "cases": 64,
+    "gpu": "NVIDIA H200",
+    "job_id": "7220106",
+    "host": "pax009",
+    "complete": true,
+    "errors_reproduce": true,
+    "paper_ms": 15.063817147165537,
+    "paper_gpu": "NVIDIA A100 80GB PCIe",
+    "paper_worst_percent": 4.103055322673392
+   }
+  }
+ },
+ "_all": [
+  {
+   "arm": "R384_lin_M1536_lat64_g0p001_fast_chol_clip_lamcarry_pred2__eng",
+   "worst_percent": 1.249860116883415,
+   "median_percent": 0.02921942663320993,
+   "ms": 30.761633533984423,
+   "ms_min": 29.460255056619644,
+   "ms_max": 35.901594907045364,
+   "invocations": 256,
+   "cases": 64,
+   "gpu": "NVIDIA H200",
+   "job_id": "7220106",
+   "host": "pax009",
+   "complete": true,
+   "errors_reproduce": true,
+   "paper_ms": 49.07379043288529,
+   "paper_gpu": "NVIDIA A100 80GB PCIe",
+   "paper_worst_percent": 1.249860116883402,
+   "problem": "burgers2d",
+   "L": 1024,
+   "role": "accurate",
+   "gpu_dir": "h200"
+  },
+  {
+   "arm": "R96_lin_M384_lat64_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs",
+   "worst_percent": 4.254809510664416,
+   "median_percent": 0.5580023133037494,
+   "ms": 12.50652177259326,
+   "ms_min": 11.365746147930622,
+   "ms_max": 14.386127702891827,
+   "invocations": 256,
+   "cases": 64,
+   "gpu": "NVIDIA H200",
+   "job_id": "7220106",
+   "host": "pax009",
+   "complete": true,
+   "errors_reproduce": true,
+   "paper_ms": 19.144739490002394,
+   "paper_gpu": "NVIDIA A100 80GB PCIe",
+   "paper_worst_percent": 4.254809510664357,
+   "problem": "burgers2d",
+   "L": 1024,
+   "role": "fast",
+   "gpu_dir": "h200"
+  },
+  {
+   "arm": "R384_lin_M1536_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs",
+   "worst_percent": 0.8748597576173384,
+   "median_percent": 0.02641921794844566,
+   "ms": 29.296159744262695,
+   "ms_min": 21.216703578829765,
+   "ms_max": 33.820344135165215,
+   "invocations": 256,
+   "cases": 64,
+   "gpu": "NVIDIA H200",
+   "job_id": "7220106",
+   "host": "pax009",
+   "complete": true,
+   "errors_reproduce": true,
+   "paper_ms": 45.23743106983602,
+   "paper_gpu": "NVIDIA A100 80GB PCIe",
+   "paper_worst_percent": 0.8748597576173374,
+   "problem": "burgers2d",
+   "L": 256,
+   "role": "accurate",
+   "gpu_dir": "h200"
+  },
+  {
+   "arm": "R96_lin_M384_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs",
+   "worst_percent": 3.8456440879539144,
+   "median_percent": 0.529332482759056,
+   "ms": 10.213436558842659,
+   "ms_min": 8.245905861258507,
+   "ms_max": 12.630203738808632,
+   "invocations": 256,
+   "cases": 64,
+   "gpu": "NVIDIA H200",
+   "job_id": "7220106",
+   "host": "pax009",
+   "complete": true,
+   "errors_reproduce": true,
+   "paper_ms": 14.244350837543607,
+   "paper_gpu": "NVIDIA A100 80GB PCIe",
+   "paper_worst_percent": 3.8456440879539118,
+   "problem": "burgers2d",
+   "L": 256,
+   "role": "fast",
+   "gpu_dir": "h200"
+  },
+  {
+   "arm": "R384_lin_M1536_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng",
+   "worst_percent": 1.1283896859166,
+   "median_percent": 0.028552470018645602,
+   "ms": 29.34988820925355,
+   "ms_min": 21.210884675383568,
+   "ms_max": 33.66722632199526,
+   "invocations": 256,
+   "cases": 64,
+   "gpu": "NVIDIA H200",
+   "job_id": "7220106",
+   "host": "pax009",
+   "complete": true,
+   "errors_reproduce": true,
+   "paper_ms": 46.664934838190675,
+   "paper_gpu": "NVIDIA A100 80GB PCIe",
+   "paper_worst_percent": 1.128389685916577,
+   "problem": "burgers2d",
+   "L": 512,
+   "role": "accurate",
+   "gpu_dir": "h200"
+  },
+  {
+   "arm": "R96_lin_M384_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng",
+   "worst_percent": 4.103055322673386,
+   "median_percent": 0.548476923680237,
+   "ms": 9.971854276955128,
+   "ms_min": 8.168147876858711,
+   "ms_max": 12.380645610392094,
+   "invocations": 256,
+   "cases": 64,
+   "gpu": "NVIDIA H200",
+   "job_id": "7220106",
+   "host": "pax009",
+   "complete": true,
+   "errors_reproduce": true,
+   "paper_ms": 15.063817147165537,
+   "paper_gpu": "NVIDIA A100 80GB PCIe",
+   "paper_worst_percent": 4.103055322673392,
+   "problem": "burgers2d",
+   "L": 512,
+   "role": "fast",
+   "gpu_dir": "h200"
+  }
+ ],
+ "_fom": {
+  "h200": {
+   "burgers2d": {
+    "1024": {
+     "fft_tight": {
+      "ms": 204.73963022232056,
+      "worst_percent": 0.0
+     },
+     "fft_tight__graphs": {
+      "ms": 209.67189455404878,
+      "worst_percent": 0.0
+     },
+     "lean_nt1e-2_l1e-2_dt005": {
+      "ms": 29.02419352903962,
+      "worst_percent": 31.172889570550293
+     },
+     "lean_nt1e-2_l1e-2_dt005__graphs": {
+      "ms": 29.6154017560184,
+      "worst_percent": 31.172889570550293
+     },
+     "lean_nt1e-2_l1e-2_dt01": {
+      "ms": 18.517937511205673,
+      "worst_percent": 2.1892552613245666
+     },
+     "lean_nt1e-2_l1e-2_dt01__graphs": {
+      "ms": 18.995327409356833,
+      "worst_percent": 2.1892552613245666
+     },
+     "lean_nt1e-3_l1e-3_dt005": {
+      "ms": 45.82404671236873,
+      "worst_percent": 0.12512899049549858
+     },
+     "lean_nt1e-3_l1e-3_dt005__graphs": {
+      "ms": 46.85664176940918,
+      "worst_percent": 0.12512899049549858
+     },
+     "lean_nt1e-3_l1e-3_dt01": {
+      "ms": 26.51670714840293,
+      "worst_percent": 1.9744548108902142
+     },
+     "lean_nt1e-3_l1e-3_dt01__graphs": {
+      "ms": 27.252514846622944,
+      "worst_percent": 1.9744548108902142
+     },
+     "lean_nt1e-4_dt005": {
+      "ms": 80.95869468525052,
+      "worst_percent": 0.05605438536172864
+     },
+     "lean_nt1e-4_dt005__graphs": {
+      "ms": 83.04578345268965,
+      "worst_percent": 0.05605438536172864
+     },
+     "lean_nt3e-3_l3e-3_dt005": {
+      "ms": 36.35073080658913,
+      "worst_percent": 0.12903385089045025
+     },
+     "lean_nt3e-3_l3e-3_dt005__graphs": {
+      "ms": 37.29522693902254,
+      "worst_percent": 0.12903385089045025
+     },
+     "lean_nt3e-3_l3e-3_dt01": {
+      "ms": 24.621704127639532,
+      "worst_percent": 2.07206449325391
+     },
+     "lean_nt3e-3_l3e-3_dt01__graphs": {
+      "ms": 25.20552882924676,
+      "worst_percent": 2.07206449325391
+     },
+     "lean_tight": {
+      "ms": 202.21107173711061,
+      "worst_percent": 0.0
+     },
+     "lean_tight__graphs": {
+      "ms": 206.92838774994016,
+      "worst_percent": 0.0
+     },
+     "nt1e-2_dt005": {
+      "ms": 30.092305038124323,
+      "worst_percent": 31.21429617598767
+     },
+     "nt1e-2_dt005__graphs": {
+      "ms": 30.664436984807253,
+      "worst_percent": 31.21429617598767
+     },
+     "nt1e-2_dt01": {
+      "ms": 16.417800448834896,
+      "worst_percent": 3.0707877230345986
+     },
+     "nt1e-2_dt01__graphs": {
+      "ms": 16.72070100903511,
+      "worst_percent": 3.0707877230345986
+     },
+     "nt1e-3_dt005": {
+      "ms": 65.902354195714,
+      "worst_percent": 0.12536521533806744
+     },
+     "nt1e-3_dt005__graphs": {
+      "ms": 67.34380312263966,
+      "worst_percent": 0.12536521533806744
+     },
+     "nt1e-3_dt01": {
+      "ms": 42.33282431960106,
+      "worst_percent": 1.9744661138902397
+     },
+     "nt1e-3_dt01__graphs": {
+      "ms": 43.16337499767542,
+      "worst_percent": 1.9744661138902397
+     },
+     "nt1e-4_dt005": {
+      "ms": 82.90337584912777,
+      "worst_percent": 0.05605438536172864
+     },
+     "nt1e-4_dt005__graphs": {
+      "ms": 84.87564790993929,
+      "worst_percent": 0.05605438536172864
+     },
+     "nt1e-4_dt01": {
+      "ms": 63.49585484713316,
+      "worst_percent": 1.9866630668227574
+     },
+     "nt1e-4_dt01__graphs": {
+      "ms": 64.91326307877898,
+      "worst_percent": 1.9866630668227574
+     }
+    },
+    "256": {
+     "fft_tight": {
+      "ms": 53.05212922394276,
+      "worst_percent": 0.0
+     },
+     "fft_tight__graphs": {
+      "ms": 55.75824715197086,
+      "worst_percent": 0.0
+     },
+     "lean_nt1e-2_l1e-2_dt005": {
+      "ms": 10.28162706643343,
+      "worst_percent": 30.274125044638062
+     },
+     "lean_nt1e-2_l1e-2_dt005__graphs": {
+      "ms": 10.405824519693851,
+      "worst_percent": 30.274125044638062
+     },
+     "lean_nt1e-2_l1e-2_dt01": {
+      "ms": 6.340998690575361,
+      "worst_percent": 2.09234408668621
+     },
+     "lean_nt1e-2_l1e-2_dt01__graphs": {
+      "ms": 6.468954961746931,
+      "worst_percent": 2.09234408668621
+     },
+     "lean_nt1e-3_l1e-3_dt005": {
+      "ms": 14.22979636117816,
+      "worst_percent": 0.10089054549484934
+     },
+     "lean_nt1e-3_l1e-3_dt005__graphs": {
+      "ms": 14.688939787447453,
+      "worst_percent": 0.10089054549484934
+     },
+     "lean_nt1e-3_l1e-3_dt01": {
+      "ms": 8.289057295769453,
+      "worst_percent": 1.869776867791851
+     },
+     "lean_nt1e-3_l1e-3_dt01__graphs": {
+      "ms": 8.478433825075626,
+      "worst_percent": 1.869776867791851
+     },
+     "lean_nt1e-4_dt005": {
+      "ms": 22.3772837780416,
+      "worst_percent": 0.06362660428098303
+     },
+     "lean_nt1e-4_dt005__graphs": {
+      "ms": 23.096048273146152,
+      "worst_percent": 0.06362660428098303
+     },
+     "lean_nt3e-3_l3e-3_dt005": {
+      "ms": 11.853676289319992,
+      "worst_percent": 0.10906831348625182
+     },
+     "lean_nt3e-3_l3e-3_dt005__graphs": {
+      "ms": 12.109773233532906,
+      "worst_percent": 0.10906831348625182
+     },
+     "lean_nt3e-3_l3e-3_dt01": {
+      "ms": 7.842226419597864,
+      "worst_percent": 1.9617320975918089
+     },
+     "lean_nt3e-3_l3e-3_dt01__graphs": {
+      "ms": 7.98853300511837,
+      "worst_percent": 1.9617320975918089
+     },
+     "lean_tight": {
+      "ms": 52.99664195626974,
+      "worst_percent": 0.0
+     },
+     "lean_tight__graphs": {
+      "ms": 55.43542047962546,
+      "worst_percent": 0.0
+     },
+     "nt1e-2_dt005": {
+      "ms": 10.284947231411934,
+      "worst_percent": 30.331858525309062
+     },
+     "nt1e-2_dt005__graphs": {
+      "ms": 10.583127848803997,
+      "worst_percent": 30.331858525309062
+     },
+     "nt1e-2_dt01": {
+      "ms": 5.701627116650343,
+      "worst_percent": 2.8269247714587773
+     },
+     "nt1e-2_dt01__graphs": {
+      "ms": 5.9226686134934425,
+      "worst_percent": 2.8269247714587773
+     },
+     "nt1e-3_dt005": {
+      "ms": 18.753794487565756,
+      "worst_percent": 0.1003010630143369
+     },
+     "nt1e-3_dt005__graphs": {
+      "ms": 19.483137410134077,
+      "worst_percent": 0.1003010630143369
+     },
+     "nt1e-3_dt01": {
+      "ms": 11.779823806136847,
+      "worst_percent": 1.8705029524691001
+     },
+     "nt1e-3_dt01__graphs": {
+      "ms": 12.449742294847965,
+      "worst_percent": 1.8705029524691001
+     },
+     "nt1e-4_dt005": {
+      "ms": 22.813855670392513,
+      "worst_percent": 0.06362660428098303
+     },
+     "nt1e-4_dt005__graphs": {
+      "ms": 23.504992481321096,
+      "worst_percent": 0.06362660428098303
+     },
+     "nt1e-4_dt01": {
+      "ms": 16.955824568867683,
+      "worst_percent": 1.8629926408954476
+     },
+     "nt1e-4_dt01__graphs": {
+      "ms": 17.905251123011112,
+      "worst_percent": 1.8629926408954476
+     }
+    },
+    "512": {
+     "fft_tight": {
+      "ms": 85.78600129112601,
+      "worst_percent": 0.0
+     },
+     "fft_tight__graphs": {
+      "ms": 90.14992089942098,
+      "worst_percent": 0.0
+     },
+     "lean_nt1e-2_l1e-2_dt005": {
+      "ms": 15.035611111670732,
+      "worst_percent": 31.16393178352737
+     },
+     "lean_nt1e-2_l1e-2_dt005__graphs": {
+      "ms": 14.9492253549397,
+      "worst_percent": 31.16393178352737
+     },
+     "lean_nt1e-2_l1e-2_dt01": {
+      "ms": 9.09772515296936,
+      "worst_percent": 2.157493978009094
+     },
+     "lean_nt1e-2_l1e-2_dt01__graphs": {
+      "ms": 9.262450970709324,
+      "worst_percent": 2.157493978009094
+     },
+     "lean_nt1e-3_l1e-3_dt005": {
+      "ms": 21.69630816206336,
+      "worst_percent": 0.1165216411788225
+     },
+     "lean_nt1e-3_l1e-3_dt005__graphs": {
+      "ms": 21.787640172988176,
+      "worst_percent": 0.1165216411788225
+     },
+     "lean_nt1e-3_l1e-3_dt01": {
+      "ms": 12.359119951725006,
+      "worst_percent": 1.9346471929776035
+     },
+     "lean_nt1e-3_l1e-3_dt01__graphs": {
+      "ms": 12.745739426463842,
+      "worst_percent": 1.9346471929776035
+     },
+     "lean_nt1e-4_dt005": {
+      "ms": 35.66139517351985,
+      "worst_percent": 0.05946253224190406
+     },
+     "lean_nt1e-4_dt005__graphs": {
+      "ms": 36.32952272891998,
+      "worst_percent": 0.05946253224190406
+     },
+     "lean_nt3e-3_l3e-3_dt005": {
+      "ms": 17.740041483193636,
+      "worst_percent": 0.11895932294563574
+     },
+     "lean_nt3e-3_l3e-3_dt005__graphs": {
+      "ms": 17.866380512714386,
+      "worst_percent": 0.11895932294563574
+     },
+     "lean_nt3e-3_l3e-3_dt01": {
+      "ms": 11.639500968158245,
+      "worst_percent": 2.0331224408541395
+     },
+     "lean_nt3e-3_l3e-3_dt01__graphs": {
+      "ms": 11.88348839059472,
+      "worst_percent": 2.0331224408541395
+     },
+     "lean_tight": {
+      "ms": 85.71428619325161,
+      "worst_percent": 0.0
+     },
+     "lean_tight__graphs": {
+      "ms": 88.07424362748861,
+      "worst_percent": 0.0
+     },
+     "nt1e-2_dt005": {
+      "ms": 14.898303430527449,
+      "worst_percent": 30.352467913093424
+     },
+     "nt1e-2_dt005__graphs": {
+      "ms": 15.39117842912674,
+      "worst_percent": 30.352467913093424
+     },
+     "nt1e-2_dt01": {
+      "ms": 8.194157388061285,
+      "worst_percent": 2.9849925455817035
+     },
+     "nt1e-2_dt01__graphs": {
+      "ms": 8.444059640169144,
+      "worst_percent": 2.9849925455817035
+     },
+     "nt1e-3_dt005": {
+      "ms": 29.038657434284687,
+      "worst_percent": 0.11587289241254745
+     },
+     "nt1e-3_dt005__graphs": {
+      "ms": 30.316872987896204,
+      "worst_percent": 0.11587289241254745
+     },
+     "nt1e-3_dt01": {
+      "ms": 18.506427295506,
+      "worst_percent": 1.9346622095615822
+     },
+     "nt1e-3_dt01__graphs": {
+      "ms": 19.339959137141705,
+      "worst_percent": 1.9346622095615822
+     },
+     "nt1e-4_dt005": {
+      "ms": 35.7786538079381,
+      "worst_percent": 0.05946253224190406
+     },
+     "nt1e-4_dt005__graphs": {
+      "ms": 37.58467314764857,
+      "worst_percent": 0.05946253224190406
+     },
+     "nt1e-4_dt01": {
+      "ms": 27.03418442979455,
+      "worst_percent": 1.9346621941255793
+     },
+     "nt1e-4_dt01__graphs": {
+      "ms": 28.390580788254738,
+      "worst_percent": 1.9346621941255793
+     }
+    }
+   }
+  }
+ }
+}

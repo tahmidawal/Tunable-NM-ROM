@@ -36,6 +36,11 @@ for R in (256, 384, 512):
     write(f'val{R}', cohort=VAL, projection_widths=sub,
           arms=[arm(r, M=m * r) for r in reversed(sub) for m in (4, 8)])
 
+# native-width validation (the fine-tune is width-native; lower rungs are not candidates)
+for R in (384, 448, 512):
+    write(f'nat{R}', cohort=VAL, projection_widths=[R], ladder=sorted(set(LADDER[:8] + [R])),
+          arms=[arm(R, M=m * R) for m in (4, 6, 8)])
+
 # Final evaluation (run once, after selection.json is committed): arms are written by freeze.py
 TEST = dict(name='test64 = params_draw(20260916, 64)', draws=[[20260916, 64]],
             expected_sha256='cd058fd2a297c20296b897e54cb186033a44a8db9527d98dcb2c2dad6044527c')

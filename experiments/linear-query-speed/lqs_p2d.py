@@ -52,6 +52,8 @@ def main():
     ap.add_argument('--frozen', default=None)
     ap.add_argument('--out', required=True)
     ap.add_argument('--reps', type=int, default=None)
+    ap.add_argument('--host-compress', action='store_true',
+                    help='second compression stage on the host (offline; for devices with no room beside the bank)')
     ap.add_argument('--cases', type=int, default=None, help='debug only: truncate the timed cohort')
     ap.add_argument('--allow-cpu', action='store_true', help='local debugging only; never a result')
     a = ap.parse_args()
@@ -126,7 +128,7 @@ def main():
     R_['floors'] = {str(k): K_.summarise(v) for k, v in bank['floors'].items()}
     print('BANK', round(bank['info']['build_seconds'], 1), flush=True)
 
-    U0, V0, C0, col2, cinfo = Q.compress_bank(bank['rot'], n)
+    U0, V0, C0, col2, cinfo = Q.compress_bank(bank['rot'], n, host_stage2=a.host_compress)
     R_['compression'] = cinfo
     print('COMPRESS', round(cinfo['seconds'], 1), cinfo['range_finder_relative_residual'], flush=True)
 

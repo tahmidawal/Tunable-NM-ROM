@@ -136,3 +136,17 @@ produced nothing.
 
 Note, 16:02 EST: the heading of A1 first carried the time 16:10 by mistake; the amendment was committed
 at 15:58 EST (commit fda0acbc1), before the two jobs 7220234 / 7220235 were submitted from that commit.
+
+### A2, Sat 14 Nov 2026 17:25 EST (after the A100 job 7220235 finished; the H200 job 7220234 still running)
+
+What happened: on the A100 80GB the test at 4096^2 failed before any query was run.  The offline
+compression ran out of device memory in its second stage (the paper bank alone holds 68.7 GB of the 80 GB).
+No 4096^2 number of any kind exists on the A100.  Tests at 256^2 to 2048^2 completed in that job.
+
+Change (offline implementation only; no accuracy-affecting choice is touched): the driver gets the option
+`--host-compress`, which does the second stage of the same compression (same probes, same seed, same
+algebra) on the host instead of the device.  The frozen pair of job 7220235 is kept as it is
+(`frozen/a100-80G.json`, SHA256 012561a1..., a copy of that job's `results/frozen.json`); one further A100
+job runs the 4096^2 test only, with that file and `--host-compress`.  The development gate and the
+reproduction gate are re-checked in that job as at every mesh.  If it fails again, 4096^2 on the A100 is
+reported as not obtained.

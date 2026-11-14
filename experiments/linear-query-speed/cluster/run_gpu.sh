@@ -1,6 +1,7 @@
 #!/bin/bash -l
 # One GPU allocation of the linear-query-speed lane: preflight, then one process per mesh.
 # Usage: sbatch ... cluster/run_gpu.sh auto "<selection meshes>" "<test meshes>" ["<paper-driver meshes>"]
+#        sbatch ... cluster/run_gpu.sh testfrozen <frozen file> "<test meshes>" ["<extra driver arguments>"]
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=8
@@ -46,6 +47,15 @@ if [ "$MODE" = auto ]; then
     # the paper's whole driver, unmodified (all arms and the CG reference solver)
     (cd paper_code && "$PY" p2t_solve.py --config "config-$n.json" --out "../results/paper-$n" \
        && "$PY" pbk_audit_np.py "../results/paper-$n" --subsample 16 --delete-fields) || echo "MESH-FAILED paper $n exit=$?"
+  done
+elif [ "$MODE" = testfrozen ]; then
+  # testfrozen <frozen file committed in the lane> "<test meshes>" [extra driver arguments]
+  FROZEN=$2; TEST=$3; EXTRA=${4:-}
+  sha256sum "$FROZEN"; cp "$FROZEN" results/frozen.json
+  for n in $TEST; do
+    echo "=== test mesh $n ==="
+    "$PY" lqs_p2d.py --config "$(cfg_of $n)" --intervals "$n" --mode test --frozen results/frozen.json --out "results/p2d-$n" $EXTRA \
+      || echo "MESH-FAILED test $n exit=$?"
   done
 else
   echo "unknown mode $MODE"; exit 65

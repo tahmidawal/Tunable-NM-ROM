@@ -21,7 +21,7 @@ import jax.numpy as jnp
 
 # ------------------------------------------------------------- offline --------
 
-def compress_bank(rot, n, probes=224, seed=20261114):
+def compress_bank(rot, n, probes=224, seed=20261114, host_stage2=False):
     """Randomised range finder in y, then in x on the y-compressed array.  `rot` is the paper's rotated
     bank: a tuple of row chunks, each a tuple of column blocks of shape (rows * (n-1), width)."""
     t0 = time.perf_counter()
@@ -55,17 +55,25 @@ def compress_bank(rot, n, probes=224, seed=20261114):
         Y, col2 = Y + y, col2 + c2
         del om
     V0, _ = jnp.linalg.qr(Y, mode='reduced')
-    Z = jnp.concatenate([project_y(blocks, V0) for blocks in rot], axis=0)   # (m, k, R)
     om = jax.random.normal(jax.random.fold_in(key, 10_000), (k * R, k), dtype=jnp.float64)
-    U0, _ = jnp.linalg.qr(Z.reshape(m, k * R) @ om, mode='reduced')
-    del om
-    C0 = (U0.T @ Z.reshape(m, k * R)).reshape(k, k, R)
-    jax.block_until_ready(C0)
+    if host_stage2:
+        # same algebra with the second stage on the host: used where the device has no room beside the
+        # paper bank (4096^2 on an 80 GB device).  Offline only.
+        Z = np.concatenate([np.asarray(project_y(blocks, V0)) for blocks in rot], axis=0).reshape(m, k * R)
+        U0, _ = np.linalg.qr(Z @ np.asarray(om), mode='reduced')
+        del om
+        C0 = (U0.T @ Z).reshape(k, k, R)
+    else:
+        Z = jnp.concatenate([project_y(blocks, V0) for blocks in rot], axis=0)   # (m, k, R)
+        U0, _ = jnp.linalg.qr(Z.reshape(m, k * R) @ om, mode='reduced')
+        del om
+        C0 = (U0.T @ Z.reshape(m, k * R)).reshape(k, k, R)
+        jax.block_until_ready(C0)
     del Z
     col2 = np.asarray(col2)
     C0 = np.asarray(C0)
     kept2 = np.sum(C0 * C0, axis=(0, 1))
-    info = dict(probes=k, seed=int(seed), features=R, intervals=int(n),
+    info = dict(probes=k, seed=int(seed), host_stage2=bool(host_stage2), features=R, intervals=int(n),
                 bank_frobenius=float(np.sqrt(col2.sum())),
                 range_finder_relative_residual={
                     str(Rp): float(np.sqrt(max(col2[:Rp].sum() - kept2[:Rp].sum(), 0.0) / col2[:Rp].sum()))

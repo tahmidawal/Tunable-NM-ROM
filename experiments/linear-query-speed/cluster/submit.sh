@@ -4,6 +4,8 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 ATTEMPT=$1; WALL=$2; FEAT=$3; SEL=$4; MESHES=$5; PAPER=${6:-}
+# if <selection meshes> is the word "testfrozen": submit.sh <attempt> <wall> <feature> testfrozen <frozen file> "<meshes>" ["<extra args>"]
+if [ "$SEL" = testfrozen ]; then RUNARGS="testfrozen '$5' '${6:-}' '${7:-}'"; MESHES="${6:-}"; PAPER="frozen=$5 extra=${7:-}"; else RUNARGS="auto '$SEL' '$MESHES' '$PAPER'"; fi
 NS=/cluster/tufts/paralab/tawal01/linear-query-speed-20261114
 DIR=$NS/jobs/$ATTEMPT
 [ -z "$(git status --porcelain -- . ":!ledger" ":!LEDGER.md")" ] || { echo "uncommitted changes; commit first"; exit 2; }
@@ -14,7 +16,7 @@ mine=$(ssh tufts-login "squeue -u \$USER -h -p gpu -o '%j'" | grep -c '^lqs_' ||
 ssh tufts-login "test ! -e $DIR && mkdir -p $DIR" || { echo "attempt directory exists: $DIR"; exit 4; }
 tar -cf - "${FILES[@]}" | ssh tufts-login "cd $DIR && tar -xf - && echo $COMMIT > SOURCE_COMMIT.txt"
 sha256sum "${FILES[@]}" | ssh tufts-login "cd $DIR && cat > SOURCE-SHA256SUMS && sha256sum -c --quiet SOURCE-SHA256SUMS" || { echo "staged checksum mismatch"; exit 3; }
-JOB=$(ssh tufts-login "cd $DIR && sbatch --parsable --job-name=lqs_$ATTEMPT --time=$WALL --constraint=$FEAT ${LQS_MEM:+--mem=$LQS_MEM} cluster/run_gpu.sh auto '$SEL' '$MESHES' '$PAPER'")
+JOB=$(ssh tufts-login "cd $DIR && sbatch --parsable --job-name=lqs_$ATTEMPT --time=$WALL --constraint=$FEAT ${LQS_MEM:+--mem=$LQS_MEM} cluster/run_gpu.sh $RUNARGS")
 n=$(ssh tufts-login "squeue -u \$USER -h -o '%i %Z'" | awk -v d="$DIR" '$2==d' | wc -l)
 [ "$n" -eq 1 ] || { echo "expected exactly one job in $DIR, found $n (job $JOB)"; exit 5; }
 echo "submitted job=$JOB dir=$DIR commit=$COMMIT"

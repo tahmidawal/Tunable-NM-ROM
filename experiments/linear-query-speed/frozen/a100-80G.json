@@ -1,0 +1,180 @@
+{
+ "rule": "PROTOCOL.md Selection",
+ "selection_meshes": [
+  256,
+  2048
+ ],
+ "timing_mesh": 2048,
+ "jobs": [
+  "7220235"
+ ],
+ "gpu": [
+  "NVIDIA A100 80GB PCIe, GPU-fe5316fb-35a6-78ef-4c0b-da5c343c936d, 81920 MiB"
+ ],
+ "candidates": [
+  {
+   "variant": "T_tau0.0001_f32_full",
+   "passes": true,
+   "accurate_ms_at_timing_mesh": 0.35979924723505974,
+   "max_deviation": 6.387728384130254e-06
+  },
+  {
+   "variant": "T_tau0.0001_f32_sub1024",
+   "passes": true,
+   "accurate_ms_at_timing_mesh": 0.2814345061779022,
+   "max_deviation": 6.387728384130254e-06
+  },
+  {
+   "variant": "T_tau0.0001_f32_sub256",
+   "passes": true,
+   "accurate_ms_at_timing_mesh": 0.24895090609788895,
+   "max_deviation": 6.387728384130254e-06
+  },
+  {
+   "variant": "T_tau0.0001_f32_sub512",
+   "passes": true,
+   "accurate_ms_at_timing_mesh": 0.2604760229587555,
+   "max_deviation": 6.387728384130254e-06
+  },
+  {
+   "variant": "T_tau0.0001_f64_full",
+   "passes": true,
+   "accurate_ms_at_timing_mesh": 0.35078125074505806,
+   "max_deviation": 6.383149820221329e-06
+  },
+  {
+   "variant": "T_tau0.0001_f64_sub1024",
+   "passes": true,
+   "accurate_ms_at_timing_mesh": 0.27386099100112915,
+   "max_deviation": 6.383149820220117e-06
+  },
+  {
+   "variant": "T_tau0.0001_f64_sub256",
+   "passes": true,
+   "accurate_ms_at_timing_mesh": 0.24268683046102524,
+   "max_deviation": 6.383149820220965e-06
+  },
+  {
+   "variant": "T_tau0.0001_f64_sub512",
+   "passes": true,
+   "accurate_ms_at_timing_mesh": 0.252546276897192,
+   "max_deviation": 6.383149820221105e-06
+  },
+  {
+   "variant": "T_tau1e-06_f32_full",
+   "passes": true,
+   "accurate_ms_at_timing_mesh": 0.3769020549952984,
+   "max_deviation": 3.2492163153936164e-07
+  },
+  {
+   "variant": "T_tau1e-06_f32_sub1024",
+   "passes": true,
+   "accurate_ms_at_timing_mesh": 0.29740994796156883,
+   "max_deviation": 3.249216317370219e-07
+  },
+  {
+   "variant": "T_tau1e-06_f32_sub256",
+   "passes": true,
+   "accurate_ms_at_timing_mesh": 0.2668648958206177,
+   "max_deviation": 2.6300604670240243e-06
+  },
+  {
+   "variant": "T_tau1e-06_f32_sub512",
+   "passes": true,
+   "accurate_ms_at_timing_mesh": 0.2778242342174053,
+   "max_deviation": 6.55845085025048e-07
+  },
+  {
+   "variant": "T_tau1e-06_f64_full",
+   "passes": true,
+   "accurate_ms_at_timing_mesh": 0.3673294559121132,
+   "max_deviation": 7.010366678924345e-08
+  },
+  {
+   "variant": "T_tau1e-06_f64_sub1024",
+   "passes": true,
+   "accurate_ms_at_timing_mesh": 0.29192352667450905,
+   "max_deviation": 1.241860831879415e-07
+  },
+  {
+   "variant": "T_tau1e-06_f64_sub256",
+   "passes": true,
+   "accurate_ms_at_timing_mesh": 0.26343483477830887,
+   "max_deviation": 2.601104238201868e-06
+  },
+  {
+   "variant": "T_tau1e-06_f64_sub512",
+   "passes": true,
+   "accurate_ms_at_timing_mesh": 0.27165748178958893,
+   "max_deviation": 6.194705969811104e-07
+  },
+  {
+   "variant": "T_tau1e-08_f32_full",
+   "passes": true,
+   "accurate_ms_at_timing_mesh": 0.39681699126958847,
+   "max_deviation": 3.57946937028468e-07
+  },
+  {
+   "variant": "T_tau1e-08_f32_sub1024",
+   "passes": true,
+   "accurate_ms_at_timing_mesh": 0.3202417865395546,
+   "max_deviation": 3.596191205262635e-07
+  },
+  {
+   "variant": "T_tau1e-08_f32_sub256",
+   "passes": true,
+   "accurate_ms_at_timing_mesh": 0.28841476887464523,
+   "max_deviation": 2.621317841793799e-06
+  },
+  {
+   "variant": "T_tau1e-08_f32_sub512",
+   "passes": true,
+   "accurate_ms_at_timing_mesh": 0.2994355745613575,
+   "max_deviation": 6.447149882261473e-07
+  },
+  {
+   "variant": "T_tau1e-08_f64_full",
+   "passes": true,
+   "accurate_ms_at_timing_mesh": 0.3913841210305691,
+   "max_deviation": 7.0604765789543e-10
+  },
+  {
+   "variant": "T_tau1e-08_f64_sub1024",
+   "passes": true,
+   "accurate_ms_at_timing_mesh": 0.31641917303204536,
+   "max_deviation": 1.2388746878290827e-07
+  },
+  {
+   "variant": "T_tau1e-08_f64_sub256",
+   "passes": true,
+   "accurate_ms_at_timing_mesh": 0.2876538783311844,
+   "max_deviation": 2.6010899980133208e-06
+  },
+  {
+   "variant": "T_tau1e-08_f64_sub512",
+   "passes": true,
+   "accurate_ms_at_timing_mesh": 0.2976786345243454,
+   "max_deviation": 6.194108022184664e-07
+  }
+ ],
+ "F": {
+  "variant": "T_tau0.0001_f64_full",
+  "tau": 0.0001,
+  "precision": "f64",
+  "input": "full",
+  "accurate_ms_at_timing_mesh": 0.35078125074505806,
+  "tied": [
+   "T_tau0.0001_f64_full"
+  ]
+ },
+ "S": {
+  "variant": "T_tau0.0001_f64_sub256",
+  "tau": 0.0001,
+  "precision": "f64",
+  "input": 256,
+  "accurate_ms_at_timing_mesh": 0.24268683046102524,
+  "tied": [
+   "T_tau0.0001_f64_sub256"
+  ]
+ }
+}

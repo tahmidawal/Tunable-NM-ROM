@@ -87,6 +87,7 @@ def main():
     p.add_argument('--extra-pool', default=None, help='extra training trajectories (gen_extra.py): fields .npy')
     p.add_argument('--extra-meta', default=None)
     p.add_argument('--extra-count', type=int, default=0, help='use the first N extra trajectories (0 = all)')
+    p.add_argument('--host-data', action='store_true', help='keep training snapshots in host memory (one batch on the device per step)')
     p.add_argument('--resume', default=None, help='start from a bank.pkl written by this trainer (same R)')
     p.add_argument('--smoke-traj', type=int, default=0, help='CPU smoke only: pool holds this many trajectories')
     a = p.parse_args()
@@ -119,16 +120,16 @@ def main():
         assert FX.shape[1:] == (26, (L + 1) ** 2) and nx <= FX.shape[0]
         n0x = np.asarray(mx['n0'])[:nx]
 
-    def load(lo, hi, levels, extra=0):
-        host = np.empty(((hi - lo + extra) * len(levels), n), np.float32)     # one host buffer, one device transfer
+    def load(lo, hi, levels, extra=None):
+        host = np.empty(((hi - lo + (extra or 0)) * len(levels), n), np.float32)     # one host buffer, one device transfer
         row = 0
-        for src, s0, s1 in ((F, lo, hi), (FX, 0, extra)):
+        for src, s0, s1 in ((F, lo, hi), (FX, 0, extra or 0)):
             for s in range(s0, s1, 64):
                 blk = np.asarray(src[s:min(s + 64, s1)])[:, levels][:, :, inter]
                 host[row:row + blk.shape[0] * len(levels)] = blk.reshape(-1, n)
                 row += blk.shape[0] * len(levels)
         assert row == host.shape[0]
-        return jnp.asarray(host)
+        return host if (a.host_data and extra is not None) else jnp.asarray(host)
 
     Utr = load(a.train_lo, a.train_hi, lv, nx)                               # (Ntr * len(lv), n) float32 on device
     ntr = a.train_hi - a.train_lo + nx
@@ -152,6 +153,7 @@ def main():
         return jnp.stack((jnp.where(ri, ar, m1).min(1), jnp.where(ri, ar, -1).max(1),
                           jnp.where(rj, ar, m1).min(1), jnp.where(rj, ar, -1).max(1)), 1)
 
+    assert not (a.host_data and (a.aug_shift or a.aug_transpose))
     if a.aug_shift:
         box = np.concatenate([np.asarray(boxes(Utr, jnp.arange(s, min(s + 2048, nsnap)))) for s in range(0, nsnap, 2048)])
         # allowed whole-cell shifts keep the support at least one cell away from the walls
@@ -243,6 +245,9 @@ def main():
     def all_errs(tp, fixed, U, n0, chunk=1024):
         Q, _ = qr_grid(tp, fixed)
         N = int(U.shape[0])
+        if isinstance(U, np.ndarray):                       # host-resident snapshots: one chunk on the device at a time
+            return np.concatenate([np.asarray(errs_chunk(Q, jnp.asarray(U[s:s + chunk]), n0[s:s + chunk],
+                                                         jnp.arange(min(chunk, N - s)))) for s in range(0, N, chunk)])
         outs = [np.asarray(errs_chunk(Q, U, n0, jnp.arange(s, min(s + chunk, N)))) for s in range(0, N - N % chunk, chunk)]
         if N % chunk:
             outs.append(np.asarray(errs_chunk(Q, U, n0, jnp.arange(N - N % chunk, N))))
@@ -287,7 +292,12 @@ def main():
         if a.aug_shift:
             go = movable[idx] & (rng.random(a.batch) < a.aug_shift)
             sh = np.where(go[:, None], rng.integers(sh_lo[idx], np.maximum(sh_hi[idx], sh_lo[idx]) + 1), 0).astype(np.int32)
-        tp, ema, st, e2, agg, orth = step(tp, ema, st, fixed, Utr, n0tr, jnp.asarray(idx), pidx, jnp.asarray(sh), jnp.asarray(tr))
+        if a.host_data:
+            idx = np.sort(idx)
+            tp, ema, st, e2, agg, orth = step(tp, ema, st, fixed, jnp.asarray(Utr[idx]), n0tr[jnp.asarray(idx)],
+                                              jnp.arange(a.batch), pidx, jnp.asarray(sh), jnp.asarray(tr))
+        else:
+            tp, ema, st, e2, agg, orth = step(tp, ema, st, fixed, Utr, n0tr, jnp.asarray(idx), pidx, jnp.asarray(sh), jnp.asarray(tr))
         if nh or (i + 1) % 100 == 0:
             eb = np.sqrt(np.asarray(e2))
             assert np.isfinite(eb).all(), f'non-finite loss at step {i}'
@@ -318,12 +328,15 @@ def main():
     acc = jnp.zeros((R, R))
     cov = jax.jit(lambda Q_, U, n0, idx: (lambda c: c.T @ c)((U[idx].astype(jnp.float64) @ Q_) / n0[idx][:, None]))
     for s in range(0, nsnap, 1024):
-        acc = acc + cov(Q, Utr, n0tr, jnp.arange(s, min(s + 1024, nsnap)))
+        if a.host_data:
+            acc = acc + cov(Q, jnp.asarray(Utr[s:s + 1024]), n0tr[s:s + 1024], jnp.arange(min(1024, nsnap - s)))
+        else:
+            acc = acc + cov(Q, Utr, n0tr, jnp.arange(s, min(s + 1024, nsnap)))
     evals, V = np.linalg.eigh(np.asarray(acc))
     V = V[:, ::-1]
     T = np.linalg.solve(np.asarray(Rg), V)                     # G T = Q V: orthonormal on the grid, energy-ordered
     sub = np.sort(rng.choice(nsnap, min(16384, nsnap), replace=False))
-    codes = np.concatenate([np.asarray(Utr[jnp.asarray(sub[s:s + 1024])].astype(jnp.float64) @ Q) @ V
+    codes = np.concatenate([np.asarray(jnp.asarray(Utr[sub[s:s + 1024]] if a.host_data else Utr[jnp.asarray(sub[s:s + 1024])]).astype(jnp.float64) @ Q) @ V
                             for s in range(0, len(sub), 1024)])
     GT = np.asarray(G) @ T
     hist['rotation'] = dict(orthonormality_deviation=float(np.linalg.norm(GT.T @ GT - np.eye(R))),

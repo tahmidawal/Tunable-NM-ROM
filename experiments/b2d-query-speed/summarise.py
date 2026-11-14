@@ -48,8 +48,8 @@ def table(j, widths=None, label=None):
         if widths and a['width'] not in widths:
             continue
         v = a.get('vs_baseline')
-        nm = {'baseline': 'baseline (unchanged)'}.get(a['role'], f"{a['role']}: {a.get('tag') or a['name']}")
-        if a['role'] == 'baseline' and not (a['M'] == 4 * a['width'] and a['rule'] == 'lat64' and a['gtol'] == 0.01):
+        nm = {'baseline': f"baseline (unchanged, gtol {a.get('gtol'):g})" if a['role'] == 'baseline' else ''}.get(a['role'], f"{a['role']}: {a.get('tag') or a['name']}")
+        if a['role'] == 'baseline' and v:
             nm = f"baseline text, M={a['M']} {a['rule']} gtol {a['gtol']:g}"
         elif a['M'] != 4 * a['width'] or a['rule'] != 'lat64':
             nm += f" (M={a['M']} {a['rule']})"

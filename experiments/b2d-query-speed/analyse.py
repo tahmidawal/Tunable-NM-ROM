@@ -61,7 +61,8 @@ def analyse(d):
         rows.append(a)
     base = {}
     for a in rows:
-        if a['role'] == 'baseline' and a['M'] == 4 * a['width'] and a['rule'] == 'lat64' and a['gtol'] == 0.01:
+        if a['role'] == 'baseline' and a['M'] == 4 * a['width'] and a['rule'] == 'lat64' and (
+                a['gtol'] == 0.01 or a['width'] not in base):          # the mesh-extension jobs carry one baseline per width
             base[a['width']] = a
     for a in rows:
         if a['width'] in base and a is not base[a['width']]:

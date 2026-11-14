@@ -17,7 +17,7 @@ TEST_SHA = 'cd058fd2a297c20296b897e54cb186033a44a8db9527d98dcb2c2dad6044527c'
 CHANGED = ['arms', 'attempt', 'audit_arms', 'audit_cases', 'batch', 'cohort_name', 'diagnostics', 'disjoint_draws',
            'eval_draws', 'expected_physical_sha256', 'fom_both_modes', 'fom_settings', 'ladder', 'purpose',
            'recon_reps', 'rom_reps', 'rules', 'test_arms', 'prior_heldout', 'allow_cpu_smoke', 'case_subset',
-           'local_smoke_waives_cohort_hash', 'frozen']
+           'local_smoke_waives_cohort_hash', 'frozen', 'intervals', 'target_chunk', 'population']
 
 
 def base_arm(Rp, M=None, rule='lat64', gtol=0.01, graphs=None, proto=None):
@@ -166,6 +166,27 @@ def build(name):
             cfg.update(eval_draws=DEV38[:2], expected_physical_sha256=None, disjoint_draws=TEST64 + FRESH64,
                        cohort_name='dev6 = params_draw(7090702,4) ++ params_draw(911702,2) (first six cases of dev38)',
                        purpose='rehearsal of the final job on six dev38 cases (no sealed cohort); not a reported result')
+    elif name in ('x512', 'x1024'):
+        # mesh extension (PROTOCOL.md section 7, last paragraph): frozen settings only, at the widths, tolerances and
+        # compile modes of the burgers2d-test configs config-t512.json / config-t1024.json @ 1b7b7f96
+        L = int(name[1:])
+        gt, gr, chunk = {512: (0.01, {384: False, 96: False, 128: False}, 8),
+                         1024: (0.001, {384: False, 96: True, 128: True}, 4)}[L]
+        fz = json.loads((HERE / 'frozen.json').read_text())
+        arms = []
+        for Rp in (96, 128, 384):
+            w = fz['widths'][str(Rp)]
+            arms.append(B(Rp, gtol=gt, graphs=gr[Rp]))
+            for kind in ('accurate', 'fast'):
+                if w[kind]:
+                    a = qs_arm(Rp, w[kind]['tag'], graphs=w[kind]['graphs'], **w[kind]['qs'])
+                    a['role'] = kind
+                    arms.append(a)
+        pop = copy.deepcopy(cfg['population'])
+        pop['source_draw'] = [20260921, 56]
+        cfg.update(intervals=L, target_chunk=chunk, population=pop, eval_draws=TEST64, expected_physical_sha256=TEST_SHA,
+                   disjoint_draws=DEV38 + FRESH64, cohort_name=f'test64 = params_draw(20260916,64) on the {L}^2 mesh',
+                   frozen=fz, purpose=f'mesh extension {L}^2: frozen 256^2 settings, evaluated once on test64')
     else:
         raise SystemExit(f'unknown config {name}')
     cfg['arms'] = arms

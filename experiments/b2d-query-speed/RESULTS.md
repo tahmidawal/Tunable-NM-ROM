@@ -186,6 +186,117 @@ Full-order solver settings in the same job on the same GPU (unchanged settings; 
 
 Timed outputs bitwise identical to the scored outputs: all arms.
 
+## Ours against our own full-order solver, 256^2, dev38 (`results/fom256`)
+
+job 7220987, pax106, NVIDIA A100 80GB PCIe, backend gpu, commit 8210938cb, 38 cases, driver 294 s, drift gate pass (ratios 0.997-1.008), neighbour gate pass. Development cohort (not sealed); the full-order settings are those paired with each width in the burgers2d-test Table 1 and are unchanged.
+
+| width | setting | median % | worst % | ms (median) | ms 5-95 % of cases | ms min-max | speedup | median ratio | worst ratio | max case ratio |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 96 | baseline (unchanged, gtol 0.01) | 0.6354 | 4.265 | 15.32 | 12.79-18.90 | 12.44-20.34 | 1 | 1 | 1 | 1 |
+| 96 | accurate: c_k1_s50_fused_f32 | 0.6353 | 4.273 | 2.13 | 2.07-2.18 | 2.03-3.17 | 7.19x | 1.000 | 1.002 | 1.044 |
+| 128 | baseline (unchanged, gtol 0.01) | 0.3255 | 2.729 | 17.76 | 15.05-21.37 | 14.01-22.28 | 1 | 1 | 1 | 1 |
+| 128 | accurate: c_k1_s50_fused_f32_first5x2 | 0.3250 | 2.729 | 2.28 | 2.24-2.37 | 2.17-3.15 | 7.79x | 0.998 | 1.000 | 1.067 |
+| 384 | baseline (unchanged, gtol 0.01) | 0.0369 | 0.477 | 45.54 | 37.32-51.21 | 33.02-53.31 | 1 | 1 | 1 | 1 |
+| 384 | fast: c_k1_s50_P_f32 | 0.0380 | 0.476 | 4.44 | 4.40-4.48 | 4.31-4.81 | 10.25x | 1.029 | 0.998 | 1.966 |
+| 384 | accurate: c_k1_s50_fused_f32_first10x2 | 0.0369 | 0.477 | 5.53 | 5.48-5.58 | 5.43-6.34 | 8.24x | 1.000 | 1.000 | 1.078 |
+
+Full-order solver settings in the same job on the same GPU (unchanged settings; `fft_tight` is the error reference itself; `__graphs` is the second compile mode of the same setting):
+
+| full-order setting | median % | worst % | ms (median) | ms 5-95 % of cases |
+|---|---|---|---|---|
+| `fft_tight` | 0.0000 | 0.000 | 94.35 | 62.34-132.28 |
+| `fft_tight__graphs` | 0.0000 | 0.000 | 92.39 | 60.87-129.50 |
+| `lean_nt1e-2_l1e-2_dt01` | 0.9225 | 1.995 | 10.25 | 7.96-13.23 |
+| `lean_nt1e-2_l1e-2_dt01__graphs` | 0.9225 | 1.995 | 9.78 | 7.51-12.83 |
+| `lean_nt3e-3_l3e-3_dt005` | 0.0351 | 0.119 | 19.40 | 15.33-24.39 |
+| `lean_nt3e-3_l3e-3_dt005__graphs` | 0.0351 | 0.119 | 18.38 | 14.71-23.17 |
+| `nt1e-2_dt01` | 1.5752 | 3.874 | 8.48 | 7.86-10.40 |
+| `nt1e-2_dt01__graphs` | 1.5752 | 3.874 | 8.37 | 7.85-10.20 |
+
+| width | full-order setting (faster compile mode) | FOM median % | FOM worst % | FOM ms | our setting | our median % | our worst % | our ms | FOM ms / our ms |
+|---|---|---|---|---|---|---|---|---|---|
+| 96 | `nt1e-2_dt01__graphs` | 1.5752 | 3.874 | 8.37 | baseline | 0.6354 | 4.265 | 15.32 | 0.55 |
+| 96 | `nt1e-2_dt01__graphs` | 1.5752 | 3.874 | 8.37 | accurate | 0.6353 | 4.273 | 2.13 | 3.93 |
+| 128 | `lean_nt1e-2_l1e-2_dt01__graphs` | 0.9225 | 1.995 | 9.78 | baseline | 0.3255 | 2.729 | 17.76 | 0.55 |
+| 128 | `lean_nt1e-2_l1e-2_dt01__graphs` | 0.9225 | 1.995 | 9.78 | accurate | 0.3250 | 2.729 | 2.28 | 4.29 |
+| 384 | `lean_nt3e-3_l3e-3_dt005__graphs` | 0.0351 | 0.119 | 18.38 | baseline | 0.0369 | 0.477 | 45.54 | 0.40 |
+| 384 | `lean_nt3e-3_l3e-3_dt005__graphs` | 0.0351 | 0.119 | 18.38 | fast | 0.0380 | 0.476 | 4.44 | 4.14 |
+| 384 | `lean_nt3e-3_l3e-3_dt005__graphs` | 0.0351 | 0.119 | 18.38 | accurate | 0.0369 | 0.477 | 5.53 | 3.32 |
+
+## Ours against our own full-order solver, 512^2, dev38 (`results/fom512`)
+
+job 7221002, pax105, NVIDIA A100 80GB PCIe, backend gpu, commit 8210938cb, 38 cases, driver 368 s, drift gate pass (ratios 0.994-1.005), neighbour gate pass. Development cohort (not sealed); the full-order settings are those paired with each width in the burgers2d-test Table 1 and are unchanged.
+
+| width | setting | median % | worst % | ms (median) | ms 5-95 % of cases | ms min-max | speedup | median ratio | worst ratio | max case ratio |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 96 | baseline (unchanged, gtol 0.01) | 0.6440 | 4.500 | 14.70 | 12.27-17.75 | 11.81-18.70 | 1 | 1 | 1 | 1 |
+| 96 | accurate: c_k1_s50_fused_f32 | 0.6449 | 4.511 | 2.31 | 2.28-2.38 | 2.18-2.80 | 6.36x | 1.001 | 1.002 | 1.035 |
+| 128 | baseline (unchanged, gtol 0.01) | 0.3406 | 2.869 | 17.93 | 14.91-21.39 | 14.31-22.40 | 1 | 1 | 1 | 1 |
+| 128 | accurate: c_k1_s50_fused_f32_first5x2 | 0.3407 | 2.875 | 2.51 | 2.46-2.58 | 2.35-6.24 | 7.15x | 1.000 | 1.002 | 1.047 |
+| 384 | baseline (unchanged, gtol 0.01) | 0.0369 | 0.527 | 46.07 | 37.64-52.24 | 33.60-55.13 | 1 | 1 | 1 | 1 |
+| 384 | fast: c_k1_s50_P_f32 | 0.0374 | 0.526 | 4.99 | 4.95-5.07 | 4.85-5.25 | 9.23x | 1.012 | 0.997 | 1.802 |
+| 384 | accurate: c_k1_s50_fused_f32_first10x2 | 0.0369 | 0.527 | 5.61 | 5.57-5.69 | 5.46-6.43 | 8.21x | 1.000 | 0.999 | 1.168 |
+
+Full-order solver settings in the same job on the same GPU (unchanged settings; `fft_tight` is the error reference itself; `__graphs` is the second compile mode of the same setting):
+
+| full-order setting | median % | worst % | ms (median) | ms 5-95 % of cases |
+|---|---|---|---|---|
+| `fft_tight` | 0.0000 | 0.000 | 162.85 | 105.78-237.05 |
+| `fft_tight__graphs` | 0.0000 | 0.000 | 163.78 | 106.49-239.47 |
+| `lean_nt1e-2_l1e-2_dt01` | 0.9455 | 2.004 | 15.88 | 11.81-21.24 |
+| `lean_nt1e-2_l1e-2_dt01__graphs` | 0.9455 | 2.004 | 15.90 | 12.04-21.17 |
+| `lean_nt3e-3_l3e-3_dt005` | 0.0359 | 0.121 | 30.58 | 22.88-38.74 |
+| `lean_nt3e-3_l3e-3_dt005__graphs` | 0.0359 | 0.121 | 30.30 | 22.66-39.04 |
+| `nt1e-2_dt01` | 1.5891 | 4.100 | 13.20 | 12.32-16.38 |
+| `nt1e-2_dt01__graphs` | 1.5891 | 4.100 | 13.26 | 12.27-16.72 |
+
+| width | full-order setting (faster compile mode) | FOM median % | FOM worst % | FOM ms | our setting | our median % | our worst % | our ms | FOM ms / our ms |
+|---|---|---|---|---|---|---|---|---|---|
+| 96 | `nt1e-2_dt01` | 1.5891 | 4.100 | 13.20 | baseline | 0.6440 | 4.500 | 14.70 | 0.90 |
+| 96 | `nt1e-2_dt01` | 1.5891 | 4.100 | 13.20 | accurate | 0.6449 | 4.511 | 2.31 | 5.70 |
+| 128 | `lean_nt1e-2_l1e-2_dt01` | 0.9455 | 2.004 | 15.88 | baseline | 0.3406 | 2.869 | 17.93 | 0.89 |
+| 128 | `lean_nt1e-2_l1e-2_dt01` | 0.9455 | 2.004 | 15.88 | accurate | 0.3407 | 2.875 | 2.51 | 6.33 |
+| 384 | `lean_nt3e-3_l3e-3_dt005__graphs` | 0.0359 | 0.121 | 30.30 | baseline | 0.0369 | 0.527 | 46.07 | 0.66 |
+| 384 | `lean_nt3e-3_l3e-3_dt005__graphs` | 0.0359 | 0.121 | 30.30 | fast | 0.0374 | 0.526 | 4.99 | 6.07 |
+| 384 | `lean_nt3e-3_l3e-3_dt005__graphs` | 0.0359 | 0.121 | 30.30 | accurate | 0.0369 | 0.527 | 5.61 | 5.40 |
+
+## Ours against our own full-order solver, 1024^2, dev38 (`results/fom1024`)
+
+job 7220990, pax106, NVIDIA A100 80GB PCIe, backend gpu, commit 8210938cb, 38 cases, driver 526 s, drift gate pass (ratios 0.992-1.004), neighbour gate pass. Development cohort (not sealed); the full-order settings are those paired with each width in the burgers2d-test Table 1 and are unchanged.
+
+| width | setting | median % | worst % | ms (median) | ms 5-95 % of cases | ms min-max | speedup | median ratio | worst ratio | max case ratio |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 96 | baseline (unchanged, gtol 0.001) | 0.6469 | 4.634 | 19.34 | 18.83-20.15 | 17.56-21.05 | 1 | 1 | 1 | 1 |
+| 96 | accurate: c_k1_s50_fused_f32 | 0.6479 | 4.638 | 2.79 | 2.71-2.85 | 2.65-3.31 | 6.94x | 1.002 | 1.001 | 1.041 |
+| 128 | baseline (unchanged, gtol 0.001) | 0.3490 | 2.952 | 21.63 | 21.22-23.10 | 20.96-23.38 | 1 | 1 | 1 | 1 |
+| 128 | accurate: c_k1_s50_fused_f32_first5x2 | 0.3491 | 2.946 | 3.17 | 3.11-3.20 | 3.03-3.91 | 6.83x | 1.000 | 0.998 | 1.042 |
+| 384 | baseline (unchanged, gtol 0.001) | 0.0373 | 0.564 | 48.85 | 47.45-55.30 | 47.29-58.65 | 1 | 1 | 1 | 1 |
+| 384 | fast: c_k1_s50_P_f32 | 0.0376 | 0.550 | 6.96 | 6.88-7.02 | 6.84-7.26 | 7.02x | 1.009 | 0.975 | 1.767 |
+| 384 | accurate: c_k1_s50_fused_f32_first10x2 | 0.0373 | 0.549 | 7.40 | 7.33-7.46 | 7.28-8.13 | 6.60x | 1.000 | 0.974 | 1.154 |
+
+Full-order solver settings in the same job on the same GPU (unchanged settings; `fft_tight` is the error reference itself; `__graphs` is the second compile mode of the same setting):
+
+| full-order setting | median % | worst % | ms (median) | ms 5-95 % of cases |
+|---|---|---|---|---|
+| `fft_tight` | 0.0000 | 0.000 | 465.68 | 296.26-694.06 |
+| `fft_tight__graphs` | 0.0000 | 0.000 | 468.53 | 297.07-694.57 |
+| `lean_nt1e-2_l1e-2_dt01` | 0.9830 | 2.023 | 40.47 | 28.84-57.57 |
+| `lean_nt1e-2_l1e-2_dt01__graphs` | 0.9830 | 2.023 | 40.48 | 28.89-57.49 |
+| `lean_nt3e-3_l3e-3_dt005` | 0.0369 | 0.123 | 79.34 | 56.65-103.31 |
+| `lean_nt3e-3_l3e-3_dt005__graphs` | 0.0369 | 0.123 | 79.62 | 56.54-103.56 |
+| `nt1e-2_dt01` | 1.6123 | 3.995 | 32.59 | 30.48-41.76 |
+| `nt1e-2_dt01__graphs` | 1.6123 | 3.995 | 32.73 | 30.52-42.40 |
+
+| width | full-order setting (faster compile mode) | FOM median % | FOM worst % | FOM ms | our setting | our median % | our worst % | our ms | FOM ms / our ms |
+|---|---|---|---|---|---|---|---|---|---|
+| 96 | `nt1e-2_dt01` | 1.6123 | 3.995 | 32.59 | baseline | 0.6469 | 4.634 | 19.34 | 1.68 |
+| 96 | `nt1e-2_dt01` | 1.6123 | 3.995 | 32.59 | accurate | 0.6479 | 4.638 | 2.79 | 11.69 |
+| 128 | `lean_nt1e-2_l1e-2_dt01` | 0.9830 | 2.023 | 40.47 | baseline | 0.3490 | 2.952 | 21.63 | 1.87 |
+| 128 | `lean_nt1e-2_l1e-2_dt01` | 0.9830 | 2.023 | 40.47 | accurate | 0.3491 | 2.946 | 3.17 | 12.77 |
+| 384 | `lean_nt3e-3_l3e-3_dt005` | 0.0369 | 0.123 | 79.34 | baseline | 0.0373 | 0.564 | 48.85 | 1.62 |
+| 384 | `lean_nt3e-3_l3e-3_dt005` | 0.0369 | 0.123 | 79.34 | fast | 0.0376 | 0.550 | 6.96 | 11.40 |
+| 384 | `lean_nt3e-3_l3e-3_dt005` | 0.0369 | 0.123 | 79.34 | accurate | 0.0373 | 0.549 | 7.40 | 10.72 |
+
 ## Frozen settings (selected on dev38 only, PROTOCOL.md section 5)
 
 Source jobs 7220300, 7220271. Equal-error width frozen on dev38: 176 (smallest of 128-192 whose accurate setting has dev38 median <= 0.195 %).

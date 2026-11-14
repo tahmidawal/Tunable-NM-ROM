@@ -1,0 +1,30 @@
+host=pax106 source_commit=8210938cbff1752792d3d76bcea17a074002db73 vendor_commit=1b7b7f96bcf5808d397d467b5e99ae287f775d07
+NVIDIA A100 80GB PCIe, GPU-93ae5f8d-299a-28bc-9b53-07a050aa9da5, 81920 MiB
+10.235.106.24:/projects/paralab  4.6T  2.2T  2.5T  47% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+BANK 65025 rows 1 row blocks 7.8
+TRUTH done 13.1
+QUICK fft_tight evolved% 0.0 median% 0.0 stalled 0 iters [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None] sec 0.0943 3.9 32.6
+QUICK fft_tight__graphs evolved% 0.0 median% 0.0 stalled 0 iters [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None] sec 0.0925 4.7 37.3
+QUICK nt1e-2_dt01 evolved% 3.8735 median% 1.5752 stalled 0 iters [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None] sec 0.0088 1.5 38.8
+QUICK nt1e-2_dt01__graphs evolved% 3.8735 median% 1.5752 stalled 0 iters [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None] sec 0.0085 1.4 40.2
+QUICK lean_nt3e-3_l3e-3_dt005 evolved% 0.1195 median% 0.0351 stalled 0 iters [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None] sec 0.0198 1.8 42.1
+QUICK lean_nt3e-3_l3e-3_dt005__graphs evolved% 0.1195 median% 0.0351 stalled 0 iters [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None] sec 0.0187 1.7 43.8
+QUICK lean_nt1e-2_l1e-2_dt01 evolved% 1.9949 median% 0.9225 stalled 0 iters [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None] sec 0.0105 1.4 45.2
+QUICK lean_nt1e-2_l1e-2_dt01__graphs evolved% 1.9949 median% 0.9225 stalled 0 iters [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None] sec 0.0101 1.4 46.6
+QUICK R96_lin_M384_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs evolved% 4.265 median% 0.6354 stalled 0 iters [37, 45, 31, 36, 29, 33, 36, 33, 40, 30, 32, 24, 23, 41, 35, 33, 37, 56, 44, 38, 40, 30, 51, 39, 35, 42, 23, 31, 44, 35, 51, 33, 37, 52, 52, 25, 30, 53] sec 0.0152 4.4 64.4
+QUICK R96_lin_M384_lat64__qs_c_k1_s50_fused_f32_graphs evolved% 4.2728 median% 0.6353 stalled 0 iters [50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50] sec 0.0023 2.4 67.0
+QUICK R128_lin_M512_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs evolved% 2.7292 median% 0.3255 stalled 0 iters [42, 47, 32, 40, 32, 37, 37, 37, 51, 32, 38, 25, 29, 42, 40, 38, 40, 58, 51, 43, 47, 32, 51, 41, 44, 47, 27, 33, 52, 37, 55, 37, 42, 52, 52, 30, 32, 57] sec 0.0178 4.6 78.6
+QUICK R128_lin_M512_lat64__qs_c_k1_s50_fused_f32_first5x2_graphs evolved% 2.729 median% 0.325 stalled 0 iters [55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55] sec 0.0025 2.8 81.7
+QUICK R384_lin_M1536_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs evolved% 0.4767 median% 0.0369 stalled 0 iters [53, 53, 50, 54, 45, 51, 55, 50, 53, 51, 51, 30, 45, 51, 52, 54, 51, 65, 51, 53, 60, 51, 52, 51, 51, 56, 33, 44, 52, 52, 61, 51, 52, 53, 52, 38, 43, 65] sec 0.0452 7.4 94.2
+QUICK R384_lin_M1536_lat64__qs_c_k1_s50_fused_f32_first10x2_graphs evolved% 0.4765 median% 0.0369 stalled 0 iters [60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60] sec 0.0057 4.0 98.5
+QUICK R384_lin_M1536_lat64__qs_c_k1_s50_P_f32_graphs evolved% 0.4757 median% 0.038 stalled 0 iters [50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50] sec 0.0046 1.8 100.3
+TIMED romA1 rep 0 140.2
+TIMED romA1 rep 1 172.3
+TIMED fomB rep 0 222.2
+TIMED romA2 rep 0 261.3
+TIMED romA2 rep 1 293.4
+DRIFT True 0.9967724540011085 1.0084927840865396 NEIGHBOUR True 1.012814524178272
+B2TEST COMPLETE
+ALL-DONE

@@ -384,3 +384,43 @@ WARMUP 10.6
 PHASE romA1 0 77.9
 PHASE romA1 1 118.6
 PHASE romA1 2 159.4
+PHASE romA1 3 200.2
+PHASE romA1 4 240.8
+PHASE cg 0 303.9
+PHASE cg 1 357.2
+PHASE cg 2 410.6
+PHASE romA2 0 458.4
+PHASE romA2 1 499.0
+PHASE romA2 2 539.9
+PHASE romA2 3 580.6
+PHASE romA2 4 621.4
+DRIFT True 0.9117536017653906 1.0397327321896224
+NEIGHBOUR False 1.1852043033588775
+GATES {'parity': True, 'deterministic': True, 'cg_converged': True, 'neighbour': False, 'drift': True, 'profile_matches_fused': True, 'device_guard': True}
+PBK SOLVE COMPLETE
+PASS 576 errors recomputed, worst relative deviation 3.0e-11 (bar 1e-8), hashes match, repetitions identical: True; controls detected: swapped-case True, perturbed-error True
+=== paper driver mesh 1024 ===
+jax_backend=gpu x64=True precision=highest
+COHORT 2026092501 32 efce2f08cbfc8df609dea8ebf2b66a609b041e0b6e10154dac039b8e592116fd {'training_all_draws': 0.01686024622883033, 'dev12': 0.05745389221275943, 'seed20260916x256': 0.018366176694078584, 'seed20260921x256': 0.017354125053087532, 'seed20260922x256': 0.025337049362483155, 'seed20260920x16384': 0.008144708950666435, 'seed7090702x6': 0.06560861282376351, 'seed911702x6': 0.04578094576944691, 'seed777x6': 0.062350275854781256}
+BANK 8.8 {'32': 15.494, '64': 6.613, '128': 4.058, '256': 2.046, '384': 1.228, '512': 0.835}
+WARMUP 12.4
+PHASE romA1 0 89.8
+PHASE romA1 1 133.4
+PHASE romA1 2 176.8
+PHASE romA1 3 220.5
+PHASE romA1 4 264.0
+PHASE cg 0 348.9
+PHASE cg 1 420.2
+PHASE cg 2 491.6
+PHASE romA2 0 542.3
+PHASE romA2 1 586.0
+PHASE romA2 2 629.6
+PHASE romA2 3 673.2
+PHASE romA2 4 716.9
+DRIFT True 0.9773436876014001 1.019774575902653
+NEIGHBOUR False 1.1047337759450344
+GATES {'parity': True, 'deterministic': True, 'cg_converged': True, 'neighbour': False, 'drift': True, 'profile_matches_fused': True, 'device_guard': True}
+PBK SOLVE COMPLETE
+PASS 576 errors recomputed, worst relative deviation 3.0e-11 (bar 1e-8), hashes match, repetitions identical: True; controls detected: swapped-case True, perturbed-error True
+Sat Nov 14 18:03:33 EST 2026
+task_completed

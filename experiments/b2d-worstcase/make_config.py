@@ -46,7 +46,8 @@ for R in (384, 448, 512):
     write(f'nat{R}', cohort=VAL, projection_widths=[R], ladder=sorted(set(LADDER[:8] + [R])),
           arms=[arm(R, M=m * R) for m in (4, 6, 8)]
           + [arm(R, M=m * R, qs=q, tag=t) for m in (4, 8) for t, q in QS_SET.items()]
-          + [arm(R, M=m * R, qs=QS_SET[t], tag=t) for m in (12, 16) for t in ('qsk3', 'qsk1P')])   # amendment A2
+          # amendment A2: more tests need the finer quadrature lattice (lat64 has 63^2 = 3969 nodes)
+          + [arm(R, M=m * R, rule='lat128', qs=QS_SET[t], tag=t) for m in (8, 12, 16) for t in ('qsk3', 'qsk1P')])
 
 # Final evaluation (run once, after selection.json is committed): arms are written by freeze.py
 TEST = dict(name='test64 = params_draw(20260916, 64)', draws=[[20260916, 64]],

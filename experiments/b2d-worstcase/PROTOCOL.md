@@ -117,5 +117,6 @@ At most 4 GPU jobs of this lane queued or running; `gpu` partition; A100 80GB; n
 Reason: the validation runs v2/v3 show that at width 512 the reduced solve loses most of the projection gain
 (projection worst 0.67 %, solve 1.24 % at M = 8R'), and that the error falls steadily with the number of tests M. With
 the fast solve the query time leaves room for more tests. The fast-solve row of A1 may therefore also use
-M = 12R' or 16R' (settings qsk3 and qsk1P only). The selection of that row is otherwise unchanged (lowest validation
+M = 8R', 12R' or 16R' on the finer quadrature lattice lat128 (settings qsk3 and qsk1P only; the lat64 lattice has
+63^2 = 3969 nodes, so it cannot carry more than about 8R' independent tests at these widths). The selection of that row is otherwise unchanged (lowest validation
 worst, median <= 0.10 %, no failed solve, ties within 5 % to the faster). The Primary and In-budget rows are unchanged.

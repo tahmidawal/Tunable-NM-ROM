@@ -35,6 +35,9 @@ import arms as A
 import hops as H
 import bkfast as BK            # patches hops.bank_apply for the nested rotated bank
 import b2fast as B2
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent / 'fastsolve'))
+import qsfast as QS            # query-speed lane's lagged-operator solve (byte-identical copy)
 
 
 def sha_array(x):
@@ -283,12 +286,18 @@ def main():
         if j:
             data['Gf'] = Gfull(Rp)
         opts = B2.GRAPHS if (s.get('graphs') and jax.default_backend() == 'gpu') else None
-        fq = B2.make_linear_query(Rp, L, dt, trust_of(Rp) * float(s.get('trust_factor', 1.)), exact_steps=j,
-                                  tangent_chunks=chunks_for(Rp), lm_cap=s.get('cap'), compiler_options=opts,
-                                  sep_eq=True, ajac_dense=bool(j), sep_dense=True,
-                                  step_budget=int(s.get('budget') or cfg['step_budget']), gtol=s['gtol'],
-                                  ridge=cfg['inner_damping'], solver='chol', clip=True, lam_carry=True,
-                                  predictor='quad')
+        if s.get('qs'):                                      # fast solve of the query-speed lane, same data dict
+            assert not j
+            if s['qs'].get('stencil32'):
+                data['G5d32'] = QS.stencil_diff32(data['G5'])
+            fq = QS.make_query(Rp, L, dt, compiler_options=opts, **s['qs'])
+        else:
+            fq = B2.make_linear_query(Rp, L, dt, trust_of(Rp) * float(s.get('trust_factor', 1.)), exact_steps=j,
+                                      tangent_chunks=chunks_for(Rp), lm_cap=s.get('cap'), compiler_options=opts,
+                                      sep_eq=True, ajac_dense=bool(j), sep_dense=True,
+                                      step_budget=int(s.get('budget') or cfg['step_budget']), gtol=s['gtol'],
+                                      ridge=cfg['inner_damping'], solver='chol', clip=True, lam_carry=True,
+                                      predictor='quad')
         cold = cold_of(Rp, s.get('ic', 'gauss'))
         pf = proj_fields.get(Rp)
         rows = []

@@ -36,10 +36,16 @@ for R in (256, 384, 512):
     write(f'val{R}', cohort=VAL, projection_widths=sub,
           arms=[arm(r, M=m * r) for r in reversed(sub) for m in (4, 8)])
 
+# fast solve of the query-speed lane (its frozen.json 'accurate' settings at widths 384 and 512, and its 'fast' one)
+QS_SET = dict(qsk1f10=dict(k=1, s=50, form='fused', stencil32=True, kfirst=2, nfirst=10),
+              qsk3=dict(k=3, s=50, form='fused', stencil32=True),
+              qsk1P=dict(k=1, s=50, form='P', stencil32=True))
+
 # native-width validation (the fine-tune is width-native; lower rungs are not candidates)
 for R in (384, 448, 512):
     write(f'nat{R}', cohort=VAL, projection_widths=[R], ladder=sorted(set(LADDER[:8] + [R])),
-          arms=[arm(R, M=m * R) for m in (4, 6, 8)])
+          arms=[arm(R, M=m * R) for m in (4, 6, 8)]
+          + [arm(R, M=m * R, qs=q, tag=t) for m in (4, 8) for t, q in QS_SET.items()])
 
 # Final evaluation (run once, after selection.json is committed): arms are written by freeze.py
 TEST = dict(name='test64 = params_draw(20260916, 64)', draws=[[20260916, 64]],

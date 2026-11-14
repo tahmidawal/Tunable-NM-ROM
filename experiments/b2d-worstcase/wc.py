@@ -318,6 +318,7 @@ def main():
                     worst=float(ev.max()), median=float(np.median(ev)), p95=float(np.quantile(ev, .95)),
                     mean=float(ev.mean()), worst_case_index=int(np.argmax(ev)),
                     ms=(1e3 * float(np.median(tt)) if tt else None),
+                    ms_mean=(1e3 * float(np.mean(tt)) if tt else None), ms_max=(1e3 * float(np.max(tt)) if tt else None),
                     mean_iterations=float(np.mean([r_['iterations'] for r_ in rows])),
                     setup_and_run_seconds=time.perf_counter() - t_arm, rows=rows)
         rep['arms'][name] = summ

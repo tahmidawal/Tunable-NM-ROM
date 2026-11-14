@@ -35,3 +35,11 @@ for R in (256, 384, 512):
     sub = [r for r in (192, 256, 384, 512) if r <= R][-3:]
     write(f'val{R}', cohort=VAL, projection_widths=sub,
           arms=[arm(r, M=m * r) for r in reversed(sub) for m in (4, 8)])
+
+# Final evaluation (run once, after selection.json is committed): arms are written by freeze.py
+TEST = dict(name='test64 = params_draw(20260916, 64)', draws=[[20260916, 64]],
+            expected_sha256='cd058fd2a297c20296b897e54cb186033a44a8db9527d98dcb2c2dad6044527c')
+FRESH = dict(name='fresh64 = params_draw(20261114, 64)', draws=[[20261114, 64]],
+             disjoint_from=[[20260916, 64, 'test64'], [0, 576, 'pool a'], [1000, 4032, 'pool b']],
+             expected_sha256='1116b7080643b2b2ea96662f6bd3592d5c51b963b3e2e3c45fc5fb22711db2f8')
+FINAL = dict(BASE, time_reps=5, time_cases=64)

@@ -142,10 +142,10 @@ def build(name):
                 arms.append(qs_arm(Rp, 'c_k2_s50_P', M=6 * Rp, k=2, s=50))
         cfg['diagnostics'] = dict(rule='lat64', width_M=[[384, 2304], [384, 3072], [512, 3072]], jac_cases=[0])
         cfg['purpose'] = 'dev38: second width-512 diagnosis, more tests than 4R\' (PROTOCOL.md section 9, amendment A1)'
-    elif name in ('ftest64', 'ffresh64'):
+    elif name in ('ftest64', 'ffresh64', 'fdev'):
         fz = json.loads((HERE / 'frozen.json').read_text())
         arms, batch = [], []
-        for Rp in fz['final_widths']:
+        for Rp in ((128, fz['equal_error_width'], 384) if name == 'fdev' else fz['final_widths']):
             w = fz['widths'][str(Rp)]
             arms.append(B(Rp))
             for kind in ('accurate', 'fast'):
@@ -162,6 +162,10 @@ def build(name):
                    cohort_name='test64 = params_draw(20260916,64)' if test else 'fresh64 = params_draw(2026111402,64)',
                    batch=dict(arms=batch, sizes=[1, 8, 64], reps=7), frozen=fz,
                    purpose='FINAL single evaluation of the frozen settings (PROTOCOL.md section 7)')
+        if name == 'fdev':
+            cfg.update(eval_draws=DEV38[:2], expected_physical_sha256=None, disjoint_draws=TEST64 + FRESH64,
+                       cohort_name='dev6 = params_draw(7090702,4) ++ params_draw(911702,2) (first six cases of dev38)',
+                       purpose='rehearsal of the final job on six dev38 cases (no sealed cohort); not a reported result')
     else:
         raise SystemExit(f'unknown config {name}')
     cfg['arms'] = arms

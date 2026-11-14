@@ -13,6 +13,7 @@ EQ_LEVEL = 0.195          # percent; FNO test64 median (burgers-ops-matched)
 
 jobs = [json.loads((Path(d) / 'arms.json').read_text()) for d in sys.argv[1:]]
 assert all(j['complete'] and j['backend'] == 'gpu' and j['cases'] == 38 and 'dev38' in j['cohort_name'] for j in jobs)
+assert all(j['neighbour_passed'] for j in jobs)
 widths = {}
 for j in jobs:
     for a in j['arms']:

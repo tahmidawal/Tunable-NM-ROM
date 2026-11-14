@@ -84,6 +84,10 @@ def main():
     p.add_argument('--time-cap', type=float, default=0., help='seconds; 0 = none')
     p.add_argument('--seed', type=int, default=0)
     p.add_argument('--allow-cpu', type=int, default=0)
+    p.add_argument('--extra-pool', default=None, help='extra training trajectories (gen_extra.py): fields .npy')
+    p.add_argument('--extra-meta', default=None)
+    p.add_argument('--extra-count', type=int, default=0, help='use the first N extra trajectories (0 = all)')
+    p.add_argument('--resume', default=None, help='start from a bank.pkl written by this trainer (same R)')
     p.add_argument('--smoke-traj', type=int, default=0, help='CPU smoke only: pool holds this many trajectories')
     a = p.parse_args()
     out = Path(a.out)
@@ -107,22 +111,34 @@ def main():
     lv = np.arange(0, 26, a.levels)
     inter = (np.arange(1, L)[:, None] * (L + 1) + np.arange(1, L)[None, :]).reshape(-1)
 
-    def load(lo, hi, levels):
-        host = np.empty(((hi - lo) * len(levels), n), np.float32)             # one host buffer, one device transfer
-        for s in range(lo, hi, 64):
-            blk = np.asarray(F[s:min(s + 64, hi)])[:, levels][:, :, inter]
-            host[(s - lo) * len(levels):(s - lo + blk.shape[0]) * len(levels)] = blk.reshape(-1, n)
+    nx, FX, n0x = 0, None, np.zeros((0,))
+    if a.extra_pool:
+        mx = np.load(a.extra_meta)
+        FX = np.load(a.extra_pool, mmap_mode='r')
+        nx = a.extra_count or FX.shape[0]
+        assert FX.shape[1:] == (26, (L + 1) ** 2) and nx <= FX.shape[0]
+        n0x = np.asarray(mx['n0'])[:nx]
+
+    def load(lo, hi, levels, extra=0):
+        host = np.empty(((hi - lo + extra) * len(levels), n), np.float32)     # one host buffer, one device transfer
+        row = 0
+        for src, s0, s1 in ((F, lo, hi), (FX, 0, extra)):
+            for s in range(s0, s1, 64):
+                blk = np.asarray(src[s:min(s + 64, s1)])[:, levels][:, :, inter]
+                host[row:row + blk.shape[0] * len(levels)] = blk.reshape(-1, n)
+                row += blk.shape[0] * len(levels)
+        assert row == host.shape[0]
         return jnp.asarray(host)
 
-    Utr = load(a.train_lo, a.train_hi, lv)                                   # (Ntr * len(lv), n) float32 on device
-    ntr = a.train_hi - a.train_lo
-    n0tr = jnp.asarray(np.repeat(n0_all[a.train_lo:a.train_hi], len(lv)))
+    Utr = load(a.train_lo, a.train_hi, lv, nx)                               # (Ntr * len(lv), n) float32 on device
+    ntr = a.train_hi - a.train_lo + nx
+    n0tr = jnp.asarray(np.repeat(np.concatenate((n0_all[a.train_lo:a.train_hi], n0x)), len(lv)))
     vl = np.array([0, 5, 10, 15, 20, 25])
     Uva = load(a.val_lo, a.val_hi, vl)
     nva = a.val_hi - a.val_lo
     n0va = jnp.asarray(np.repeat(n0_all[a.val_lo:a.val_hi], len(vl)))
     nsnap = int(Utr.shape[0])
-    print(f'DATA train {ntr} traj x {len(lv)} levels = {nsnap} snapshots ({Utr.nbytes/2**30:.1f} GiB), '
+    print(f'DATA extra {nx} | train {ntr} traj x {len(lv)} levels = {nsnap} snapshots ({Utr.nbytes/2**30:.1f} GiB), '
           f'val {nva} traj', el(), flush=True)
     xy = jnp.asarray(e.coords(L))
     m1 = L - 1
@@ -171,6 +187,11 @@ def main():
         # rotated columns are orthonormal on the grid (norm 1); rescale to unit mean square so Adam sees O(1) outputs
         g[-1] = (g[-1][0] * np.sqrt(n), g[-1][1] * np.sqrt(n))
         params = dict(B=jnp.asarray(ck['params']['B']), g=g, out_scale=jnp.asarray(1.0))
+    if a.resume:
+        rb = pickle.load(open(a.resume, 'rb'))['params']
+        params = dict(B=jnp.asarray(rb['B']), g=[(jnp.asarray(w), jnp.asarray(b)) for w, b in rb['g']],
+                      out_scale=jnp.asarray(rb['out_scale']))
+        assert params['g'][-1][0].shape[1] == a.R
     R = a.R
     train_keys = ['g'] + (['B'] if a.train_B else [])
 

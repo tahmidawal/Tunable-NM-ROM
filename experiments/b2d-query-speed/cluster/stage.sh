@@ -14,8 +14,11 @@ cp -r "$LANE/../iso-error/vendor/experiments" "$OUT/experiments"
 CK=experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl
 mkdir -p "$OUT/$(dirname $CK)"; cp "$ROOT/$CK" "$OUT/$CK"
 echo "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589  $OUT/$CK" | sha256sum -c --quiet
-POST=""; [ -f "$LANE/cluster/post-$A.sh" ] && POST="$D/cluster/post-$A.sh"
-for f in $D/qsdrive.py $D/qsfast.py "$CONFIG" $POST; do
+POST=""; EXTRA=""
+if [ -f "$LANE/cluster/post-$A.sh" ]; then
+  POST="$D/cluster/post-$A.sh"; EXTRA="$D/cluster/post-ops.sh $(cd "$ROOT" && ls $D/ops/*)"
+fi
+for f in $D/qsdrive.py $D/qsfast.py "$CONFIG" $POST $EXTRA; do
   [ -z "$(git -C "$ROOT" status --porcelain -- "$f")" ] || { echo "uncommitted: $f"; exit 5; }
   mkdir -p "$OUT/$(dirname $f)"; cp "$ROOT/$f" "$OUT/$f"
 done
@@ -56,7 +59,7 @@ export PYTHONPATH="\$E/mr-burgers2d:\$E/separable-decoder:\$E/head-ablation:\$E/
 "\$PY" $D/qsdrive.py --config $CONFIG --checkpoint $CK \\
   --rotation experiments/burgers-bank-knob/inputs/rotation_R512.npz \\
   --inputs experiments/b-panel/inputs --out output
-${POST:+bash $POST}
+${POST:+export PY; bash $POST}
 find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
 echo ALL-DONE
 EOF

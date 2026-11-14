@@ -8,7 +8,7 @@ NS=/cluster/tufts/paralab/tawal01/sparse-solvers-20261113
 DIR=$NS/jobs/$ATTEMPT
 [ -z "$(git status --porcelain -- . ":!ledger")" ] || { echo "uncommitted changes; commit first"; exit 2; }
 COMMIT=$(git rev-parse HEAD)
-FILES=(bench.py matrices.py stepper.py ref.py cluster/run_step.sh vendor/SHA256SUMS vendor/b2d/engines.py
+FILES=(bench.py matrices.py stepper.py amgx_step.py ref.py cluster/run_step.sh vendor/SHA256SUMS vendor/b2d/engines.py
        vendor/b2d/iterative_paths.py vendor/b2d/sep_common.py vendor/b3d/common.py vendor/b3d/b3d_common.py "$TASKS")
 mine=$(ssh tufts-login "squeue -u \$USER -h -p gpu -o '%j'" | grep -c '^ss_' || true)
 [ "$mine" -lt 3 ] || { echo "already $mine GPU jobs of this lane queued or running"; exit 6; }

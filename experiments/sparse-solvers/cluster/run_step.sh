@@ -30,19 +30,33 @@ printf 'cpu_model='; lscpu | sed -n 's/^Model name:[[:space:]]*//p'
 export SS_PYDEPS=$NS/pydeps
 NVL=$(ls -d $SP/nvidia/*/lib | tr '\n' ':')
 BASE_LD="${LD_LIBRARY_PATH:-}"
-grep -v '^#' "$1" | while read -r dim L cases budget; do
+export SS_AMGX_LD=$(module load gcc/12.4.0 cuda/12.9.0 >/dev/null 2>&1; echo "$LD_LIBRARY_PATH")
+export SS_AMGX_ROOT=$NS/amgx-build SS_AMGX_COMMIT=$(git -C $NS/amgx-build/src rev-parse HEAD)
+echo "amgx_commit=$SS_AMGX_COMMIT"
+# task line: dim L cases budget_s [amgx_cases amgx_budget_s]; budget_s = 0 skips the cuDSS stepper (AmgX only)
+grep -v '^#' "$1" | while read -r dim L cases budget acases abudget; do
   [ -n "$dim" ] || continue
   out=results/b${dim}d_L${L}.json
+  aout=results/amgx_b${dim}d_L${L}.json
   [ -e "$out" ] && continue
+  [ -e "$aout" ] && continue
   echo "=== dim=$dim L=$L cases=$cases budget=$budget $(date)"
   if ! "$PY" ref.py --dim "$dim" --L "$L" --cases "$cases" --out refs; then
     echo "{\"task\": \"burgers_stepper\", \"dim\": $dim, \"L\": $L, \"status\": \"reference failed\"}" > "$out"
     echo "REFERENCE FAILED dim=$dim L=$L"; continue
   fi
   cp refs/b${dim}d_L${L}.json results/ref_b${dim}d_L${L}.json
+  if [ "$budget" != 0 ]; then
   PYTHONPATH="$NS/pydeps:$JOB_DIR" LD_LIBRARY_PATH="$NS/pydeps/nvidia/cu12/lib:$NVL$BASE_LD" \
     "$PY" stepper.py --dim "$dim" --L "$L" --cases "$cases" --refs refs --out "$out" --budget "$budget" ${2:+--smoke} \
     || echo "STEPPER PROCESS FAILED dim=$dim L=$L rc=$?"
+  fi
+  if [ -n "$acases" ]; then
+    echo "=== amgx dim=$dim L=$L cases=$acases budget=$abudget $(date)"
+    PYTHONPATH="$NS/pydeps:$JOB_DIR" LD_LIBRARY_PATH="$SS_AMGX_LD:$NS/pydeps/nvidia/cu12/lib:$NVL$BASE_LD" \
+      timeout $((abudget + 1200)) "$PY" amgx_step.py --dim "$dim" --L "$L" --cases "$acases" --refs refs --out "$aout" \
+      --budget "$abudget" || echo "AMGX STEPPER PROCESS FAILED dim=$dim L=$L rc=$?"
+  fi
   rm -f refs/b${dim}d_L${L}_case*.npy
 done
 date

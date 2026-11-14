@@ -179,3 +179,26 @@ to the printed digits, small floating-point differences between GPU types report
 not reproduced.  Rows not re-run for lack of time or slots keep the paper value and are marked as not re-measured.
 `RESULTS-ours-same-gpu.md` is generated from the result JSON by script.  At most 3 GPU jobs of this lane queued or
 running at any time.
+
+### Amendment 4 (Sat 14 Nov 2026, 16:50 EST): settings of the AmgX stepper (Task A item 4), fixed before it has run
+
+Reason: amendment 3 left the AmgX stepper open ("only if time allows").  The single-solve measurements show AmgX far
+cheaper than a cuDSS refactorisation in 3D, so an honest best shot for the sparse-solver side needs it.  No AmgX stepper
+number exists at the time of writing; the cuDSS stepper results seen so far (256^2, part of 512^2) did not inform
+anything below except the decision to keep the list short.
+
+`amgx_step.py` reuses the cuDSS stepper's kernels, Newton loop (the same function), timing contract, warm-up, repeat rule,
+checks against the paper's reference and error metric.  Only the linear solve differs: AmgX (mode dDDI, device pointers),
+zero initial guess, relative linear tolerance `ltol` (RELATIVE_INI, L2), max 200 linear iterations; the Newton residual
+test is ours, as for cuDSS, so a linear solve that stops early only costs Newton iterations.  "Setup" = replace matrix
+coefficients + AmgX solver setup.  Variants: full (setup every Newton iteration), k1 (once per time step), frozen (once
+per trajectory), lin1 (one setup and solve per step, no residual test).
+Configurations: 2D PBICGSTAB_CLASSICAL_JACOBI, 3D FGMRES_CLASSICAL_AGGRESSIVE_PMIS (the shipped configurations that were
+fastest on the Burgers Jacobians in the single-solve tables), and in both a non-AMG BiCGStab with one block-Jacobi sweep
+written by this lane (the backward-Euler matrix is close to diagonally dominant at small sizes, where AMG setup is waste).
+Same-mesh settings (dt 0.005): lin1 (ltol 1e-3); {k1, frozen, full} x (ntol 1e-6 with ltol 1e-2; ntol 3e-3 with ltol 1e-1).
+Matched grid, same mesh only: dt in {0.01, 0.005} x {frozen, k1} x ntol in {1e-2, 1e-3} with ltol 1e-1; lin1 at dt 0.01
+with ltol 1e-2.  Cases: the first min(16, cuDSS cases) cases of the same cohort.  A per-size wall budget applies; settings
+not reached are "not run (budget)"; a setting whose AmgX call errors is "failed" with the message.  Selection rule for
+the accuracy-matched table: as amendment 3, with AmgX and cuDSS settings reported in separate columns.  Mesh coarsening
+and dt > 0.01 are not run for AmgX (the cuDSS grid shows whether they can meet the error at all).

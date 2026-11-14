@@ -180,7 +180,7 @@ not reproduced.  Rows not re-run for lack of time or slots keep the paper value 
 `RESULTS-ours-same-gpu.md` is generated from the result JSON by script.  At most 3 GPU jobs of this lane queued or
 running at any time.
 
-### Amendment 4 (Sat 14 Nov 2026, 16:50 EST): settings of the AmgX stepper (Task A item 4), fixed before it has run
+### Amendment 4 (Sat 14 Nov 2026, 16:35 EST): settings of the AmgX stepper (Task A item 4), fixed before it has run
 
 Reason: amendment 3 left the AmgX stepper open ("only if time allows").  The single-solve measurements show AmgX far
 cheaper than a cuDSS refactorisation in 3D, so an honest best shot for the sparse-solver side needs it.  No AmgX stepper

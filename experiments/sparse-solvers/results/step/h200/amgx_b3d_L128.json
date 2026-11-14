@@ -1,0 +1,5139 @@
+{
+ "task": "burgers_stepper",
+ "dim": 3,
+ "L": 128,
+ "unknowns": 2048383,
+ "cases": 6,
+ "dtype": "float64",
+ "solver": "amgx",
+ "reference": {
+  "dim": 3,
+  "L": 128,
+  "cases": 6,
+  "jax": "0.10.2",
+  "dt": 0.005,
+  "steps": 50,
+  "cohort": "table(923901, 32) (paper Burgers 3D held-out cohort)",
+  "cohort_sha256": "f20a1aac4d506891595da155380399a0796191b374a2355f9395f389b9417b37",
+  "reference": "common.make_fom(n, 0.005, 1e-10, 1e-11)",
+  "ntol": 1e-10,
+  "ltol": 1e-11,
+  "n": 129,
+  "all_converged": true
+ },
+ "cupy": "14.2.0",
+ "budget_s": 1500.0,
+ "amgx_commit": "91a8413ef267b1c32aff4014c02820e1c5897ac2",
+ "mode": "dDDI",
+ "config_changes": "linear tolerance set; max_iters 200; printing and internal timers off; rest as shipped. PBICGSTAB_JACOBI_NOAMG is written by this lane: BiCGStab + one block-Jacobi sweep, no AMG",
+ "interface": "device pointers passed to the AmgX C API (matrix values, right-hand side, solution); AmgX copies them",
+ "status": "ok",
+ "host": "pax008",
+ "gpu": "NVIDIA H200, 143771 MiB, 575.57.08",
+ "slurm_job": "7221194",
+ "cpus": "16",
+ "started": "2026-11-14 17:31:28 EST",
+ "settings": {
+  "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|lin1_dt0.005_ntolnone_ltol0.001": {
+   "config": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS",
+   "variant": "lin1",
+   "dt": 0.005,
+   "ntol": null,
+   "ltol": 0.001,
+   "group": "same-mesh",
+   "name": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|lin1_dt0.005_ntolnone_ltol0.001",
+   "coarsen": 1,
+   "steps": 50,
+   "mesh_L": 128,
+   "reps_per_case": 3,
+   "time_s": {
+    "median": 2.66604369180277,
+    "min": 2.4854626273736358,
+    "max": 2.7271809028461576,
+    "n": 18,
+    "all": [
+     2.7035543713718653,
+     2.706217943690717,
+     2.711292238906026,
+     2.6939293714240193,
+     2.698481498286128,
+     2.694722312502563,
+     2.485980316065252,
+     2.4857258554548025,
+     2.4854626273736358,
+     2.6375898560509086,
+     2.6379036055877805,
+     2.6369742695242167,
+     2.7250755140557885,
+     2.7271809028461576,
+     2.725447458215058,
+     2.637672930955887,
+     2.6381580121815205,
+     2.6374110402539372
+    ]
+   },
+   "worst_error": 0.0004304761193989145,
+   "median_error": 0.00016185973683221152,
+   "newton_total_median": 50.0,
+   "newton_total_max": 50,
+   "refactor_median": 50.0,
+   "solve_median": 50.0,
+   "linear_iterations_median": 250.5,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 9.378374947405177e-05,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 255,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0,
+     "times": [
+      2.7035543713718653,
+      2.706217943690717,
+      2.711292238906026
+     ]
+    },
+    {
+     "case": 1,
+     "error": 0.00034954023808937354,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 251,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0,
+     "times": [
+      2.6939293714240193,
+      2.698481498286128,
+      2.694722312502563
+     ]
+    },
+    {
+     "case": 2,
+     "error": 3.799041370504347e-05,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 200,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0,
+     "times": [
+      2.485980316065252,
+      2.4857258554548025,
+      2.4854626273736358
+     ]
+    },
+    {
+     "case": 3,
+     "error": 0.00022347854314016413,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 250,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0,
+     "times": [
+      2.6375898560509086,
+      2.6379036055877805,
+      2.6369742695242167
+     ]
+    },
+    {
+     "case": 4,
+     "error": 0.0004304761193989145,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 286,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0,
+     "times": [
+      2.7250755140557885,
+      2.7271809028461576,
+      2.725447458215058
+     ]
+    },
+    {
+     "case": 5,
+     "error": 0.00010024093052425891,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 250,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0,
+     "times": [
+      2.637672930955887,
+      2.6381580121815205,
+      2.6374110402539372
+     ]
+    }
+   ],
+   "instrumented_case0": {
+    "total_s": 2.705617608502507,
+    "refactor_s": 2.3885527681559324,
+    "solve_s": 0.3110225545242429,
+    "rest_s": 0.006042285822331905,
+    "note": "synchronised around every setup and solve; slower than the timed runs"
+   }
+  },
+  "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|k1_dt0.005_ntol1e-06_ltol0.01": {
+   "config": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS",
+   "variant": "k1",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 0.01,
+   "group": "same-mesh",
+   "name": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|k1_dt0.005_ntol1e-06_ltol0.01",
+   "coarsen": 1,
+   "steps": 50,
+   "mesh_L": 128,
+   "reps_per_case": 3,
+   "time_s": {
+    "median": 2.8551486590877175,
+    "min": 2.6292796256020665,
+    "max": 2.966630627401173,
+    "n": 18,
+    "all": [
+     2.8952127238735557,
+     2.8910495955497026,
+     2.891027469187975,
+     2.92584250215441,
+     2.9256651923060417,
+     2.924082406796515,
+     2.6297112200409174,
+     2.6309536518529058,
+     2.6292796256020665,
+     2.81926984898746,
+     2.818919242359698,
+     2.8184238094836473,
+     2.9662373028695583,
+     2.9644909044727683,
+     2.966630627401173,
+     2.787026255391538,
+     2.785647848621011,
+     2.7903061974793673
+    ]
+   },
+   "worst_error": 9.596274199319382e-07,
+   "median_error": 4.700982581912696e-07,
+   "newton_total_median": 103.5,
+   "newton_total_max": 115,
+   "refactor_median": 50.0,
+   "solve_median": 103.5,
+   "linear_iterations_median": 384.0,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 3.216000300095728e-07,
+     "newton_total": 100,
+     "newton_max_step": 2,
+     "refactor": 50,
+     "solve": 100,
+     "linear_iterations": 390,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 9.966749637646383e-07,
+     "times": [
+      2.8952127238735557,
+      2.8910495955497026,
+      2.891027469187975
+     ]
+    },
+    {
+     "case": 1,
+     "error": 5.595829411452377e-07,
+     "newton_total": 108,
+     "newton_max_step": 3,
+     "refactor": 50,
+     "solve": 108,
+     "linear_iterations": 419,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 9.123507177495636e-07,
+     "times": [
+      2.92584250215441,
+      2.9256651923060417,
+      2.924082406796515
+     ]
+    },
+    {
+     "case": 2,
+     "error": 3.806135752373015e-07,
+     "newton_total": 100,
+     "newton_max_step": 2,
+     "refactor": 50,
+     "solve": 100,
+     "linear_iterations": 300,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 1.7769587918067492e-07,
+     "times": [
+      2.6297112200409174,
+      2.6309536518529058,
+      2.6292796256020665
+     ]
+    },
+    {
+     "case": 3,
+     "error": 9.307222813266069e-07,
+     "newton_total": 107,
+     "newton_max_step": 3,
+     "refactor": 50,
+     "solve": 107,
+     "linear_iterations": 378,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 9.510337080404188e-07,
+     "times": [
+      2.81926984898746,
+      2.818919242359698,
+      2.8184238094836473
+     ]
+    },
+    {
+     "case": 4,
+     "error": 1.7331576820926097e-07,
+     "newton_total": 115,
+     "newton_max_step": 3,
+     "refactor": 50,
+     "solve": 115,
+     "linear_iterations": 461,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 9.748666496038866e-07,
+     "times": [
+      2.9662373028695583,
+      2.9644909044727683,
+      2.966630627401173
+     ]
+    },
+    {
+     "case": 5,
+     "error": 9.596274199319382e-07,
+     "newton_total": 100,
+     "newton_max_step": 2,
+     "refactor": 50,
+     "solve": 100,
+     "linear_iterations": 350,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 8.167105991045058e-07,
+     "times": [
+      2.787026255391538,
+      2.785647848621011,
+      2.7903061974793673
+     ]
+    }
+   ],
+   "instrumented_case0": {
+    "total_s": 2.9030094277113676,
+    "refactor_s": 2.4054651707410812,
+    "solve_s": 0.47562979348003864,
+    "rest_s": 0.021914463490247726,
+    "note": "synchronised around every setup and solve; slower than the timed runs"
+   }
+  },
+  "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|frozen_dt0.005_ntol1e-06_ltol0.01": {
+   "config": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS",
+   "variant": "frozen",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 0.01,
+   "group": "same-mesh",
+   "name": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|frozen_dt0.005_ntol1e-06_ltol0.01",
+   "coarsen": 1,
+   "steps": 50,
+   "mesh_L": 128,
+   "reps_per_case": 3,
+   "time_s": {
+    "median": 0.8719909456558526,
+    "min": 0.5260140104219317,
+    "max": 1.4005451118573546,
+    "n": 18,
+    "all": [
+     0.8174830926582217,
+     0.8141664611175656,
+     0.8121387101709843,
+     1.2037443593144417,
+     1.2126949550583959,
+     1.2066125739365816,
+     0.5260140104219317,
+     0.526175175793469,
+     0.5266655189916492,
+     0.9275227636098862,
+     0.9264987986534834,
+     0.9266645889729261,
+     1.3990671364590526,
+     1.4005451118573546,
+     1.4002355830743909,
+     0.7108586002141237,
+     0.7099860180169344,
+     0.7104260576888919
+    ]
+   },
+   "worst_error": 4.689409936575644e-06,
+   "median_error": 1.852996709275198e-06,
+   "newton_total_median": 171.5,
+   "newton_total_max": 240,
+   "refactor_median": 1.0,
+   "solve_median": 171.5,
+   "linear_iterations_median": 657.5,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 1.8260272483997779e-06,
+     "newton_total": 149,
+     "newton_max_step": 3,
+     "refactor": 1,
+     "solve": 149,
+     "linear_iterations": 589,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 9.966749637646383e-07,
+     "times": [
+      0.8174830926582217,
+      0.8141664611175656,
+      0.8121387101709843
+     ]
+    },
+    {
+     "case": 1,
+     "error": 2.1250026433132946e-06,
+     "newton_total": 229,
+     "newton_max_step": 5,
+     "refactor": 1,
+     "solve": 229,
+     "linear_iterations": 943,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 9.998341864353208e-07,
+     "times": [
+      1.2037443593144417,
+      1.2126949550583959,
+      1.2066125739365816
+     ]
+    },
+    {
+     "case": 2,
+     "error": 1.879966170150618e-06,
+     "newton_total": 138,
+     "newton_max_step": 3,
+     "refactor": 1,
+     "solve": 138,
+     "linear_iterations": 414,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 9.770334895328222e-07,
+     "times": [
+      0.5260140104219317,
+      0.526175175793469,
+      0.5266655189916492
+     ]
+    },
+    {
+     "case": 3,
+     "error": 1.3380725577745492e-06,
+     "newton_total": 194,
+     "newton_max_step": 4,
+     "refactor": 1,
+     "solve": 194,
+     "linear_iterations": 726,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 9.421331757317627e-07,
+     "times": [
+      0.9275227636098862,
+      0.9264987986534834,
+      0.9266645889729261
+     ]
+    },
+    {
+     "case": 4,
+     "error": 4.021324829494733e-07,
+     "newton_total": 240,
+     "newton_max_step": 5,
+     "refactor": 1,
+     "solve": 240,
+     "linear_iterations": 1103,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 9.501840704643434e-07,
+     "times": [
+      1.3990671364590526,
+      1.4005451118573546,
+      1.4002355830743909
+     ]
+    },
+    {
+     "case": 5,
+     "error": 4.689409936575644e-06,
+     "newton_total": 149,
+     "newton_max_step": 3,
+     "refactor": 1,
+     "solve": 149,
+     "linear_iterations": 546,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 8.167105991045058e-07,
+     "times": [
+      0.7108586002141237,
+      0.7099860180169344,
+      0.7104260576888919
+     ]
+    }
+   ],
+   "instrumented_case0": {
+    "total_s": 0.8145489580929279,
+    "refactor_s": 0.04921109415590763,
+    "solve_s": 0.7445059213787317,
+    "rest_s": 0.020831942558288574,
+    "note": "synchronised around every setup and solve; slower than the timed runs"
+   }
+  },
+  "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|full_dt0.005_ntol1e-06_ltol0.01": {
+   "config": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS",
+   "variant": "full",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 0.01,
+   "group": "same-mesh",
+   "name": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|full_dt0.005_ntol1e-06_ltol0.01",
+   "coarsen": 1,
+   "steps": 50,
+   "mesh_L": 128,
+   "reps_per_case": 1,
+   "time_s": {
+    "median": 5.270911656785756,
+    "min": 4.896375850774348,
+    "max": 6.175967339426279,
+    "n": 6,
+    "all": [
+     5.304827722720802,
+     5.543124692514539,
+     4.896375850774348,
+     5.236995590850711,
+     6.175967339426279,
+     5.139186518266797
+    ]
+   },
+   "worst_error": 9.924515628218791e-07,
+   "median_error": 4.6557069948691165e-07,
+   "newton_total_median": 101.0,
+   "newton_total_max": 115,
+   "refactor_median": 101.0,
+   "solve_median": 101.0,
+   "linear_iterations_median": 374.0,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 1.9976304592621226e-07,
+     "newton_total": 100,
+     "newton_max_step": 2,
+     "refactor": 100,
+     "solve": 100,
+     "linear_iterations": 390,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 8.61560504546685e-07,
+     "times": [
+      5.304827722720802
+     ]
+    },
+    {
+     "case": 1,
+     "error": 5.521097611989606e-07,
+     "newton_total": 105,
+     "newton_max_step": 3,
+     "refactor": 105,
+     "solve": 105,
+     "linear_iterations": 407,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 9.97738890080953e-07,
+     "times": [
+      5.543124692514539
+     ]
+    },
+    {
+     "case": 2,
+     "error": 3.790316377748626e-07,
+     "newton_total": 100,
+     "newton_max_step": 2,
+     "refactor": 100,
+     "solve": 100,
+     "linear_iterations": 300,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 1.7255666833542236e-07,
+     "times": [
+      4.896375850774348
+     ]
+    },
+    {
+     "case": 3,
+     "error": 9.924515628218791e-07,
+     "newton_total": 102,
+     "newton_max_step": 3,
+     "refactor": 102,
+     "solve": 102,
+     "linear_iterations": 358,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 9.636068554352612e-07,
+     "times": [
+      5.236995590850711
+     ]
+    },
+    {
+     "case": 4,
+     "error": 1.707828801655339e-07,
+     "newton_total": 115,
+     "newton_max_step": 3,
+     "refactor": 115,
+     "solve": 115,
+     "linear_iterations": 460,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 9.615095671838914e-07,
+     "times": [
+      6.175967339426279
+     ]
+    },
+    {
+     "case": 5,
+     "error": 9.180029033632225e-07,
+     "newton_total": 100,
+     "newton_max_step": 2,
+     "refactor": 100,
+     "solve": 100,
+     "linear_iterations": 350,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 5.996620784629412e-07,
+     "times": [
+      5.139186518266797
+     ]
+    }
+   ],
+   "instrumented_case0": {
+    "total_s": 5.302598061971366,
+    "refactor_s": 4.801632502116263,
+    "solve_s": 0.4755538944154978,
+    "rest_s": 0.025411665439605713,
+    "note": "synchronised around every setup and solve; slower than the timed runs"
+   }
+  },
+  "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|k1_dt0.005_ntol0.003_ltol0.1": {
+   "config": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS",
+   "variant": "k1",
+   "dt": 0.005,
+   "ntol": 0.003,
+   "ltol": 0.1,
+   "group": "same-mesh",
+   "name": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|k1_dt0.005_ntol0.003_ltol0.1",
+   "coarsen": 1,
+   "steps": 50,
+   "mesh_L": 128,
+   "reps_per_case": 3,
+   "time_s": {
+    "median": 2.50823841849342,
+    "min": 2.400066518224776,
+    "max": 2.573134477250278,
+    "n": 18,
+    "all": [
+     2.5431774547323585,
+     2.546759550459683,
+     2.5432175723835826,
+     2.5265834694728255,
+     2.526372045278549,
+     2.529918442480266,
+     2.4023746820166707,
+     2.400066518224776,
+     2.408734886907041,
+     2.4864098634570837,
+     2.4846062110736966,
+     2.484672206453979,
+     2.573134477250278,
+     2.557517522946,
+     2.554677785374224,
+     2.483704355545342,
+     2.4854427594691515,
+     2.4901047917082906
+    ]
+   },
+   "worst_error": 0.0015503991354987234,
+   "median_error": 0.0008600198978748158,
+   "newton_total_median": 50.0,
+   "newton_total_max": 60,
+   "refactor_median": 50.0,
+   "solve_median": 50.0,
+   "linear_iterations_median": 100.0,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 0.0012294001150099214,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0020549386458632614,
+     "times": [
+      2.5431774547323585,
+      2.546759550459683,
+      2.5432175723835826
+     ]
+    },
+    {
+     "case": 1,
+     "error": 0.0015503991354987234,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0028468602544351644,
+     "times": [
+      2.5265834694728255,
+      2.526372045278549,
+      2.529918442480266
+     ]
+    },
+    {
+     "case": 2,
+     "error": 0.00022535648366728582,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.00016737765493676283,
+     "times": [
+      2.4023746820166707,
+      2.400066518224776,
+      2.408734886907041
+     ]
+    },
+    {
+     "case": 3,
+     "error": 0.0008489085266889416,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0013065271744309647,
+     "times": [
+      2.4864098634570837,
+      2.4846062110736966,
+      2.484672206453979
+     ]
+    },
+    {
+     "case": 4,
+     "error": 0.00087113126906069,
+     "newton_total": 60,
+     "newton_max_step": 2,
+     "refactor": 50,
+     "solve": 60,
+     "linear_iterations": 123,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0029925054935917173,
+     "times": [
+      2.573134477250278,
+      2.557517522946,
+      2.554677785374224
+     ]
+    },
+    {
+     "case": 5,
+     "error": 0.0006258787497329417,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0008071815075614646,
+     "times": [
+      2.483704355545342,
+      2.4854427594691515,
+      2.4901047917082906
+     ]
+    }
+   ],
+   "instrumented_case0": {
+    "total_s": 2.5447784578427672,
+    "refactor_s": 2.4017617674544454,
+    "solve_s": 0.12562946882098913,
+    "rest_s": 0.017387221567332745,
+    "note": "synchronised around every setup and solve; slower than the timed runs"
+   }
+  },
+  "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|frozen_dt0.005_ntol0.003_ltol0.1": {
+   "config": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS",
+   "variant": "frozen",
+   "dt": 0.005,
+   "ntol": 0.003,
+   "ltol": 0.1,
+   "group": "same-mesh",
+   "name": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|frozen_dt0.005_ntol0.003_ltol0.1",
+   "coarsen": 1,
+   "steps": 50,
+   "mesh_L": 128,
+   "reps_per_case": 3,
+   "time_s": {
+    "median": 0.18041382124647498,
+    "min": 0.17045620921999216,
+    "max": 0.21726580616086721,
+    "n": 18,
+    "all": [
+     0.18934390600770712,
+     0.18919080309569836,
+     0.18928376585245132,
+     0.18126549199223518,
+     0.18130433652549982,
+     0.18380873929709196,
+     0.17047813162207603,
+     0.17045620921999216,
+     0.17058617901057005,
+     0.17956215050071478,
+     0.17925808764994144,
+     0.17919034603983164,
+     0.21726580616086721,
+     0.21560927666723728,
+     0.2151558417826891,
+     0.1787277152761817,
+     0.1787927057594061,
+     0.1787140192463994
+    ]
+   },
+   "worst_error": 0.006652276005168524,
+   "median_error": 0.0035059598638098,
+   "newton_total_median": 50.0,
+   "newton_total_max": 62,
+   "refactor_median": 1.0,
+   "solve_median": 50.0,
+   "linear_iterations_median": 100.0,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 0.0021170771273443527,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0020549386458632614,
+     "times": [
+      0.18934390600770712,
+      0.18919080309569836,
+      0.18928376585245132
+     ]
+    },
+    {
+     "case": 1,
+     "error": 0.006652276005168524,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0028468602544351644,
+     "times": [
+      0.18126549199223518,
+      0.18130433652549982,
+      0.18380873929709196
+     ]
+    },
+    {
+     "case": 2,
+     "error": 0.002159688725354955,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0001906316967891422,
+     "times": [
+      0.17047813162207603,
+      0.17045620921999216,
+      0.17058617901057005
+     ]
+    },
+    {
+     "case": 3,
+     "error": 0.005379730127406561,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0013065271744309647,
+     "times": [
+      0.17956215050071478,
+      0.17925808764994144,
+      0.17919034603983164
+     ]
+    },
+    {
+     "case": 4,
+     "error": 0.0034690317715053705,
+     "newton_total": 62,
+     "newton_max_step": 2,
+     "refactor": 1,
+     "solve": 62,
+     "linear_iterations": 127,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.002985248062933991,
+     "times": [
+      0.21726580616086721,
+      0.21560927666723728,
+      0.2151558417826891
+     ]
+    },
+    {
+     "case": 5,
+     "error": 0.0035428879561142297,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.000806078444476346,
+     "times": [
+      0.1787277152761817,
+      0.1787927057594061,
+      0.1787140192463994
+     ]
+    }
+   ],
+   "instrumented_case0": {
+    "total_s": 0.1897172350436449,
+    "refactor_s": 0.04901649709790945,
+    "solve_s": 0.12881374824792147,
+    "rest_s": 0.011886989697813988,
+    "note": "synchronised around every setup and solve; slower than the timed runs"
+   }
+  },
+  "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|full_dt0.005_ntol0.003_ltol0.1": {
+   "config": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS",
+   "variant": "full",
+   "dt": 0.005,
+   "ntol": 0.003,
+   "ltol": 0.1,
+   "group": "same-mesh",
+   "name": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|full_dt0.005_ntol0.003_ltol0.1",
+   "coarsen": 1,
+   "steps": 50,
+   "mesh_L": 128,
+   "reps_per_case": 3,
+   "time_s": {
+    "median": 2.5048760711215436,
+    "min": 2.3958641421049833,
+    "max": 3.0320555148646235,
+    "n": 18,
+    "all": [
+     2.539761300198734,
+     2.542114144191146,
+     2.5398212438449264,
+     2.52271144464612,
+     2.5247118650004268,
+     2.646198651753366,
+     2.4024647530168295,
+     2.3958641421049833,
+     2.3979195533320308,
+     2.4809773564338684,
+     2.4809355037286878,
+     2.487040697596967,
+     3.0304616214707494,
+     3.0320555148646235,
+     3.0314040277153254,
+     2.4843572322279215,
+     2.4817182635888457,
+     2.48649172578007
+    ]
+   },
+   "worst_error": 0.0015503991354987234,
+   "median_error": 0.0008601493293763067,
+   "newton_total_median": 50.0,
+   "newton_total_max": 60,
+   "refactor_median": 50.0,
+   "solve_median": 50.0,
+   "linear_iterations_median": 100.0,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 0.0012294001150099214,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0020549386458632614,
+     "times": [
+      2.539761300198734,
+      2.542114144191146,
+      2.5398212438449264
+     ]
+    },
+    {
+     "case": 1,
+     "error": 0.0015503991354987234,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0028468602544351644,
+     "times": [
+      2.52271144464612,
+      2.5247118650004268,
+      2.646198651753366
+     ]
+    },
+    {
+     "case": 2,
+     "error": 0.00022535648366728582,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.00016737765493676283,
+     "times": [
+      2.4024647530168295,
+      2.3958641421049833,
+      2.3979195533320308
+     ]
+    },
+    {
+     "case": 3,
+     "error": 0.0008489085266889416,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0013065271744309647,
+     "times": [
+      2.4809773564338684,
+      2.4809355037286878,
+      2.487040697596967
+     ]
+    },
+    {
+     "case": 4,
+     "error": 0.0008713901320636717,
+     "newton_total": 60,
+     "newton_max_step": 2,
+     "refactor": 60,
+     "solve": 60,
+     "linear_iterations": 123,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0029924803552611296,
+     "times": [
+      3.0304616214707494,
+      3.0320555148646235,
+      3.0314040277153254
+     ]
+    },
+    {
+     "case": 5,
+     "error": 0.0006258787497329417,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0008071815075614646,
+     "times": [
+      2.4843572322279215,
+      2.4817182635888457,
+      2.48649172578007
+     ]
+    }
+   ],
+   "instrumented_case0": {
+    "total_s": 2.5411844328045845,
+    "refactor_s": 2.3988098902627826,
+    "solve_s": 0.1254375521093607,
+    "rest_s": 0.016936990432441235,
+    "note": "synchronised around every setup and solve; slower than the timed runs"
+   }
+  },
+  "PBICGSTAB_JACOBI_NOAMG|lin1_dt0.005_ntolnone_ltol0.001": {
+   "config": "PBICGSTAB_JACOBI_NOAMG",
+   "variant": "lin1",
+   "dt": 0.005,
+   "ntol": null,
+   "ltol": 0.001,
+   "group": "same-mesh",
+   "name": "PBICGSTAB_JACOBI_NOAMG|lin1_dt0.005_ntolnone_ltol0.001",
+   "coarsen": 1,
+   "steps": 50,
+   "mesh_L": 128,
+   "reps_per_case": 3,
+   "time_s": {
+    "median": 0.1553278649225831,
+    "min": 0.1303260326385498,
+    "max": 0.1711007049307227,
+    "n": 18,
+    "all": [
+     0.17088780365884304,
+     0.17107567097991705,
+     0.1711007049307227,
+     0.16792465187609196,
+     0.16801120806485415,
+     0.16788060404360294,
+     0.13101161364465952,
+     0.13034252356737852,
+     0.1303260326385498,
+     0.14310920890420675,
+     0.14313081372529268,
+     0.14312206767499447,
+     0.1675714673474431,
+     0.16795203182846308,
+     0.16752491611987352,
+     0.13163970038294792,
+     0.1316211810335517,
+     0.13262666761875153
+    ]
+   },
+   "worst_error": 0.0003974608519997388,
+   "median_error": 0.0002345310380105331,
+   "newton_total_median": 50.0,
+   "newton_total_max": 50,
+   "refactor_median": 50.0,
+   "solve_median": 50.0,
+   "linear_iterations_median": 313.5,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 0.00014651531946739826,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 351,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0,
+     "times": [
+      0.17088780365884304,
+      0.17107567097991705,
+      0.1711007049307227
+     ]
+    },
+    {
+     "case": 1,
+     "error": 0.0003974608519997388,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 343,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0,
+     "times": [
+      0.16792465187609196,
+      0.16801120806485415,
+      0.16788060404360294
+     ]
+    },
+    {
+     "case": 2,
+     "error": 8.6132206562392e-05,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 255,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0,
+     "times": [
+      0.13101161364465952,
+      0.13034252356737852,
+      0.1303260326385498
+     ]
+    },
+    {
+     "case": 3,
+     "error": 0.000269139438632751,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 285,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0,
+     "times": [
+      0.14310920890420675,
+      0.14313081372529268,
+      0.14312206767499447
+     ]
+    },
+    {
+     "case": 4,
+     "error": 0.00038841803067718754,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 342,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0,
+     "times": [
+      0.1675714673474431,
+      0.16795203182846308,
+      0.16752491611987352
+     ]
+    },
+    {
+     "case": 5,
+     "error": 0.00019992263738831517,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 257,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0,
+     "times": [
+      0.13163970038294792,
+      0.1316211810335517,
+      0.13262666761875153
+     ]
+    }
+   ],
+   "instrumented_case0": {
+    "total_s": 0.17273948341608047,
+    "refactor_s": 0.017017985694110394,
+    "solve_s": 0.15214167442172766,
+    "rest_s": 0.003579823300242424,
+    "note": "synchronised around every setup and solve; slower than the timed runs"
+   }
+  },
+  "PBICGSTAB_JACOBI_NOAMG|k1_dt0.005_ntol1e-06_ltol0.01": {
+   "config": "PBICGSTAB_JACOBI_NOAMG",
+   "variant": "k1",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 0.01,
+   "group": "same-mesh",
+   "name": "PBICGSTAB_JACOBI_NOAMG|k1_dt0.005_ntol1e-06_ltol0.01",
+   "coarsen": 1,
+   "steps": 50,
+   "mesh_L": 128,
+   "reps_per_case": 3,
+   "time_s": {
+    "median": 0.2898578089661896,
+    "min": 0.15873875841498375,
+    "max": 0.36544367391616106,
+    "n": 18,
+    "all": [
+     0.3022187286987901,
+     0.3010743735358119,
+     0.30108701530843973,
+     0.35370781272649765,
+     0.35402574948966503,
+     0.3539019674062729,
+     0.15884670428931713,
+     0.15877101570367813,
+     0.15873875841498375,
+     0.2777471551671624,
+     0.27864124439656734,
+     0.27860207855701447,
+     0.36544367391616106,
+     0.36540413834154606,
+     0.36499652825295925,
+     0.24087176099419594,
+     0.23962260503321886,
+     0.23698475398123264
+    ]
+   },
+   "worst_error": 5.1477606935283365e-06,
+   "median_error": 2.5552312242364178e-06,
+   "newton_total_median": 113.0,
+   "newton_total_max": 122,
+   "refactor_median": 50.0,
+   "solve_median": 113.0,
+   "linear_iterations_median": 587.5,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 4.6702852713356356e-06,
+     "newton_total": 111,
+     "newton_max_step": 3,
+     "refactor": 50,
+     "solve": 111,
+     "linear_iterations": 616,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 9.931654912390566e-07,
+     "times": [
+      0.3022187286987901,
+      0.3010743735358119,
+      0.30108701530843973
+     ]
+    },
+    {
+     "case": 1,
+     "error": 2.004350572024843e-06,
+     "newton_total": 115,
+     "newton_max_step": 3,
+     "refactor": 50,
+     "solve": 115,
+     "linear_iterations": 738,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 9.752996712644657e-07,
+     "times": [
+      0.35370781272649765,
+      0.35402574948966503,
+      0.3539019674062729
+     ]
+    },
+    {
+     "case": 2,
+     "error": 5.1477606935283365e-06,
+     "newton_total": 100,
+     "newton_max_step": 2,
+     "refactor": 50,
+     "solve": 100,
+     "linear_iterations": 281,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 5.662135805305689e-07,
+     "times": [
+      0.15884670428931713,
+      0.15877101570367813,
+      0.15873875841498375
+     ]
+    },
+    {
+     "case": 3,
+     "error": 1.5872034711720906e-06,
+     "newton_total": 117,
+     "newton_max_step": 3,
+     "refactor": 50,
+     "solve": 117,
+     "linear_iterations": 559,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 9.935190200639729e-07,
+     "times": [
+      0.2777471551671624,
+      0.27864124439656734,
+      0.27860207855701447
+     ]
+    },
+    {
+     "case": 4,
+     "error": 2.582707927611028e-06,
+     "newton_total": 122,
+     "newton_max_step": 3,
+     "refactor": 50,
+     "solve": 122,
+     "linear_iterations": 763,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 9.272310962985549e-07,
+     "times": [
+      0.36544367391616106,
+      0.36540413834154606,
+      0.36499652825295925
+     ]
+    },
+    {
+     "case": 5,
+     "error": 2.5277545208618077e-06,
+     "newton_total": 108,
+     "newton_max_step": 3,
+     "refactor": 50,
+     "solve": 108,
+     "linear_iterations": 464,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 9.940100462969303e-07,
+     "times": [
+      0.24087176099419594,
+      0.23962260503321886,
+      0.23698475398123264
+     ]
+    }
+   ],
+   "instrumented_case0": {
+    "total_s": 0.3030723351985216,
+    "refactor_s": 0.017081215977668762,
+    "solve_s": 0.2687843469902873,
+    "rest_s": 0.017206772230565548,
+    "note": "synchronised around every setup and solve; slower than the timed runs"
+   }
+  },
+  "PBICGSTAB_JACOBI_NOAMG|frozen_dt0.005_ntol1e-06_ltol0.01": {
+   "config": "PBICGSTAB_JACOBI_NOAMG",
+   "variant": "frozen",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 0.01,
+   "group": "same-mesh",
+   "name": "PBICGSTAB_JACOBI_NOAMG|frozen_dt0.005_ntol1e-06_ltol0.01",
+   "coarsen": 1,
+   "steps": 50,
+   "mesh_L": 128,
+   "reps_per_case": 3,
+   "time_s": {
+    "median": 0.5242474959231913,
+    "min": 0.238816499710083,
+    "max": 1.0264305071905255,
+    "n": 18,
+    "all": [
+     0.500940297730267,
+     0.4998625610023737,
+     0.5018270201981068,
+     0.7924541411921382,
+     0.7944764168933034,
+     0.7929629543796182,
+     0.23900400660932064,
+     0.238816499710083,
+     0.2390067745000124,
+     0.5466679716482759,
+     0.5475542293861508,
+     0.5473346002399921,
+     1.0264305071905255,
+     1.0230471873655915,
+     1.0201581679284573,
+     0.3882981212809682,
+     0.38942631147801876,
+     0.3877783892676234
+    ]
+   },
+   "worst_error": 4.195946177103269e-06,
+   "median_error": 2.0638854359515446e-06,
+   "newton_total_median": 173.0,
+   "newton_total_max": 240,
+   "refactor_median": 1.0,
+   "solve_median": 173.0,
+   "linear_iterations_median": 1156.0,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 1.9198265876786413e-06,
+     "newton_total": 149,
+     "newton_max_step": 3,
+     "refactor": 1,
+     "solve": 149,
+     "linear_iterations": 1111,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 9.559792261459676e-07,
+     "times": [
+      0.500940297730267,
+      0.4998625610023737,
+      0.5018270201981068
+     ]
+    },
+    {
+     "case": 1,
+     "error": 2.2695621480612195e-06,
+     "newton_total": 225,
+     "newton_max_step": 5,
+     "refactor": 1,
+     "solve": 225,
+     "linear_iterations": 1770,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 9.925165369272854e-07,
+     "times": [
+      0.7924541411921382,
+      0.7944764168933034,
+      0.7929629543796182
+     ]
+    },
+    {
+     "case": 2,
+     "error": 2.2079442842244483e-06,
+     "newton_total": 141,
+     "newton_max_step": 3,
+     "refactor": 1,
+     "solve": 141,
+     "linear_iterations": 498,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 8.671136616062159e-07,
+     "times": [
+      0.23900400660932064,
+      0.238816499710083,
+      0.2390067745000124
+     ]
+    },
+    {
+     "case": 3,
+     "error": 1.2092964465548092e-06,
+     "newton_total": 195,
+     "newton_max_step": 4,
+     "refactor": 1,
+     "solve": 195,
+     "linear_iterations": 1201,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 9.051372093314434e-07,
+     "times": [
+      0.5466679716482759,
+      0.5475542293861508,
+      0.5473346002399921
+     ]
+    },
+    {
+     "case": 4,
+     "error": 3.8406658769170466e-07,
+     "newton_total": 240,
+     "newton_max_step": 5,
+     "refactor": 1,
+     "solve": 240,
+     "linear_iterations": 2303,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 9.779195987655974e-07,
+     "times": [
+      1.0264305071905255,
+      1.0230471873655915,
+      1.0201581679284573
+     ]
+    },
+    {
+     "case": 5,
+     "error": 4.195946177103269e-06,
+     "newton_total": 151,
+     "newton_max_step": 4,
+     "refactor": 1,
+     "solve": 151,
+     "linear_iterations": 842,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 9.845895744238222e-07,
+     "times": [
+      0.3882981212809682,
+      0.38942631147801876,
+      0.3877783892676234
+     ]
+    }
+   ],
+   "instrumented_case0": {
+    "total_s": 0.5031177466735244,
+    "refactor_s": 0.0003469977527856827,
+    "solve_s": 0.4822142319753766,
+    "rest_s": 0.02055651694536209,
+    "note": "synchronised around every setup and solve; slower than the timed runs"
+   }
+  },
+  "PBICGSTAB_JACOBI_NOAMG|full_dt0.005_ntol1e-06_ltol0.01": {
+   "config": "PBICGSTAB_JACOBI_NOAMG",
+   "variant": "full",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 0.01,
+   "group": "same-mesh",
+   "name": "PBICGSTAB_JACOBI_NOAMG|full_dt0.005_ntol1e-06_ltol0.01",
+   "coarsen": 1,
+   "steps": 50,
+   "mesh_L": 128,
+   "reps_per_case": 3,
+   "time_s": {
+    "median": 0.29052280681207776,
+    "min": 0.1766471043229103,
+    "max": 0.39714054949581623,
+    "n": 18,
+    "all": [
+     0.2924686372280121,
+     0.292129916138947,
+     0.29236490186303854,
+     0.364536227658391,
+     0.36508320458233356,
+     0.3648175112903118,
+     0.17671737726777792,
+     0.17670193500816822,
+     0.1766471043229103,
+     0.2879402320832014,
+     0.2889156974852085,
+     0.2879335843026638,
+     0.39714054949581623,
+     0.39707659278064966,
+     0.3965694159269333,
+     0.24065158143639565,
+     0.24092584010213614,
+     0.24095627386122942
+    ]
+   },
+   "worst_error": 5.412643510132128e-06,
+   "median_error": 1.8160572539058066e-06,
+   "newton_total_median": 111.0,
+   "newton_total_max": 125,
+   "refactor_median": 111.0,
+   "solve_median": 111.0,
+   "linear_iterations_median": 539.0,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 5.412643510132128e-06,
+     "newton_total": 107,
+     "newton_max_step": 3,
+     "refactor": 107,
+     "solve": 107,
+     "linear_iterations": 549,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 9.24001209564525e-07,
+     "times": [
+      0.2924686372280121,
+      0.292129916138947,
+      0.29236490186303854
+     ]
+    },
+    {
+     "case": 1,
+     "error": 1.860267051590985e-06,
+     "newton_total": 119,
+     "newton_max_step": 3,
+     "refactor": 119,
+     "solve": 119,
+     "linear_iterations": 706,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 9.650970738088317e-07,
+     "times": [
+      0.364536227658391,
+      0.36508320458233356,
+      0.3648175112903118
+     ]
+    },
+    {
+     "case": 2,
+     "error": 4.996799265005273e-06,
+     "newton_total": 100,
+     "newton_max_step": 2,
+     "refactor": 100,
+     "solve": 100,
+     "linear_iterations": 284,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 5.315648631215549e-07,
+     "times": [
+      0.17671737726777792,
+      0.17670193500816822,
+      0.1766471043229103
+     ]
+    },
+    {
+     "case": 3,
+     "error": 1.40658653181495e-06,
+     "newton_total": 115,
+     "newton_max_step": 3,
+     "refactor": 115,
+     "solve": 115,
+     "linear_iterations": 529,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 9.216191434808067e-07,
+     "times": [
+      0.2879402320832014,
+      0.2889156974852085,
+      0.2879335843026638
+     ]
+    },
+    {
+     "case": 4,
+     "error": 1.771847456220628e-06,
+     "newton_total": 125,
+     "newton_max_step": 3,
+     "refactor": 125,
+     "solve": 125,
+     "linear_iterations": 773,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 9.292412618931182e-07,
+     "times": [
+      0.39714054949581623,
+      0.39707659278064966,
+      0.3965694159269333
+     ]
+    },
+    {
+     "case": 5,
+     "error": 1.6053725567290826e-06,
+     "newton_total": 103,
+     "newton_max_step": 3,
+     "refactor": 103,
+     "solve": 103,
+     "linear_iterations": 433,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 8.95323255911278e-07,
+     "times": [
+      0.24065158143639565,
+      0.24092584010213614,
+      0.24095627386122942
+     ]
+    }
+   ],
+   "instrumented_case0": {
+    "total_s": 0.29493850376456976,
+    "refactor_s": 0.03727824706584215,
+    "solve_s": 0.24056170135736465,
+    "rest_s": 0.017098555341362953,
+    "note": "synchronised around every setup and solve; slower than the timed runs"
+   }
+  },
+  "PBICGSTAB_JACOBI_NOAMG|k1_dt0.005_ntol0.003_ltol0.1": {
+   "config": "PBICGSTAB_JACOBI_NOAMG",
+   "variant": "k1",
+   "dt": 0.005,
+   "ntol": 0.003,
+   "ltol": 0.1,
+   "group": "same-mesh",
+   "name": "PBICGSTAB_JACOBI_NOAMG|k1_dt0.005_ntol0.003_ltol0.1",
+   "coarsen": 1,
+   "steps": 50,
+   "mesh_L": 128,
+   "reps_per_case": 3,
+   "time_s": {
+    "median": 0.07538273138925433,
+    "min": 0.05605148617178202,
+    "max": 0.10114722512662411,
+    "n": 18,
+    "all": [
+     0.08146742824465036,
+     0.08153851330280304,
+     0.08156495448201895,
+     0.08743931632488966,
+     0.0874564265832305,
+     0.08743328414857388,
+     0.05605148617178202,
+     0.056074255146086216,
+     0.056498595513403416,
+     0.06837942358106375,
+     0.06831655465066433,
+     0.06837337370961905,
+     0.10111299809068441,
+     0.10114722512662411,
+     0.10111396946012974,
+     0.0692980345338583,
+     0.0691781509667635,
+     0.0692213149741292
+    ]
+   },
+   "worst_error": 0.017871678550093147,
+   "median_error": 0.013370893361879826,
+   "newton_total_median": 50.0,
+   "newton_total_max": 60,
+   "refactor_median": 50.0,
+   "solve_median": 50.0,
+   "linear_iterations_median": 104.5,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 0.008690700041835838,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 119,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0027554503654848806,
+     "times": [
+      0.08146742824465036,
+      0.08153851330280304,
+      0.08156495448201895
+     ]
+    },
+    {
+     "case": 1,
+     "error": 0.01539634496494956,
+     "newton_total": 54,
+     "newton_max_step": 2,
+     "refactor": 50,
+     "solve": 54,
+     "linear_iterations": 131,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0028542350125082324,
+     "times": [
+      0.08743931632488966,
+      0.0874564265832305,
+      0.08743328414857388
+     ]
+    },
+    {
+     "case": 2,
+     "error": 0.013009986845501429,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 59,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.000875174253550187,
+     "times": [
+      0.05605148617178202,
+      0.056074255146086216,
+      0.056498595513403416
+     ]
+    },
+    {
+     "case": 3,
+     "error": 0.017871678550093147,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 87,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0029894593745074002,
+     "times": [
+      0.06837942358106375,
+      0.06831655465066433,
+      0.06837337370961905
+     ]
+    },
+    {
+     "case": 4,
+     "error": 0.006541493093823202,
+     "newton_total": 60,
+     "newton_max_step": 2,
+     "refactor": 50,
+     "solve": 60,
+     "linear_iterations": 161,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0029507091007496987,
+     "times": [
+      0.10111299809068441,
+      0.10114722512662411,
+      0.10111396946012974
+     ]
+    },
+    {
+     "case": 5,
+     "error": 0.013731799878258224,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 90,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0019890479265573394,
+     "times": [
+      0.0692980345338583,
+      0.0691781509667635,
+      0.0692213149741292
+     ]
+    }
+   ],
+   "instrumented_case0": {
+    "total_s": 0.08261848706752062,
+    "refactor_s": 0.017154471948742867,
+    "solve_s": 0.05359252821654081,
+    "rest_s": 0.011871486902236938,
+    "note": "synchronised around every setup and solve; slower than the timed runs"
+   }
+  },
+  "PBICGSTAB_JACOBI_NOAMG|frozen_dt0.005_ntol0.003_ltol0.1": {
+   "config": "PBICGSTAB_JACOBI_NOAMG",
+   "variant": "frozen",
+   "dt": 0.005,
+   "ntol": 0.003,
+   "ltol": 0.1,
+   "group": "same-mesh",
+   "name": "PBICGSTAB_JACOBI_NOAMG|frozen_dt0.005_ntol0.003_ltol0.1",
+   "coarsen": 1,
+   "steps": 50,
+   "mesh_L": 128,
+   "reps_per_case": 3,
+   "time_s": {
+    "median": 0.05896555492654443,
+    "min": 0.03939619567245245,
+    "max": 0.090143583714962,
+    "n": 18,
+    "all": [
+     0.06495097000151873,
+     0.06498606968671083,
+     0.0651110066100955,
+     0.06281787902116776,
+     0.06284296792000532,
+     0.06279699876904488,
+     0.03939619567245245,
+     0.03941442258656025,
+     0.04291264433413744,
+     0.05513411108404398,
+     0.053584218956530094,
+     0.05351560469716787,
+     0.08528688363730907,
+     0.090143583714962,
+     0.08522809017449617,
+     0.052632701583206654,
+     0.05255433823913336,
+     0.05257127154618502
+    ]
+   },
+   "worst_error": 0.023317088410976915,
+   "median_error": 0.016661602643010344,
+   "newton_total_median": 50.0,
+   "newton_total_max": 58,
+   "refactor_median": 1.0,
+   "solve_median": 50.0,
+   "linear_iterations_median": 102.5,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 0.008731761396466139,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 120,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0027554503654848806,
+     "times": [
+      0.06495097000151873,
+      0.06498606968671083,
+      0.0651110066100955
+     ]
+    },
+    {
+     "case": 1,
+     "error": 0.023317088410976915,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 113,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.002990379607398408,
+     "times": [
+      0.06281787902116776,
+      0.06284296792000532,
+      0.06279699876904488
+     ]
+    },
+    {
+     "case": 2,
+     "error": 0.01703134165733015,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 59,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0009626885675232895,
+     "times": [
+      0.03939619567245245,
+      0.03941442258656025,
+      0.04291264433413744
+     ]
+    },
+    {
+     "case": 3,
+     "error": 0.02006265767821443,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 92,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0029894593745074002,
+     "times": [
+      0.05513411108404398,
+      0.053584218956530094,
+      0.05351560469716787
+     ]
+    },
+    {
+     "case": 4,
+     "error": 0.006332772259991658,
+     "newton_total": 58,
+     "newton_max_step": 2,
+     "refactor": 1,
+     "solve": 58,
+     "linear_iterations": 165,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.00299119894785752,
+     "times": [
+      0.08528688363730907,
+      0.090143583714962,
+      0.08522809017449617
+     ]
+    },
+    {
+     "case": 5,
+     "error": 0.016291863628690534,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 90,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0019890479265573394,
+     "times": [
+      0.052632701583206654,
+      0.05255433823913336,
+      0.05257127154618502
+     ]
+    }
+   ],
+   "instrumented_case0": {
+    "total_s": 0.06583405192941427,
+    "refactor_s": 0.00034343451261520386,
+    "solve_s": 0.05381529312580824,
+    "rest_s": 0.01167532429099083,
+    "note": "synchronised around every setup and solve; slower than the timed runs"
+   }
+  },
+  "PBICGSTAB_JACOBI_NOAMG|full_dt0.005_ntol0.003_ltol0.1": {
+   "config": "PBICGSTAB_JACOBI_NOAMG",
+   "variant": "full",
+   "dt": 0.005,
+   "ntol": 0.003,
+   "ltol": 0.1,
+   "group": "same-mesh",
+   "name": "PBICGSTAB_JACOBI_NOAMG|full_dt0.005_ntol0.003_ltol0.1",
+   "coarsen": 1,
+   "steps": 50,
+   "mesh_L": 128,
+   "reps_per_case": 3,
+   "time_s": {
+    "median": 0.07539071841165423,
+    "min": 0.056122830137610435,
+    "max": 0.11149536725133657,
+    "n": 18,
+    "all": [
+     0.08160245884209871,
+     0.08154796063899994,
+     0.08149212319403887,
+     0.0884796092286706,
+     0.08828275185078382,
+     0.08834936190396547,
+     0.05620861891657114,
+     0.056122830137610435,
+     0.056147935800254345,
+     0.06827767938375473,
+     0.06838898826390505,
+     0.06847922597080469,
+     0.11020352691411972,
+     0.11149536725133657,
+     0.11032606102526188,
+     0.0692893136292696,
+     0.06923193857073784,
+     0.06919488310813904
+    ]
+   },
+   "worst_error": 0.017871678550093147,
+   "median_error": 0.013370893361879826,
+   "newton_total_median": 50.0,
+   "newton_total_max": 63,
+   "refactor_median": 50.0,
+   "solve_median": 50.0,
+   "linear_iterations_median": 104.5,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 0.008690700041835838,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 119,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0027554503654848806,
+     "times": [
+      0.08160245884209871,
+      0.08154796063899994,
+      0.08149212319403887
+     ]
+    },
+    {
+     "case": 1,
+     "error": 0.015448373814818337,
+     "newton_total": 54,
+     "newton_max_step": 2,
+     "refactor": 54,
+     "solve": 54,
+     "linear_iterations": 130,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.002852663702412472,
+     "times": [
+      0.0884796092286706,
+      0.08828275185078382,
+      0.08834936190396547
+     ]
+    },
+    {
+     "case": 2,
+     "error": 0.013009986845501429,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 59,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.000875174253550187,
+     "times": [
+      0.05620861891657114,
+      0.056122830137610435,
+      0.056147935800254345
+     ]
+    },
+    {
+     "case": 3,
+     "error": 0.017871678550093147,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 87,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0029894593745074002,
+     "times": [
+      0.06827767938375473,
+      0.06838898826390505,
+      0.06847922597080469
+     ]
+    },
+    {
+     "case": 4,
+     "error": 0.005464312601487274,
+     "newton_total": 63,
+     "newton_max_step": 2,
+     "refactor": 63,
+     "solve": 63,
+     "linear_iterations": 173,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.00280325453977162,
+     "times": [
+      0.11020352691411972,
+      0.11149536725133657,
+      0.11032606102526188
+     ]
+    },
+    {
+     "case": 5,
+     "error": 0.013731799878258224,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 90,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0019890479265573394,
+     "times": [
+      0.0692893136292696,
+      0.06923193857073784,
+      0.06919488310813904
+     ]
+    }
+   ],
+   "instrumented_case0": {
+    "total_s": 0.08255194313824177,
+    "refactor_s": 0.01716047339141369,
+    "solve_s": 0.05357201676815748,
+    "rest_s": 0.011819452978670597,
+    "note": "synchronised around every setup and solve; slower than the timed runs"
+   }
+  },
+  "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|frozen_dt0.01_ntol0.01_ltol0.1": {
+   "config": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS",
+   "variant": "frozen",
+   "dt": 0.01,
+   "ntol": 0.01,
+   "ltol": 0.1,
+   "group": "matched-grid",
+   "name": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|frozen_dt0.01_ntol0.01_ltol0.1",
+   "coarsen": 1,
+   "steps": 25,
+   "mesh_L": 128,
+   "reps_per_case": 3,
+   "time_s": {
+    "median": 0.12493210192769766,
+    "min": 0.11363491415977478,
+    "max": 0.14444023184478283,
+    "n": 18,
+    "all": [
+     0.13202567771077156,
+     0.13027401082217693,
+     0.13029094506055117,
+     0.13468157593160868,
+     0.13499958906322718,
+     0.13474323321133852,
+     0.11363491415977478,
+     0.11419865023344755,
+     0.11414797138422728,
+     0.11959019303321838,
+     0.11948311515152454,
+     0.11929866299033165,
+     0.14394110441207886,
+     0.14444023184478283,
+     0.14370286371558905,
+     0.11498004104942083,
+     0.114804457873106,
+     0.11476314812898636
+    ]
+   },
+   "worst_error": 0.018222669559052593,
+   "median_error": 0.011838002465963454,
+   "newton_total_median": 25.0,
+   "newton_total_max": 25,
+   "refactor_median": 1.0,
+   "solve_median": 25.0,
+   "linear_iterations_median": 56.5,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 0.006915532473894718,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 25,
+     "linear_iterations": 63,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0027677832529476314,
+     "times": [
+      0.13202567771077156,
+      0.13027401082217693,
+      0.13029094506055117
+     ]
+    },
+    {
+     "case": 1,
+     "error": 0.018222669559052593,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 25,
+     "linear_iterations": 67,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.004533706498275696,
+     "times": [
+      0.13468157593160868,
+      0.13499958906322718,
+      0.13474323321133852
+     ]
+    },
+    {
+     "case": 2,
+     "error": 0.005464929098189163,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 25,
+     "linear_iterations": 50,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0007691978083949664,
+     "times": [
+      0.11363491415977478,
+      0.11419865023344755,
+      0.11414797138422728
+     ]
+    },
+    {
+     "case": 3,
+     "error": 0.013936605361655875,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 25,
+     "linear_iterations": 50,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.005291097577893018,
+     "times": [
+      0.11959019303321838,
+      0.11948311515152454,
+      0.11929866299033165
+     ]
+    },
+    {
+     "case": 4,
+     "error": 0.017620287402179316,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 25,
+     "linear_iterations": 75,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.008021479060811606,
+     "times": [
+      0.14394110441207886,
+      0.14444023184478283,
+      0.14370286371558905
+     ]
+    },
+    {
+     "case": 5,
+     "error": 0.009739399570271033,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 25,
+     "linear_iterations": 50,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0031856598328720335,
+     "times": [
+      0.11498004104942083,
+      0.114804457873106,
+      0.11476314812898636
+     ]
+    }
+   ]
+  },
+  "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|frozen_dt0.01_ntol0.001_ltol0.1": {
+   "config": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS",
+   "variant": "frozen",
+   "dt": 0.01,
+   "ntol": 0.001,
+   "ltol": 0.1,
+   "group": "matched-grid",
+   "name": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|frozen_dt0.01_ntol0.001_ltol0.1",
+   "coarsen": 1,
+   "steps": 25,
+   "mesh_L": 128,
+   "reps_per_case": 3,
+   "time_s": {
+    "median": 0.2052318616770208,
+    "min": 0.11287974193692207,
+    "max": 0.2365493355318904,
+    "n": 18,
+    "all": [
+     0.2154842745512724,
+     0.2155101951211691,
+     0.21504137013107538,
+     0.22222551424056292,
+     0.22233603335916996,
+     0.22252532467246056,
+     0.11322754621505737,
+     0.11297218222171068,
+     0.11287974193692207,
+     0.1952678319066763,
+     0.1954223532229662,
+     0.19541235640645027,
+     0.23559451196342707,
+     0.2365493355318904,
+     0.23614908568561077,
+     0.17832581885159016,
+     0.1783984014764428,
+     0.17850417830049992
+    ]
+   },
+   "worst_error": 0.011622279717811459,
+   "median_error": 0.006683393239027681,
+   "newton_total_median": 50.0,
+   "newton_total_max": 50,
+   "refactor_median": 1.0,
+   "solve_median": 50.0,
+   "linear_iterations_median": 120.0,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 0.004630294220566249,
+     "newton_total": 50,
+     "newton_max_step": 2,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 132,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.00028172724965504903,
+     "times": [
+      0.2154842745512724,
+      0.2155101951211691,
+      0.21504137013107538
+     ]
+    },
+    {
+     "case": 1,
+     "error": 0.010495994960124558,
+     "newton_total": 50,
+     "newton_max_step": 2,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 138,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0005805635010248788,
+     "times": [
+      0.22222551424056292,
+      0.22233603335916996,
+      0.22252532467246056
+     ]
+    },
+    {
+     "case": 2,
+     "error": 0.005464929098189163,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 25,
+     "linear_iterations": 50,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0007691978083949664,
+     "times": [
+      0.11322754621505737,
+      0.11297218222171068,
+      0.11287974193692207
+     ]
+    },
+    {
+     "case": 3,
+     "error": 0.007703076201291133,
+     "newton_total": 50,
+     "newton_max_step": 2,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 108,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0003963632891542438,
+     "times": [
+      0.1952678319066763,
+      0.1954223532229662,
+      0.19541235640645027
+     ]
+    },
+    {
+     "case": 4,
+     "error": 0.011622279717811459,
+     "newton_total": 50,
+     "newton_max_step": 2,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 150,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0007005079951261581,
+     "times": [
+      0.23559451196342707,
+      0.2365493355318904,
+      0.23614908568561077
+     ]
+    },
+    {
+     "case": 5,
+     "error": 0.005663710276764228,
+     "newton_total": 50,
+     "newton_max_step": 2,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.00023696476160574978,
+     "times": [
+      0.17832581885159016,
+      0.1783984014764428,
+      0.17850417830049992
+     ]
+    }
+   ]
+  },
+  "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|k1_dt0.01_ntol0.01_ltol0.1": {
+   "config": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS",
+   "variant": "k1",
+   "dt": 0.01,
+   "ntol": 0.01,
+   "ltol": 0.1,
+   "group": "matched-grid",
+   "name": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|k1_dt0.01_ntol0.01_ltol0.1",
+   "coarsen": 1,
+   "steps": 25,
+   "mesh_L": 128,
+   "reps_per_case": 3,
+   "time_s": {
+    "median": 1.2807358489371836,
+    "min": 1.2438761424273252,
+    "max": 1.298830732703209,
+    "n": 18,
+    "all": [
+     1.2825993541628122,
+     1.2823686972260475,
+     1.2851544115692377,
+     1.286526639945805,
+     1.2877892330288887,
+     1.2865109657868743,
+     1.2440910367295146,
+     1.2442162176594138,
+     1.2438761424273252,
+     1.2778859185054898,
+     1.2777768857777119,
+     1.2786641959100962,
+     1.298830732703209,
+     1.2982338462024927,
+     1.2979740835726261,
+     1.2791030006483197,
+     1.277036310173571,
+     1.27559070661664
+    ]
+   },
+   "worst_error": 0.012538651349372036,
+   "median_error": 0.0070003561363741595,
+   "newton_total_median": 25.0,
+   "newton_total_max": 25,
+   "refactor_median": 25.0,
+   "solve_median": 25.0,
+   "linear_iterations_median": 56.0,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 0.004826828139943404,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 25,
+     "solve": 25,
+     "linear_iterations": 62,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.002835283032950041,
+     "times": [
+      1.2825993541628122,
+      1.2823686972260475,
+      1.2851544115692377
+     ]
+    },
+    {
+     "case": 1,
+     "error": 0.011392187617106246,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 25,
+     "solve": 25,
+     "linear_iterations": 64,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0038059228498670368,
+     "times": [
+      1.286526639945805,
+      1.2877892330288887,
+      1.2865109657868743
+     ]
+    },
+    {
+     "case": 2,
+     "error": 0.0042245999075766014,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 25,
+     "solve": 25,
+     "linear_iterations": 50,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0006600832618929339,
+     "times": [
+      1.2440910367295146,
+      1.2442162176594138,
+      1.2438761424273252
+     ]
+    },
+    {
+     "case": 3,
+     "error": 0.008122562735504038,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 25,
+     "solve": 25,
+     "linear_iterations": 50,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.005291097577893018,
+     "times": [
+      1.2778859185054898,
+      1.2777768857777119,
+      1.2786641959100962
+     ]
+    },
+    {
+     "case": 4,
+     "error": 0.012538651349372036,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 25,
+     "solve": 25,
+     "linear_iterations": 75,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.008021479060811606,
+     "times": [
+      1.298830732703209,
+      1.2982338462024927,
+      1.2979740835726261
+     ]
+    },
+    {
+     "case": 5,
+     "error": 0.00587814953724428,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 25,
+     "solve": 25,
+     "linear_iterations": 50,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0031856598328720335,
+     "times": [
+      1.2791030006483197,
+      1.277036310173571,
+      1.27559070661664
+     ]
+    }
+   ]
+  },
+  "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|k1_dt0.01_ntol0.001_ltol0.1": {
+   "config": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS",
+   "variant": "k1",
+   "dt": 0.01,
+   "ntol": 0.001,
+   "ltol": 0.1,
+   "group": "matched-grid",
+   "name": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|k1_dt0.01_ntol0.001_ltol0.1",
+   "coarsen": 1,
+   "steps": 25,
+   "mesh_L": 128,
+   "reps_per_case": 3,
+   "time_s": {
+    "median": 1.3417102447710931,
+    "min": 1.244247566908598,
+    "max": 1.366082901135087,
+    "n": 18,
+    "all": [
+     1.3356938902288675,
+     1.3350526010617614,
+     1.3369920728728175,
+     1.3546862322837114,
+     1.3549113906919956,
+     1.3542479826137424,
+     1.244247566908598,
+     1.2444319520145655,
+     1.2465158132836223,
+     1.3420955147594213,
+     1.3419160740450025,
+     1.343845504336059,
+     1.3659148262813687,
+     1.366082901135087,
+     1.3659607619047165,
+     1.3415044154971838,
+     1.340394327417016,
+     1.3400696376338601
+    ]
+   },
+   "worst_error": 0.011774248648537348,
+   "median_error": 0.006879049664986229,
+   "newton_total_median": 50.0,
+   "newton_total_max": 50,
+   "refactor_median": 25.0,
+   "solve_median": 50.0,
+   "linear_iterations_median": 101.5,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 0.00469288301027763,
+     "newton_total": 46,
+     "newton_max_step": 2,
+     "refactor": 25,
+     "solve": 46,
+     "linear_iterations": 103,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0009273024529853834,
+     "times": [
+      1.3356938902288675,
+      1.3350526010617614,
+      1.3369920728728175
+     ]
+    },
+    {
+     "case": 1,
+     "error": 0.010585162732139306,
+     "newton_total": 50,
+     "newton_max_step": 2,
+     "refactor": 25,
+     "solve": 50,
+     "linear_iterations": 118,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.00035288723224784137,
+     "times": [
+      1.3546862322837114,
+      1.3549113906919956,
+      1.3542479826137424
+     ]
+    },
+    {
+     "case": 2,
+     "error": 0.0042245999075766014,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 25,
+     "solve": 25,
+     "linear_iterations": 50,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0006600832618929339,
+     "times": [
+      1.244247566908598,
+      1.2444319520145655,
+      1.2465158132836223
+     ]
+    },
+    {
+     "case": 3,
+     "error": 0.007914668924362198,
+     "newton_total": 50,
+     "newton_max_step": 2,
+     "refactor": 25,
+     "solve": 50,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0003849606245144258,
+     "times": [
+      1.3420955147594213,
+      1.3419160740450025,
+      1.343845504336059
+     ]
+    },
+    {
+     "case": 4,
+     "error": 0.011774248648537348,
+     "newton_total": 50,
+     "newton_max_step": 2,
+     "refactor": 25,
+     "solve": 50,
+     "linear_iterations": 128,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.00047692808824135525,
+     "times": [
+      1.3659148262813687,
+      1.366082901135087,
+      1.3659607619047165
+     ]
+    },
+    {
+     "case": 5,
+     "error": 0.005843430405610261,
+     "newton_total": 50,
+     "newton_max_step": 2,
+     "refactor": 25,
+     "solve": 50,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.00023696476160574978,
+     "times": [
+      1.3415044154971838,
+      1.340394327417016,
+      1.3400696376338601
+     ]
+    }
+   ]
+  },
+  "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|frozen_dt0.005_ntol0.01_ltol0.1": {
+   "config": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS",
+   "variant": "frozen",
+   "dt": 0.005,
+   "ntol": 0.01,
+   "ltol": 0.1,
+   "group": "matched-grid",
+   "name": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|frozen_dt0.005_ntol0.01_ltol0.1",
+   "coarsen": 1,
+   "steps": 50,
+   "mesh_L": 128,
+   "reps_per_case": 3,
+   "time_s": {
+    "median": 0.18046120600774884,
+    "min": 0.08311652485281229,
+    "max": 0.18936433270573616,
+    "n": 18,
+    "all": [
+     0.18936433270573616,
+     0.1892907191067934,
+     0.18920827005058527,
+     0.18157117068767548,
+     0.1815062342211604,
+     0.18169862311333418,
+     0.08312675636261702,
+     0.08311652485281229,
+     0.08547746390104294,
+     0.17892672773450613,
+     0.17941617779433727,
+     0.1789460638538003,
+     0.18587786797434092,
+     0.18592433165758848,
+     0.18606347031891346,
+     0.1789643056690693,
+     0.17885370925068855,
+     0.17893670592457056
+    ]
+   },
+   "worst_error": 0.2822270463829021,
+   "median_error": 0.005470511512020349,
+   "newton_total_median": 50.0,
+   "newton_total_max": 50,
+   "refactor_median": 1.0,
+   "solve_median": 50.0,
+   "linear_iterations_median": 100.0,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 0.0021170771273443527,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0020549386458632614,
+     "times": [
+      0.18936433270573616,
+      0.1892907191067934,
+      0.18920827005058527
+     ]
+    },
+    {
+     "case": 1,
+     "error": 0.006652276005168524,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0028468602544351644,
+     "times": [
+      0.18157117068767548,
+      0.1815062342211604,
+      0.18169862311333418
+     ]
+    },
+    {
+     "case": 2,
+     "error": 0.2822270463829021,
+     "newton_total": 13,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 13,
+     "linear_iterations": 26,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.009995059447572414,
+     "times": [
+      0.08312675636261702,
+      0.08311652485281229,
+      0.08547746390104294
+     ]
+    },
+    {
+     "case": 3,
+     "error": 0.005379730127406561,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0013065271744309647,
+     "times": [
+      0.17892672773450613,
+      0.17941617779433727,
+      0.1789460638538003
+     ]
+    },
+    {
+     "case": 4,
+     "error": 0.005561292896634137,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 104,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.006004598023857815,
+     "times": [
+      0.18587786797434092,
+      0.18592433165758848,
+      0.18606347031891346
+     ]
+    },
+    {
+     "case": 5,
+     "error": 0.0035428879561142297,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.000806078444476346,
+     "times": [
+      0.1789643056690693,
+      0.17885370925068855,
+      0.17893670592457056
+     ]
+    }
+   ]
+  },
+  "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|frozen_dt0.005_ntol0.001_ltol0.1": {
+   "config": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS",
+   "variant": "frozen",
+   "dt": 0.005,
+   "ntol": 0.001,
+   "ltol": 0.1,
+   "group": "matched-grid",
+   "name": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|frozen_dt0.005_ntol0.001_ltol0.1",
+   "coarsen": 1,
+   "steps": 50,
+   "mesh_L": 128,
+   "reps_per_case": 3,
+   "time_s": {
+    "median": 0.2165173557586968,
+    "min": 0.17070090491324663,
+    "max": 0.3109478671103716,
+    "n": 18,
+    "all": [
+     0.2265841355547309,
+     0.22839864622801542,
+     0.22678211238235235,
+     0.27330587804317474,
+     0.27317057736217976,
+     0.27265291940420866,
+     0.17091762088239193,
+     0.17070090491324663,
+     0.17086352035403252,
+     0.2064505759626627,
+     0.20635057520121336,
+     0.20632027462124825,
+     0.3108458109200001,
+     0.3108788961544633,
+     0.3109478671103716,
+     0.1788728004321456,
+     0.1789260832592845,
+     0.17874819785356522
+    ]
+   },
+   "worst_error": 0.004914177296687595,
+   "median_error": 0.002688956137886959,
+   "newton_total_median": 62.5,
+   "newton_total_max": 100,
+   "refactor_median": 1.0,
+   "solve_median": 62.5,
+   "linear_iterations_median": 125.0,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 0.0017760197929447,
+     "newton_total": 64,
+     "newton_max_step": 2,
+     "refactor": 1,
+     "solve": 64,
+     "linear_iterations": 128,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.000978117925538543,
+     "times": [
+      0.2265841355547309,
+      0.22839864622801542,
+      0.22678211238235235
+     ]
+    },
+    {
+     "case": 1,
+     "error": 0.0032182235504189635,
+     "newton_total": 86,
+     "newton_max_step": 2,
+     "refactor": 1,
+     "solve": 86,
+     "linear_iterations": 172,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0009924340722043863,
+     "times": [
+      0.27330587804317474,
+      0.27317057736217976,
+      0.27265291940420866
+     ]
+    },
+    {
+     "case": 2,
+     "error": 0.002159688725354955,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0001906316967891422,
+     "times": [
+      0.17091762088239193,
+      0.17070090491324663,
+      0.17086352035403252
+     ]
+    },
+    {
+     "case": 3,
+     "error": 0.004914177296687595,
+     "newton_total": 61,
+     "newton_max_step": 2,
+     "refactor": 1,
+     "solve": 61,
+     "linear_iterations": 122,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0009910564490463176,
+     "times": [
+      0.2064505759626627,
+      0.20635057520121336,
+      0.20632027462124825
+     ]
+    },
+    {
+     "case": 4,
+     "error": 0.0002565452978795816,
+     "newton_total": 100,
+     "newton_max_step": 2,
+     "refactor": 1,
+     "solve": 100,
+     "linear_iterations": 203,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.00047604782297370915,
+     "times": [
+      0.3108458109200001,
+      0.3108788961544633,
+      0.3109478671103716
+     ]
+    },
+    {
+     "case": 5,
+     "error": 0.0035428879561142297,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.000806078444476346,
+     "times": [
+      0.1788728004321456,
+      0.1789260832592845,
+      0.17874819785356522
+     ]
+    }
+   ]
+  },
+  "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|k1_dt0.005_ntol0.01_ltol0.1": {
+   "config": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS",
+   "variant": "k1",
+   "dt": 0.005,
+   "ntol": 0.01,
+   "ltol": 0.1,
+   "group": "matched-grid",
+   "name": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|k1_dt0.005_ntol0.01_ltol0.1",
+   "coarsen": 1,
+   "steps": 50,
+   "mesh_L": 128,
+   "reps_per_case": 3,
+   "time_s": {
+    "median": 2.51485552592203,
+    "min": 0.6304141525179148,
+    "max": 2.553990688174963,
+    "n": 18,
+    "all": [
+     2.553990688174963,
+     2.553196703083813,
+     2.5537036918103695,
+     2.535010328516364,
+     2.5380455125123262,
+     2.535167177207768,
+     0.6306768599897623,
+     0.6304141525179148,
+     0.6305423472076654,
+     2.4947007233276963,
+     2.49234860856086,
+     2.492073471657932,
+     2.5420407373458147,
+     2.5415976038202643,
+     2.543575745075941,
+     2.494363581761718,
+     2.493397342041135,
+     2.494676034897566
+    ]
+   },
+   "worst_error": 0.2821870336202397,
+   "median_error": 0.0013898996252543223,
+   "newton_total_median": 50.0,
+   "newton_total_max": 50,
+   "refactor_median": 50.0,
+   "solve_median": 50.0,
+   "linear_iterations_median": 100.0,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 0.0012294001150099214,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0020549386458632614,
+     "times": [
+      2.553990688174963,
+      2.553196703083813,
+      2.5537036918103695
+     ]
+    },
+    {
+     "case": 1,
+     "error": 0.0015503991354987234,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0028468602544351644,
+     "times": [
+      2.535010328516364,
+      2.5380455125123262,
+      2.535167177207768
+     ]
+    },
+    {
+     "case": 2,
+     "error": 0.2821870336202397,
+     "newton_total": 13,
+     "newton_max_step": 1,
+     "refactor": 13,
+     "solve": 13,
+     "linear_iterations": 26,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.009998427129560722,
+     "times": [
+      0.6306768599897623,
+      0.6304141525179148,
+      0.6305423472076654
+     ]
+    },
+    {
+     "case": 3,
+     "error": 0.0008489085266889416,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0013065271744309647,
+     "times": [
+      2.4947007233276963,
+      2.49234860856086,
+      2.492073471657932
+     ]
+    },
+    {
+     "case": 4,
+     "error": 0.0018515147492802776,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 104,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.005906857996423044,
+     "times": [
+      2.5420407373458147,
+      2.5415976038202643,
+      2.543575745075941
+     ]
+    },
+    {
+     "case": 5,
+     "error": 0.0006258787497329417,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0008071815075614646,
+     "times": [
+      2.494363581761718,
+      2.493397342041135,
+      2.494676034897566
+     ]
+    }
+   ]
+  },
+  "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|k1_dt0.005_ntol0.001_ltol0.1": {
+   "config": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS",
+   "variant": "k1",
+   "dt": 0.005,
+   "ntol": 0.001,
+   "ltol": 0.1,
+   "group": "matched-grid",
+   "name": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|k1_dt0.005_ntol0.001_ltol0.1",
+   "coarsen": 1,
+   "steps": 50,
+   "mesh_L": 128,
+   "reps_per_case": 3,
+   "time_s": {
+    "median": 2.54820551071316,
+    "min": 2.40594619512558,
+    "max": 2.665594682097435,
+    "n": 18,
+    "all": [
+     2.586147991940379,
+     2.586163707077503,
+     2.5876950873062015,
+     2.5991249522194266,
+     2.5981344217434525,
+     2.5993712693452835,
+     2.4070252310484648,
+     2.4064944609999657,
+     2.40594619512558,
+     2.508417838253081,
+     2.5100954696536064,
+     2.510263029485941,
+     2.6621310487389565,
+     2.661886151880026,
+     2.665594682097435,
+     2.495366274379194,
+     2.4959339732304215,
+     2.4926242381334305
+    ]
+   },
+   "worst_error": 0.0006821594116491138,
+   "median_error": 0.0005672936907730374,
+   "newton_total_median": 59.5,
+   "newton_total_max": 99,
+   "refactor_median": 50.0,
+   "solve_median": 59.5,
+   "linear_iterations_median": 119.0,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 0.0005488144049625157,
+     "newton_total": 63,
+     "newton_max_step": 2,
+     "refactor": 50,
+     "solve": 63,
+     "linear_iterations": 126,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.000986989314190153,
+     "times": [
+      2.586147991940379,
+      2.586163707077503,
+      2.5876950873062015
+     ]
+    },
+    {
+     "case": 1,
+     "error": 0.0005857729765835591,
+     "newton_total": 73,
+     "newton_max_step": 2,
+     "refactor": 50,
+     "solve": 73,
+     "linear_iterations": 146,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0009972769906285942,
+     "times": [
+      2.5991249522194266,
+      2.5981344217434525,
+      2.5993712693452835
+     ]
+    },
+    {
+     "case": 2,
+     "error": 0.00022535648366728582,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.00016737765493676283,
+     "times": [
+      2.4070252310484648,
+      2.4064944609999657,
+      2.40594619512558
+     ]
+    },
+    {
+     "case": 3,
+     "error": 0.0006821594116491138,
+     "newton_total": 56,
+     "newton_max_step": 2,
+     "refactor": 50,
+     "solve": 56,
+     "linear_iterations": 112,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0009762342778471785,
+     "times": [
+      2.508417838253081,
+      2.5100954696536064,
+      2.510263029485941
+     ]
+    },
+    {
+     "case": 4,
+     "error": 0.00010995976465014262,
+     "newton_total": 99,
+     "newton_max_step": 2,
+     "refactor": 50,
+     "solve": 99,
+     "linear_iterations": 200,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0009940258188956446,
+     "times": [
+      2.6621310487389565,
+      2.661886151880026,
+      2.665594682097435
+     ]
+    },
+    {
+     "case": 5,
+     "error": 0.0006258787497329417,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0008071815075614646,
+     "times": [
+      2.495366274379194,
+      2.4959339732304215,
+      2.4926242381334305
+     ]
+    }
+   ]
+  },
+  "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|lin1_dt0.01_ntolnone_ltol0.01": {
+   "config": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS",
+   "variant": "lin1",
+   "dt": 0.01,
+   "ntol": null,
+   "ltol": 0.01,
+   "group": "matched-grid",
+   "name": "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|lin1_dt0.01_ntolnone_ltol0.01",
+   "coarsen": 1,
+   "steps": 25,
+   "mesh_L": 128,
+   "reps_per_case": 3,
+   "time_s": {
+    "median": 1.3239935715682805,
+    "min": 1.264293442480266,
+    "max": 1.338101520203054,
+    "n": 18,
+    "all": [
+     1.3226001895964146,
+     1.3204600708559155,
+     1.320661830715835,
+     1.3208367163315415,
+     1.3213272262364626,
+     1.3226101007312536,
+     1.2743874695152044,
+     1.2677413746714592,
+     1.264293442480266,
+     1.3259624540805817,
+     1.32593032438308,
+     1.3259785985574126,
+     1.338101520203054,
+     1.3368649184703827,
+     1.3370726481080055,
+     1.3253770424053073,
+     1.3274227436631918,
+     1.3286958960816264
+    ]
+   },
+   "worst_error": 0.012736153965081562,
+   "median_error": 0.007285866824815338,
+   "newton_total_median": 25.0,
+   "newton_total_max": 25,
+   "refactor_median": 25.0,
+   "solve_median": 25.0,
+   "linear_iterations_median": 100.5,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 0.004855827450944868,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 25,
+     "solve": 25,
+     "linear_iterations": 102,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0,
+     "times": [
+      1.3226001895964146,
+      1.3204600708559155,
+      1.320661830715835
+     ]
+    },
+    {
+     "case": 1,
+     "error": 0.011308831809652432,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 25,
+     "solve": 25,
+     "linear_iterations": 101,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0,
+     "times": [
+      1.3208367163315415,
+      1.3213272262364626,
+      1.3226101007312536
+     ]
+    },
+    {
+     "case": 2,
+     "error": 0.004306739449512299,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 25,
+     "solve": 25,
+     "linear_iterations": 75,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0,
+     "times": [
+      1.2743874695152044,
+      1.2677413746714592,
+      1.264293442480266
+     ]
+    },
+    {
+     "case": 3,
+     "error": 0.008481295637049153,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 25,
+     "solve": 25,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0,
+     "times": [
+      1.3259624540805817,
+      1.32593032438308,
+      1.3259785985574126
+     ]
+    },
+    {
+     "case": 4,
+     "error": 0.012736153965081562,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 25,
+     "solve": 25,
+     "linear_iterations": 115,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0,
+     "times": [
+      1.338101520203054,
+      1.3368649184703827,
+      1.3370726481080055
+     ]
+    },
+    {
+     "case": 5,
+     "error": 0.006090438012581523,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 25,
+     "solve": 25,
+     "linear_iterations": 100,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0,
+     "times": [
+      1.3253770424053073,
+      1.3274227436631918,
+      1.3286958960816264
+     ]
+    }
+   ]
+  },
+  "PBICGSTAB_JACOBI_NOAMG|frozen_dt0.01_ntol0.01_ltol0.1": {
+   "config": "PBICGSTAB_JACOBI_NOAMG",
+   "variant": "frozen",
+   "dt": 0.01,
+   "ntol": 0.01,
+   "ltol": 0.1,
+   "group": "matched-grid",
+   "name": "PBICGSTAB_JACOBI_NOAMG|frozen_dt0.01_ntol0.01_ltol0.1",
+   "coarsen": 1,
+   "steps": 25,
+   "mesh_L": 128,
+   "reps_per_case": 3,
+   "time_s": {
+    "median": 0.04368308698758483,
+    "min": 0.024355336092412472,
+    "max": 0.07213991601020098,
+    "n": 18,
+    "all": [
+     0.04379358887672424,
+     0.044143074192106724,
+     0.04584167618304491,
+     0.06034224200993776,
+     0.06022140756249428,
+     0.06039601098746061,
+     0.02437317743897438,
+     0.024358601309359074,
+     0.024355336092412472,
+     0.043474248610436916,
+     0.043509937822818756,
+     0.043572585098445415,
+     0.07211499009281397,
+     0.07213991601020098,
+     0.07212167885154486,
+     0.03790004272013903,
+     0.03779424726963043,
+     0.03782819304615259
+    ]
+   },
+   "worst_error": 0.023354420105031307,
+   "median_error": 0.014851506395602919,
+   "newton_total_median": 25.0,
+   "newton_total_max": 29,
+   "refactor_median": 1.0,
+   "solve_median": 25.0,
+   "linear_iterations_median": 85.5,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 0.012387244505963376,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 25,
+     "linear_iterations": 86,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.005193989772598347,
+     "times": [
+      0.04379358887672424,
+      0.044143074192106724,
+      0.04584167618304491
+     ]
+    },
+    {
+     "case": 1,
+     "error": 0.023354420105031307,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 25,
+     "linear_iterations": 124,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.00889320973962518,
+     "times": [
+      0.06034224200993776,
+      0.06022140756249428,
+      0.06039601098746061
+     ]
+    },
+    {
+     "case": 2,
+     "error": 0.019587516201156983,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 25,
+     "linear_iterations": 40,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0021451342371703974,
+     "times": [
+      0.02437317743897438,
+      0.024358601309359074,
+      0.024355336092412472
+     ]
+    },
+    {
+     "case": 3,
+     "error": 0.012553944076087304,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 25,
+     "linear_iterations": 85,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.005998073343452501,
+     "times": [
+      0.043474248610436916,
+      0.043509937822818756,
+      0.043572585098445415
+     ]
+    },
+    {
+     "case": 4,
+     "error": 0.01472998807532017,
+     "newton_total": 29,
+     "newton_max_step": 2,
+     "refactor": 1,
+     "solve": 29,
+     "linear_iterations": 151,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.008656142759776305,
+     "times": [
+      0.07211499009281397,
+      0.07213991601020098,
+      0.07212167885154486
+     ]
+    },
+    {
+     "case": 5,
+     "error": 0.014973024715885666,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 25,
+     "linear_iterations": 72,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.004089512126229819,
+     "times": [
+      0.03790004272013903,
+      0.03779424726963043,
+      0.03782819304615259
+     ]
+    }
+   ]
+  },
+  "PBICGSTAB_JACOBI_NOAMG|frozen_dt0.01_ntol0.001_ltol0.1": {
+   "config": "PBICGSTAB_JACOBI_NOAMG",
+   "variant": "frozen",
+   "dt": 0.01,
+   "ntol": 0.001,
+   "ltol": 0.1,
+   "group": "matched-grid",
+   "name": "PBICGSTAB_JACOBI_NOAMG|frozen_dt0.01_ntol0.001_ltol0.1",
+   "coarsen": 1,
+   "steps": 25,
+   "mesh_L": 128,
+   "reps_per_case": 3,
+   "time_s": {
+    "median": 0.09845952270552516,
+    "min": 0.051143936812877655,
+    "max": 0.14129896648228168,
+    "n": 18,
+    "all": [
+     0.09944185521453619,
+     0.09983699768781662,
+     0.09950834792107344,
+     0.12650361564010382,
+     0.12647099513560534,
+     0.12647006288170815,
+     0.05115807335823774,
+     0.051143936812877655,
+     0.05121172871440649,
+     0.0974652748554945,
+     0.09747719019651413,
+     0.09743890352547169,
+     0.14101939368993044,
+     0.14129896648228168,
+     0.14126162603497505,
+     0.08638198114931583,
+     0.08626570273190737,
+     0.08614941779524088
+    ]
+   },
+   "worst_error": 0.011928882614529346,
+   "median_error": 0.006821227027787065,
+   "newton_total_median": 50.0,
+   "newton_total_max": 54,
+   "refactor_median": 1.0,
+   "solve_median": 50.0,
+   "linear_iterations_median": 206.5,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 0.004780418515045935,
+     "newton_total": 50,
+     "newton_max_step": 2,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 209,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.00047754463484626854,
+     "times": [
+      0.09944185521453619,
+      0.09983699768781662,
+      0.09950834792107344
+     ]
+    },
+    {
+     "case": 1,
+     "error": 0.010743009081281835,
+     "newton_total": 50,
+     "newton_max_step": 2,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 273,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0009620729291581231,
+     "times": [
+      0.12650361564010382,
+      0.12647099513560534,
+      0.12647006288170815
+     ]
+    },
+    {
+     "case": 2,
+     "error": 0.003994807883463656,
+     "newton_total": 50,
+     "newton_max_step": 2,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 95,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.00019690615958926926,
+     "times": [
+      0.05115807335823774,
+      0.051143936812877655,
+      0.05121172871440649
+     ]
+    },
+    {
+     "case": 3,
+     "error": 0.00792121370033881,
+     "newton_total": 50,
+     "newton_max_step": 2,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 204,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.00049328498906397,
+     "times": [
+      0.0974652748554945,
+      0.09747719019651413,
+      0.09743890352547169
+     ]
+    },
+    {
+     "case": 4,
+     "error": 0.011928882614529346,
+     "newton_total": 54,
+     "newton_max_step": 3,
+     "refactor": 1,
+     "solve": 54,
+     "linear_iterations": 306,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0009881719685885218,
+     "times": [
+      0.14101939368993044,
+      0.14129896648228168,
+      0.14126162603497505
+     ]
+    },
+    {
+     "case": 5,
+     "error": 0.005721240355235321,
+     "newton_total": 50,
+     "newton_max_step": 2,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 178,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.00031175478780070393,
+     "times": [
+      0.08638198114931583,
+      0.08626570273190737,
+      0.08614941779524088
+     ]
+    }
+   ]
+  },
+  "PBICGSTAB_JACOBI_NOAMG|k1_dt0.01_ntol0.01_ltol0.1": {
+   "config": "PBICGSTAB_JACOBI_NOAMG",
+   "variant": "k1",
+   "dt": 0.01,
+   "ntol": 0.01,
+   "ltol": 0.1,
+   "group": "matched-grid",
+   "name": "PBICGSTAB_JACOBI_NOAMG|k1_dt0.01_ntol0.01_ltol0.1",
+   "coarsen": 1,
+   "steps": 25,
+   "mesh_L": 128,
+   "reps_per_case": 3,
+   "time_s": {
+    "median": 0.04981810972094536,
+    "min": 0.03192393574863672,
+    "max": 0.060791206546127796,
+    "n": 18,
+    "all": [
+     0.051659561693668365,
+     0.05160434823483229,
+     0.0515679782256484,
+     0.05993044376373291,
+     0.05989289842545986,
+     0.05986357666552067,
+     0.03192393574863672,
+     0.032027265056967735,
+     0.03197727911174297,
+     0.04806824121624231,
+     0.04805279057472944,
+     0.04802020266652107,
+     0.06073750555515289,
+     0.060789721086621284,
+     0.060791206546127796,
+     0.045100511983036995,
+     0.045061832293868065,
+     0.04517608322203159
+    ]
+   },
+   "worst_error": 0.018347330732677504,
+   "median_error": 0.015315426327608257,
+   "newton_total_median": 25.0,
+   "newton_total_max": 27,
+   "refactor_median": 25.0,
+   "solve_median": 25.0,
+   "linear_iterations_median": 81.0,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 0.012823859443027927,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 25,
+     "solve": 25,
+     "linear_iterations": 85,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.005193989772598347,
+     "times": [
+      0.051659561693668365,
+      0.05160434823483229,
+      0.0515679782256484
+     ]
+    },
+    {
+     "case": 1,
+     "error": 0.016421992210244412,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 25,
+     "solve": 25,
+     "linear_iterations": 105,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.007817125427521306,
+     "times": [
+      0.05993044376373291,
+      0.05989289842545986,
+      0.05986357666552067
+     ]
+    },
+    {
+     "case": 2,
+     "error": 0.015896192057363253,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 25,
+     "solve": 25,
+     "linear_iterations": 38,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0021451342371703974,
+     "times": [
+      0.03192393574863672,
+      0.032027265056967735,
+      0.03197727911174297
+     ]
+    },
+    {
+     "case": 3,
+     "error": 0.014734660597853258,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 25,
+     "solve": 25,
+     "linear_iterations": 77,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.004095427014592419,
+     "times": [
+      0.04806824121624231,
+      0.04805279057472944,
+      0.04802020266652107
+     ]
+    },
+    {
+     "case": 4,
+     "error": 0.018347330732677504,
+     "newton_total": 27,
+     "newton_max_step": 2,
+     "refactor": 25,
+     "solve": 27,
+     "linear_iterations": 106,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.009654268901060298,
+     "times": [
+      0.06073750555515289,
+      0.060789721086621284,
+      0.060791206546127796
+     ]
+    },
+    {
+     "case": 5,
+     "error": 0.013186073409247955,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 25,
+     "solve": 25,
+     "linear_iterations": 69,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0035221627999755607,
+     "times": [
+      0.045100511983036995,
+      0.045061832293868065,
+      0.04517608322203159
+     ]
+    }
+   ]
+  },
+  "PBICGSTAB_JACOBI_NOAMG|k1_dt0.01_ntol0.001_ltol0.1": {
+   "config": "PBICGSTAB_JACOBI_NOAMG",
+   "variant": "k1",
+   "dt": 0.01,
+   "ntol": 0.001,
+   "ltol": 0.1,
+   "group": "matched-grid",
+   "name": "PBICGSTAB_JACOBI_NOAMG|k1_dt0.01_ntol0.001_ltol0.1",
+   "coarsen": 1,
+   "steps": 25,
+   "mesh_L": 128,
+   "reps_per_case": 3,
+   "time_s": {
+    "median": 0.09436614159494638,
+    "min": 0.057770879939198494,
+    "max": 0.1107314731925726,
+    "n": 18,
+    "all": [
+     0.09930903743952513,
+     0.09933681786060333,
+     0.09928897116333246,
+     0.1107314731925726,
+     0.1094161719083786,
+     0.10946286376565695,
+     0.05784959718585014,
+     0.057770879939198494,
+     0.05796230956912041,
+     0.08934646937996149,
+     0.0894433120265603,
+     0.08927198220044374,
+     0.10810282174497843,
+     0.10821026936173439,
+     0.10842632781714201,
+     0.08125544525682926,
+     0.0811532074585557,
+     0.08117351308465004
+    ]
+   },
+   "worst_error": 0.011759196356463093,
+   "median_error": 0.006589325676929488,
+   "newton_total_median": 49.0,
+   "newton_total_max": 51,
+   "refactor_median": 25.0,
+   "solve_median": 49.0,
+   "linear_iterations_median": 178.5,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 0.004546323955838833,
+     "newton_total": 48,
+     "newton_max_step": 2,
+     "refactor": 25,
+     "solve": 48,
+     "linear_iterations": 191,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0009219219874808428,
+     "times": [
+      0.09930903743952513,
+      0.09933681786060333,
+      0.09928897116333246
+     ]
+    },
+    {
+     "case": 1,
+     "error": 0.01073529442824408,
+     "newton_total": 50,
+     "newton_max_step": 2,
+     "refactor": 25,
+     "solve": 50,
+     "linear_iterations": 213,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0007172925225120868,
+     "times": [
+      0.1107314731925726,
+      0.1094161719083786,
+      0.10946286376565695
+     ]
+    },
+    {
+     "case": 2,
+     "error": 0.0034689693080059212,
+     "newton_total": 48,
+     "newton_max_step": 2,
+     "refactor": 25,
+     "solve": 48,
+     "linear_iterations": 94,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0009684790799674722,
+     "times": [
+      0.05784959718585014,
+      0.057770879939198494,
+      0.05796230956912041
+     ]
+    },
+    {
+     "case": 3,
+     "error": 0.007810693571788514,
+     "newton_total": 50,
+     "newton_max_step": 2,
+     "refactor": 25,
+     "solve": 50,
+     "linear_iterations": 166,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.000494298228614829,
+     "times": [
+      0.08934646937996149,
+      0.0894433120265603,
+      0.08927198220044374
+     ]
+    },
+    {
+     "case": 4,
+     "error": 0.011759196356463093,
+     "newton_total": 51,
+     "newton_max_step": 3,
+     "refactor": 25,
+     "solve": 51,
+     "linear_iterations": 209,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0008693751626635243,
+     "times": [
+      0.10810282174497843,
+      0.10821026936173439,
+      0.10842632781714201
+     ]
+    },
+    {
+     "case": 5,
+     "error": 0.0053679577820704635,
+     "newton_total": 48,
+     "newton_max_step": 2,
+     "refactor": 25,
+     "solve": 48,
+     "linear_iterations": 147,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0009486659647363717,
+     "times": [
+      0.08125544525682926,
+      0.0811532074585557,
+      0.08117351308465004
+     ]
+    }
+   ]
+  },
+  "PBICGSTAB_JACOBI_NOAMG|frozen_dt0.005_ntol0.01_ltol0.1": {
+   "config": "PBICGSTAB_JACOBI_NOAMG",
+   "variant": "frozen",
+   "dt": 0.005,
+   "ntol": 0.01,
+   "ltol": 0.1,
+   "group": "matched-grid",
+   "name": "PBICGSTAB_JACOBI_NOAMG|frozen_dt0.005_ntol0.01_ltol0.1",
+   "coarsen": 1,
+   "steps": 50,
+   "mesh_L": 128,
+   "reps_per_case": 3,
+   "time_s": {
+    "median": 0.05814652284607291,
+    "min": 0.016386189498007298,
+    "max": 0.07063919771462679,
+    "n": 18,
+    "all": [
+     0.06782302632927895,
+     0.0650681285187602,
+     0.06503005418926477,
+     0.06271233130246401,
+     0.06285952962934971,
+     0.06289870943874121,
+     0.01642811205238104,
+     0.016446304507553577,
+     0.016386189498007298,
+     0.053569708950817585,
+     0.05357638653367758,
+     0.053580714389681816,
+     0.07043374050408602,
+     0.07063919771462679,
+     0.0704564405605197,
+     0.05263620615005493,
+     0.05261752009391785,
+     0.052601839415729046
+    ]
+   },
+   "worst_error": 0.25867253453787825,
+   "median_error": 0.01817726065345248,
+   "newton_total_median": 50.0,
+   "newton_total_max": 50,
+   "refactor_median": 1.0,
+   "solve_median": 50.0,
+   "linear_iterations_median": 102.5,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 0.008731761396466139,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 120,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0027554503654848806,
+     "times": [
+      0.06782302632927895,
+      0.0650681285187602,
+      0.06503005418926477
+     ]
+    },
+    {
+     "case": 1,
+     "error": 0.023317088410976915,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 113,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.002990379607398408,
+     "times": [
+      0.06271233130246401,
+      0.06285952962934971,
+      0.06289870943874121
+     ]
+    },
+    {
+     "case": 2,
+     "error": 0.25867253453787825,
+     "newton_total": 16,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 16,
+     "linear_iterations": 17,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.009952089865368304,
+     "times": [
+      0.01642811205238104,
+      0.016446304507553577,
+      0.016386189498007298
+     ]
+    },
+    {
+     "case": 3,
+     "error": 0.02006265767821443,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 92,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0029894593745074002,
+     "times": [
+      0.053569708950817585,
+      0.05357638653367758,
+      0.053580714389681816
+     ]
+    },
+    {
+     "case": 4,
+     "error": 0.013743328754995416,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 131,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.005232160551852098,
+     "times": [
+      0.07043374050408602,
+      0.07063919771462679,
+      0.0704564405605197
+     ]
+    },
+    {
+     "case": 5,
+     "error": 0.016291863628690534,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 90,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0019890479265573394,
+     "times": [
+      0.05263620615005493,
+      0.05261752009391785,
+      0.052601839415729046
+     ]
+    }
+   ]
+  },
+  "PBICGSTAB_JACOBI_NOAMG|frozen_dt0.005_ntol0.001_ltol0.1": {
+   "config": "PBICGSTAB_JACOBI_NOAMG",
+   "variant": "frozen",
+   "dt": 0.005,
+   "ntol": 0.001,
+   "ltol": 0.1,
+   "group": "matched-grid",
+   "name": "PBICGSTAB_JACOBI_NOAMG|frozen_dt0.005_ntol0.001_ltol0.1",
+   "coarsen": 1,
+   "steps": 50,
+   "mesh_L": 128,
+   "reps_per_case": 3,
+   "time_s": {
+    "median": 0.10002792347222567,
+    "min": 0.03943909518420696,
+    "max": 0.1490728659555316,
+    "n": 18,
+    "all": [
+     0.10138982068747282,
+     0.10491330176591873,
+     0.10324337240308523,
+     0.13650697749108076,
+     0.13819984626024961,
+     0.13626347947865725,
+     0.03944816906005144,
+     0.03948897682130337,
+     0.03943909518420696,
+     0.09863772615790367,
+     0.09866602625697851,
+     0.0986160421743989,
+     0.14858363661915064,
+     0.1490728659555316,
+     0.14863787218928337,
+     0.09091170690953732,
+     0.08882079925388098,
+     0.08886965550482273
+    ]
+   },
+   "worst_error": 0.01703134165733015,
+   "median_error": 0.00434720481413118,
+   "newton_total_median": 82.0,
+   "newton_total_max": 96,
+   "refactor_median": 1.0,
+   "solve_median": 82.0,
+   "linear_iterations_median": 193.5,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 0.0036642158423165505,
+     "newton_total": 75,
+     "newton_max_step": 2,
+     "refactor": 1,
+     "solve": 75,
+     "linear_iterations": 198,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0009946932578779389,
+     "times": [
+      0.10138982068747282,
+      0.10491330176591873,
+      0.10324337240308523
+     ]
+    },
+    {
+     "case": 1,
+     "error": 0.002418197342177152,
+     "newton_total": 96,
+     "newton_max_step": 2,
+     "refactor": 1,
+     "solve": 96,
+     "linear_iterations": 271,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0009973397684222961,
+     "times": [
+      0.13650697749108076,
+      0.13819984626024961,
+      0.13626347947865725
+     ]
+    },
+    {
+     "case": 2,
+     "error": 0.01703134165733015,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 1,
+     "solve": 50,
+     "linear_iterations": 59,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0009626885675232895,
+     "times": [
+      0.03944816906005144,
+      0.03948897682130337,
+      0.03943909518420696
+     ]
+    },
+    {
+     "case": 3,
+     "error": 0.00503019378594581,
+     "newton_total": 85,
+     "newton_max_step": 2,
+     "refactor": 1,
+     "solve": 85,
+     "linear_iterations": 189,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0009623219539169213,
+     "times": [
+      0.09863772615790367,
+      0.09866602625697851,
+      0.0986160421743989
+     ]
+    },
+    {
+     "case": 4,
+     "error": 0.0008632363250143657,
+     "newton_total": 96,
+     "newton_max_step": 2,
+     "refactor": 1,
+     "solve": 96,
+     "linear_iterations": 302,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0009561256172310038,
+     "times": [
+      0.14858363661915064,
+      0.1490728659555316,
+      0.14863787218928337
+     ]
+    },
+    {
+     "case": 5,
+     "error": 0.007011208857404626,
+     "newton_total": 79,
+     "newton_max_step": 2,
+     "refactor": 1,
+     "solve": 79,
+     "linear_iterations": 169,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0009843671297497295,
+     "times": [
+      0.09091170690953732,
+      0.08882079925388098,
+      0.08886965550482273
+     ]
+    }
+   ]
+  },
+  "PBICGSTAB_JACOBI_NOAMG|k1_dt0.005_ntol0.01_ltol0.1": {
+   "config": "PBICGSTAB_JACOBI_NOAMG",
+   "variant": "k1",
+   "dt": 0.005,
+   "ntol": 0.01,
+   "ltol": 0.1,
+   "group": "matched-grid",
+   "name": "PBICGSTAB_JACOBI_NOAMG|k1_dt0.005_ntol0.01_ltol0.1",
+   "coarsen": 1,
+   "steps": 50,
+   "mesh_L": 128,
+   "reps_per_case": 3,
+   "time_s": {
+    "median": 0.07461390271782875,
+    "min": 0.021467809565365314,
+    "max": 0.08694857358932495,
+    "n": 18,
+    "all": [
+     0.08146969508379698,
+     0.08148004859685898,
+     0.08136974833905697,
+     0.08007823582738638,
+     0.08029326051473618,
+     0.08022477943450212,
+     0.02152283675968647,
+     0.021586530841886997,
+     0.021467809565365314,
+     0.06831670925021172,
+     0.0682293837890029,
+     0.06827979534864426,
+     0.08679164946079254,
+     0.08694857358932495,
+     0.08690338302403688,
+     0.06914956960827112,
+     0.06909682042896748,
+     0.06913047097623348
+    ]
+   },
+   "worst_error": 0.25856159299299114,
+   "median_error": 0.01596184305132574,
+   "newton_total_median": 50.0,
+   "newton_total_max": 50,
+   "refactor_median": 50.0,
+   "solve_median": 50.0,
+   "linear_iterations_median": 103.0,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 0.008690700041835838,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 119,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0027554503654848806,
+     "times": [
+      0.08146969508379698,
+      0.08148004859685898,
+      0.08136974833905697
+     ]
+    },
+    {
+     "case": 1,
+     "error": 0.017979055257198624,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 116,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0036880042237433567,
+     "times": [
+      0.08007823582738638,
+      0.08029326051473618,
+      0.08022477943450212
+     ]
+    },
+    {
+     "case": 2,
+     "error": 0.25856159299299114,
+     "newton_total": 16,
+     "newton_max_step": 1,
+     "refactor": 16,
+     "solve": 16,
+     "linear_iterations": 17,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.00995873153256354,
+     "times": [
+      0.02152283675968647,
+      0.021586530841886997,
+      0.021467809565365314
+     ]
+    },
+    {
+     "case": 3,
+     "error": 0.017871678550093147,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 87,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0029894593745074002,
+     "times": [
+      0.06831670925021172,
+      0.0682293837890029,
+      0.06827979534864426
+     ]
+    },
+    {
+     "case": 4,
+     "error": 0.014052007552558334,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 131,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.005392306600314107,
+     "times": [
+      0.08679164946079254,
+      0.08694857358932495,
+      0.08690338302403688
+     ]
+    },
+    {
+     "case": 5,
+     "error": 0.013731799878258224,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 90,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0019890479265573394,
+     "times": [
+      0.06914956960827112,
+      0.06909682042896748,
+      0.06913047097623348
+     ]
+    }
+   ]
+  },
+  "PBICGSTAB_JACOBI_NOAMG|k1_dt0.005_ntol0.001_ltol0.1": {
+   "config": "PBICGSTAB_JACOBI_NOAMG",
+   "variant": "k1",
+   "dt": 0.005,
+   "ntol": 0.001,
+   "ltol": 0.1,
+   "group": "matched-grid",
+   "name": "PBICGSTAB_JACOBI_NOAMG|k1_dt0.005_ntol0.001_ltol0.1",
+   "coarsen": 1,
+   "steps": 50,
+   "mesh_L": 128,
+   "reps_per_case": 3,
+   "time_s": {
+    "median": 0.1122106472030282,
+    "min": 0.05602027662098408,
+    "max": 0.1441744538024068,
+    "n": 18,
+    "all": [
+     0.11372148431837559,
+     0.11394168622791767,
+     0.11419534310698509,
+     0.1312291957437992,
+     0.1312854988500476,
+     0.13118868973106146,
+     0.05608424078673124,
+     0.05606359988451004,
+     0.05602027662098408,
+     0.11069981008768082,
+     0.11058005783706903,
+     0.11066239606589079,
+     0.14171534031629562,
+     0.1441744538024068,
+     0.1418244680389762,
+     0.09612018894404173,
+     0.09598789177834988,
+     0.09597585909068584
+    ]
+   },
+   "worst_error": 0.013009986845501429,
+   "median_error": 0.004901271241009643,
+   "newton_total_median": 78.5,
+   "newton_total_max": 88,
+   "refactor_median": 50.0,
+   "solve_median": 78.5,
+   "linear_iterations_median": 184.5,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 0.004067040308276046,
+     "newton_total": 73,
+     "newton_max_step": 2,
+     "refactor": 50,
+     "solve": 73,
+     "linear_iterations": 189,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0009349102987288185,
+     "times": [
+      0.11372148431837559,
+      0.11394168622791767,
+      0.11419534310698509
+     ]
+    },
+    {
+     "case": 1,
+     "error": 0.004393011178154523,
+     "newton_total": 87,
+     "newton_max_step": 2,
+     "refactor": 50,
+     "solve": 87,
+     "linear_iterations": 226,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0009937614999941786,
+     "times": [
+      0.1312291957437992,
+      0.1312854988500476,
+      0.13118868973106146
+     ]
+    },
+    {
+     "case": 2,
+     "error": 0.013009986845501429,
+     "newton_total": 50,
+     "newton_max_step": 1,
+     "refactor": 50,
+     "solve": 50,
+     "linear_iterations": 59,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.000875174253550187,
+     "times": [
+      0.05608424078673124,
+      0.05606359988451004,
+      0.05602027662098408
+     ]
+    },
+    {
+     "case": 3,
+     "error": 0.005409531303864764,
+     "newton_total": 83,
+     "newton_max_step": 2,
+     "refactor": 50,
+     "solve": 83,
+     "linear_iterations": 180,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.000994547608517649,
+     "times": [
+      0.11069981008768082,
+      0.11058005783706903,
+      0.11066239606589079
+     ]
+    },
+    {
+     "case": 4,
+     "error": 0.0019070932026093756,
+     "newton_total": 88,
+     "newton_max_step": 2,
+     "refactor": 50,
+     "solve": 88,
+     "linear_iterations": 250,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0009116648061580832,
+     "times": [
+      0.14171534031629562,
+      0.1441744538024068,
+      0.1418244680389762
+     ]
+    },
+    {
+     "case": 5,
+     "error": 0.006517730749849838,
+     "newton_total": 74,
+     "newton_max_step": 2,
+     "refactor": 50,
+     "solve": 74,
+     "linear_iterations": 147,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.000977026849509791,
+     "times": [
+      0.09612018894404173,
+      0.09598789177834988,
+      0.09597585909068584
+     ]
+    }
+   ]
+  },
+  "PBICGSTAB_JACOBI_NOAMG|lin1_dt0.01_ntolnone_ltol0.01": {
+   "config": "PBICGSTAB_JACOBI_NOAMG",
+   "variant": "lin1",
+   "dt": 0.01,
+   "ntol": null,
+   "ltol": 0.01,
+   "group": "matched-grid",
+   "name": "PBICGSTAB_JACOBI_NOAMG|lin1_dt0.01_ntolnone_ltol0.01",
+   "coarsen": 1,
+   "steps": 25,
+   "mesh_L": 128,
+   "reps_per_case": 3,
+   "time_s": {
+    "median": 0.08362973015755415,
+    "min": 0.05355226527899504,
+    "max": 0.10468059778213501,
+    "n": 18,
+    "all": [
+     0.1035692859441042,
+     0.10365802701562643,
+     0.10468059778213501,
+     0.09208033513277769,
+     0.09207852371037006,
+     0.09208985418081284,
+     0.05361922923475504,
+     0.05365838669240475,
+     0.05355226527899504,
+     0.07507800217717886,
+     0.07518093660473824,
+     0.07502862624824047,
+     0.09812422189861536,
+     0.09810212720185518,
+     0.09800317790359259,
+     0.07181770727038383,
+     0.07194740977138281,
+     0.07167569175362587
+    ]
+   },
+   "worst_error": 0.012322598485179137,
+   "median_error": 0.0073064136321252665,
+   "newton_total_median": 25.0,
+   "newton_total_max": 25,
+   "refactor_median": 25.0,
+   "solve_median": 25.0,
+   "linear_iterations_median": 171.0,
+   "linear_not_converged_total": 0,
+   "unconverged_steps_total": 0,
+   "cases_with_unconverged": 0,
+   "finite": true,
+   "status": "ok",
+   "per_case": [
+    {
+     "case": 0,
+     "error": 0.00464323165429663,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 25,
+     "solve": 25,
+     "linear_iterations": 218,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0,
+     "times": [
+      0.1035692859441042,
+      0.10365802701562643,
+      0.10468059778213501
+     ]
+    },
+    {
+     "case": 1,
+     "error": 0.010788563231522948,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 25,
+     "solve": 25,
+     "linear_iterations": 191,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0,
+     "times": [
+      0.09208033513277769,
+      0.09207852371037006,
+      0.09208985418081284
+     ]
+    },
+    {
+     "case": 2,
+     "error": 0.005205323563096034,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 25,
+     "solve": 25,
+     "linear_iterations": 101,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0,
+     "times": [
+      0.05361922923475504,
+      0.05365838669240475,
+      0.05355226527899504
+     ]
+    },
+    {
+     "case": 3,
+     "error": 0.008336429556947399,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 25,
+     "solve": 25,
+     "linear_iterations": 151,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0,
+     "times": [
+      0.07507800217717886,
+      0.07518093660473824,
+      0.07502862624824047
+     ]
+    },
+    {
+     "case": 4,
+     "error": 0.012322598485179137,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 25,
+     "solve": 25,
+     "linear_iterations": 205,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0,
+     "times": [
+      0.09812422189861536,
+      0.09810212720185518,
+      0.09800317790359259
+     ]
+    },
+    {
+     "case": 5,
+     "error": 0.006276397707303134,
+     "newton_total": 25,
+     "newton_max_step": 1,
+     "refactor": 25,
+     "solve": 25,
+     "linear_iterations": 143,
+     "linear_not_converged": 0,
+     "unconverged_steps": 0,
+     "max_rel_residual": 0.0,
+     "times": [
+      0.07181770727038383,
+      0.07194740977138281,
+      0.07167569175362587
+     ]
+    }
+   ]
+  }
+ },
+ "setup": {
+  "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|0.001": {
+   "pattern_build_cpu_s": 0.3577512400224805,
+   "matrix_upload_s": 0.0009573707357048988,
+   "first_setup_s": 0.10317103192210197,
+   "peak_device_bytes_setup": 591396864,
+   "device_bytes_held_after_setup": 591396864
+  },
+  "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|0.01": {
+   "pattern_build_cpu_s": 0.3048498248681426,
+   "matrix_upload_s": 0.0003084791824221611,
+   "first_setup_s": 0.045700546354055405,
+   "peak_device_bytes_setup": 513802240,
+   "device_bytes_held_after_setup": 513802240
+  },
+  "FGMRES_CLASSICAL_AGGRESSIVE_PMIS|0.1": {
+   "pattern_build_cpu_s": 0.3068497646600008,
+   "matrix_upload_s": 0.00030829478055238724,
+   "first_setup_s": 0.0458667017519474,
+   "peak_device_bytes_setup": 524288000,
+   "device_bytes_held_after_setup": 524288000
+  },
+  "PBICGSTAB_JACOBI_NOAMG|0.001": {
+   "pattern_build_cpu_s": 0.30544985365122557,
+   "matrix_upload_s": 0.00031143706291913986,
+   "first_setup_s": 0.0007162848487496376,
+   "peak_device_bytes_setup": -2322464768,
+   "device_bytes_held_after_setup": 113246208
+  },
+  "PBICGSTAB_JACOBI_NOAMG|0.01": {
+   "pattern_build_cpu_s": 0.30174872279167175,
+   "matrix_upload_s": 0.00031908322125673294,
+   "first_setup_s": 0.0007150266319513321,
+   "peak_device_bytes_setup": -2322464768,
+   "device_bytes_held_after_setup": 113246208
+  },
+  "PBICGSTAB_JACOBI_NOAMG|0.1": {
+   "pattern_build_cpu_s": 0.30956730246543884,
+   "matrix_upload_s": 0.00030817650258541107,
+   "first_setup_s": 0.0007141008973121643,
+   "peak_device_bytes_setup": -2322464768,
+   "device_bytes_held_after_setup": 113246208
+  }
+ },
+ "checks": {
+  "FGMRES_CLASSICAL_AGGRESSIVE_PMIS": {
+   "ltol": 0.001,
+   "tight_full_newton_vs_reference": 4.206453343898528e-09,
+   "initial_field_difference": 0.0,
+   "tight_unconverged_steps": 0,
+   "tight_newton_total": 109,
+   "linear_not_converged": 0,
+   "passed": true
+  },
+  "PBICGSTAB_JACOBI_NOAMG": {
+   "ltol": 0.001,
+   "tight_full_newton_vs_reference": 4.1914515671051426e-08,
+   "initial_field_difference": 0.0,
+   "tight_unconverged_steps": 0,
+   "tight_newton_total": 119,
+   "linear_not_converged": 0,
+   "passed": true
+  }
+ },
+ "peak_device_bytes": 2473459712,
+ "elapsed_s": 512.1532692909241,
+ "amgx_log_tail": ""
+}

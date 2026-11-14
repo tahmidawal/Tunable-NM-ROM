@@ -10,6 +10,13 @@ leans on the worst snapshots), with hard-example sampling (part of every batch i
 proportional to (current error)^alpha). The inner least squares is solved exactly per step (Cholesky of the Gram);
 by the envelope theorem its solution carries no gradient. A scale-free Gram penalty keeps the bank conditioned.
 
+Augmentation (no solver calls; both optional, applied per batch sample with the given probability):
+  --aug-transpose  x <-> y swap. The equation, the scheme and the domain are symmetric under it, so the swapped
+                   snapshot is the reference solution for the centre (cy, cx), which lies in the same parameter box.
+  --aug-shift      translation by whole grid cells of snapshots whose support (|u| > shift_tol * max|u|) stays inside
+                   the domain; cells shifted in are zero. The scheme is translation invariant away from the walls, so
+                   the shifted snapshot is the reference solution for the shifted centre up to the tail below shift_tol.
+
 Data: training trajectories P[lo:hi] of the baseline lanes' pool (26 time levels each, float32, read-only), held on
 the GPU; validation P[4352:4608] is only monitored (projection error at the six output times), never trained on.
 
@@ -64,6 +71,9 @@ def main():
     p.add_argument('--val-hi', type=int, default=4608)
     p.add_argument('--levels', type=int, default=1, help='keep every k-th of the 26 levels')
     p.add_argument('--train-B', type=int, default=0)
+    p.add_argument('--aug-transpose', type=float, default=0.)
+    p.add_argument('--aug-shift', type=float, default=0.)
+    p.add_argument('--shift-tol', type=float, default=1e-3)
     p.add_argument('--scratch', type=int, default=0)
     p.add_argument('--g-hidden', type=int, default=1024)
     p.add_argument('--g-layers', type=int, default=2)
@@ -115,6 +125,36 @@ def main():
     print(f'DATA train {ntr} traj x {len(lv)} levels = {nsnap} snapshots ({Utr.nbytes/2**30:.1f} GiB), '
           f'val {nva} traj', el(), flush=True)
     xy = jnp.asarray(e.coords(L))
+    m1 = L - 1
+
+    @jax.jit
+    def boxes(U, idx):
+        X = jnp.abs(U[idx]).reshape(-1, m1, m1)
+        on = X > a.shift_tol * X.max((1, 2), keepdims=True)
+        ri, rj = on.any(2), on.any(1)
+        ar = jnp.arange(m1)
+        return jnp.stack((jnp.where(ri, ar, m1).min(1), jnp.where(ri, ar, -1).max(1),
+                          jnp.where(rj, ar, m1).min(1), jnp.where(rj, ar, -1).max(1)), 1)
+
+    if a.aug_shift:
+        box = np.concatenate([np.asarray(boxes(Utr, jnp.arange(s, min(s + 2048, nsnap)))) for s in range(0, nsnap, 2048)])
+        # allowed whole-cell shifts keep the support at least one cell away from the walls
+        sh_lo = np.stack((-(box[:, 0] - 1), -(box[:, 2] - 1)), 1)
+        sh_hi = np.stack(((m1 - 2) - box[:, 1], (m1 - 2) - box[:, 3]), 1)
+        movable = (sh_lo <= sh_hi).all(1) & ((sh_hi - sh_lo).max(1) > 0)
+        print(f'SHIFT movable snapshots {movable.mean():.3f}; median shift range (cells) '
+              f'{np.median((sh_hi - sh_lo)[movable], 0)}', el(), flush=True)
+
+    def augment(Ub, sh, tr):
+        b = Ub.shape[0]
+        ar = jnp.arange(m1)
+        ii, jj = ar[None, :] - sh[:, :1], ar[None, :] - sh[:, 1:]
+        vi, vj = (ii >= 0) & (ii < m1), (jj >= 0) & (jj < m1)
+        X = Ub.reshape(b, m1, m1)[jnp.arange(b)[:, None, None], jnp.clip(ii, 0, m1 - 1)[:, :, None],
+                                  jnp.clip(jj, 0, m1 - 1)[:, None, :]]
+        X = jnp.where(vi[:, :, None] & vj[:, None, :], X, 0.)
+        X = jnp.where(tr[:, None, None], X.transpose(0, 2, 1), X)
+        return X.reshape(b, n)
 
     # ----------------------------------------------------------------- model ----
     ck = pickle.load(open(a.checkpoint, 'rb'))
@@ -154,12 +194,15 @@ def main():
         orth = jnp.mean((gn - jnp.eye(R)) ** 2)
         return agg + a.lam_orth * orth, (e2, agg, orth)
 
+    use_aug = bool(a.aug_shift or a.aug_transpose)
     sched = optax.warmup_cosine_decay_schedule(0., a.lr, a.warmup, a.steps, a.lr * a.lr_end)
     opt = optax.adam(sched)
 
     @jax.jit
-    def step(tp, ema, st, fixed, U, n0, idx, pidx):
+    def step(tp, ema, st, fixed, U, n0, idx, pidx, sh, tr):
         Ub = U[idx]
+        if use_aug:
+            Ub = augment(Ub, sh, tr)
         (val, (e2, agg, orth)), gr = jax.value_and_grad(loss_fn, has_aux=True)(tp, fixed, Ub, n0[idx], pidx)
         upd, st = opt.update(gr, st)
         tp = optax.apply_updates(tp, upd)
@@ -218,7 +261,12 @@ def main():
         else:
             idx = idx_u
         pidx = jnp.asarray(np.sort(rng.choice(n, a.points, replace=False))) if a.points else full_grid
-        tp, ema, st, e2, agg, orth = step(tp, ema, st, fixed, Utr, n0tr, jnp.asarray(idx), pidx)
+        sh = np.zeros((a.batch, 2), np.int32)
+        tr = rng.random(a.batch) < a.aug_transpose
+        if a.aug_shift:
+            go = movable[idx] & (rng.random(a.batch) < a.aug_shift)
+            sh = np.where(go[:, None], rng.integers(sh_lo[idx], np.maximum(sh_hi[idx], sh_lo[idx]) + 1), 0).astype(np.int32)
+        tp, ema, st, e2, agg, orth = step(tp, ema, st, fixed, Utr, n0tr, jnp.asarray(idx), pidx, jnp.asarray(sh), jnp.asarray(tr))
         if nh or (i + 1) % 100 == 0:
             eb = np.sqrt(np.asarray(e2))
             assert np.isfinite(eb).all(), f'non-finite loss at step {i}'

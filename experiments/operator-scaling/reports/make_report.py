@@ -72,7 +72,9 @@ def main():
     global TARGET
     rom = load(TPL / 'rom_reference.json')['meshes']['256']
     acc, fast = rom['roles']['accurate'], rom['roles']['fast']
-    TARGET = acc['median_evolved_percent']
+    TARGET = 0.0264  # Exact registered success threshold (percent), rounded from the historical ROM row.
+    freeze_file = HERE / 'closeout' / 'selection.json'
+    frozen = load(freeze_file) if freeze_file.exists() else None
     # ---- runs (validation) ----
     runs = {}
     for f in sorted(glob.glob(str(INP / 'runs' / '*' / '*' / 'history.json'))):
@@ -85,7 +87,7 @@ def main():
         runs[key] = dict(key=key, schedule=meta.get('schedule', 'plateau'), arm=meta['arm'], family='FNO' if meta['arm'][0] == 'F' else 'U-Net', rung=meta['rung'],
                          train_cases=meta['train_cases'], params=meta['real_parameters'], gpu=meta['gpu'], job=meta['job_id'],
                          steps=res['steps'] if res else hist[-1]['step'] if hist else 0,
-                         stop=res['stop_reason'] if res else 'running', converged=bool(res and res['converged']),
+                         stop=res['stop_reason'] if res else frozen['runs'][key]['stop_reason'] if frozen else 'running', converged=bool(res and res['converged']),
                          best_step=res['best_step'] if res else (best['step'] if best else None),
                          val_mean=100 * (res['best_validation']['mean'] if res else best['val_mean']) if hist else None,
                          val_worst=100 * (res['best_validation']['worst'] if res else best['val_worst']) if hist else None,
@@ -117,6 +119,11 @@ def main():
     lines = []
     W = lines.append
     have_test = bool(tests)
+    if have_test:
+        W('# Held-out FNO and U-Net scaling on 2D viscous Burgers\n')
+        W('The registered single-precision operators were scored against regenerated double-precision reference fields. '
+          'Held-out errors and timings are final for the saved checkpoints in this allocation. '
+          'Rows marked interrupted were stopped during training and preserve their last validation-selected best weights.\n')
     W(f'### Table 1. Every run of this lane: size, data, cost, validation{" and test (test64, " + ", ".join(sorted({v["gpu"] for v in tests.values()})) + ", batch 1)" if have_test else " (test not yet evaluated)"}\n')
     W('| family | arm | params | training trajectories (+256 validation) | checkpoint | steps (best) | stop | converged | training GPU-h (GPU) | val. mean % | val. worst % | test median % | test worst % | query ms (p05–p95) |')
     W('|---|---|---|---|---|---|---|---|---|---|---|---|---|---|')
@@ -126,14 +133,18 @@ def main():
             t = tests.get(k + ck)
             if ck and not t:
                 continue
-            rows.append(dict(r, checkpoint=('best up to ' + ck[1:]) if ck else 'final best', test=t, test_key=k + ck))
+            display = dict(r)
+            if frozen and ck:
+                val = frozen['runs'][k + ck]['validation']
+                display.update(val_mean=100 * val['mean'], val_worst=100 * val['worst'])
+            rows.append(dict(display, checkpoint=('best up to ' + ck[1:]) if ck else 'final best', test=t, test_key=k + ck))
             gpu = r['gpu'].replace('NVIDIA ', '').replace(' Blackwell Server Edition', '')
             W(f"| {r['family']} | {r['arm']}{' (cosine, A1)' if r['schedule'] == 'cosine' else ''} | {r['params']:,} | {r['train_cases']:,} | {('best ≤' + ck[1:]) if ck else 'final best'} | "
               f"{r['steps']:,} ({(t['best_step'] if t else r['best_step']) or 0:,}) | {r['stop']} | {'yes' if r['converged'] else '**no**'} | "
-              f"{r['gpu_hours']:.1f} ({gpu}) | {fmt(r['val_mean'], 4)} | {fmt(r['val_worst'])} | "
+              f"{r['gpu_hours']:.1f} ({gpu}) | {fmt(display['val_mean'], 4)} | {fmt(display['val_worst'])} | "
               f"{fmt(t['median'], 3) if t else ''} | {fmt(t['worst'], 3) if t else ''} | "
               f"{(fmt(t['ms'], 3) + ' (' + fmt(t['p05'], 3) + '–' + fmt(t['p95'], 3) + ')') if t else ''} |")
-    W(f"\nReference (same test64, same metric, A100 80GB): ROM accurate median {fmt(acc['median_evolved_percent'], 3)} %, worst "
+    W(f"\nReference (same test64, same metric, historical separate allocations): ROM accurate median {fmt(acc['median_evolved_percent'], 3)} %, worst "
       f"{fmt(acc['worst_evolved_percent'], 3)} %, {fmt(acc['median_gpu_ms'], 3)} ms; ROM fast median {fmt(fast['median_evolved_percent'], 3)} %, "
       f"worst {fmt(fast['worst_evolved_percent'], 3)} %, {fmt(fast['median_gpu_ms'], 3)} ms; full-order solver at the ROM-accurate tolerance median "
       f"{fmt(rom['table1']['fom_median_evolved_percent'], 3)} %, worst {fmt(rom['table1']['fom_worst_evolved_percent'], 3)} %, "
@@ -182,7 +193,8 @@ def main():
                 fits[f'{fam} data ({arm}), {which}'] = dict(points=list(zip(xs, ys)), fit=f,
                                                            extrapolation=extrapolate(f, xs, ys, TARGET) if which == 'median' else None)
         if fam == 'FNO':   # amendment A2: separate cosine data fit (3 points, no extrapolation by rule)
-            cdata = [r for r in rows if r['arm'] == arm and r['schedule'] == 'cosine' and r['checkpoint'] == 'final best' and val_of(r, 'median')]
+            cdata = [r for r in rows if r['arm'] == arm and r['key'].split('/')[0] in {'a1F','a2F4','a2F18'}
+                     and r['schedule'] == 'cosine' and r['checkpoint'] == 'final best' and val_of(r, 'median')]
             for which in ('median', 'worst'):
                 if len(cdata) >= 3:
                     xs, ys = [r['train_cases'] for r in cdata], [val_of(r, which) for r in cdata]
@@ -232,6 +244,8 @@ def main():
         cand = [r for r in rows if r['family'] == fam and r['val_mean'] is not None]
         if cand:
             b = min(cand, key=lambda r: r['val_mean'] if r['checkpoint'] == 'final best' else float('inf'))
+            if frozen:
+                assert frozen['selection'][fam]['selected'] == b['test_key']
             best[fam] = dict(key=b['test_key'], arm=b['arm'], rung=b['rung'], params=b['params'], val_mean=b['val_mean'], test=b['test'])
         reached = [r for r in rows if r['family'] == fam and r['test'] and r['test']['median'] <= TARGET]
         best.setdefault(fam, {})['reached_target'] = [dict(key=r['test_key'], median=r['test']['median'], ms=r['test']['ms'], worst=r['test']['worst']) for r in reached]
@@ -249,6 +263,22 @@ def main():
         W(f"| {fam} | {b.get('key', '—')} | {b.get('params', 0):,} | {runs.get(b.get('key', '').split('@')[0], {}).get('train_cases', 0):,} | "
           f"{fmt(t['median']) if t else ''} | {fmt(t['worst']) if t else ''} | {fmt(t['ms']) if t else ''} | {len(b['reached_target'])} | "
           f"{(fmt(c['median']) + ' (' + c['key'] + ', ' + fmt(c['ms']) + ' ms)') if c else ''} |")
+    if have_test:
+        W('\nAll query times in the test table were measured on the same GPU for this study. '
+          'Historical reference and template rows came from separate jobs and cannot supply a paired speed ratio. '
+          'The lowest test median is descriptive. The validation-selected row is the headline. '
+          'Missing training rungs and interruptions limit size and data fits, including any extrapolation.\n')
+        W('## Glossary\n')
+        W('FNO means Fourier neural operator. U-Net is an encoder–decoder with skip connections. '
+          'A rung is one training-set size. A parameter is one real-valued model weight, counting both parts of a complex number. '
+          'A checkpoint stores weights. Final best means the weights with the lowest validation score during the available training. '
+          'Validation selects a model. Test cases measure it after selection. The error for each case is the largest relative '
+          'field error over its five evolved times, normalized by the initial field norm. Median, mean and worst summarize '
+          'those case errors. A timed query starts with device-resident inputs and ends with six device-resident fields. '
+          'p05/p95 are the fifth and ninety-fifth percentiles of repeated batch-one latency. '
+          'GPU-hours measure training or generation elapsed time on the allocated accelerator. '
+          'LR is the learning rate. A step is one optimizer update. '
+          'Regression slopes use log coordinates. R² measures explained variation, SE is standard error and CI is a confidence interval.')
     (HERE / 'reports' / 'tables.md').write_text('\n'.join(lines) + '\n')
     summary = dict(target_median_percent=TARGET, rom_accurate=acc, rom_fast=fast, runs=runs, tests=tests, test_jobs=test_job,
                    fits=fits, time_fits=tfit, best=best, data_generation=gen_cost, training_gpu_hours=total_train,

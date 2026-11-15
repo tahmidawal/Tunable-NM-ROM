@@ -1,0 +1,32 @@
+{
+  "source": {
+    "max_relative_residual": 9.99559517236289e-07,
+    "max_newton_iterations": 3,
+    "median_seconds": 0.0891345040872693,
+    "total_seconds": 7.87440006993711,
+    "physical_sha256": "cd058fd2a297c20296b897e54cb186033a44a8db9527d98dcb2c2dad6044527c",
+    "name": "test64-L256",
+    "mesh": 256,
+    "cases": 64,
+    "dtype": "float64",
+    "fields_sha256": "62fd33a82acfa0657c073b5195a4aa164382886101ac2b0aad582d0d2f3ff004",
+    "solver": "fft_tight: Newton-BiCGStab, FFT preconditioner, dt 0.005, ntol 1e-6, ltol 1e-8",
+    "numpy": "2.5.0",
+    "jax": "0.10.2",
+    "job_id": "7243849",
+    "node": "pax050"
+  },
+  "files": {
+    "test64-L256.fields.npy": {
+      "sha256": "4d0fbef2f98fc591a30610abb697192ba24f5ce8d63434897c77e9152e276b8d",
+      "bytes": 202902656,
+      "independent_template_copy": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/data/test/test64-L256.fields.npy"
+    },
+    "test64-L256.meta.npz": {
+      "sha256": "056469d36dd8f52f028a4e52c1b52d2cd969ec4ee4d552213c8d22c57e47393a",
+      "bytes": 3574,
+      "independent_template_copy": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/data/test/test64-L256.meta.npz"
+    }
+  },
+  "original_and_regenerated_bytes_identical": true
+}

@@ -1,0 +1,29 @@
+{
+  "job_id": "7244109",
+  "dim": 3,
+  "mesh": 129,
+  "cohort": "sealed64",
+  "checks": {
+    "G_audit": {
+      "passed": true,
+      "compared": 4864,
+      "max_rel": 6.854118409535649e-15,
+      "relative_tolerance": 1e-10,
+      "case_kind_counts": {
+        "bank": 4864,
+        "full_solver": 0
+      },
+      "physical_witness_cases": 64,
+      "FOM_coverage": "no 3D full-solver field saved",
+      "times_scored_per_field": 5
+    },
+    "fault_injections": {
+      "swapped_case": true,
+      "perturbed_record": true,
+      "perturbed_reference_byte": true,
+      "passed": true
+    }
+  },
+  "result_sha256": "ee9f3cb7b9805b19d85e4e5164231fa967958597c8c872caff14144f60d2b43e",
+  "passed": true
+}

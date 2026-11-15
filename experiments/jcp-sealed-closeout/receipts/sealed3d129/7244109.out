@@ -1,0 +1,102 @@
+NVIDIA A100 80GB PCIe, GPU-48b2d82c-0e16-1d88-9016-0d1b8d169ed8, 81920 MiB
+jax_backend=gpu
+{"original_cohort_sha256_by_batch": {"0": "cc7e846f661f4d5e641c8f439eeb9c7f766dea2601581cccb3d08a70b327baa1", "1": "cc7e846f661f4d5e641c8f439eeb9c7f766dea2601581cccb3d08a70b327baa1"}, "regenerated_sha256": "8fdda0fa14f69469fed788c66a83febc5f85855586001ab508b4d5f12787593d", "used_sha256": "cc7e846f661f4d5e641c8f439eeb9c7f766dea2601581cccb3d08a70b327baa1", "max_relative_draw_difference": 0.0, "max_relative_peak_difference": 2.103469576976369e-16}
+jax_backend=gpu x64=True precision=highest
+[12.0s] references loaded: 128
+[20.2s] [mesh 129] bank rows [(512, 2048383)] 5.4s
+[26.2s] [mesh 129] Gram cond 1.0011, A (2049, 512) 11.4s
+[97.8s] [mesh 129] tensor (2049, 512, 512) 83.0s
+[187.3s] off-mesh tables built
+[198.4s] evaluator gates {'G_R': {'checked': 37, 'mismatched': [], 'passed': True}, 'G_coh': {'cohort': 'sealed64', 'sha256': 'cc7e846f661f4d5e641c8f439eeb9c7f766dea2601581cccb3d08a70b327baa1', 'expected': 'cc7e846f661f4d5e641c8f439eeb9c7f766dea2601581cccb3d08a70b327baa1', 'bitwise': True, 'blob_counts_equal': True, 'draws_max_rel_vs_E0': 0.0, 's_star_max_rel_vs_E0': 0.0, 'passed': True}, 'G_ref': {'store_version': '3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0', 'loaded': 128, 'passed': True}, 'gram_condition': 1.002278026460992, 'tensor_vs_direct': 2.473903731695495e-16, 'G1_derivative_vs_fd': 1.0670765479049681e-07, 'G2_meshnodes_offmesh_vs_tensor': 7.435689792837534e-16, 'G3_jacobian_vs_jacfwd': 0.0, 'G3_adv_half_Jc': 7.839756597315806e-16}
+[212.0s] arms built; G4 passed
+[236.5s] ARM lat32768 done (22.0s)
+[247.3s] ARM tensor done (10.8s)
+[257.0s] ARM lat256 done (9.7s)
+[266.7s] ARM lat512 done (9.6s)
+[276.5s] ARM lat768 done (9.8s)
+[286.6s] ARM lat1024 done (10.1s)
+[296.6s] ARM lat1536 done (10.0s)
+[306.9s] ARM lat2048 done (10.3s)
+[317.3s] ARM lat2560 done (10.3s)
+[328.0s] ARM lat3072 done (10.6s)
+[338.6s] ARM lat3584 done (10.5s)
+[349.4s] ARM lat4096 done (10.8s)
+[360.9s] ARM lat6144 done (11.5s)
+[373.0s] ARM lat8192 done (12.1s)
+[388.1s] ARM lat16384 done (15.0s)
+[397.6s] ARM gl8 done (9.4s)
+[407.5s] ARM gl10 done (9.9s)
+[417.5s] ARM gl12 done (9.9s)
+[427.8s] ARM gl14 done (10.2s)
+[437.7s] ARM gl16 done (9.9s)
+[448.9s] ARM gl17 done (11.1s)
+[460.3s] ARM gl18 done (11.3s)
+[471.9s] ARM gl19 done (11.5s)
+[484.1s] ARM gl20 done (12.1s)
+[497.5s] ARM gl22 done (13.3s)
+[511.8s] ARM gl24 done (14.2s)
+[529.3s] ARM gl28 done (17.4s)
+[550.0s] ARM gl32 done (20.6s)
+[559.7s] ARM sob1024 done (9.5s)
+[569.4s] ARM sob2048 done (9.6s)
+[579.8s] ARM sob4096 done (10.4s)
+[591.2s] ARM sob8192 done (11.3s)
+[605.6s] ARM sob16384 done (14.2s)
+[625.4s] ARM sob32768 done (19.8s)
+[636.1s] ARM kor2039 done (10.5s)
+[647.2s] ARM kor4093 done (11.0s)
+[662.4s] ARM kor16381 done (15.0s)
+[673.6s] ARM ctrl_smol8 done (11.0s)
+[686.9s] FOM hist_dt0.005 done (12.8s)
+[696.2s] FOM hist_dt0.01 done (9.1s)
+[702.6s] FOM hist_dt0.025 done (6.2s)
+[744.6s] FOM UB_L128 done (41.9s)
+[783.7s] FOM CC_L128 done (38.9s)
+[793.1s] FOM CC_L64 done (9.3s)
+[799.0s] FOM PS_N8 done (5.7s)
+[804.9s] FOM PS_N12 done (5.7s)
+[811.2s] FOM PS_N16 done (6.2s)
+[817.9s] FOM PS_N20 done (6.6s)
+[824.9s] FOM PS_N24 done (6.8s)
+[841.0s] FOM PS_N32 done (16.0s)
+[1002.1s] G_lat {'compared': 228, 'max_rel': 0.0, 'passed': True}
+[1113.3s] timing main rep 0 done
+[1170.0s] timing main rep 1 done
+[1226.5s] timing main rep 2 done
+[1291.3s] timing confirm rep 0 done
+[1313.5s] timing confirm rep 1 done
+[1335.6s] timing confirm rep 2 done
+[1357.8s] timing confirm rep 3 done
+[1380.0s] timing confirm rep 4 done
+[1380.0s] timing gates {'max_output_diff': 0.0, 'worst_block_drift': 1.0193541489551183, 'outputs_pass': True, 'drift_pass': True}; selected {'arm': 'lat4096', 'selection': 'preopening'}
+PLATEAU3D COMPLETE
+{
+  "job_id": "7244109",
+  "dim": 3,
+  "mesh": 129,
+  "cohort": "sealed64",
+  "checks": {
+    "G_audit": {
+      "passed": true,
+      "compared": 4864,
+      "max_rel": 6.854118409535649e-15,
+      "relative_tolerance": 1e-10,
+      "case_kind_counts": {
+        "bank": 4864,
+        "full_solver": 0
+      },
+      "physical_witness_cases": 64,
+      "FOM_coverage": "no 3D full-solver field saved",
+      "times_scored_per_field": 5
+    },
+    "fault_injections": {
+      "swapped_case": true,
+      "perturbed_record": true,
+      "perturbed_reference_byte": true,
+      "passed": true
+    }
+  },
+  "result_sha256": "ee9f3cb7b9805b19d85e4e5164231fa967958597c8c872caff14144f60d2b43e",
+  "passed": true
+}
+

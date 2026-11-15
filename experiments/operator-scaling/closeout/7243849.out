@@ -1,0 +1,37 @@
+code/gen_data.py: OK
+code/burgers_fom.py: OK
+code/evaluate.py: OK
+code/opnet.py: OK
+code/families.py: OK
+selection.json: OK
+evaluate.sbatch: OK
+PROTOCOL.md: OK
+name, uuid, memory.total [MiB], driver_version
+NVIDIA A100 80GB PCIe, GPU-7e4a47f7-94ae-5071-1329-bd1dd16a77be, 81920 MiB, 575.57.08
+jax_backend=gpu
+2.11.0+cu128 _CudaDeviceProperties(name='NVIDIA A100 80GB PCIe', major=8, minor=0, total_memory=81152MB, multi_processor_count=108, uuid=7e4a47f7-94ae-5071-1329-bd1dd16a77be, pci_bus_id=213, pci_device_id=0, pci_domain_id=0, L2_cache_size=40MB)
+CASE 0 2.047
+DONE {"max_relative_residual": 9.99559517236289e-07, "max_newton_iterations": 3, "median_seconds": 0.0891345040872693, "total_seconds": 7.87440006993711, "physical_sha256": "cd058fd2a297c20296b897e54cb186033a44a8db9527d98dcb2c2dad6044527c", "name": "test64-L256", "mesh": 256, "cases": 64, "dtype": "float64", "fields_sha256": "62fd33a82acfa0657c073b5195a4aa164382886101ac2b0aad582d0d2f3ff004", "solver": "fft_tight: Newton-BiCGStab, FFT preconditioner, dt 0.005, ntol 1e-6, ltol 1e-8", "numpy": "2.5.0", "jax": "0.10.2", "job_id": "7243849", "node": "pax050"}
+EVAL a1F/Fw128m64L4-n36864-s0-cosine 256 {'L256': (0.175, 0.065, 11.03)}
+EVAL a1U/Ub128-n36864-s0-cosine 256 {'L256': (0.511, 0.267, 29.5)}
+EVAL a2F18/Fw128m64L4-n18432-s0-cosine 256 {'L256': (0.4, 0.176, 11.13)}
+EVAL a2F4/Fw128m64L4-n4608-s0-cosine 256 {'L256': (0.421, 0.195, 11.14)}
+EVAL a3a/Fw128m64L4-n36864-s0-cosine 256 {'L256': (0.512, 0.225, 11.14)}
+EVAL a3b/Fw192m48L4-n36864-s0-cosine 256 {'L256': (2.638, 0.965, 17.16)}
+EVAL p1F/Fw128m64L4-n36864-s0 256 {'L256': (0.311, 0.12, 11.19)}
+EVAL p1F/Fw128m64L4-n36864-s0@200k 256 {'L256': (0.36, 0.141, 11.18)}
+EVAL p1F/Fw128m64L4-n9216-s0 256 {'L256': (0.289, 0.124, 11.18)}
+EVAL p1U/Ub128-n36864-s0 256 {'L256': (0.461, 0.196, 29.5)}
+EVAL p1U/Ub128-n9216-s0 256 {'L256': (0.769, 0.325, 29.51)}
+EVAL p3/Fw128m64L4-n18432-s0 256 {'L256': (0.305, 0.131, 11.24)}
+EVAL p3/Ub128-n18432-s0 256 {'L256': (0.575, 0.241, 29.51)}
+EVAL szF2/Fw128m64L4-n4608-s0 256 {'L256': (0.367, 0.135, 11.24)}
+EVAL szF2/Fw192m48L4-n4608-s0 256 {'L256': (0.29, 0.135, 17.27)}
+EVAL szF3/Fw128m32L4-n4608-s0 256 {'L256': (0.346, 0.137, 9.09)}
+EVAL szU192/Ub192-n4608-s0 256 {'L256': (0.829, 0.35, 57.03)}
+EVAL szU2/Ub128-n4608-s0 256 {'L256': (0.643, 0.282, 29.51)}
+EVAL szU2/Ub48-n4608-s0 256 {'L256': (0.462, 0.236, 7.39)}
+EVAL szU2/Ub64-n4608-s0 256 {'L256': (0.375, 0.177, 10.03)}
+EVAL szU2/Ub96-n4608-s0 256 {'L256': (0.536, 0.216, 18.72)}
+EVALUATION DONE results
+EVALUATION-COMPLETE

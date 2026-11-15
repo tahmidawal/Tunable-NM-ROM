@@ -40,9 +40,23 @@ The full-order pseudospectral solver with $N=32$ appears in both native panels. 
 | 2D | 128 / 128 | 0.0021% | 1.5914% |
 | 3D | 64 / 64 | 0.0024% | 0.2114% |
 
+### Comparing the lattice query with an accuracy-matched full-order solver
+
+The spectral solver had to converge on every case and match or improve both the median and worst eligible ST error within reference uncertainty. The initial timing block selected the fastest qualifying full-order configuration. The table uses a separate confirmation block on the same GPU, timing six prepared inputs with five repetitions each. Both solvers returned fields on the same scoring lattice. The ratio divides the lattice median by the full-order median.
+
+| Mesh | Full-order solver | Lattice median | Full-order median | Time ratio |
+|---|---|---:|---:|---:|
+| 512² | PS_N48 | 41.98 ms | 6.41 ms | 6.55× |
+| 2048² | PS_N48 | 41.84 ms | 6.41 ms | 6.52× |
+| 64³ | PS_N16 | 39.52 ms | 8.78 ms | 4.50× |
+| 128³ | PS_N20 | 46.53 ms | 8.77 ms | 5.31× |
+| 256³ | PS_N20 | 42.19 ms | 5.55 ms | 7.60× |
+
+These are prepared-input query times. The full-order solver's input preparation was measured separately. The ROM's corresponding preparation time was unmeasured, so the table supports no end-to-end timing ratio. The other 2D meshes failed the timing stability criterion.
+
 Independent scoring reproduced 15,472 saved case–reference comparisons across the mesh panels. The maximum relative discrepancy was 7.12e-15. Checks used saved model and full-solver fields on selected 2D cases and decoded all 3D model coefficients. The historical 3D protocol saved no full-solver fields for independent reconstruction. POD and quadrature ran in separate allocations. Custody used one shared research account. The out-of-family populations remain sealed.
 
-[Committed freeze](https://github.com/tahmidawal/Tunable-NM-ROM/blob/138cc10a8f50caeca3791f0353a3ba7b60bb8b8e/experiments/jcp-sealed-closeout/F1.json) · [Mesh-by-mesh decisions and controls](https://github.com/tahmidawal/Tunable-NM-ROM/tree/61b52f6de54a37f21f9514eb69d97ea42a62f649/experiments/jcp-sealed-closeout/results)
+[Committed freeze](https://github.com/tahmidawal/Tunable-NM-ROM/blob/138cc10a8f50caeca3791f0353a3ba7b60bb8b8e/experiments/jcp-sealed-closeout/F1.json) · [Mesh-by-mesh decisions and controls](https://github.com/tahmidawal/Tunable-NM-ROM/tree/0751cea90eca0801afbce26b5073d98fd2cf3f52/experiments/jcp-sealed-closeout/results)
 
 ## Held-out neural operators
 

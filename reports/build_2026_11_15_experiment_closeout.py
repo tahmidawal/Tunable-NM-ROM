@@ -196,6 +196,31 @@ def sealed_section(trees):
         err = ps['ST']['eligible']
         intro.append(f"| {d}D | {n-ps['unconverged_count']} / {n} | {100*err['median']:.4f}% | "
                      f"{100*err['maximum']:.4f}% |")
+    matched = load(results/"sealed-matched-fom-timing.json")["panels"]
+    intro += ["", "### Comparing the lattice query with an accuracy-matched full-order solver", "",
+              "The spectral solver had to converge on every case and match or improve both the median and "
+              "worst eligible ST error within reference uncertainty. The initial timing block selected the "
+              "fastest qualifying full-order configuration. The table uses a separate confirmation block on "
+              "the same GPU, timing six prepared inputs with five repetitions each. Both solvers returned fields "
+              "on the same scoring lattice. The ratio divides the lattice median by the full-order median.",
+              "", "| Mesh | Full-order solver | Lattice median | Full-order median | Time ratio |",
+              "|---|---|---:|---:|---:|"]
+    for d, meshes in dims.items():
+        for mesh in meshes:
+            item = matched[f"sealed{d}d{mesh}"]
+            if not item["qualified"]:
+                continue
+            method = item["matched_fom"]
+            timings = item["subject_timings"]
+            lat = timings["rom_lat|" + item["quadrature_rule"]]["confirm_ms"]
+            spectral = timings["fom|" + method]["confirm_ms"]
+            resolution = mesh if d == 2 else mesh-1
+            symbol = "²" if d == 2 else "³"
+            intro.append(f"| {resolution}{symbol} | {method} | {lat:.2f} ms | {spectral:.2f} ms | "
+                         f"{lat/spectral:.2f}× |")
+    intro += ["", "These are prepared-input query times. The full-order solver's input preparation was measured "
+               "separately. The ROM's corresponding preparation time was unmeasured, so the table supports no "
+               "end-to-end timing ratio. The other 2D meshes failed the timing stability criterion."]
     checks = verification["panels"].values()
     comparisons = sum(panel["witness_count"] for panel in checks)
     discrepancy = max(panel["max_witness_discrepancy"] for panel in checks)
@@ -208,7 +233,7 @@ def sealed_section(trees):
     intro += ["", "[Committed freeze](https://github.com/tahmidawal/Tunable-NM-ROM/blob/"
                    "138cc10a8f50caeca3791f0353a3ba7b60bb8b8e/experiments/jcp-sealed-closeout/F1.json) · "
                    "[Mesh-by-mesh decisions and controls](https://github.com/tahmidawal/Tunable-NM-ROM/tree/"
-                   "61b52f6de54a37f21f9514eb69d97ea42a62f649/experiments/jcp-sealed-closeout/results)"]
+                   "0751cea90eca0801afbce26b5073d98fd2cf3f52/experiments/jcp-sealed-closeout/results)"]
     return intro
 
 

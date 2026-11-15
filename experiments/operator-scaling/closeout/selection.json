@@ -1,0 +1,807 @@
+{
+  "test_cohort_seen": false,
+  "runs": {
+    "a1F/Fw128m64L4-n36864-s0-cosine": {
+      "path": "/cluster/tufts/paralab/tawal01/rebuttal-op-scaling/a1F/runs/Fw128m64L4-n36864-s0-cosine",
+      "checkpoint": "best.pt",
+      "budget": "final",
+      "best_sha256": "da5302063be3d479dfd9aad50bc6db1f6c9fe0dee2f455fe6c5359d486663402",
+      "best_step": 398500,
+      "validation": {
+        "mean": 0.0007288603574124863,
+        "median": 0.0006489804072771221,
+        "worst": 0.002192531479522586
+      },
+      "family": "FNO",
+      "arm": "Fw128m64L4",
+      "rung": 36864,
+      "seed": 0,
+      "config": {
+        "family": "fno",
+        "width": 128,
+        "modes": 64,
+        "layers": 4,
+        "lr": 0.001
+      },
+      "train_cases": 36608,
+      "real_parameters": 277025413,
+      "last_logged_step": 400000,
+      "stop_reason": "step_cap",
+      "converged": false,
+      "training_job": "7158479",
+      "accounting": {
+        "state": "COMPLETED",
+        "exit_code": "0:0",
+        "end": "2026-11-13T09:17:20"
+      },
+      "training_commit": "23ca09c3f83437feab934cb7a339c4970f0962d4",
+      "validation_history_sha256": "11f67a3a49badf6505f8cda92019367ed035f9f2665e8ae7eaac4e9ab487069d",
+      "training_meta_sha256": "8ad49c959174fdb8495a81324dddc0bebc90ca3938c6ccd97b387e27bcb71bf1"
+    },
+    "a1U/Ub128-n36864-s0-cosine": {
+      "path": "/cluster/tufts/paralab/tawal01/rebuttal-op-scaling/a1U/runs/Ub128-n36864-s0-cosine",
+      "checkpoint": "best.pt",
+      "budget": "final",
+      "best_sha256": "0e536c2c0cf10d6deb5046bf81f673298091b48f019bc2fb0a82db215506e83b",
+      "best_step": 106000,
+      "validation": {
+        "mean": 0.003014916085248842,
+        "median": 0.0028287628665566444,
+        "worst": 0.006365615874528885
+      },
+      "family": "U-Net",
+      "arm": "Ub128",
+      "rung": 36864,
+      "seed": 0,
+      "config": {
+        "family": "unet",
+        "base": 128,
+        "groups": 8,
+        "lr": 0.0003
+      },
+      "train_cases": 36608,
+      "real_parameters": 124123141,
+      "last_logged_step": 107000,
+      "stop_reason": "interrupted_by_cancellation",
+      "converged": false,
+      "training_job": "7163215",
+      "accounting": {
+        "state": "CANCELLED by 34493",
+        "exit_code": "0:0",
+        "end": "2026-11-13T12:55:41"
+      },
+      "training_commit": "382788253a42d42760c97166b088b243bf81c9d9",
+      "validation_history_sha256": "716e3a6169426e98e85591369e8f95853103cce97e4be298f4dab2d7d879f627",
+      "training_meta_sha256": "3edf6d506766a0b0c20f4314707b6d7b57e991f59c3bdadd09e5d62e3cdad1cd"
+    },
+    "a2F18/Fw128m64L4-n18432-s0-cosine": {
+      "path": "/cluster/tufts/paralab/tawal01/rebuttal-op-scaling/a2F18/runs/Fw128m64L4-n18432-s0-cosine",
+      "checkpoint": "best.pt",
+      "budget": "final",
+      "best_sha256": "577dfe55124e1fa651bc725f62e1916dcb0a4fa53d5d6d69945740572a0e558c",
+      "best_step": 151000,
+      "validation": {
+        "mean": 0.0019939762396461447,
+        "median": 0.0018661503563635051,
+        "worst": 0.004909974057227373
+      },
+      "family": "FNO",
+      "arm": "Fw128m64L4",
+      "rung": 18432,
+      "seed": 0,
+      "config": {
+        "family": "fno",
+        "width": 128,
+        "modes": 64,
+        "layers": 4,
+        "lr": 0.001
+      },
+      "train_cases": 18176,
+      "real_parameters": 277025413,
+      "last_logged_step": 167500,
+      "stop_reason": "interrupted_by_cancellation",
+      "converged": false,
+      "training_job": "7163213",
+      "accounting": {
+        "state": "CANCELLED by 34493",
+        "exit_code": "0:0",
+        "end": "2026-11-13T12:55:41"
+      },
+      "training_commit": "382788253a42d42760c97166b088b243bf81c9d9",
+      "validation_history_sha256": "329ce898bd1574c0984ad85bb65803a7e883fdbd0da35ea7fa9abf43441997aa",
+      "training_meta_sha256": "06fa3c8507d6337534dc3c0070209a9103ed5c87c8e6ba7f18a718b590f7aec7"
+    },
+    "a2F4/Fw128m64L4-n4608-s0-cosine": {
+      "path": "/cluster/tufts/paralab/tawal01/rebuttal-op-scaling/a2F4/runs/Fw128m64L4-n4608-s0-cosine",
+      "checkpoint": "best.pt",
+      "budget": "final",
+      "best_sha256": "95f536856f004d7c1724486c9613eb8bb24a256a7ecc15d95901311d3530b361",
+      "best_step": 168000,
+      "validation": {
+        "mean": 0.002182804220865364,
+        "median": 0.001988439238630235,
+        "worst": 0.006337915547192097
+      },
+      "family": "FNO",
+      "arm": "Fw128m64L4",
+      "rung": 4608,
+      "seed": 0,
+      "config": {
+        "family": "fno",
+        "width": 128,
+        "modes": 64,
+        "layers": 4,
+        "lr": 0.001
+      },
+      "train_cases": 4352,
+      "real_parameters": 277025413,
+      "last_logged_step": 170500,
+      "stop_reason": "interrupted_by_cancellation",
+      "converged": false,
+      "training_job": "7163214",
+      "accounting": {
+        "state": "CANCELLED by 34493",
+        "exit_code": "0:0",
+        "end": "2026-11-13T12:55:41"
+      },
+      "training_commit": "382788253a42d42760c97166b088b243bf81c9d9",
+      "validation_history_sha256": "e167c6db878ccb1d2e365ab4f5bc6871ddb1dd83c4cbf5312d078864827c1d63",
+      "training_meta_sha256": "2427dc7a3b48d9ef0b790a40095859644203644e4a119eba372352f912789daa"
+    },
+    "a3a/Fw128m64L4-n36864-s0-cosine": {
+      "path": "/cluster/tufts/paralab/tawal01/rebuttal-op-scaling/a3a/runs/Fw128m64L4-n36864-s0-cosine",
+      "checkpoint": "best.pt",
+      "budget": "final",
+      "best_sha256": "0c2cde40fb2c2a456a936cfdfaac663e859ddca1370375077c9d81d77192c9de",
+      "best_step": 132500,
+      "validation": {
+        "mean": 0.002592114420622238,
+        "median": 0.002384594059549272,
+        "worst": 0.006327145732939243
+      },
+      "family": "FNO",
+      "arm": "Fw128m64L4",
+      "rung": 36864,
+      "seed": 0,
+      "config": {
+        "family": "fno",
+        "width": 128,
+        "modes": 64,
+        "layers": 4,
+        "lr": 0.001
+      },
+      "train_cases": 36608,
+      "real_parameters": 277025413,
+      "last_logged_step": 137000,
+      "stop_reason": "interrupted_by_cancellation",
+      "converged": false,
+      "training_job": "7164142",
+      "accounting": {
+        "state": "CANCELLED by 34493",
+        "exit_code": "0:0",
+        "end": "2026-11-13T12:55:41"
+      },
+      "training_commit": "dfe296d6ccb54c8df5fe5e45190bb97e5a62909d",
+      "validation_history_sha256": "72e8cd2b943b92394d58b6b794a34ac86b5bdd6798966b353f1e71d50c8522c7",
+      "training_meta_sha256": "95b459939989d30ece23b6387b2d678fdf4ed65180cf49ca2eca2f4efb8d17e6"
+    },
+    "a3b/Fw192m48L4-n36864-s0-cosine": {
+      "path": "/cluster/tufts/paralab/tawal01/rebuttal-op-scaling/a3b/runs/Fw192m48L4-n36864-s0-cosine",
+      "checkpoint": "best.pt",
+      "budget": "final",
+      "best_sha256": "447002a9bb2fe324095c1aac3503cf19820e3af904ca8172f57f38f1341d3911",
+      "best_step": 6000,
+      "validation": {
+        "mean": 0.010404251061117975,
+        "median": 0.009696602821350098,
+        "worst": 0.026981202885508537
+      },
+      "family": "FNO",
+      "arm": "Fw192m48L4",
+      "rung": 36864,
+      "seed": 0,
+      "config": {
+        "family": "fno",
+        "width": 192,
+        "modes": 48,
+        "layers": 4,
+        "lr": 0.001
+      },
+      "train_cases": 36608,
+      "real_parameters": 354343877,
+      "last_logged_step": 6500,
+      "stop_reason": "interrupted_by_cancellation",
+      "converged": false,
+      "training_job": "7175422",
+      "accounting": {
+        "state": "CANCELLED by 34493",
+        "exit_code": "0:0",
+        "end": "2026-11-13T12:55:41"
+      },
+      "training_commit": "c48d847d4a079ff9a2b6c4384896acb6c267e440",
+      "validation_history_sha256": "d02b8e02e72b4556fc78c036d1e186f308c1e779fd79598f5e31eda9101880a4",
+      "training_meta_sha256": "8d86d52a01128c4264a87cebc7a218862fe07ac111859fdcdfa3fd7a868b71a7"
+    },
+    "p1F/Fw128m64L4-n36864-s0": {
+      "path": "/cluster/tufts/paralab/tawal01/rebuttal-op-scaling/p1F/runs/Fw128m64L4-n36864-s0",
+      "checkpoint": "best.pt",
+      "budget": "final",
+      "best_sha256": "a13e72f9278330236100c26c7006a1f8cf451deed01c4ebf800b029661e32dea",
+      "best_step": 322000,
+      "validation": {
+        "mean": 0.0013435709954592312,
+        "median": 0.0012098000734113157,
+        "worst": 0.00454981392249465
+      },
+      "family": "FNO",
+      "arm": "Fw128m64L4",
+      "rung": 36864,
+      "seed": 0,
+      "config": {
+        "family": "fno",
+        "width": 128,
+        "modes": 64,
+        "layers": 4,
+        "lr": 0.001
+      },
+      "train_cases": 36608,
+      "real_parameters": 277025413,
+      "last_logged_step": 332000,
+      "stop_reason": "early_stopping",
+      "converged": true,
+      "training_job": "7157811",
+      "accounting": {
+        "state": "COMPLETED",
+        "exit_code": "0:0",
+        "end": "2026-11-13T11:39:25"
+      },
+      "training_commit": "27599fb61bbac62aee1a205c6dd9cdfb71d9d60f",
+      "validation_history_sha256": "5c815453bc0c869b2901d3b8822bbdbb5c95e99d35ed3f8cd9107afa52a3515e",
+      "training_meta_sha256": "c5c64503293fabfebea5decbff10724b91b29604bfd28475fa7b81729a1c4024"
+    },
+    "p1F/Fw128m64L4-n36864-s0@200k": {
+      "path": "/cluster/tufts/paralab/tawal01/rebuttal-op-scaling/p1F/runs/Fw128m64L4-n36864-s0",
+      "checkpoint": "best_upto_200000.pt",
+      "budget": "200k",
+      "best_sha256": "b796d1bfa4f7e5b8d21e30756e104741b77e8343ecd184e77cfdaf2bf1393fad",
+      "best_step": 198500,
+      "validation": {
+        "mean": 0.0015544668876827927,
+        "median": 0.0013986139092594385,
+        "worst": 0.005311573389917612
+      },
+      "family": "FNO",
+      "arm": "Fw128m64L4",
+      "rung": 36864,
+      "seed": 0,
+      "config": {
+        "family": "fno",
+        "width": 128,
+        "modes": 64,
+        "layers": 4,
+        "lr": 0.001
+      },
+      "train_cases": 36608,
+      "real_parameters": 277025413,
+      "last_logged_step": 332000,
+      "stop_reason": "early_stopping",
+      "converged": true,
+      "training_job": "7157811",
+      "accounting": {
+        "state": "COMPLETED",
+        "exit_code": "0:0",
+        "end": "2026-11-13T11:39:25"
+      },
+      "training_commit": "27599fb61bbac62aee1a205c6dd9cdfb71d9d60f",
+      "validation_history_sha256": "5c815453bc0c869b2901d3b8822bbdbb5c95e99d35ed3f8cd9107afa52a3515e",
+      "training_meta_sha256": "c5c64503293fabfebea5decbff10724b91b29604bfd28475fa7b81729a1c4024"
+    },
+    "p1F/Fw128m64L4-n9216-s0": {
+      "path": "/cluster/tufts/paralab/tawal01/rebuttal-op-scaling/p1F/runs/Fw128m64L4-n9216-s0",
+      "checkpoint": "best.pt",
+      "budget": "final",
+      "best_sha256": "8d0d33a70b05faf00ef55cb0faa7ac5b91e4b08a75b9e6720db1cea64c972f50",
+      "best_step": 200000,
+      "validation": {
+        "mean": 0.0013651382575972093,
+        "median": 0.0012072492972947657,
+        "worst": 0.00464660907164216
+      },
+      "family": "FNO",
+      "arm": "Fw128m64L4",
+      "rung": 9216,
+      "seed": 0,
+      "config": {
+        "family": "fno",
+        "width": 128,
+        "modes": 64,
+        "layers": 4,
+        "lr": 0.001
+      },
+      "train_cases": 8960,
+      "real_parameters": 277025413,
+      "last_logged_step": 200000,
+      "stop_reason": "step_cap",
+      "converged": false,
+      "training_job": "7157811",
+      "accounting": {
+        "state": "COMPLETED",
+        "exit_code": "0:0",
+        "end": "2026-11-13T11:39:25"
+      },
+      "training_commit": "27599fb61bbac62aee1a205c6dd9cdfb71d9d60f",
+      "validation_history_sha256": "57d764c40bae252b50d3e14375b6011d0d4663ba005021b51e24e9745a118828",
+      "training_meta_sha256": "583bb15e51502062fcab6bc52cb344c492512f70fa372ac336b36cd1e18b1dc1"
+    },
+    "p1U/Ub128-n36864-s0": {
+      "path": "/cluster/tufts/paralab/tawal01/rebuttal-op-scaling/p1U/runs/Ub128-n36864-s0",
+      "checkpoint": "best.pt",
+      "budget": "final",
+      "best_sha256": "530dea029cf6e39b11c526947abd83ba6195c66c03ef3edf051ea11531ec192e",
+      "best_step": 170000,
+      "validation": {
+        "mean": 0.002159509484499722,
+        "median": 0.0019161754753440619,
+        "worst": 0.006338953040540218
+      },
+      "family": "U-Net",
+      "arm": "Ub128",
+      "rung": 36864,
+      "seed": 0,
+      "config": {
+        "family": "unet",
+        "base": 128,
+        "groups": 8,
+        "lr": 0.0003
+      },
+      "train_cases": 36608,
+      "real_parameters": 124123141,
+      "last_logged_step": 180000,
+      "stop_reason": "early_stopping",
+      "converged": true,
+      "training_job": "7157812",
+      "accounting": {
+        "state": "CANCELLED by 34493",
+        "exit_code": "0:0",
+        "end": "2026-11-13T12:55:41"
+      },
+      "training_commit": "27599fb61bbac62aee1a205c6dd9cdfb71d9d60f",
+      "validation_history_sha256": "23d5ec91ecb3e465398663ad54e4dc58761654904a8d0d6fa6ff9fdb094ae01c",
+      "training_meta_sha256": "fe348379df5cd3ab13f245b3cd433def846cde91275f5b985f365b0a2dca2b30"
+    },
+    "p1U/Ub128-n9216-s0": {
+      "path": "/cluster/tufts/paralab/tawal01/rebuttal-op-scaling/p1U/runs/Ub128-n9216-s0",
+      "checkpoint": "best.pt",
+      "budget": "final",
+      "best_sha256": "1f9716e6fa4fb2c40e1e1c62a8686b516bff6d614ae3816c96263e82e274a4f6",
+      "best_step": 50000,
+      "validation": {
+        "mean": 0.003699307927490736,
+        "median": 0.0034002496395260096,
+        "worst": 0.01072713639587164
+      },
+      "family": "U-Net",
+      "arm": "Ub128",
+      "rung": 9216,
+      "seed": 0,
+      "config": {
+        "family": "unet",
+        "base": 128,
+        "groups": 8,
+        "lr": 0.0003
+      },
+      "train_cases": 8960,
+      "real_parameters": 124123141,
+      "last_logged_step": 50500,
+      "stop_reason": "interrupted_by_cancellation",
+      "converged": false,
+      "training_job": "7157812",
+      "accounting": {
+        "state": "CANCELLED by 34493",
+        "exit_code": "0:0",
+        "end": "2026-11-13T12:55:41"
+      },
+      "training_commit": "27599fb61bbac62aee1a205c6dd9cdfb71d9d60f",
+      "validation_history_sha256": "fad943ac730fca19ba34f407f25e2bbcfb66318a27770a8c4abeaba3c9d332e7",
+      "training_meta_sha256": "737bc79f29122ac259ca5cebe34c4397b152a7a95daed13fc0e3abff722193c1"
+    },
+    "p3/Fw128m64L4-n18432-s0": {
+      "path": "/cluster/tufts/paralab/tawal01/rebuttal-op-scaling/p3/runs/Fw128m64L4-n18432-s0",
+      "checkpoint": "best.pt",
+      "budget": "final",
+      "best_sha256": "1fd15ce7731776d60d3c1d989ae92415b7c75f035fe8951200c55df06dc96200",
+      "best_step": 199000,
+      "validation": {
+        "mean": 0.0014362086747041758,
+        "median": 0.0012817609240300953,
+        "worst": 0.0048076193779706955
+      },
+      "family": "FNO",
+      "arm": "Fw128m64L4",
+      "rung": 18432,
+      "seed": 0,
+      "config": {
+        "family": "fno",
+        "width": 128,
+        "modes": 64,
+        "layers": 4,
+        "lr": 0.001
+      },
+      "train_cases": 18176,
+      "real_parameters": 277025413,
+      "last_logged_step": 200000,
+      "stop_reason": "step_cap",
+      "converged": false,
+      "training_job": "7157948",
+      "accounting": {
+        "state": "CANCELLED by 34493",
+        "exit_code": "0:0",
+        "end": "2026-11-13T12:55:41"
+      },
+      "training_commit": "ce1ad3df9dcbe43859ad162cfa705920dfdd1826",
+      "validation_history_sha256": "a2a6fb4ed63547e114abef9b5a08aa4ecf34899949523a9091adc7693d4def7e",
+      "training_meta_sha256": "ac19af8363fa658e4703b39f6527c5a2f91b1e41a51fe2a9542ff9e361b2cfe6"
+    },
+    "p3/Ub128-n18432-s0": {
+      "path": "/cluster/tufts/paralab/tawal01/rebuttal-op-scaling/p3/runs/Ub128-n18432-s0",
+      "checkpoint": "best.pt",
+      "budget": "final",
+      "best_sha256": "ddec913fb2c9338b2a98004bdef1fb9c3403e916f614d949e3595e7afbb4d4fe",
+      "best_step": 141500,
+      "validation": {
+        "mean": 0.002586646478448529,
+        "median": 0.0022669166792184114,
+        "worst": 0.00863039679825306
+      },
+      "family": "U-Net",
+      "arm": "Ub128",
+      "rung": 18432,
+      "seed": 0,
+      "config": {
+        "family": "unet",
+        "base": 128,
+        "groups": 8,
+        "lr": 0.0003
+      },
+      "train_cases": 18176,
+      "real_parameters": 124123141,
+      "last_logged_step": 144500,
+      "stop_reason": "interrupted_by_cancellation",
+      "converged": false,
+      "training_job": "7157948",
+      "accounting": {
+        "state": "CANCELLED by 34493",
+        "exit_code": "0:0",
+        "end": "2026-11-13T12:55:41"
+      },
+      "training_commit": "ce1ad3df9dcbe43859ad162cfa705920dfdd1826",
+      "validation_history_sha256": "2aa680762a1241fdb949408dfdf5f40fd26a0e962a3cda3530de61b658bb92a6",
+      "training_meta_sha256": "7fc06cea81dad8cbddff5c55eea5bb40a8ab7b512b44f05e7bc8145a2d25d74a"
+    },
+    "szF2/Fw128m64L4-n4608-s0": {
+      "path": "/cluster/tufts/paralab/tawal01/rebuttal-op-scaling/szF2/runs/Fw128m64L4-n4608-s0",
+      "checkpoint": "best.pt",
+      "budget": "final",
+      "best_sha256": "9ad5ac239088b4aa8e0c133f534b7fed1190bb5018f60ab1e4b72763b013a318",
+      "best_step": 200000,
+      "validation": {
+        "mean": 0.0016317690049163502,
+        "median": 0.0013580911909230053,
+        "worst": 0.006778317969292402
+      },
+      "family": "FNO",
+      "arm": "Fw128m64L4",
+      "rung": 4608,
+      "seed": 0,
+      "config": {
+        "family": "fno",
+        "width": 128,
+        "modes": 64,
+        "layers": 4,
+        "lr": 0.001
+      },
+      "train_cases": 4352,
+      "real_parameters": 277025413,
+      "last_logged_step": 200000,
+      "stop_reason": "step_cap",
+      "converged": false,
+      "training_job": "7157808",
+      "accounting": {
+        "state": "CANCELLED by 34493",
+        "exit_code": "0:0",
+        "end": "2026-11-13T12:55:41"
+      },
+      "training_commit": "27599fb61bbac62aee1a205c6dd9cdfb71d9d60f",
+      "validation_history_sha256": "6026582064bc9f4ae259fc62a835e5500a44c8db81f113e909956af96ddce681",
+      "training_meta_sha256": "866d1ee78ef32a5eba75ddf1a090ad25e033fbf73b9af4243550a7c980a4b6f5"
+    },
+    "szF2/Fw192m48L4-n4608-s0": {
+      "path": "/cluster/tufts/paralab/tawal01/rebuttal-op-scaling/szF2/runs/Fw192m48L4-n4608-s0",
+      "checkpoint": "best.pt",
+      "budget": "final",
+      "best_sha256": "46221e0ef0e5d8d0797731d853c0b112d7635f0db988b59973a5611fc22b6212",
+      "best_step": 113000,
+      "validation": {
+        "mean": 0.001592787864183265,
+        "median": 0.0013510285061784089,
+        "worst": 0.006662583444267511
+      },
+      "family": "FNO",
+      "arm": "Fw192m48L4",
+      "rung": 4608,
+      "seed": 0,
+      "config": {
+        "family": "fno",
+        "width": 192,
+        "modes": 48,
+        "layers": 4,
+        "lr": 0.001
+      },
+      "train_cases": 4352,
+      "real_parameters": 354343877,
+      "last_logged_step": 115500,
+      "stop_reason": "interrupted_by_cancellation",
+      "converged": false,
+      "training_job": "7157808",
+      "accounting": {
+        "state": "CANCELLED by 34493",
+        "exit_code": "0:0",
+        "end": "2026-11-13T12:55:41"
+      },
+      "training_commit": "27599fb61bbac62aee1a205c6dd9cdfb71d9d60f",
+      "validation_history_sha256": "e4932e78200591463dc052e6b7ae9346f474be3f4472add51172804757ad9e28",
+      "training_meta_sha256": "626bbfba5fa8d920d7b36e13c55997eea3d33c357121a9650c833adaf7fb338b"
+    },
+    "szF3/Fw128m32L4-n4608-s0": {
+      "path": "/cluster/tufts/paralab/tawal01/rebuttal-op-scaling/szF3/runs/Fw128m32L4-n4608-s0",
+      "checkpoint": "best.pt",
+      "budget": "final",
+      "best_sha256": "6035280e4a7e1723dc788810cc47d93d991130881144a3cecfe90af17990af26",
+      "best_step": 191000,
+      "validation": {
+        "mean": 0.001582131612167359,
+        "median": 0.0013464082148857415,
+        "worst": 0.005937060806900263
+      },
+      "family": "FNO",
+      "arm": "Fw128m32L4",
+      "rung": 4608,
+      "seed": 0,
+      "config": {
+        "family": "fno",
+        "width": 128,
+        "modes": 32,
+        "layers": 4,
+        "lr": 0.001
+      },
+      "train_cases": 4352,
+      "real_parameters": 71504517,
+      "last_logged_step": 193500,
+      "stop_reason": "interrupted_by_cancellation",
+      "converged": false,
+      "training_job": "7163881",
+      "accounting": {
+        "state": "CANCELLED by 34493",
+        "exit_code": "0:0",
+        "end": "2026-11-13T12:55:41"
+      },
+      "training_commit": "382788253a42d42760c97166b088b243bf81c9d9",
+      "validation_history_sha256": "a7c7e0c2565e2a7befece48cface9fe8b274b7d09ce460bf268b013418fdca18",
+      "training_meta_sha256": "f28632a323e362abbe6fbe1564bda139385db063397f950e7c842369e86932b7"
+    },
+    "szU192/Ub192-n4608-s0": {
+      "path": "/cluster/tufts/paralab/tawal01/rebuttal-op-scaling/szU192/runs/Ub192-n4608-s0",
+      "checkpoint": "best.pt",
+      "budget": "final",
+      "best_sha256": "75152b29585b6f0283a8d7a1741fbb4fdc732f80c33deb11d2ec707f9d4840d8",
+      "best_step": 103500,
+      "validation": {
+        "mean": 0.0038465257930511143,
+        "median": 0.0034166990080848336,
+        "worst": 0.010426877997815609
+      },
+      "family": "U-Net",
+      "arm": "Ub192",
+      "rung": 4608,
+      "seed": 0,
+      "config": {
+        "family": "unet",
+        "base": 192,
+        "groups": 8,
+        "lr": 0.0003
+      },
+      "train_cases": 4352,
+      "real_parameters": 279254021,
+      "last_logged_step": 105000,
+      "stop_reason": "interrupted_by_cancellation",
+      "converged": false,
+      "training_job": "7157949",
+      "accounting": {
+        "state": "CANCELLED by 34493",
+        "exit_code": "0:0",
+        "end": "2026-11-13T12:55:41"
+      },
+      "training_commit": "ce1ad3df9dcbe43859ad162cfa705920dfdd1826",
+      "validation_history_sha256": "7470726b7e0cb2f3dab3deee5b73b9903297841867698dd13bba2a7e3f259a2b",
+      "training_meta_sha256": "d12154345dd99bcb186fd6e36a562bef1094509e8d4f6befa1cf1e1bdb99d3f6"
+    },
+    "szU2/Ub128-n4608-s0": {
+      "path": "/cluster/tufts/paralab/tawal01/rebuttal-op-scaling/szU2/runs/Ub128-n4608-s0",
+      "checkpoint": "best.pt",
+      "budget": "final",
+      "best_sha256": "a41d457932b054b46f908d466923b4b09d35787bbb2a5f698a5cb33559b94a23",
+      "best_step": 103000,
+      "validation": {
+        "mean": 0.003090362401508173,
+        "median": 0.002765757846646011,
+        "worst": 0.011058623902499676
+      },
+      "family": "U-Net",
+      "arm": "Ub128",
+      "rung": 4608,
+      "seed": 0,
+      "config": {
+        "family": "unet",
+        "base": 128,
+        "groups": 8,
+        "lr": 0.0003
+      },
+      "train_cases": 4352,
+      "real_parameters": 124123141,
+      "last_logged_step": 113000,
+      "stop_reason": "early_stopping",
+      "converged": true,
+      "training_job": "7157810",
+      "accounting": {
+        "state": "CANCELLED by 34493",
+        "exit_code": "0:0",
+        "end": "2026-11-13T12:55:41"
+      },
+      "training_commit": "27599fb61bbac62aee1a205c6dd9cdfb71d9d60f",
+      "validation_history_sha256": "93f31be2361c6ae93f77a848b6b6e4c407ce0d431dff327fb1789fb6cf50e199",
+      "training_meta_sha256": "fa92772702e1d8db4e031a07018ee52488d79b0d69c5c440a3db52c1a79c01e3"
+    },
+    "szU2/Ub48-n4608-s0": {
+      "path": "/cluster/tufts/paralab/tawal01/rebuttal-op-scaling/szU2/runs/Ub48-n4608-s0",
+      "checkpoint": "best.pt",
+      "budget": "final",
+      "best_sha256": "d533fa9eca239ff12b90e933840a8a4a92b515fbd3b637d980b25b557cc21fc6",
+      "best_step": 84500,
+      "validation": {
+        "mean": 0.0025562311202520505,
+        "median": 0.0023174419766291976,
+        "worst": 0.006487514823675156
+      },
+      "family": "U-Net",
+      "arm": "Ub48",
+      "rung": 4608,
+      "seed": 0,
+      "config": {
+        "family": "unet",
+        "base": 48,
+        "groups": 8,
+        "lr": 0.0003
+      },
+      "train_cases": 4352,
+      "real_parameters": 17462021,
+      "last_logged_step": 85500,
+      "stop_reason": "interrupted_by_cancellation",
+      "converged": false,
+      "training_job": "7157810",
+      "accounting": {
+        "state": "CANCELLED by 34493",
+        "exit_code": "0:0",
+        "end": "2026-11-13T12:55:41"
+      },
+      "training_commit": "27599fb61bbac62aee1a205c6dd9cdfb71d9d60f",
+      "validation_history_sha256": "c29064733510408c9614622fe435fd949d243ee0d830a1169ad943a7f713dfa0",
+      "training_meta_sha256": "14cd932e32f34d03ad8eba96d27498e18047546c7724be6b6ab3d6339f3dec41"
+    },
+    "szU2/Ub64-n4608-s0": {
+      "path": "/cluster/tufts/paralab/tawal01/rebuttal-op-scaling/szU2/runs/Ub64-n4608-s0",
+      "checkpoint": "best.pt",
+      "budget": "final",
+      "best_sha256": "f623790a37a4110e5d6a0c04a769715d1814ec0cf579e7f88f493c42938e0422",
+      "best_step": 176000,
+      "validation": {
+        "mean": 0.0021204863533057505,
+        "median": 0.00186880148248747,
+        "worst": 0.00540952617302537
+      },
+      "family": "U-Net",
+      "arm": "Ub64",
+      "rung": 4608,
+      "seed": 0,
+      "config": {
+        "family": "unet",
+        "base": 64,
+        "groups": 8,
+        "lr": 0.0003
+      },
+      "train_cases": 4352,
+      "real_parameters": 31038469,
+      "last_logged_step": 181000,
+      "stop_reason": "early_stopping",
+      "converged": true,
+      "training_job": "7157810",
+      "accounting": {
+        "state": "CANCELLED by 34493",
+        "exit_code": "0:0",
+        "end": "2026-11-13T12:55:41"
+      },
+      "training_commit": "27599fb61bbac62aee1a205c6dd9cdfb71d9d60f",
+      "validation_history_sha256": "bbf2792bc462a0faca606c39f6accec27299afbda6ed6d78e322e13af91b576d",
+      "training_meta_sha256": "3b082cbdaf9dbf2f4e890063c277a0a643aa17b4dedb4b9a7a5c6fc0a07153fa"
+    },
+    "szU2/Ub96-n4608-s0": {
+      "path": "/cluster/tufts/paralab/tawal01/rebuttal-op-scaling/szU2/runs/Ub96-n4608-s0",
+      "checkpoint": "best.pt",
+      "budget": "final",
+      "best_sha256": "071bd0c6a49055f830da6371dfb3d10cba20d30cc5668e5699d569bbb2e13c7c",
+      "best_step": 134500,
+      "validation": {
+        "mean": 0.002391404787886131,
+        "median": 0.0020599295385181904,
+        "worst": 0.006212008185684681
+      },
+      "family": "U-Net",
+      "arm": "Ub96",
+      "rung": 4608,
+      "seed": 0,
+      "config": {
+        "family": "unet",
+        "base": 96,
+        "groups": 8,
+        "lr": 0.0003
+      },
+      "train_cases": 4352,
+      "real_parameters": 69825029,
+      "last_logged_step": 144500,
+      "stop_reason": "early_stopping",
+      "converged": true,
+      "training_job": "7157810",
+      "accounting": {
+        "state": "CANCELLED by 34493",
+        "exit_code": "0:0",
+        "end": "2026-11-13T12:55:41"
+      },
+      "training_commit": "27599fb61bbac62aee1a205c6dd9cdfb71d9d60f",
+      "validation_history_sha256": "060357bba71759f97bf68fbf598eb98071378b8c2fdcbda1dc578b1b67d512c0",
+      "training_meta_sha256": "f5c1207c5ca6560ead4e454138584e73f2567906b2edb1b1a9572ee9919062c2"
+    }
+  },
+  "selection": {
+    "FNO": {
+      "selected": "a1F/Fw128m64L4-n36864-s0-cosine",
+      "rule": "lowest validation mean across all available final best checkpoints",
+      "candidates": {
+        "a1F/Fw128m64L4-n36864-s0-cosine": 0.0007288603574124863,
+        "a2F18/Fw128m64L4-n18432-s0-cosine": 0.0019939762396461447,
+        "a2F4/Fw128m64L4-n4608-s0-cosine": 0.002182804220865364,
+        "a3a/Fw128m64L4-n36864-s0-cosine": 0.002592114420622238,
+        "a3b/Fw192m48L4-n36864-s0-cosine": 0.010404251061117975,
+        "p1F/Fw128m64L4-n36864-s0": 0.0013435709954592312,
+        "p1F/Fw128m64L4-n9216-s0": 0.0013651382575972093,
+        "p3/Fw128m64L4-n18432-s0": 0.0014362086747041758,
+        "szF2/Fw128m64L4-n4608-s0": 0.0016317690049163502,
+        "szF2/Fw192m48L4-n4608-s0": 0.001592787864183265,
+        "szF3/Fw128m32L4-n4608-s0": 0.001582131612167359
+      }
+    },
+    "U-Net": {
+      "selected": "szU2/Ub64-n4608-s0",
+      "rule": "lowest validation mean across all available final best checkpoints",
+      "candidates": {
+        "a1U/Ub128-n36864-s0-cosine": 0.003014916085248842,
+        "p1U/Ub128-n36864-s0": 0.002159509484499722,
+        "p1U/Ub128-n9216-s0": 0.003699307927490736,
+        "p3/Ub128-n18432-s0": 0.002586646478448529,
+        "szU192/Ub192-n4608-s0": 0.0038465257930511143,
+        "szU2/Ub128-n4608-s0": 0.003090362401508173,
+        "szU2/Ub48-n4608-s0": 0.0025562311202520505,
+        "szU2/Ub64-n4608-s0": 0.0021204863533057505,
+        "szU2/Ub96-n4608-s0": 0.002391404787886131
+      }
+    }
+  }
+}

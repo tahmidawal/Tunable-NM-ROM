@@ -62,7 +62,8 @@ def run_cohort(net, norm, fields, nus, n0s, query, reps=5, burn=20):
             per.append(e[1:])
     ev = np.max(np.asarray(per), axis=1)
     return dict(worst_percent=100 * float(ev.max()), median_percent=100 * float(np.median(ev)),
-                mean_percent=100 * float(ev.mean()), per_case_per_time=per, timing=stats(t))
+                mean_percent=100 * float(ev.mean()), per_case_per_time=per, timing=stats(t),
+                timing_repetitions_ms=(1000 * np.asarray(t).reshape(len(fields), reps)).tolist())
 
 
 def sha256(path):
@@ -86,9 +87,19 @@ def main():
     manifest = json.loads(Path(a.manifest).read_text())
     env = dict(cohort=a.cohort, gpu=torch.cuda.get_device_name(), job_id=os.environ.get('SLURM_JOB_ID'),
                node=os.environ.get('SLURMD_NODENAME'), torch=torch.__version__, manifest_sha256=sha256(a.manifest))
+    if a.skip_1024 and a.cohort == 'test64':
+        assert not torch.backends.cuda.matmul.allow_tf32 and not torch.backends.cudnn.allow_tf32
+        assert 'A100' in env['gpu'] and torch.cuda.get_device_properties(0).total_memory >= 75 * 1024**3
+        env.update(network='float32', scoring='float64', tf32=False, timed_output='final repetition per case')
     for L in (256,) if a.skip_1024 else (256, 1024):
         m = np.load(Path(a.cohort_dir) / f'{a.cohort}-L{L}.meta.npz')
         data = (np.load(Path(a.cohort_dir) / f'{a.cohort}-L{L}.fields.npy', mmap_mode='r'), m['params'][:, 4], m['n0'])
+        if L == 256 and a.cohort == 'test64':
+            import hashlib
+            expected = 'cd058fd2a297c20296b897e54cb186033a44a8db9527d98dcb2c2dad6044527c'
+            got = hashlib.sha256(np.ascontiguousarray(m['params']).tobytes()).hexdigest()
+            assert got == expected and data[0].dtype == np.float64 and data[0].shape == (64, 6, 257, 257)
+            env.update(parameter_sha256=got)
         for key, entry in manifest['runs'].items():
             target = out / f"{key.replace('/', '__')}.L{L}.json"
             if target.exists():
@@ -97,6 +108,8 @@ def main():
             ckpt = Path(entry['path']) / entry.get('checkpoint', 'best.pt')
             assert sha256(ckpt) == entry['best_sha256'], f'checkpoint changed after the selection was frozen: {ckpt}'
             net, ck = load(ckpt)
+            assert ck['step'] == entry['best_step'] and ck['validation'] == entry['validation']
+            assert all(p.dtype in {torch.float32, torch.complex64} for p in net.parameters())
             norm = ck['normalization']
             r = dict(env, key=key, mesh=L, arm=ck['arm'], rung=ck['rung'], seed=ck['seed'], best_step=ck['step'],
                      checkpoint=ckpt.name, validation=ck['validation'], real_parameters=opnet.real_parameters(net), best_sha256=entry['best_sha256'])

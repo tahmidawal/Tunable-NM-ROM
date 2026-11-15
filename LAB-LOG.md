@@ -12,7 +12,13 @@ below it is append-only, oldest first.
 
 ---
 
-# Where things stand — 2026-11-06
+# Where things stand — 2026-11-15
+
+**JCP submission-readiness audit.** The [submission plan](reports/2026-11-15-jcp-submission-readiness.md) proposes a numerical study of classical quadrature for a continuous reduced basis. The current conference revision already includes a Burgers mesh-scaling figure. Author decisions on overlap, quadrature authorship and any prospective Burgers confirmation remain open.
+
+The November 15 11:11 EST Slurm snapshot shows no queued or running Tunable-NM-ROM allocation, and six separately scoped quadtree allocations. Sparse jobs `7229013`, `7229014` and `7229016` completed. Seven remote result hashes are recorded, collection and table verification are pending, and the small Poisson timing failed its neighbour test. The Burgers equal-error ROM width sweep and original NS3D coordinate-bank confirmation are complete. Frozen higher-accuracy operator evaluations and the original sealed Burgers E0 campaign remain separate open items.
+
+## Earlier state — 2026-11-06
 
 **2026-11-06 — G5 unsteady cylinder (DFG 2D-2, Re 90–110): reference admitted; POD beats the neural bank; campaign complete (Claude).**
 - Report: [reports/2026-11-06-cylinder-unsteady/2026-11-06-cylinder-unsteady.md](reports/2026-11-06-cylinder-unsteady/2026-11-06-cylinder-unsteady.md) (tables generated from saved JSON; figures and animation included).
@@ -21575,3 +21581,13 @@ remote `quad-floor/` was deleted. Design: `experiments/quad-floor/DESIGN.md` ame
 - **R1f PASS** (Codex audit of saved arrays; held-out unopened). Correction: at 1/800 and 1/1600 the startup lift check also failed (decision unchanged). Reference admitted for R2–R5.
 - **R2** (job 6924298, 7m25s; export 1,036,497 Q points, 24.5 GB peak): development Re 95 velocity floors (median/max): frozen run-09 bank 2.55e-1/2.60e-1 (**fails**, H-rep0 confirmed), POD r4 3.79e-2, r8 1.63e-2, r12 9.09e-3/1.07e-2 (fail), **r16 4.83e-3/5.74e-3 (first pass)**, r24 2.35e-3/2.75e-3. → **R3 required at r_b = 16**. R3 training 6924961 and R4 POD/frozen arms r4-pod01 submitted.
 - **G5 closure (2026-11-06).** R3 (6924961, 37 min): parent and child stopped at iteration limits. R4 (6926886) dev Re 95: POD r16 e_u-RMS 9.49e-3 (6/6 targets), r24 5.73e-3 (6/6), retrained bank r16 1.45e-2 (5/6, divergence 4.6e-2), frozen bank 2.81e-1 (0/6). Quadrature check: attempt 1 (in 6926886) refused at its identity guard (independently recomputed FE modes differ at 1e-10); attempt 2 (6927926, modes reused by hash) has floors ≤ 4e-9 and metrics ≤ 1.6e-7, but the operator criterion fails solely via BL (‖BL‖ ≈ 3.7e-15 vs ‖B‖ ≈ 3.49) → ranking reported unresolved by rule. R5 (6929094, held-out Re 105 opened once): POD r16 8.47e-3 (6/6), r24 3.47e-3 (6/6), bank r16 1.10e-2 (5/6, divergence 5.0e-2), frozen 3.03e-1 (0/6). Paired timing: FE 647 s warm per 0.1 s workload versus ROM 0.08–0.54 s (≈1.2e3–8.2e3×). FE repetitions are non-bitwise at 1e-13 (thread order); every repetition reproduces the record to 6e-15. Incident: one ad-hoc diagnostic was started on the login node by mistake and killed within about 2 minutes; the measurement was redone inside R5. Total 38.99 GPU-h. Report published on main. Open: merge decision; longer horizons; Re outside [90,110]; accuracy-matched FE ladder; bank divergence handling; 3D.
+
+## 2026-11-15
+
+### Codex — JCP submission readiness, Slurm reconciliation and claim audit
+
+Reviewed the canonical log, live Tufts account queue/accounting, saved run outputs and manuscript/venue policies. Published the [submission plan](reports/2026-11-15-jcp-submission-readiness.md), [evidence generator](reports/build_2026_11_15_submission_evidence.py), [queue snapshot](<research_notes/JCP submission readiness/slurm-snapshot.txt>) and [remote result hashes](<research_notes/JCP submission readiness/sparse-remote.sha256>). Proposed a separate quadrature paper around the mechanism, point-count plateau, storage, small-rank tensor counterexample and matched-error baselines. The generated examples give 987 and 4,096 lattice points on the tested 2D/3D Burgers meshes; allocated advection arrays of 4.30 versus 0.34 GB in the width-512 example; and a 1.17–1.43× quadrature/tensor query-cost ratio in the width-64 Navier–Stokes development study.
+
+Corrected stale status descriptions for the NS coordinate-bank confirmation, equal-error width sweep and three final sparse jobs. The small Poisson timing failed its order-stability check. Kept the mixed-precision Burgers accelerations, cross-job solver ratios, unqualified 2D equal-cost stepping result, and original failed cylinder setting separate from admitted measurements. No numerical failure was reversed. The live queue belonged entirely to the sibling quadtree project at the recorded snapshot. No experiment, cohort, worktree merge, external manuscript upload, venue withdrawal or reviewer communication was performed.
+
+Open work is coauthor scope/venue agreement, reconciling the sparse outputs and outstanding operator promise, deciding how to handle the original sealed Burgers campaign, and clean-checkout verification of a figure-generating release. Separate finished lanes stay on their branches.

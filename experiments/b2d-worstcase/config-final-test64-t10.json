@@ -1,0 +1,59 @@
+{
+ "intervals": 256,
+ "dt": 0.005,
+ "ladder": [
+  32,
+  48,
+  64,
+  96,
+  128,
+  192,
+  256,
+  384
+ ],
+ "reference": {
+  "name": "fft_tight",
+  "dt": 0.005,
+  "ntol": 1e-06,
+  "ltol": 1e-08
+ },
+ "rules": {
+  "lat64": {
+   "lattice": 64
+  },
+  "lat128": {
+   "lattice": 128
+  },
+  "lat32": {
+   "lattice": 32
+  }
+ },
+ "cold_axis_points": 48,
+ "step_budget": 600,
+ "inner_damping": 1e-10,
+ "time_reps": 5,
+ "time_cases": 64,
+ "attempt": "final-test64-t10",
+ "cohort": {
+  "name": "test64 = params_draw(20260916, 64)",
+  "draws": [
+   [
+    20260916,
+    64
+   ]
+  ],
+  "expected_sha256": "cd058fd2a297c20296b897e54cb186033a44a8db9527d98dcb2c2dad6044527c"
+ },
+ "projection_widths": [
+  384
+ ],
+ "arms": [
+  {
+   "Rp": 384,
+   "M": 1536,
+   "rule": "lat64",
+   "gtol": 0.01,
+   "graphs": true
+  }
+ ]
+}

@@ -222,3 +222,14 @@ device memory (the 4096^2 bank plus its compression does not fit 80 GB, as seen 
 Everything else (arms, cohorts, gates, timing scope, ablations) is as in A3/A3a.  If both jobs complete,
 both are reported, H200 as the headline (it covers 4096^2); the two freezes are independent and both are
 stated.
+
+## Amendment A3c (20:19 EST, 14 Nov 2026): heat 2D 4096^2 on A100 80GB with the A100 freeze
+
+Outcome known at this point: A100 job 7228875 (A3b) completed; frozen F = `T_tau1e-06_f64` (file SHA256
+1e4220ef...), all gates passed at 2048^2 and 1024^2; its peak device memory was 13.7 GB, so 4096^2 is now
+expected to fit 80 GB (A3b assumed it would not).  The H200 job 7221755 is still pending.
+
+One further A100 80GB job runs 4096^2 only, with the frozen file of job 7228875 passed in unchanged (new
+driver option `--frozen`; no selection is run, nothing is re-chosen).  Gates, cohorts, scope and
+ablations as in A3.  If it runs out of device memory, that is reported as a failure and 4096^2 on A100
+stays unmeasured.

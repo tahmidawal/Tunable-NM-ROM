@@ -61,7 +61,7 @@ elif [ "$MODE" = testfrozen ]; then
 elif [ "$MODE" = heat2d ]; then
   # heat2d "<meshes, selection mesh first>"   (PROTOCOL.md amendment A3; selection and freeze inside the driver)
   echo "=== heat 2D meshes $2 ==="
-  "$PY" lqs_h2d.py --out results/h2d --meshes "$2" --select-mesh "${2%% *}" || echo "MESH-FAILED heat2d exit=$?"
+  "$PY" lqs_h2d.py --out results/h2d --meshes "$2" --select-mesh "${2%% *}" ${3:+--frozen "$3"} || echo "MESH-FAILED heat2d exit=$?"
   sha256sum results/h2d/frozen-h2d.json || true
 else
   echo "unknown mode $MODE"; exit 65

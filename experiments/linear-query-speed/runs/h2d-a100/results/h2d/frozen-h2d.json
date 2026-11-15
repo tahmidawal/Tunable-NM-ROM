@@ -1,0 +1,75 @@
+{
+ "rule": "PROTOCOL.md A3 selection",
+ "selection_mesh": 2048,
+ "cohort": "development only",
+ "candidates": [
+  {
+   "variant": "T_tau0.0001_f64",
+   "tau": 0.0001,
+   "precision": "f64",
+   "passes": false,
+   "max_deviation": 2.078952519029018e-05,
+   "accurate_ms": 0.49346499145030975,
+   "fast_ms": 0.42029470205307007
+  },
+  {
+   "variant": "T_tau0.0001_f32",
+   "tau": 0.0001,
+   "precision": "f32",
+   "passes": false,
+   "max_deviation": 2.078919321646559e-05,
+   "accurate_ms": 0.6087785586714745,
+   "fast_ms": 0.5646334029734135
+  },
+  {
+   "variant": "T_tau1e-06_f64",
+   "tau": 1e-06,
+   "precision": "f64",
+   "passes": true,
+   "max_deviation": 2.6960618389233006e-07,
+   "accurate_ms": 0.5313479341566563,
+   "fast_ms": 0.4911618307232857
+  },
+  {
+   "variant": "T_tau1e-06_f32",
+   "tau": 1e-06,
+   "precision": "f32",
+   "passes": true,
+   "max_deviation": 8.010118025546241e-07,
+   "accurate_ms": 0.6492394022643566,
+   "fast_ms": 0.6231595762073994
+  },
+  {
+   "variant": "T_tau1e-08_f64",
+   "tau": 1e-08,
+   "precision": "f64",
+   "passes": true,
+   "max_deviation": 2.9846198951162698e-09,
+   "accurate_ms": 0.593842938542366,
+   "fast_ms": 0.5252822302281857
+  },
+  {
+   "variant": "T_tau1e-08_f32",
+   "tau": 1e-08,
+   "precision": "f32",
+   "passes": true,
+   "max_deviation": 8.009389271689585e-07,
+   "accurate_ms": 0.6938041187822819,
+   "fast_ms": 0.6644404493272305
+  }
+ ],
+ "F": {
+  "variant": "T_tau1e-06_f64",
+  "tau": 1e-06,
+  "precision": "f64",
+  "passes": true,
+  "max_deviation": 2.6960618389233006e-07,
+  "accurate_ms": 0.5313479341566563,
+  "fast_ms": 0.4911618307232857,
+  "tied": [
+   "T_tau1e-06_f64"
+  ]
+ },
+ "job_id": "7228875",
+ "nvidia_smi": "NVIDIA A100 80GB PCIe, GPU-c692ba0c-a68c-8e5c-5811-dbbe618d443c, 81920 MiB, 575.57.08"
+}

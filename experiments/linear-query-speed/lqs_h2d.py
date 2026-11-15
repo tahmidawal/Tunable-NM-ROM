@@ -79,6 +79,7 @@ def main():
     ap.add_argument('--out', required=True)
     ap.add_argument('--meshes', default='4096 2048 1024')
     ap.add_argument('--select-mesh', type=int, default=4096)
+    ap.add_argument('--frozen', default=None, help='use this frozen file (A3c); no selection is run')
     ap.add_argument('--smoke', action='store_true', help='CPU debugging: small cohort, no stored-value gate')
     a = ap.parse_args()
     out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
@@ -87,7 +88,7 @@ def main():
     if not a.smoke:
         assert backend == 'gpu' and os.environ.get('JAX_DEFAULT_MATMUL_PRECISION') == 'highest'
     meshes = [int(x) for x in a.meshes.split()]
-    assert meshes[0] == a.select_mesh, 'the selection mesh must come first'
+    assert a.frozen or meshes[0] == a.select_mesh, 'the selection mesh must come first'
     cfg = json.loads((PC / 'configs' / 'h2d.json').read_text())
     stored = json.loads((HERE / 'paper_reference' / 'h2d-stored.json').read_text())
     model = C.load_model(cfg['model'], PC / 'inputs'); d = model['d']; assert d == 2
@@ -116,6 +117,12 @@ def main():
                               'phases paperA1 / variants / paperA2',
               development_cases=dev, test_cases=test, stored_reference_sha256=stored['sha256'], meshes=[])
     frozen = None
+    if a.frozen:
+        text = Path(a.frozen).read_text(); frozen = json.loads(text)
+        R_['frozen'] = frozen; R_['frozen_sha256'] = hashlib.sha256(text.encode()).hexdigest()
+        R_['frozen_source'] = a.frozen
+        (out / 'frozen-h2d.json').write_text(text)
+        print('FROZEN-FROM-FILE', frozen['F']['variant'], R_['frozen_sha256'], flush=True)
 
     def save():
         (out / 'result.json').write_text(json.dumps(R_))

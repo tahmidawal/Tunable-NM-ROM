@@ -1,0 +1,637 @@
+{
+  "decisions": {
+    "fib987": {
+      "S": {
+        "by_mesh": {
+          "1024": "FAIL",
+          "2048": "FAIL",
+          "256": "FAIL",
+          "4096": "FAIL",
+          "512": "FAIL"
+        },
+        "decision": "FAIL"
+      },
+      "ST": {
+        "by_mesh": {
+          "1024": "PASS",
+          "2048": "PASS",
+          "256": "PASS",
+          "4096": "PASS",
+          "512": "PASS"
+        },
+        "decision": "PASS"
+      }
+    },
+    "gauss45": {
+      "S": {
+        "by_mesh": {
+          "1024": "FAIL",
+          "2048": "PASS",
+          "256": "FAIL",
+          "4096": "PASS",
+          "512": "FAIL"
+        },
+        "decision": "FAIL"
+      },
+      "ST": {
+        "by_mesh": {
+          "1024": "PASS",
+          "2048": "PASS",
+          "256": "PASS",
+          "4096": "PASS",
+          "512": "PASS"
+        },
+        "decision": "PASS"
+      }
+    },
+    "gl20": {
+      "S": {
+        "by_mesh": {
+          "129": "PASS",
+          "257": "PASS",
+          "65": "PASS"
+        },
+        "decision": "PASS"
+      },
+      "ST": {
+        "by_mesh": {
+          "129": "PASS",
+          "257": "PASS",
+          "65": "PASS"
+        },
+        "decision": "PASS"
+      }
+    },
+    "lat4096": {
+      "S": {
+        "by_mesh": {
+          "129": "PASS",
+          "257": "PASS",
+          "65": "PASS"
+        },
+        "decision": "PASS"
+      },
+      "ST": {
+        "by_mesh": {
+          "129": "PASS",
+          "257": "PASS",
+          "65": "PASS"
+        },
+        "decision": "PASS"
+      }
+    }
+  },
+  "opening": {
+    "file_count": 768,
+    "freeze_sha256": "659009ee48e40bfe5d57e176b8c08ad9a24840f0f342c5b48ea9aef5c3babd41",
+    "published_sha256": "cf22a18268c15f44d3eab6b7193b90553248747b88778b68ab3e429ae5af8d71",
+    "review_sha256": "898f19eb1c1c0753656121f6a7d0b4ac70a77f44f539718234abf8631bf9652c",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0"
+  },
+  "panels": {
+    "sealed2d1024": {
+      "S": {
+        "eligible": 107,
+        "n_all": 128,
+        "rules": {
+          "fib987": {
+            "decision": "FAIL",
+            "maximum": 0.022042721607853522,
+            "median": 0.00047289638379958916
+          },
+          "gauss45": {
+            "decision": "FAIL",
+            "maximum": 0.02278275878604629,
+            "median": 0.000426894476028924
+          }
+        },
+        "status_counts": {
+          "accepted": 107,
+          "unresolved-floor": 21
+        }
+      },
+      "ST": {
+        "eligible": 123,
+        "n_all": 128,
+        "rules": {
+          "fib987": {
+            "decision": "PASS",
+            "maximum": 0.03412238592186276,
+            "median": 0.009662634114076212
+          },
+          "gauss45": {
+            "decision": "PASS",
+            "maximum": 0.03396137740599674,
+            "median": 0.009509144188130033
+          }
+        },
+        "status_counts": {
+          "accepted": 123,
+          "order-fail": 5
+        }
+      },
+      "archive_inventory_sha256": "4794cf8c2e73308bef5d7cbc5a8e63458d2fafe42c4cceefb6bd1d42d74d1d91",
+      "completed": "COMPLETED",
+      "elapsed": "00:26:06",
+      "job_id": "7244112",
+      "max_witness_discrepancy": 0.0,
+      "native_cohort_sha256": "4f930cd33a1960c79491ed03ab4e463b020694dd6d867b8a7323c246a204495f",
+      "node": "pax050",
+      "result_sha256": "5ebd22f42cf311f6b92f6c4fb73b4b1d1ba7198023ec9a3475254ff6e0e13651",
+      "timing_gate": {
+        "drift_pass": false,
+        "max_output_diff": 2.9449831451284528e-15,
+        "outputs_pass": true,
+        "worst_block_drift": 1.1423931386516086
+      },
+      "witness_count": 176
+    },
+    "sealed2d2048": {
+      "S": {
+        "eligible": 107,
+        "n_all": 128,
+        "rules": {
+          "fib987": {
+            "decision": "FAIL",
+            "maximum": 0.02204036890341083,
+            "median": 0.0004743833282898719
+          },
+          "gauss45": {
+            "decision": "PASS",
+            "maximum": 0.02277854650810072,
+            "median": 0.00043109829587324315
+          }
+        },
+        "status_counts": {
+          "accepted": 107,
+          "unresolved-floor": 21
+        }
+      },
+      "ST": {
+        "eligible": 123,
+        "n_all": 128,
+        "rules": {
+          "fib987": {
+            "decision": "PASS",
+            "maximum": 0.03411867677044165,
+            "median": 0.009660384456506991
+          },
+          "gauss45": {
+            "decision": "PASS",
+            "maximum": 0.03395741316027363,
+            "median": 0.009507532187430246
+          }
+        },
+        "status_counts": {
+          "accepted": 123,
+          "order-fail": 5
+        }
+      },
+      "archive_inventory_sha256": "c2dae07069885243d66b7cf4c9001b2cce250828d80901055a13093589b260ab",
+      "completed": "COMPLETED",
+      "elapsed": "00:33:00",
+      "job_id": "7244110",
+      "max_witness_discrepancy": 0.0,
+      "native_cohort_sha256": "4f930cd33a1960c79491ed03ab4e463b020694dd6d867b8a7323c246a204495f",
+      "node": "pax050",
+      "result_sha256": "3953db0fe9f9208c8c4515f182ee8af08315a78ae0f0dfefc7a17565e8cbd859",
+      "timing_gate": {
+        "drift_pass": true,
+        "max_output_diff": 3.012948469483184e-15,
+        "outputs_pass": true,
+        "worst_block_drift": 1.0418560930247172
+      },
+      "witness_count": 176
+    },
+    "sealed2d256": {
+      "S": {
+        "eligible": 107,
+        "n_all": 128,
+        "rules": {
+          "fib987": {
+            "decision": "FAIL",
+            "maximum": 0.022116845760057992,
+            "median": 0.0004486325623970565
+          },
+          "gauss45": {
+            "decision": "FAIL",
+            "maximum": 0.022953711647957117,
+            "median": 0.00043327599439907746
+          }
+        },
+        "status_counts": {
+          "accepted": 107,
+          "unresolved-floor": 21
+        }
+      },
+      "ST": {
+        "eligible": 123,
+        "n_all": 128,
+        "rules": {
+          "fib987": {
+            "decision": "PASS",
+            "maximum": 0.034152248592976414,
+            "median": 0.009683452435482975
+          },
+          "gauss45": {
+            "decision": "PASS",
+            "maximum": 0.0339462227321105,
+            "median": 0.009549964849454733
+          }
+        },
+        "status_counts": {
+          "accepted": 123,
+          "order-fail": 5
+        }
+      },
+      "archive_inventory_sha256": "b1b879bde5a8513d299dd970f706722ec21174839d7f7fc8f25d786a2373a72b",
+      "completed": "COMPLETED",
+      "elapsed": "00:22:50",
+      "job_id": "7244114",
+      "max_witness_discrepancy": 0.0,
+      "native_cohort_sha256": "4f930cd33a1960c79491ed03ab4e463b020694dd6d867b8a7323c246a204495f",
+      "node": "pax106",
+      "result_sha256": "cfbb6bd1a492c7dde12d9e5511cc36fdd404c0ae4790389525836beb22f66414",
+      "timing_gate": {
+        "drift_pass": false,
+        "max_output_diff": 3.1474494512337232e-15,
+        "outputs_pass": true,
+        "worst_block_drift": 1.1005524178428256
+      },
+      "witness_count": 176
+    },
+    "sealed2d4096": {
+      "S": {
+        "eligible": 107,
+        "n_all": 128,
+        "rules": {
+          "fib987": {
+            "decision": "FAIL",
+            "maximum": 0.022039840074344966,
+            "median": 0.000474310568716455
+          },
+          "gauss45": {
+            "decision": "PASS",
+            "maximum": 0.022777918133243303,
+            "median": 0.00043111812795563494
+          }
+        },
+        "status_counts": {
+          "accepted": 107,
+          "unresolved-floor": 21
+        }
+      },
+      "ST": {
+        "eligible": 123,
+        "n_all": 128,
+        "rules": {
+          "fib987": {
+            "decision": "PASS",
+            "maximum": 0.03411796020658808,
+            "median": 0.009660335190535952
+          },
+          "gauss45": {
+            "decision": "PASS",
+            "maximum": 0.03395663027529302,
+            "median": 0.009507405892525364
+          }
+        },
+        "status_counts": {
+          "accepted": 123,
+          "order-fail": 5
+        }
+      },
+      "archive_inventory_sha256": "94ff61c9243ea611b9760194bcf52105c94877e8a0480b3c744b45e6159c15bd",
+      "completed": "COMPLETED",
+      "elapsed": "00:39:57",
+      "job_id": "7244108",
+      "max_witness_discrepancy": 0.0,
+      "native_cohort_sha256": "4f930cd33a1960c79491ed03ab4e463b020694dd6d867b8a7323c246a204495f",
+      "node": "pax010",
+      "result_sha256": "5c8f7b12221e0ace154bf49decdce309418ae843c14172b1a749b11437212f4c",
+      "timing_gate": {
+        "drift_pass": false,
+        "max_output_diff": 2.979967619580325e-15,
+        "outputs_pass": true,
+        "worst_block_drift": 1.1338802597016877
+      },
+      "witness_count": 176
+    },
+    "sealed2d512": {
+      "S": {
+        "eligible": 107,
+        "n_all": 128,
+        "rules": {
+          "fib987": {
+            "decision": "FAIL",
+            "maximum": 0.022059830562753537,
+            "median": 0.00044058287495914113
+          },
+          "gauss45": {
+            "decision": "FAIL",
+            "maximum": 0.022800648164204,
+            "median": 0.0004275099355439402
+          }
+        },
+        "status_counts": {
+          "accepted": 107,
+          "unresolved-floor": 21
+        }
+      },
+      "ST": {
+        "eligible": 123,
+        "n_all": 128,
+        "rules": {
+          "fib987": {
+            "decision": "PASS",
+            "maximum": 0.0341347912080158,
+            "median": 0.009665923065167788
+          },
+          "gauss45": {
+            "decision": "PASS",
+            "maximum": 0.03397567870072903,
+            "median": 0.00951691136760365
+          }
+        },
+        "status_counts": {
+          "accepted": 123,
+          "order-fail": 5
+        }
+      },
+      "archive_inventory_sha256": "05d300cb44064c01a1ef6a7f83bbe6fde5d6fbb65b2b6432a4a90094c2106365",
+      "completed": "COMPLETED",
+      "elapsed": "00:23:23",
+      "job_id": "7244113",
+      "max_witness_discrepancy": 0.0,
+      "native_cohort_sha256": "4f930cd33a1960c79491ed03ab4e463b020694dd6d867b8a7323c246a204495f",
+      "node": "pax050",
+      "result_sha256": "a26a27e7652d0f68783f352839458098b3f00db8d083102be2c27cf302a16154",
+      "timing_gate": {
+        "drift_pass": true,
+        "max_output_diff": 3.2835017488826853e-15,
+        "outputs_pass": true,
+        "worst_block_drift": 1.0647392315112698
+      },
+      "witness_count": 176
+    },
+    "sealed3d129": {
+      "S": {
+        "eligible": 64,
+        "n_all": 64,
+        "rules": {
+          "gl20": {
+            "decision": "PASS",
+            "maximum": 0.03737990542177333,
+            "median": 0.007933072259365365
+          },
+          "lat4096": {
+            "decision": "PASS",
+            "maximum": 0.03731160297545108,
+            "median": 0.007934736060971857
+          }
+        },
+        "status_counts": {
+          "accepted": 64
+        }
+      },
+      "ST": {
+        "eligible": 64,
+        "n_all": 64,
+        "rules": {
+          "gl20": {
+            "decision": "PASS",
+            "maximum": 0.05578415161187922,
+            "median": 0.016053042299939504
+          },
+          "lat4096": {
+            "decision": "PASS",
+            "maximum": 0.05447511075873829,
+            "median": 0.016044466611363592
+          }
+        },
+        "status_counts": {
+          "accepted": 64
+        }
+      },
+      "archive_inventory_sha256": "a8e72e5a4bb721413dd832500851f71b2df4bbdd925f9ce2e2efacd226e0856d",
+      "completed": "COMPLETED",
+      "elapsed": "00:25:10",
+      "job_id": "7244109",
+      "max_witness_discrepancy": 6.854118409535649e-15,
+      "native_cohort_sha256": "cc7e846f661f4d5e641c8f439eeb9c7f766dea2601581cccb3d08a70b327baa1",
+      "node": "pax050",
+      "result_sha256": "ee9f3cb7b9805b19d85e4e5164231fa967958597c8c872caff14144f60d2b43e",
+      "timing_gate": {
+        "drift_pass": true,
+        "max_output_diff": 0.0,
+        "outputs_pass": true,
+        "worst_block_drift": 1.0193541489551183
+      },
+      "witness_count": 4864
+    },
+    "sealed3d257": {
+      "S": {
+        "eligible": 64,
+        "n_all": 64,
+        "rules": {
+          "gl20": {
+            "decision": "PASS",
+            "maximum": 0.037307665921679854,
+            "median": 0.007929916627931372
+          },
+          "lat4096": {
+            "decision": "PASS",
+            "maximum": 0.037234437325483066,
+            "median": 0.00793157004837583
+          }
+        },
+        "status_counts": {
+          "accepted": 64
+        }
+      },
+      "ST": {
+        "eligible": 64,
+        "n_all": 64,
+        "rules": {
+          "gl20": {
+            "decision": "PASS",
+            "maximum": 0.055842449974630635,
+            "median": 0.016063559446461692
+          },
+          "lat4096": {
+            "decision": "PASS",
+            "maximum": 0.05454553026237025,
+            "median": 0.016053530059015424
+          }
+        },
+        "status_counts": {
+          "accepted": 64
+        }
+      },
+      "archive_inventory_sha256": "a4f85075725199839266ed87ba3e357e235c30cb6eb7df2814cf4c19e375d6cd",
+      "completed": "COMPLETED",
+      "elapsed": "00:48:29",
+      "job_id": "7244107",
+      "max_witness_discrepancy": 7.116485692925032e-15,
+      "native_cohort_sha256": "cc7e846f661f4d5e641c8f439eeb9c7f766dea2601581cccb3d08a70b327baa1",
+      "node": "pax010",
+      "result_sha256": "96b015fff12e6a9cf4b44f3f1289f0062531534850d8d52fe4768613d7c05e62",
+      "timing_gate": {
+        "drift_pass": true,
+        "max_output_diff": 0.0,
+        "outputs_pass": true,
+        "worst_block_drift": 1.0263627647577178
+      },
+      "witness_count": 4864
+    },
+    "sealed3d65": {
+      "S": {
+        "eligible": 64,
+        "n_all": 64,
+        "rules": {
+          "gl20": {
+            "decision": "PASS",
+            "maximum": 0.03748022140872809,
+            "median": 0.00795245883317117
+          },
+          "lat4096": {
+            "decision": "PASS",
+            "maximum": 0.037363081564654094,
+            "median": 0.007954096178441804
+          }
+        },
+        "status_counts": {
+          "accepted": 64
+        }
+      },
+      "ST": {
+        "eligible": 64,
+        "n_all": 64,
+        "rules": {
+          "gl20": {
+            "decision": "PASS",
+            "maximum": 0.055594829957887955,
+            "median": 0.016061907125819126
+          },
+          "lat4096": {
+            "decision": "PASS",
+            "maximum": 0.05422132983818371,
+            "median": 0.016067770661919327
+          }
+        },
+        "status_counts": {
+          "accepted": 64
+        }
+      },
+      "archive_inventory_sha256": "a135e4f470eef985497a6713e1a47bba0635413176988bb2672a4947fbc7ad7c",
+      "completed": "COMPLETED",
+      "elapsed": "00:20:32",
+      "job_id": "7244111",
+      "max_witness_discrepancy": 6.2562149473508495e-15,
+      "native_cohort_sha256": "cc7e846f661f4d5e641c8f439eeb9c7f766dea2601581cccb3d08a70b327baa1",
+      "node": "pax105",
+      "result_sha256": "9553b3d8f776ec6d29711a8db39392db93693ba421ca6869a67adfb238b0cf99",
+      "timing_gate": {
+        "drift_pass": true,
+        "max_output_diff": 0.0,
+        "outputs_pass": true,
+        "worst_block_drift": 1.0202938171601894
+      },
+      "witness_count": 4864
+    }
+  },
+  "pod": {
+    "pod2": {
+      "S": {
+        "all": {
+          "finite": 128,
+          "maximum": 0.04463168820260741,
+          "median": 0.008828953749156633,
+          "missing_or_nonfinite": 0,
+          "total": 128
+        },
+        "eligible": {
+          "finite": 107,
+          "maximum": 0.04463168820260741,
+          "median": 0.009260373351921402,
+          "missing_or_nonfinite": 0,
+          "total": 107
+        }
+      },
+      "ST": {
+        "all": {
+          "finite": 128,
+          "maximum": 0.04534107942645595,
+          "median": 0.0020527529211059035,
+          "missing_or_nonfinite": 0,
+          "total": 128
+        },
+        "eligible": {
+          "finite": 123,
+          "maximum": 0.04534107942645595,
+          "median": 0.00201942780487375,
+          "missing_or_nonfinite": 0,
+          "total": 123
+        }
+      },
+      "archive_inventory_sha256": "c2fbcde1ee5d16e5adaf0261950f5f47ed30cdb7a71dfe37824059e12af3a3a4",
+      "completed": "COMPLETED",
+      "elapsed": "00:03:11",
+      "finite_fields": 128,
+      "job_id": "7244116",
+      "max_abs_score_difference": 8.673617379884035e-19,
+      "node": "pax050",
+      "nonstationary_steps": 0,
+      "offline_replay_job": "7244401",
+      "result_sha256": "ba35d6027abb3a8fd59d36a0e6c711a43a6541b1037f95c105cae6f990e24905",
+      "steps": 6400,
+      "valid_cases": 128
+    },
+    "pod3": {
+      "S": {
+        "all": {
+          "finite": 64,
+          "maximum": 0.03866750193893761,
+          "median": 0.008670029053757293,
+          "missing_or_nonfinite": 0,
+          "total": 64
+        },
+        "eligible": {
+          "finite": 64,
+          "maximum": 0.03866750193893761,
+          "median": 0.008670029053757293,
+          "missing_or_nonfinite": 0,
+          "total": 64
+        }
+      },
+      "ST": {
+        "all": {
+          "finite": 64,
+          "maximum": 0.03569574987814184,
+          "median": 0.002078456234742665,
+          "missing_or_nonfinite": 0,
+          "total": 64
+        },
+        "eligible": {
+          "finite": 64,
+          "maximum": 0.03569574987814184,
+          "median": 0.002078456234742665,
+          "missing_or_nonfinite": 0,
+          "total": 64
+        }
+      },
+      "archive_inventory_sha256": "40b001f43153f8606f2257d912c9d7ae50584e96e563e1f888ae733ad77f83ab",
+      "completed": "COMPLETED",
+      "elapsed": "00:03:23",
+      "finite_fields": 64,
+      "job_id": "7244115",
+      "max_abs_score_difference": 1.734723475976807e-18,
+      "node": "pax105",
+      "nonstationary_steps": 0,
+      "offline_replay_job": "7244272",
+      "result_sha256": "fbad18e9d2c50e72eca5d6dd5615fcec96fdcf0ac645074a577dd8117d57198b",
+      "steps": 1600,
+      "valid_cases": 64
+    }
+  }
+}

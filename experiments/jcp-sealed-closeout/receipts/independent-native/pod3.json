@@ -1,0 +1,130 @@
+{
+  "accumulation_mantissa_bits": 63,
+  "agreement": true,
+  "archive_manifest_sha256": "40b001f43153f8606f2257d912c9d7ae50584e96e563e1f888ae733ad77f83ab",
+  "audit_job": "7244272",
+  "cases": [
+    {
+      "case": 0,
+      "kinds": {
+        "S": {
+          "eligible": true,
+          "max_abs_difference": 1.734723475976807e-18,
+          "max_difference_relative_to_trajectory": 2.0098291559525682e-16,
+          "outcome": "accepted",
+          "rescored_per_frame": [
+            0.008631198680937766,
+            0.007532111767672683,
+            0.006313495621481522,
+            0.005317726838264249,
+            0.004476866245097224
+          ],
+          "rescored_trajectory_max": 0.008631198680937766,
+          "stored_per_frame": [
+            0.008631198680937764,
+            0.007532111767672683,
+            0.006313495621481521,
+            0.005317726838264249,
+            0.004476866245097224
+          ],
+          "stored_trajectory_max": 0.008631198680937764,
+          "within_existing_witness_tolerance": true
+        },
+        "ST": {
+          "eligible": true,
+          "max_abs_difference": 2.168404344971009e-19,
+          "max_difference_relative_to_trajectory": 8.416732429703207e-17,
+          "outcome": "accepted",
+          "rescored_per_frame": [
+            0.0025763018642704695,
+            0.0019695345977719897,
+            0.0015941827013836926,
+            0.0012178289822190028,
+            0.0009025593724665129
+          ],
+          "rescored_trajectory_max": 0.0025763018642704695,
+          "stored_per_frame": [
+            0.0025763018642704695,
+            0.0019695345977719897,
+            0.0015941827013836929,
+            0.0012178289822190028,
+            0.0009025593724665129
+          ],
+          "stored_trajectory_max": 0.0025763018642704695,
+          "within_existing_witness_tolerance": true
+        }
+      },
+      "repetition": 0,
+      "witness_sha256": "e73f80ed3f6fc86bce8efffcd9dfb9272e1c4ebf8b049116771acf7ff6ac4778"
+    },
+    {
+      "case": 2,
+      "kinds": {
+        "S": {
+          "eligible": true,
+          "max_abs_difference": 4.336808689942018e-19,
+          "max_difference_relative_to_trajectory": 1.1075019343738051e-16,
+          "outcome": "accepted",
+          "rescored_per_frame": [
+            0.0029688324703585787,
+            0.0037708622909693457,
+            0.0039158475081076055,
+            0.0037784292237991153,
+            0.0035040890401835793
+          ],
+          "rescored_trajectory_max": 0.0039158475081076055,
+          "stored_per_frame": [
+            0.0029688324703585787,
+            0.0037708622909693457,
+            0.0039158475081076055,
+            0.0037784292237991158,
+            0.0035040890401835793
+          ],
+          "stored_trajectory_max": 0.0039158475081076055,
+          "within_existing_witness_tolerance": true
+        },
+        "ST": {
+          "eligible": true,
+          "max_abs_difference": 1.0842021724855044e-19,
+          "max_difference_relative_to_trajectory": 1.7468983556678795e-16,
+          "outcome": "accepted",
+          "rescored_per_frame": [
+            0.00046361481432930407,
+            0.0005236894438868111,
+            0.0005831350919125619,
+            0.0006109024417483503,
+            0.0006206441084381175
+          ],
+          "rescored_trajectory_max": 0.0006206441084381175,
+          "stored_per_frame": [
+            0.00046361481432930407,
+            0.0005236894438868111,
+            0.000583135091912562,
+            0.0006109024417483503,
+            0.0006206441084381174
+          ],
+          "stored_trajectory_max": 0.0006206441084381174,
+          "within_existing_witness_tolerance": true
+        }
+      },
+      "repetition": 0,
+      "witness_sha256": "9c47101bd14724f26850ecc1ae4cbef41a6a8a97408275e74b64dadc5874e203"
+    }
+  ],
+  "check": "rescore 2 saved cases, 2 reference kinds, 5 post-initial frames (rep 0)",
+  "cohort": "sealed64",
+  "field_dtype": "float64",
+  "freeze_sha256": "659009ee48e40bfe5d57e176b8c08ad9a24840f0f342c5b48ea9aef5c3babd41",
+  "independent_script_sha256": "40006d0cb072957799f7f573f2296b06630d3573e2e4d82a590319a6eae86a2c",
+  "input_inventory_sha256": "dc617c3a7809118f1a5aa4cfa715875da0a1563b8125b1a5a5c246c567c7f53f",
+  "max_abs_difference": 1.734723475976807e-18,
+  "max_difference_relative_to_trajectory": 2.0098291559525682e-16,
+  "native_subject": "POD512_none_CN_25steps_g1e-4",
+  "original_witness_comparison_tolerance": 1e-10,
+  "production_job": "7244115",
+  "production_source_commit": "9670f658705afc2c841cce1a628324f9f0ccac29",
+  "publication_sha256": "cf22a18268c15f44d3eab6b7193b90553248747b88778b68ab3e429ae5af8d71",
+  "result_sha256": "fbad18e9d2c50e72eca5d6dd5615fcec96fdcf0ac645074a577dd8117d57198b",
+  "review_sha256": "898f19eb1c1c0753656121f6a7d0b4ac70a77f44f539718234abf8631bf9652c",
+  "store_sha256": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0"
+}

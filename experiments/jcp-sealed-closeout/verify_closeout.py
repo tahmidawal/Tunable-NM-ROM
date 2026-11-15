@@ -37,7 +37,11 @@ def validate(raw):
         root=raw/task
         source=checked_inventory(root,'SOURCE.sha256'); outputs=checked_inventory(root,'OUTPUTS.sha256')
         archive=checked_inventory(root,'ARCHIVE.sha256')
-        for path,h in source.items():need(archive[path]==h,'source missing from archive')
+        # The archive inventory excludes its own basename at every depth. Historical pilot
+        # inventories inside the frozen source are independently checked by SOURCE.sha256.
+        for path,h in source.items():
+            if path.name=='ARCHIVE.sha256' and path.parts[0]=='experiments':continue
+            need(archive[path]==h,'source missing from archive')
         for path,h in outputs.items():need(archive[path]==h,'output missing from archive')
         for name in ('F1.json','F1-REVIEW.json'):
             need(source[Path('experiments/jcp-sealed-closeout')/name]==sha((HERE/name).read_bytes()),'Staged F1 diverged')
@@ -53,7 +57,14 @@ def validate(raw):
             p=load(root/'output/COMPLETE.json');d=int(task[3]);r=load(HERE/f'results/sealed{d}d{256 if d==2 else 65}-pod-and-comparators.json')['pod']
             need(p['job_id']==j and outputs[Path('output/result.jsonl')]==r['result_sha256'],'POD provenance mismatch')
             for k in ('ST','S'):need(r[k]['all']['total']==p['n'],'Incomplete POD cohort')
-            pod[task]=dict(**base,**{k:r[k] for k in ('ST','S','steps','nonstationary_steps','finite_fields','valid_cases','result_sha256')})
+            replay=load(HERE/f'receipts/independent-native/{task}.json')
+            need(replay['agreement'] and replay['freeze_sha256']==pub['freeze_sha256']
+                and replay['review_sha256']==pub['review_sha256'] and replay['publication_sha256']==pub['published_sha256']
+                and replay['store_sha256']==STORE and str(replay['production_job'])==j
+                and replay['archive_manifest_sha256']==base['archive_inventory_sha256']
+                and replay['result_sha256']==r['result_sha256'],'POD replay not bound to original outputs')
+            pod[task]=dict(**base,offline_replay_job=replay['audit_job'],max_abs_score_difference=replay['max_abs_difference'],
+                **{k:r[k] for k in ('ST','S','steps','nonstationary_steps','finite_fields','valid_cases','result_sha256')})
             continue
         panel=load(HERE/f'results/{task}-decision.json')
         cmp=load(HERE/f'results/{task}-comparators.json')

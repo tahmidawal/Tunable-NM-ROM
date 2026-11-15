@@ -1,0 +1,82 @@
+{
+  "fib987": {
+    "S": {
+      "by_mesh": {
+        "1024": "FAIL",
+        "2048": "FAIL",
+        "256": "FAIL",
+        "4096": "FAIL",
+        "512": "FAIL"
+      },
+      "decision": "FAIL"
+    },
+    "ST": {
+      "by_mesh": {
+        "1024": "PASS",
+        "2048": "PASS",
+        "256": "PASS",
+        "4096": "PASS",
+        "512": "PASS"
+      },
+      "decision": "PASS"
+    }
+  },
+  "gauss45": {
+    "S": {
+      "by_mesh": {
+        "1024": "FAIL",
+        "2048": "PASS",
+        "256": "FAIL",
+        "4096": "PASS",
+        "512": "FAIL"
+      },
+      "decision": "FAIL"
+    },
+    "ST": {
+      "by_mesh": {
+        "1024": "PASS",
+        "2048": "PASS",
+        "256": "PASS",
+        "4096": "PASS",
+        "512": "PASS"
+      },
+      "decision": "PASS"
+    }
+  },
+  "gl20": {
+    "S": {
+      "by_mesh": {
+        "129": "PASS",
+        "257": "PASS",
+        "65": "PASS"
+      },
+      "decision": "PASS"
+    },
+    "ST": {
+      "by_mesh": {
+        "129": "PASS",
+        "257": "PASS",
+        "65": "PASS"
+      },
+      "decision": "PASS"
+    }
+  },
+  "lat4096": {
+    "S": {
+      "by_mesh": {
+        "129": "PASS",
+        "257": "PASS",
+        "65": "PASS"
+      },
+      "decision": "PASS"
+    },
+    "ST": {
+      "by_mesh": {
+        "129": "PASS",
+        "257": "PASS",
+        "65": "PASS"
+      },
+      "decision": "PASS"
+    }
+  }
+}

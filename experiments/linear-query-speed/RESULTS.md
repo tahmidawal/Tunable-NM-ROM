@@ -82,6 +82,44 @@ accurate 0.565 -> 0.152 (3.7x), fast 0.381 -> 0.136 (2.8x).  At 2048^2 and 4096^
 agrees with the stored A100 values within 2 to 7 %.  The comparison with cuDSS does not involve the
 paper path and is unaffected.
 
+## Heat 2D: six output fields in 0.26 to 1.47 ms on A100 80GB at unchanged accuracy (2.2x to 14.2x faster than the paper path in the same job)
+
+Timed quantity (column F): initial field of the whole mesh on the device -> six output fields of the whole
+mesh on the device, blocked; median over the paper's 16-case sealed test cohort x 5 repetitions (the
+paper's heat scope).  Arms are the paper's: accurate `lin_R128_cn`, fast `lin_R32_cn`.  The configuration
+was chosen on the development cohort only at 2048^2 (job 7228875), frozen (`T_tau1e-06_f64`, file SHA256
+1e4220ef...), and the same frozen file was used for 4096^2 (job 7228913).  Worst test error is identical
+to six digits before and after (0.1332 % and 1.0823 %); the largest field deviation from the paper path is
+3.0e-8 (accurate) and 2.1e-7 (fast).  The coarser truncation 1e-4 that Poisson 2D uses failed the heat
+development gate (deviation 2.1e-5 > 1e-5) and was not used.
+
+| mesh | arm | worst err, paper path | worst err, F | paper stored | paper path, this job (A1/A2) | F, this job | F vs paper path | cuDSS 20 solves, factor reused (est.) | AmgX setup + 20 solves (est.) | cuDSS est. / F | coefficients only (no field) |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1024^2 | accurate (`lin_R128_cn`) | 0.001332 | 0.001332 | 0.636 | 1.263 (1.263/1.262) | **0.255** | 4.9x | 99 | 486 | 389x | 0.164 |
+| 1024^2 | fast (`lin_R32_cn`) | 0.010823 | 0.010823 | 0.336 | 0.525 (0.524/0.525) | **0.238** | 2.2x | 99 | 486 | 417x | 0.164 |
+| 2048^2 | accurate (`lin_R128_cn`) | 0.001332 | 0.001332 | 1.964 | 4.635 (4.633/4.636) | **0.528** | 8.8x | 334 | 1455 | 633x | 0.241 |
+| 2048^2 | fast (`lin_R32_cn`) | 0.010823 | 0.010823 | 0.829 | 1.759 (1.758/1.759) | **0.490** | 3.6x | 334 | 1455 | 682x | 0.242 |
+| 4096^2 | accurate (`lin_R128_cn`) | 0.001332 | 0.001332 | 8.421 | 20.789 (20.763/20.796) | **1.468** | 14.2x | 1323 | 5370 | 901x | 0.461 |
+| 4096^2 | fast (`lin_R32_cn`) | 0.010823 | 0.010823 | 3.966 | 8.159 (8.141/8.162) | **1.301** | 6.3x | 1323 | 5370 | 1017x | 0.463 |
+
+"paper stored" is the paper's stored value from H200 (job 4197350), a different and faster GPU type than
+this measurement, so the paper's heat 2D timings came from H200; the before/after pair is "paper path,
+this job" and F, both on the same A100 80GB in the same job.  Against the stored H200 values the tuned
+A100 query is still faster (accurate 0.636 -> 0.255, 1.964 -> 0.528, 8.421 -> 1.468 ms; fast 0.336 ->
+0.238, 0.829 -> 0.490, 3.966 -> 1.301 ms).  The cuDSS and AmgX columns are the sparse-solvers lane's
+A100 arithmetic estimates for 20 Crank-Nicolson solves, not measured trajectories.  "Coefficients only"
+is a separate measurement with no field output.
+
+Stage medians at 4096^2, accurate arm (first test case, separately compiled): paper path moments by full
+sine transform 2.69 ms, evolve 0.07 ms, six-field bank product 18.09 ms; tuned path moments + coefficients
+0.43 ms, core contraction 0.07 ms, field products 1.06 ms.  Gates: stored-error reproduction passed at all
+three meshes (largest absolute difference 8.2e-17), development deviation gate passed (2.7e-7), moment
+identity 5e-16, `jax_backend=gpu` in both logs.  Offline compression 6 to 8 s per mesh; peak device memory
+51.5 GB at 4096^2.  Full tables: `tables/heat2d-a100-80G.md`, `tables/heat2d-a100-80G-4096.md`.
+
+The H200 heat 2D job (7221755, amendment A3) was still pending on queue priority when this was written (submitted 17:48 EST); H200 heat 2D is therefore not measured.
+
+
 ## What changed, in plain words
 
 The trained model, the reduced basis, the reduced solve and the answer are the same as in the paper.  Only
@@ -103,13 +141,17 @@ the way the online query is evaluated changed.
    maps for the six output times and the core are folded offline into one small matrix, so the six output
    fields come from two products.
 
-Offline cost added: one randomised compression of the bank per mesh (6 to 15 s on the GPU for Poisson 2D;
-see the tables), no retraining.
+Offline cost added: one randomised compression of the bank per mesh (6 to 15 s on the GPU; see the
+tables), no retraining.  The dense bank is still needed once offline, so offline memory is unchanged
+(4096^2 Poisson 2D on A100 80GB needed the host-side variant of the compression, amendment A2).
 
 ## What this supports and what it does not
 
 Supports:
 
+- On heat 2D (A100 80GB) the tuned query returns the same six fields as the paper query (deviation at most
+  2.1e-7, worst test error identical to six digits) 2.2x to 14.2x faster than the paper path timed in the
+  same job, at 1024^2 to 4096^2.
 - On Poisson 2D the tuned query returns the same field as the paper query (largest deviation 1.4e-6 of the
   field norm on the accurate arm, 8.8e-6 on the fast arm; worst test error identical to six digits) and is
   faster than the quoted cuDSS reused-factorisation solve at every mesh from 256^2 to 4096^2, on both GPU
@@ -133,10 +175,23 @@ Does not support:
 - At 256^2 to 1024^2 the paper path timed inside this lane's driver is slower and noisier than the stored
   paper values (see "Paper-path timing spread"), so the conservative speed-up at small meshes uses the
   stored paper value as "before".  The cuDSS comparison does not depend on this.
-- Heat 2D comparators are the sparse-solvers lane's arithmetic estimates for 20 Crank-Nicolson solves, not
-  measured trajectories.
+- Heat 2D was measured on A100 80GB only (the H200 job did not start); the stored paper heat timings are
+  from H200, so only the in-job paper path is a same-GPU "before".  Heat 2D comparators are the
+  sparse-solvers lane's arithmetic estimates for 20 Crank-Nicolson solves, not measured trajectories.
+  The paper's heat 2D query already beat those estimates by two orders of magnitude; the new result is
+  the before/after gain, not a changed ranking.
 - Poisson 3D and heat 3D were not attempted (three-direction compression and new paper-path drivers were
   out of the time budget; both already beat cuDSS by large margins in the paper).
+
+## Failures and cancelled jobs
+
+- A100 80GB job 7220235: the 4096^2 Poisson test failed (compression ran out of device memory); rerun as
+  job 7221131 with the host-side compression stage (amendment A2), same frozen pair.
+- Jobs 7220222, 7220223 (superseded) and 7221749 (wrong fast heat arm, amendment A3a) were cancelled while
+  pending; none started.
+- H200 heat 2D job 7221755 never started (queue priority).
+- The unmodified paper driver's own timing-stability gate failed on H200 (see above).
+- The cause of the paper path's extra variable overhead in this lane's driver at small meshes was not found.
 
 ## Jobs and GPU-hours
 
@@ -148,4 +203,8 @@ Does not support:
 | 7220235 | A100 80GB (pax050) | dev selection 256^2, 2048^2 -> freeze -> test 256^2..2048^2; 4096^2 test failed (compression out of device memory) | 01:06:10 | 1.10 | completed |
 | 7221131 | A100 80GB (pax106) | test 4096^2 only, frozen pair of 7220235, `--host-compress` (amendment A2) | 00:24:15 | 0.40 | completed |
 | 7221749 | H200 (requested) | heat 2D with the wrong fast arm (see A3a) | 0 | 0 | cancelled while pending, never started |
-| 7221755 | H200 (requested) | heat 2D: selection at 4096^2 on the development cohort, freeze, test 4096^2/2048^2/1024^2 (A3, A3a) | pending | | |
+| 7221755 | H200 (requested) | heat 2D: selection at 4096^2 on the development cohort, freeze, test 4096^2/2048^2/1024^2 (A3, A3a) | 0 so far | 0 | still pending on priority at 20:30 EST |
+| 7228875 | A100 80GB (requested) | heat 2D fallback: selection at 2048^2 on the development cohort, freeze, test 2048^2/1024^2 (A3b) | 00:08:57 | 0.15 | completed (pax106) |
+| 7228913 | A100 80GB (requested) | heat 2D 4096^2 with the frozen file of 7228875 (A3c) | 00:05:22 | 0.09 | completed (pax106) |
+
+Total GPU-hours used: 3.35 (1.61 + 1.10 + 0.40 + 0.15 + 0.09), one GPU per job.

@@ -136,3 +136,7 @@ and t12 are also run in one job on an RTX Pro 6000 (96 GB) node, with the deploy
 not depend on the GPU. The time cap of the Primary rule is applied as written (ratio to the deployed width-384 time
 measured in the same job, here on the same RTX Pro 6000), and ties are broken by the times of that job. The final
 evaluation and every reported query time stay on an A100 80GB.
+
+A4 addendum (same time, before the freeze): the A100 queue moved while the RTX job ran. Where a configuration has
+both an A100 80GB validation job and an RTX one, the A100 job is the one used by the freeze (errors agree; the times
+are then A100 times).

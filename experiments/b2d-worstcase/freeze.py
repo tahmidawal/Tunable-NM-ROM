@@ -28,17 +28,19 @@ for e in evs:
             continue   # candidates are evaluated at the native width on all 256 validation cases
         same = job in ref_ms
         rows.append(dict(
-            arm=name, spec=s, validation_file=e['file'], validation_job=e['job_id'], bank_sha256=e['checkpoint_sha256'],
+            arm=name, spec=s, gpu=e['gpu'], validation_file=e['file'], validation_job=e['job_id'], bank_sha256=e['checkpoint_sha256'],
             rotation_sha256=e['rotation_sha256'], bank='deployed' if dep else b['attempt'],
             extra_trajectories=0 if dep else int(b['args'].get('extra_count') or 0),
             fast=bool(s.get('qs')), worst=a['worst'], median=a['median'], p95=a['p95'], ms=a['ms'], failed=a['failed'],
             deployed_ms=ref_ms[job] if same else min(ref_ms.values()), deployed_ms_same_job=same))
-# a (bank, arm) validated in several jobs counts once: its latest job
+# a (bank, arm) validated in several jobs counts once: an A100 80GB job before any other GPU (A4), then the latest job
 latest = {}
 for r in rows:
     k = (r['bank_sha256'], r['arm'])
-    if k not in latest or int(r['validation_job']) > int(latest[k]['validation_job']):
-        latest[k] = r
+    rank = ('A100 80GB' in r['gpu'], int(r['validation_job']))
+    if k not in latest or rank > latest[k][0]:
+        latest[k] = (rank, r)
+latest = {k: v[1] for k, v in latest.items()}
 rows = list(latest.values())
 for r in rows:
     r['admissible'] = bool(r['median'] <= 1e-3 and r['failed'] == 0)

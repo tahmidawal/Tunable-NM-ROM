@@ -30,7 +30,7 @@ for e in evs:
         rows.append(dict(
             arm=name, spec=s, gpu=e['gpu'], validation_file=e['file'], validation_job=e['job_id'], bank_sha256=e['checkpoint_sha256'],
             rotation_sha256=e['rotation_sha256'], bank='deployed' if dep else b['attempt'],
-            extra_trajectories=0 if dep else int(b['args'].get('extra_count') or 0),
+            extra_trajectories=0 if dep else ((int(b['args'].get('extra_count') or 0) or 2304) if b['args'].get('extra_pool') else 0),
             fast=bool(s.get('qs')), worst=a['worst'], median=a['median'], p95=a['p95'], ms=a['ms'], failed=a['failed'],
             deployed_ms=ref_ms[job] if same else min(ref_ms.values()), deployed_ms_same_job=same))
 # a (bank, arm) validated in several jobs counts once: an A100 80GB job before any other GPU (A4), then the latest job

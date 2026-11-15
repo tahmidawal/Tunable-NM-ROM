@@ -42,12 +42,17 @@ def main():
         opened=Opened(HERE, args.config)
         solver.RS = opened.refstore(solver.RS)
         row = opened.regenerated(d, solver)
+        args.out.mkdir(parents=True,exist_ok=True)
+        (args.out/'cohort-identity.json').write_text(json.dumps(opened.descriptor_receipt,sort_keys=True)+'\n')
         if d==2:
             solver.Q.cohort=lambda cohort: row
             solver.COHORT_SHA[cfg['cohort']] = solver.QS.sha(row)
         else:
             # Set the archived in-range seed; C.table uses the original family generator.
-            solver.COHORT[cfg['cohort']] = (opened.seed(d), len(cfg['cases']), row['sha256'])
+            seed=opened.seed(d)
+            original_table=solver.C.table
+            solver.C.table=lambda s,n: row if (s,n)==(seed,len(cfg['cases'])) else original_table(s,n)
+            solver.COHORT[cfg['cohort']] = (seed, len(cfg['cases']), row['sha256'])
     elif cfg['cohort'] not in ('dev6','dev4'):
         raise ValueError('Only the two development or two sealed in-range cohorts are admitted')
     sys.argv = [str(solver.__file__), '--config', str(args.config.resolve()), '--out', str(args.out.resolve())]

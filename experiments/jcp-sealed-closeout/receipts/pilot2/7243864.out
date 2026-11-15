@@ -1,0 +1,28 @@
+NVIDIA A100 80GB PCIe, GPU-fe5316fb-35a6-78ef-4c0b-da5c343c936d, 81920 MiB
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[1.5s] references loaded: 4
+[15.8s] bank + operators + cold start built
+[106.3s] arms built: 31
+[187.6s] CASE 0 (dev60) done
+[192.2s] CASE 1 (dev61) done
+[194.3s] FOM UB_L256 done (2.0s)
+[195.4s] FOM CC_L256 done (1.1s)
+[197.2s] FOM CC_L32 done (1.8s)
+[199.0s] FOM CC_L64 done (1.9s)
+[200.9s] FOM CC_L128 done (1.8s)
+[202.1s] FOM UB_L128 done (1.1s)
+[206.2s] FOM PS_N12 done (4.1s)
+[218.9s] FOM PS_N16 done (12.7s)
+[223.3s] FOM PS_N20 done (4.4s)
+[227.4s] FOM PS_N24 done (4.1s)
+[231.5s] FOM PS_N32 done (4.1s)
+[236.0s] FOM PS_N48 done (4.5s)
+[240.8s] FOM PS_N64 done (4.8s)
+[284.9s] G_lat {'compared': 62, 'max_rel': 3.283775195530399e-15, 'passed': True}
+[343.0s] timing main rep 0 done
+[361.5s] timing main rep 1 done
+[403.1s] timing confirm rep 0 done
+[410.6s] timing confirm rep 1 done
+[410.6s] timing gates {'max_output_diff': 3.283775195530399e-15, 'worst_block_drift': 1.4308316699397958, 'outputs_pass': True, 'drift_pass': False}; selected {'arm': 'fib987', 'selection': 'preopening'}
+PLATEAU2D COMPLETE

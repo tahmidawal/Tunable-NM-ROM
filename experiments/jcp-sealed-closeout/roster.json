@@ -1,0 +1,695 @@
+{
+  "coordinator_scope": "Original 19 merged lanes plus subsequent experimental branches up to 2026-11-14. Included names describe the selected use only. All unlisted populations, comparators, and methods are excluded. All other prior projects are excluded.",
+  "native_pod_selections": [
+    {
+      "arm": "CPU-256",
+      "choice": {
+        "1024": "r256|k8|CNR",
+        "256": "r256|k8|CNR",
+        "4096": "r256|k8|CNR"
+      },
+      "cost": 398.37054048875643,
+      "near_tie": false,
+      "ratio": 0.10168947280313843
+    },
+    {
+      "dt": 0.01,
+      "gtol": 0.0001,
+      "scheme": "CN",
+      "steps": 25,
+      "subject_id": "POD512_none_CN_25steps_g1e-4",
+      "tolf": 1e-09,
+      "trust_radius": 3.097916703945634
+    }
+  ],
+  "roster": {
+    "exp/2026-10-01-ns3d-coordnet-bank": {
+      "commit": "21c175a1b5cef353845d370cbed9599b545e2248",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "27990289e8fdd7f7dfdd2f019ffa95e160e32559"
+    },
+    "exp/2026-10-01-quadrature-burgers3d": {
+      "commit": "aab6b69275aa501ad70e710786ba0a656618d5d7",
+      "disposition": "included",
+      "role": "3D bank, frozen basis and upstream rule family through plateau vendor",
+      "tree": "eef1e131900512a638c9f6d23964fd0fcb44c94f"
+    },
+    "exp/2026-10-01-quadrature-study": {
+      "commit": "84d28e3039ae77b7b3e351fb9c4e2842df0797cc",
+      "disposition": "included",
+      "role": "2D continuous bank and trained checkpoint through pinned plateau vendor",
+      "tree": "28e51b2cdc407d7639a83821623fe503eadc0c7a"
+    },
+    "exp/2026-10-06-jcp-fom-pareto": {
+      "commit": "73bab9c316f276c5f80678760f61f2230155faa0",
+      "disposition": "included",
+      "role": "reference-discretization FOM controls via the fixed bank panels",
+      "tree": "0c35c5719aa913ba603509c87f610e9f3eeb1d5e"
+    },
+    "exp/2026-10-06-jcp-hr-baselines": {
+      "commit": "2e3abac47bb94b5a7854115bbae655b38ef3ed2a",
+      "disposition": "included",
+      "role": "native POD historical solver kernels and training assets",
+      "tree": "b9d1f6c9fa7cb20b112106b4ba85de519fd24204"
+    },
+    "exp/2026-10-06-jcp-mechanism": {
+      "commit": "712d682d8aa6bfc8e88934047f8d7caeda2d19a8",
+      "disposition": "excluded",
+      "role": "training mechanism and ablations",
+      "tree": "58e61570fc53a02d77ba9df24552ff83d7f00bad"
+    },
+    "exp/2026-10-06-jcp-references": {
+      "commit": "cc04f4b54a1b717d00eb803a276d7efb86994773",
+      "disposition": "included",
+      "role": "E0 reference, floor, public metadata and six original encrypted commitments",
+      "tree": "048cbc6a60aa8bf20b351a24789875d93c3a086d"
+    },
+    "exp/2026-10-08-jcp-smooth-bank": {
+      "commit": "12f620782ea27deefe412c91da6f8fffa4e8004f",
+      "disposition": "excluded",
+      "role": "alternative training regularization",
+      "tree": "9329e6fec3a98eb9aaf0f02870b496875b29d7e9"
+    },
+    "exp/2026-10-08-jcp-time2": {
+      "commit": "a7a12528fd69eb881cb346b4527c5dbeb9862401",
+      "disposition": "excluded",
+      "role": "alternative time-integration hypotheses",
+      "tree": "f893a38c43d6085819fea1b300aafaad9702ff14"
+    },
+    "exp/2026-10-08-jcp-wide-bank": {
+      "commit": "f050dffa6387df5feee424de2327e0beeabf84ce",
+      "disposition": "excluded",
+      "role": "larger bank widths",
+      "tree": "14530baee59af30299f9708eaf81fa2260a474d7"
+    },
+    "exp/2026-10-13-jcp-combined": {
+      "commit": "a3c9e170d8f47a53f34e8cb3672e546148383151",
+      "disposition": "excluded",
+      "role": "alternate combined recipe",
+      "tree": "e19027545bb5a2246705fbe21f6b0933514fb17b"
+    },
+    "exp/2026-10-14-jcp-speed3d": {
+      "commit": "7391544881bdbfa10bdbab5b5ba9562eca673983",
+      "disposition": "included",
+      "role": "3D full-order and sampling solver library through pinned plateau vendor",
+      "tree": "16daef4cfee124f947d875e5b8b697de1591d005"
+    },
+    "exp/2026-10-17-jcp-p1-scaling": {
+      "commit": "5b782026b653e8f9bcd3a1235b42cadc7e439be9",
+      "disposition": "excluded",
+      "role": "historical time/cost scaling",
+      "tree": "aadd480296b1c90d700bba6f209a0eacd2133945"
+    },
+    "exp/2026-10-18-jcp-budget": {
+      "commit": "d70608191e63122a2cec842e9bcd33c0111c87c4",
+      "disposition": "excluded",
+      "role": "alternative training and solver budgets",
+      "tree": "4d3a2ecf7b4456f95f5f373d7c4f91d31ae0eb0a"
+    },
+    "exp/2026-10-18-jcp-dims": {
+      "commit": "a99906fe642e583e6c52090fc32135cfcbf1aaaa",
+      "disposition": "excluded",
+      "role": "alternative latent dimensions",
+      "tree": "0ee34cc5d15cd550d896a95d76f8587113a8f7e4"
+    },
+    "exp/2026-10-18-jcp-fom2d": {
+      "commit": "12103d331d5a3f4411e7aa33f443852f9a4d4649",
+      "disposition": "included",
+      "role": "2D classical full-order comparator ladder via the fixed bank panels",
+      "tree": "7ec73b5299d04dc058f2c54b234cfd189901bb2a"
+    },
+    "exp/2026-10-18-jcp-heads": {
+      "commit": "45d28fac385ac5a0aa1c57dc455c0fd846cfae09",
+      "disposition": "excluded",
+      "role": "alternative trained output heads",
+      "tree": "5e3dfe798d406a371d7ed7196e19ea1b3c63fc60"
+    },
+    "exp/2026-10-18-jcp-qualify": {
+      "commit": "250b20d91b53fb182845963180cff66b7b761937",
+      "disposition": "excluded",
+      "role": "separate retrospective solver certification study",
+      "tree": "81131eab51df24a3999a22cf87d2f6e6ee4f506d"
+    },
+    "exp/2026-10-19-jcp-regimes": {
+      "commit": "70ce5f0f2ec9f814e7a771c774e188a57642021c",
+      "disposition": "excluded",
+      "role": "different development regime",
+      "tree": "51157209bcba63f796d165f2ef4135d24ec8484a"
+    },
+    "exp/2026-10-19-jcp-robust": {
+      "commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+      "disposition": "excluded",
+      "role": "alternative training seeds",
+      "tree": "f0a644729c105b72a96fca150bf566341e143a25"
+    },
+    "exp/2026-10-20-jcp-consolidated": {
+      "commit": "93f399faad67f94ea2b56fe25f13003143e64694",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "dcbf27c0097cfffbd984c3bab97b4c81159e3c96"
+    },
+    "exp/2026-10-20-spectral-pilot": {
+      "commit": "e105a79ef188c4a4ca837bcdcc49051254dd56c4",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "abc3149f0b1210f033d06891b4d67525b809e282"
+    },
+    "exp/2026-10-21-imp-faststep": {
+      "commit": "a3e417b1e298908f0670574261799e9c499f49fc",
+      "disposition": "excluded",
+      "role": "alternative integrator",
+      "tree": "91dbec707ac267fa969b5d48488f11c08e0f8c26"
+    },
+    "exp/2026-10-21-imp-fronts": {
+      "commit": "506dbd3a59a2df1f744a37225b6efabb4f494c55",
+      "disposition": "excluded",
+      "role": "out-of-family steep fronts",
+      "tree": "ba7fdb684f2dde6c123a9be1a0846b7e04fb64de"
+    },
+    "exp/2026-10-21-imp-geometry": {
+      "commit": "0dc801d2bb24063dcf2130cec5cdc894dc70c674",
+      "disposition": "excluded",
+      "role": "new geometry",
+      "tree": "1224bebeacfa93e86b30679889956a876476c25a"
+    },
+    "exp/2026-10-21-imp-hrcost": {
+      "commit": "cf351b62abe1c16608d120e2dac4b732685d3f39",
+      "disposition": "excluded",
+      "role": "historical cost sweep",
+      "tree": "af31258e47ca1be85f23a08ef18cdd008a577edc"
+    },
+    "exp/2026-10-21-imp-multimesh": {
+      "commit": "dd4cd7fc4743bfffc47f24029b95f11ac939f929",
+      "disposition": "included",
+      "role": "one native 2D continuous POD/ECSW selection",
+      "tree": "644ee8548e7a1590295df7e148aebd15c89d7b08"
+    },
+    "exp/2026-10-21-imp-varcoef": {
+      "commit": "e8d39fa1a756815dbd77667463b191ee1c6e4828",
+      "disposition": "excluded",
+      "role": "different coefficient PDE",
+      "tree": "4fa1cb6796a791a74a1e273e820111adbba0c429"
+    },
+    "exp/2026-10-22-imp-box": {
+      "commit": "9c35fdd83aff197bf656e7daa2f1c853a77ba1e4",
+      "disposition": "excluded",
+      "role": "different domain",
+      "tree": "11c875ba5b5a96643c610ce0bc128c2b93a8fcef"
+    },
+    "exp/2026-10-26-b3d-pod": {
+      "commit": "99a0dd650a1bf79985954544c032f682b9cb5590",
+      "disposition": "included",
+      "role": "one native 3D unreduced-sampling POD selection",
+      "tree": "959928f7bc92c4a158ed700d1d479efab5b09f96"
+    },
+    "exp/2026-10-26-b3d-refine": {
+      "commit": "723d1c0f24f206ae92ab7c484a0d2bfab93a16fe",
+      "disposition": "excluded",
+      "role": "different FOM refinement study",
+      "tree": "9b75c4fefc2072e68d63a81574f213ebd6fb4d4b"
+    },
+    "exp/2026-10-26-b3d-solver": {
+      "commit": "88bb5c4330c7440387536390bb161a650ca66ccd",
+      "disposition": "included",
+      "role": "fine 3D native POD selection source",
+      "tree": "79a7aeac5ae2cb5000d01d747fc2acb0f25d1aba"
+    },
+    "exp/2026-10-27-burgers-decoder-interpolation": {
+      "commit": "3847de82078d9b70e2cb21b018f9e9d88fe409c0",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "05f692c3deb57a42994324366d27bbba18e3ffdb"
+    },
+    "exp/2026-10-27-burgers-multilevel": {
+      "commit": "e5a76ae341f86a75972368c55013a9e1a6028207",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "e7224324bd25609f1743721e4e84fdcec9eecd3a"
+    },
+    "exp/2026-10-27-burgers-prefix2d": {
+      "commit": "6c5717b27901ab6abad3dfcbf6c08ab4bd7a964c",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "5a1ad592c968b2b16d723626cdb69f1d56326d55"
+    },
+    "exp/2026-10-27-burgers-recon2d": {
+      "commit": "d3773aabc33ff8a7bd07c0d3df23768066017f04",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "4cd03a9a8c2d7eb191678d3183ea050cb1ef94e4"
+    },
+    "exp/2026-10-27-burgers-recon3d": {
+      "commit": "d7e21d00e151fc8bf0b44b4afd86ab88bd16f093",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "92ea648091bd46902a45e281c6be8c644d32589c"
+    },
+    "exp/2026-10-27-ns-obstacle": {
+      "commit": "f463a08ec310254c1cca88312c764f69bb2c1258",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "bb434f31127e728a121b74a32627883a5667f0bd"
+    },
+    "exp/2026-10-27-ns-obstacle-2d": {
+      "commit": "091afa488ec8eab401a4bf4753af6be19d945d0f",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "9124b4c2a698b96aa3b75e21cd0da22a9bb9995e"
+    },
+    "exp/2026-10-27-ns-obstacle-3d": {
+      "commit": "ba83a8855a45f80f5d7779f152dad39551a2825e",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "fd5f38b64501b24501ba27b9964d0ea95096f414"
+    },
+    "exp/2026-10-27-ns-obstacle-rom": {
+      "commit": "57680db12521fd2119247c9f09a2ce95332d4562",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "f7dbafd3ebc6216bc8683c985558a874ce2e44f7"
+    },
+    "exp/2026-10-28-burgers-latent2d": {
+      "commit": "6740acb7aeab53679218a7ad89466e4783281987",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "391ef2bfb350fc9366251ec04edc3f55051699e6"
+    },
+    "exp/2026-10-28-burgers-shared": {
+      "commit": "2ff58d1190c42ff273886fc0e5c8f8e11e1f50bb",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "a5d79cc1f1dab3fae6204ae2f48af8c8b8dfe9ff"
+    },
+    "exp/2026-10-28-burgers-shared-replay": {
+      "commit": "036f96191d71901015ad1cfd4b083101b5265949",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "d82ffcb245af52424ed5cbb3602fb493dc248270"
+    },
+    "exp/2026-10-28-burgers-shared-step": {
+      "commit": "8827a4d6155f10ad65661e3f81347e1ba24d6d15",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "ea3fe72819fa0bc6e55d32a568038affff241721"
+    },
+    "exp/2026-10-29-accuracy-cost-knobs": {
+      "commit": "79a7e0cb2eb33932adbc78287e575c3e414a3c69",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "806f21c1910b9102baed5b83276082e1a913742c"
+    },
+    "exp/2026-10-30-quad-floor": {
+      "commit": "50999cee85576f4e70feaa1c859ecf5dee3cfe85",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "96ae5f8038159c4392a9983fa3767471ff3816fb"
+    },
+    "exp/2026-11-03-cyl-divfree": {
+      "commit": "69af5170d0cf89d31e6050a2778e829e3454aa0f",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "4d5ea768a01eca0f11a946e5f4a03ec736d3fa31"
+    },
+    "exp/2026-11-03-cylinder-unsteady": {
+      "commit": "f187c83422698e41544a267129530c4ae05dffb7",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "a3a46b7e6d9e7706aa062843f6293a40e3352f60"
+    },
+    "exp/2026-11-03-cylinder-unsteady-ref": {
+      "commit": "6a940bb1c64174ae9a3e4c127c3d4814b744068a",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "df75e2aa7b68c1d3553aacadbda50fb86dd4b7f2"
+    },
+    "exp/2026-11-03-cylinder-unsteady-rom": {
+      "commit": "e8c6b9872089e15999513524ec1e4cb44d0eb94e",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "30facaaffaa9a3cbf3071719569b9633ba88995b"
+    },
+    "exp/2026-11-03-geometry-family-design": {
+      "commit": "44b8b74cd811609d95eae0f2f45576ba88b50b34",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "89db46b48b78c17c545538f4846e631be53e72f4"
+    },
+    "exp/2026-11-03-ns3d-pod-match": {
+      "commit": "dd06bff1b53f2f5736cbc2de6d8e46c25748607f",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "d68591450fb40f59e0aaa9c87586e1ab7e2ab138"
+    },
+    "exp/2026-11-05-burgers-quadrature-plateau": {
+      "commit": "a2eae048a976c4d2124bdccb957c50391157dd47",
+      "disposition": "included",
+      "role": "eight fixed bank and full-order panels; four prospective fixed quadrature rules",
+      "tree": "b39bbd794f38cb2a82e34bdc51d37cfff56c1f29"
+    },
+    "exp/2026-11-05-ns3d-offmesh-quadrature": {
+      "commit": "7868fe7ac8bc8c04b260259caaf5557b84c698ed",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "8102ad55923bcdde378f9899f1ecafac82646da1"
+    },
+    "exp/2026-11-11-aniso-stretched": {
+      "commit": "9f6ca07988e4b39a484d5c7b6f7081d98869e845",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "de3efc04981c7303716eefaca11ea9dd79bc0488"
+    },
+    "exp/2026-11-11-burgers-ops-matched": {
+      "commit": "6357834e4592d7ee23542776fb7679c7f9aacfe9",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "494efc310cfea32f633fb8f53dd1f3d4c24b8690"
+    },
+    "exp/2026-11-11-cylinder-operators": {
+      "commit": "53c1e8652ff009767578306c7c3d377b8bcb2cda",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "8cb254909b62d231190c1d4355c8f82e59f7e75e"
+    },
+    "exp/2026-11-11-nfrom-baseline": {
+      "commit": "562e725047a02797984ff7a8cc802f1ea370ebe6",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "2a1f38cd31b9c303e328e7fdb643c79b8b6831fd"
+    },
+    "exp/2026-11-11-ns3d-hard": {
+      "commit": "57eb5661f63d19755876d001af62142295e7799c",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "bb10a2f64ccacee048b7ccd887e027a6c51473a9"
+    },
+    "exp/2026-11-11-ns3d-hard-rank": {
+      "commit": "64ed589c9562bf203f79568ad8e8d5eddc3cb30f",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "aa2f871116a8f6a914dd64461b76babdd5310a02"
+    },
+    "exp/2026-11-12-official-baselines": {
+      "commit": "671ae0e0d287f26209f38209bde5ea4ef8ce3401",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "383c4f57b2fd5704589ff5a3f1bd996e2dcca172"
+    },
+    "exp/2026-11-12-operator-scaling": {
+      "commit": "4c5eea3833f3bab325c432ce2d364b9139863ffc",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "80254bc55d5308e0028bda856369412198249bc5"
+    },
+    "exp/2026-11-12-paper-revision": {
+      "commit": "fb27ed846a8b81d5b46fd34a165f98c4693bc0b5",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "1771bc0f5fba6e316729a3c224f67336be5e67f9"
+    },
+    "exp/2026-11-13-cylinder-amg": {
+      "commit": "a1373dd70217c3916b661d04635b38995c0e096a",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "b1c46507c597f9d56c1f25b65d695235f9da8c86"
+    },
+    "exp/2026-11-13-iso-error": {
+      "commit": "2fd48d20f9d3d0a56aa58dd1a58d444a5331bcd4",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "253c27c9aa7d69ed004d2415475cf92ba1e52928"
+    },
+    "exp/2026-11-13-manuscript-rebuttal": {
+      "commit": "b3f327bc2d6f50166e785e9a91f74cd04e78c051",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "dbd4dffd4780186f2ec3d89ebcf3d5fc630c9554"
+    },
+    "exp/2026-11-13-ns3d-batched": {
+      "commit": "d65373ab8622071263ad1707f1cc63c9d9308189",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "cc1e1257fac1816bcb0a8e3b4c95c9f5558f2efc"
+    },
+    "exp/2026-11-13-ns3d-flat-timing": {
+      "commit": "458137b766a262abb146ca5a7e10f06e928390b5",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "683dda0694960100aa515062a4387772a42b2216"
+    },
+    "exp/2026-11-13-sparse-solvers": {
+      "commit": "f630a2dcee713496e610afef87ca21595db238db",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "c920c0a735966e482bb42f1baccab3f9e8fec8db"
+    },
+    "exp/2026-11-14-burgers2d-query-speed": {
+      "commit": "c8bd352aace4433d40f9ed35dea864e7da4a0dee",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "029338551bc5a7f196c8511d4e4cad83af6f382b"
+    },
+    "exp/2026-11-14-burgers2d-worstcase": {
+      "commit": "360a0510c1a136982708032e62ac0212e85fe90e",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "69ffcef5c3e5f8bee5197804c5f1ab1579e8903b"
+    },
+    "exp/2026-11-14-linear-query-speed": {
+      "commit": "37658aef6a2153023d1960a9c5699689f46e38c3",
+      "disposition": "excluded",
+      "role": "separate solver, application, hardware campaign or manuscript scope",
+      "tree": "7394ce2dbc5f9e76c24ae40bc6f57e5d01dd8a58"
+    }
+  },
+  "selected_evidence": [
+    {
+      "blob": "5fc8ab8d40cabd133e07672ec29de206dbe01489",
+      "commit": "93f399faad67f94ea2b56fe25f13003143e64694",
+      "path": "experiments/jcp-consolidated/README.md",
+      "sha256": "8a0affda53e24dd18d223011e5acd9a314a25164b91bf2dccc33b893b662d923"
+    },
+    {
+      "blob": "83c8e418714b9434592edca1b4d2fdf5594520d3",
+      "commit": "cc04f4b54a1b717d00eb803a276d7efb86994773",
+      "path": "experiments/jcp-references/DESIGN.md",
+      "sha256": "ee321e21a59e4c7e26074aafcbcfc6e67679560b28e9a369f17a5c62bc874513"
+    },
+    {
+      "blob": "87e63796589967aa91dec8be90b729f6fd464f02",
+      "commit": "a2eae048a976c4d2124bdccb957c50391157dd47",
+      "path": "experiments/burgers-quadrature-plateau/DESIGN.md",
+      "sha256": "d09c167d01f9907e7b60cb06db15ade65da03b29f8db80d57c5d275f70828318"
+    },
+    {
+      "blob": "a0bfdbee02de95cea330b254c604ec06573dd23e",
+      "commit": "cc04f4b54a1b717d00eb803a276d7efb86994773",
+      "path": "experiments/jcp-references/checks/sealed_seeds.json",
+      "sha256": "0c327190bd6e4c2e4fa3be901a330c260b702ff6299ce2764fe021a6fa43957f"
+    },
+    {
+      "blob": "32c6734ddac2ef827c38ba9c89e05e641242ca4a",
+      "commit": "cc04f4b54a1b717d00eb803a276d7efb86994773",
+      "path": "experiments/jcp-references/store/STATUS.json",
+      "sha256": "af7d824e94b42afb83753d6b11a0c4d71407cff0923ebee9c245eb8d51f81005"
+    },
+    {
+      "blob": "2642612524f857a536610445c354cd53dae0972d",
+      "commit": "cc04f4b54a1b717d00eb803a276d7efb86994773",
+      "path": "experiments/jcp-references/store/MANIFEST.sha256",
+      "sha256": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0"
+    },
+    {
+      "blob": "768273e330a013fe3c76c142d35b1b2f0ccd5e15",
+      "commit": "a2eae048a976c4d2124bdccb957c50391157dd47",
+      "path": "experiments/burgers-quadrature-plateau/results/p2d1024/result.json",
+      "sha256": "a69e2dc8a57d70d1ba6fb6409206bd8fa9ef096b94a1e352b726ad4e4f30830b"
+    },
+    {
+      "blob": "3c42c80dac0a9f651a4be4e6ae3ec514b785f883",
+      "commit": "a2eae048a976c4d2124bdccb957c50391157dd47",
+      "path": "experiments/burgers-quadrature-plateau/checks/p2d1024-summary.json",
+      "sha256": "eaf71f88d891bd38df7de8882dd4ddd13eaa9f0c5aca8cfeeb6e7687e7792d23"
+    },
+    {
+      "blob": "22377af659dfd6f319bff0bcf6d486e8dd4adab7",
+      "commit": "a2eae048a976c4d2124bdccb957c50391157dd47",
+      "path": "experiments/burgers-quadrature-plateau/checks/p2d1024-audit.json",
+      "sha256": "f75254c1cfc3520858f35768aae2ef3a563910f4bfb52940ffaf1ef1ea804e6b"
+    },
+    {
+      "blob": "d25a8cc34ee3670a9cea9babd25aa0eac8e32f25",
+      "commit": "a2eae048a976c4d2124bdccb957c50391157dd47",
+      "path": "experiments/burgers-quadrature-plateau/results/p2d2048/result.json",
+      "sha256": "6cae2f2b7372d34aeb6b62e4f062f588c52ba52b0fa55e708c6c4039fadf4cf3"
+    },
+    {
+      "blob": "611ce9c122645402186659ce52ab2529fedb54d8",
+      "commit": "a2eae048a976c4d2124bdccb957c50391157dd47",
+      "path": "experiments/burgers-quadrature-plateau/checks/p2d2048-summary.json",
+      "sha256": "2716aaac8193cc4f0e3262ae81a6ec0e7fe1e1786dc4789915d5ab9f811e31ad"
+    },
+    {
+      "blob": "99a3fb9ea4afe6076edbd5e7ecbc50d48bf5556a",
+      "commit": "a2eae048a976c4d2124bdccb957c50391157dd47",
+      "path": "experiments/burgers-quadrature-plateau/checks/p2d2048-audit.json",
+      "sha256": "92324c5ca09f73aaea1329b43ca262376539543dd027a7a8a568992d8eff95b3"
+    },
+    {
+      "blob": "8add51800620271ef3bf6fb622593f8bf3cc55a9",
+      "commit": "a2eae048a976c4d2124bdccb957c50391157dd47",
+      "path": "experiments/burgers-quadrature-plateau/results/p2d256b/result.json",
+      "sha256": "fcfb174fbbc45edcbb0f890e7af74e9f6829ecd20b610c07d19271992a751bb5"
+    },
+    {
+      "blob": "cb3ecf83af5b9af39fbcb0c72156b911ff9a79ef",
+      "commit": "a2eae048a976c4d2124bdccb957c50391157dd47",
+      "path": "experiments/burgers-quadrature-plateau/checks/p2d256b-summary.json",
+      "sha256": "d178a7ae5cb4542d9c4db944dc7f8b9f2d7979fcfdd251cd93a359ed80e50b4a"
+    },
+    {
+      "blob": "d52a7186eb9133946e9f47f658fd5589cac4cd06",
+      "commit": "a2eae048a976c4d2124bdccb957c50391157dd47",
+      "path": "experiments/burgers-quadrature-plateau/checks/p2d256b-audit.json",
+      "sha256": "614830055f2696740d8657d737d130ef29898da148d8578dd99ca2036cdb16f7"
+    },
+    {
+      "blob": "8b8a64c3bbddce9774189b9eae314e6d13a1b482",
+      "commit": "a2eae048a976c4d2124bdccb957c50391157dd47",
+      "path": "experiments/burgers-quadrature-plateau/results/p2d4096/result.json",
+      "sha256": "3c1e1ccd185f083563bfc6238a60413a96c73f5ac152a17cb30254d30e947470"
+    },
+    {
+      "blob": "7d8f060fe0745ba31f78beb9e92775192d0fdfe5",
+      "commit": "a2eae048a976c4d2124bdccb957c50391157dd47",
+      "path": "experiments/burgers-quadrature-plateau/checks/p2d4096-summary.json",
+      "sha256": "4a38403af43d0b6fb2e55dce2018e60c120f03635b8e2b78a094c1ba4e570020"
+    },
+    {
+      "blob": "da62e54b5b76d1d42ef2cef32972150a5a7cb9ad",
+      "commit": "a2eae048a976c4d2124bdccb957c50391157dd47",
+      "path": "experiments/burgers-quadrature-plateau/checks/p2d4096-audit.json",
+      "sha256": "a9362ac092322628084f2672938639b9194ce5120cba53fed7712e6873cb7477"
+    },
+    {
+      "blob": "7bd30fa4c29af56a41e27099bc730d05226c6e35",
+      "commit": "a2eae048a976c4d2124bdccb957c50391157dd47",
+      "path": "experiments/burgers-quadrature-plateau/results/p2d512/result.json",
+      "sha256": "563a22f82cda268e3ee6d011906677f5ed830b040c5580f227c10c15a5205462"
+    },
+    {
+      "blob": "79f22f6dc4d02b8b80dd094df9bc05971cd0e404",
+      "commit": "a2eae048a976c4d2124bdccb957c50391157dd47",
+      "path": "experiments/burgers-quadrature-plateau/checks/p2d512-summary.json",
+      "sha256": "1f93276706bda48190bc574b2bbb99163c5267da63daa8e9b251b3e737d92b95"
+    },
+    {
+      "blob": "5bcf96439855bed4a2b174791cc1f4b8e2e93e48",
+      "commit": "a2eae048a976c4d2124bdccb957c50391157dd47",
+      "path": "experiments/burgers-quadrature-plateau/checks/p2d512-audit.json",
+      "sha256": "c28ce8ac71b1667872c7066fb27e6f67dafb2ade5742fb39eeaeec84596a192a"
+    },
+    {
+      "blob": "f417ee5bdb62df967ee334c32da4e7ae41c6ae5f",
+      "commit": "a2eae048a976c4d2124bdccb957c50391157dd47",
+      "path": "experiments/burgers-quadrature-plateau/results/p3d129/result.json",
+      "sha256": "cfb17753676f2417245252bb93410ee41e2a329334fba4b8d891983ed3b19def"
+    },
+    {
+      "blob": "6471fa2204d7433ac5e68ef7950a0adc4e285a9d",
+      "commit": "a2eae048a976c4d2124bdccb957c50391157dd47",
+      "path": "experiments/burgers-quadrature-plateau/checks/p3d129-summary.json",
+      "sha256": "0d3dac02256559efd8497270ddd692fcb736271d367440b446243c5ccce958ec"
+    },
+    {
+      "blob": "c3271d247fb7ec70152564d4f18223ff68b91999",
+      "commit": "a2eae048a976c4d2124bdccb957c50391157dd47",
+      "path": "experiments/burgers-quadrature-plateau/checks/p3d129-audit.json",
+      "sha256": "1f97eaabf50b0fab338d455b8a2c514d05c4784498bb6afd061602d40ec0c8b7"
+    },
+    {
+      "blob": "b981cd7de04b2aeceb6e70cda9d0924c45a8bc42",
+      "commit": "a2eae048a976c4d2124bdccb957c50391157dd47",
+      "path": "experiments/burgers-quadrature-plateau/results/p3d257c/result.json",
+      "sha256": "4bc0245b439e0561b4414abb7e551e752418472617df4e58f4117846e5c366b7"
+    },
+    {
+      "blob": "2d88ad6d7109abd8dca9a1ff5d0a9e935bf6d3ad",
+      "commit": "a2eae048a976c4d2124bdccb957c50391157dd47",
+      "path": "experiments/burgers-quadrature-plateau/checks/p3d257c-summary.json",
+      "sha256": "69e1065651cc9efafb50445e671a7bc7eac931e62d45d8b8cbc457bd813d4f1e"
+    },
+    {
+      "blob": "9d94df024c11839771eb0e787289a53286bab5a1",
+      "commit": "a2eae048a976c4d2124bdccb957c50391157dd47",
+      "path": "experiments/burgers-quadrature-plateau/checks/p3d257c-audit.json",
+      "sha256": "2b12ccb1a8f52265e5c06afb0810654a5084a8d7b59c679746897573bd6501cf"
+    },
+    {
+      "blob": "8bced7793c691bc505e390d8cc8a41b342ed143b",
+      "commit": "a2eae048a976c4d2124bdccb957c50391157dd47",
+      "path": "experiments/burgers-quadrature-plateau/results/p3d65b/result.json",
+      "sha256": "67e60432a862ae32ae897254ad298fd63777aa444ec891d7bac5b42c6a80efbd"
+    },
+    {
+      "blob": "9b7740d93558c83768e9d943ce429f6c5ba527ba",
+      "commit": "a2eae048a976c4d2124bdccb957c50391157dd47",
+      "path": "experiments/burgers-quadrature-plateau/checks/p3d65b-summary.json",
+      "sha256": "0364139489753a39a92e09398c04f13af89479dbdc39632b13ca21ddc30d130a"
+    },
+    {
+      "blob": "09da749b30f7d9abd8e5a7fa4d93b6d64e4ce11c",
+      "commit": "a2eae048a976c4d2124bdccb957c50391157dd47",
+      "path": "experiments/burgers-quadrature-plateau/checks/p3d65b-audit.json",
+      "sha256": "09598cbe8ada6fcc66e69ecb16df88c0116768e9cb40878b0d67909534cfa1a4"
+    },
+    {
+      "blob": "9939ece4cacebe9096687c0d2dfab26560297256",
+      "commit": "cc04f4b54a1b717d00eb803a276d7efb86994773",
+      "path": "experiments/jcp-references/runs/fd2dsealed128p0/output/result.json",
+      "sha256": "fd65cba1a665b94e823b38f0530ac605301e2beda4f8b53a301f534d3e7ac2aa"
+    },
+    {
+      "blob": "8838c6f36988aff05270f700a197acd95535f5d8",
+      "commit": "cc04f4b54a1b717d00eb803a276d7efb86994773",
+      "path": "experiments/jcp-references/runs/fd2dsealed128p1/output/result.json",
+      "sha256": "fabdf26d14363f572aab5d0ae1dbe988d681bc6dfe3fd20459296524a945eef3"
+    },
+    {
+      "blob": "b9276f153a3c155a59a319416ca38d31f28795f0",
+      "commit": "cc04f4b54a1b717d00eb803a276d7efb86994773",
+      "path": "experiments/jcp-references/runs/fd2dsealed128p2/output/result.json",
+      "sha256": "7cf7f5bdd5824d776465408f29e5b09bc3fcbca0fb488a01339e6323835f8277"
+    },
+    {
+      "blob": "f490e0ae15e1bd217e42fd6c1316ce8ab385159a",
+      "commit": "cc04f4b54a1b717d00eb803a276d7efb86994773",
+      "path": "experiments/jcp-references/runs/fd2dsealed128p3/output/result.json",
+      "sha256": "379f188b471c5dba20af19c324fa2b39b95120531988d6da64ca149bc86dfcbc"
+    },
+    {
+      "blob": "2f001b0ab3d529881a6a2e323dae60cb1fbffe2d",
+      "commit": "cc04f4b54a1b717d00eb803a276d7efb86994773",
+      "path": "experiments/jcp-references/runs/fd3dsealed64p0/output/result.json",
+      "sha256": "140f42196e3b3f522641374b004c1a9fe096dcffc72418f6dab918cdcdec63ff"
+    },
+    {
+      "blob": "0611ef1cd28cc7a53ed0dc28df1a02b9bd08800b",
+      "commit": "cc04f4b54a1b717d00eb803a276d7efb86994773",
+      "path": "experiments/jcp-references/runs/fd3dsealed64p1/output/result.json",
+      "sha256": "f092993ba84388e9c2edd8e72b0676e256614fb62d3afad7efb15d96eec4b7c2"
+    },
+    {
+      "blob": "5cf99d913faa69dfee2e6159aebc117bef5d91f8",
+      "commit": "dd4cd7fc4743bfffc47f24029b95f11ac939f929",
+      "path": "experiments/imp-multimesh/checks/analysis.json",
+      "sha256": "68aefa34c5929b07bdc61c74aad1d4dae0a7e81c882e2e4e1999c93ef6076b8f"
+    },
+    {
+      "blob": "bd6d7f8de439e153165dbcaf2a6234c72c4a6ff9",
+      "commit": "99a0dd650a1bf79985954544c032f682b9cb5590",
+      "path": "experiments/b3d-pod/inputs/FINE-SELECTION.json",
+      "sha256": "46ddebe8b6e2f582ad9791a5819460ab0f928b60a9c457d0e0e6e5d621a211fa"
+    }
+  ]
+}

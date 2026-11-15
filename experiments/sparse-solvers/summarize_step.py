@@ -6,6 +6,7 @@ Reads <dir>/b<dim>d_L<L>.json (stepper.py), ours_burgers.json (the paper's numbe
 results/ours/same_gpu.json (our model re-timed on the same GPU type, Task B).
 """
 import json
+import statistics
 import sys
 from pathlib import Path
 
@@ -122,38 +123,35 @@ def main():
               f"{s['newton_total_median']:.0f} ({s['newton_total_max']}) | {s['refactor_median']:.0f} | {s['solve_median']:.0f} | "
               f"{s['unconverged_steps_total']} | {split} |")
     P()
-    P('## Accuracy-matched: fastest cuDSS setting whose worst-case error is no worse than ours')
+    P('## Fastest measured cuDSS setting meeting each ROM worst-error threshold')
     P()
     P('cuDSS may use any variant, Newton tolerance, time step (0.005, 0.01, 0.025, 0.05) and mesh (same, 2x or 4x coarser, '
       'interpolated back and compared on the target mesh). Selection: smallest median time among settings with worst-case '
       'error <= our worst-case error (paper value). Settings with unconverged steps are selected only in the last column. '
-      'Note: our worst case is over the full paper cohort, cuDSS\'s over the number of cases listed under Runs.')
+      'The ROM threshold comes from the full paper cohort. cuDSS uses the cases listed under Runs. '
+      'ROM and sparse-solver times were measured in separate allocations, even when the GPU model matches.')
     P()
-    P('| problem | ours | ours worst % | ours ms (paper) | ours ms (same GPU, this lane) | cuDSS setting | cuDSS ms median (min–max) | '
-      'cuDSS worst % | cuDSS / ours (paper ms) | cuDSS / ours (same GPU) | fastest incl. unconverged |')
-    P('|---|---|---|---|---|---|---|---|---|---|---|')
+    P('| problem | ROM setting | ROM threshold, worst % | cuDSS setting | cuDSS ms median (min–max) | '
+      'cuDSS worst % | fastest incl. unconverged |')
+    P('|---|---|---|---|---|---|---|')
     for (dim, L), r in res.items():
         S = [s for s in (r.get('settings') or {}).values() if s.get('status') == 'ok' and s.get('finite')]
         o = ours[f'burgers{dim}d'].get(str(L))
         if not S or not o:
             continue
-        sg = same_gpu.get(f'burgers{dim}d', {}).get(str(L), {})
         for role in ('accurate', 'fast'):
             thr = o[role]['worst_percent'] / 100
             ok = sorted((s for s in S if s['worst_error'] <= thr), key=lambda s: s['time_s']['median'])
             clean = [s for s in ok if s['unconverged_steps_total'] == 0]
-            sgm = sg.get(role, {}).get('ms')
+            head = f"| Burgers {dim}D {L}^{dim} | {role} | {o[role]['worst_percent']:.4g} | "
             if not clean:
-                P(f"| Burgers {dim}D {L}^{dim} | {role} | {o[role]['worst_percent']:.4g} | {o[role]['ms']:.4g} | "
-                  f"{'' if sgm is None else f'{sgm:.4g}'} | none meets the error | | | | | |")
+                P(head + 'none meets the error | | | |')
                 continue
             b = clean[0]
             t = b['time_s']
             other = '' if ok[0] is b else f"{label(ok[0])}: {ms(ok[0]['time_s']['median'])} ms, {pct(ok[0]['worst_error'])} %"
-            P(f"| Burgers {dim}D {L}^{dim} | {role} | {o[role]['worst_percent']:.4g} | {o[role]['ms']:.4g} | "
-              f"{'' if sgm is None else f'{sgm:.4g}'} | {label(b)} | {ms(t['median'])} ({ms(t['min'])}–{ms(t['max'])}) | "
-              f"{pct(b['worst_error'])} | {1e3 * t['median'] / o[role]['ms']:.3g} | "
-              f"{'' if sgm is None else f'{1e3 * t['median'] / sgm:.3g}'} | {other} |")
+            P(head + f"{label(b)} | {ms(t['median'])} ({ms(t['min'])}–{ms(t['max'])}) | "
+              f"{pct(b['worst_error'])} | {other} |")
     P()
     P('## Matched grid: all settings')
     for (dim, L), r in res.items():
@@ -177,10 +175,18 @@ def main():
             P(f"| {label(s)} | {s['steps']} | {ms(t['median'])} | {ms(t['min'])}–{ms(t['max'])} | {pct(s['worst_error'])} | "
               f"{pct(s['median_error'])} | {s['newton_total_median']:.0f} | {s['refactor_median']:.0f} | "
               f"{s['unconverged_steps_total']} |")
-    amgx_sections(P, amg, ours, same_gpu)
+    amgx_sections(P, amg, ours)
+    P()
+    P('## Glossary')
+    P()
+    P('A case is one initial field and viscosity. Each trajectory runs through the final time on the indicated mesh. '
+      'Median and worst errors are percentages across the cases. A tolerance is a numerical stopping criterion. '
+      'A Newton iteration updates the nonlinear solution. A linear solve computes that update. Setup and '
+      'refactorisation construct or refresh a matrix solver. A timed repetition repeats a trajectory. '
+      'AmgX is the iterative GPU linear solver, cuDSS is the direct GPU linear solver, and ROM is the reduced-order model.')
 
 
-def amgx_sections(P, amg, ours, same_gpu):
+def amgx_sections(P, amg, ours):
     P()
     P('## AmgX stepper (amendment 4)')
     P()
@@ -228,35 +234,35 @@ def amgx_sections(P, amg, ours, same_gpu):
               f"{s['newton_total_median']:.0f} | {s['linear_iterations_median']:.0f} | {s['refactor_median']:.0f} | "
               f"{s['unconverged_steps_total']} | {s['linear_not_converged_total']} | {split} |")
     P()
-    P('### AmgX, accuracy-matched: fastest setting whose worst-case error is no worse than ours')
+    P('### Fastest measured AmgX setting meeting each ROM worst-error threshold')
     P()
     P('Same selection rule as for cuDSS (settings with unconverged Newton steps excluded). AmgX was run on the same mesh only, '
-      'dt 0.005 and 0.01.')
+      'dt 0.005 and 0.01. The error is recorded on the first timed repetition of each case. The paired median uses '
+      'those same repetitions. The all-repeat median selects the setting under the registered rule. '
+      'The limited AmgX cohort and the full ROM cohort have different sizes.')
     P()
-    P('| problem | ours | ours worst % | ours ms (paper) | ours ms (same GPU, this lane) | AmgX setting | AmgX ms median (min–max) | '
-      'AmgX worst % | AmgX / ours (paper ms) | AmgX / ours (same GPU) |')
-    P('|---|---|---|---|---|---|---|---|---|---|')
+    P('| problem | ROM setting | ROM threshold, worst % | AmgX setting | AmgX all-repeat ms median (min–max) | '
+      'AmgX paired ms median | AmgX median % | AmgX worst % |')
+    P('|---|---|---|---|---|---|---|---|')
     for (dim, L), r in amg.items():
         S = [s for s in (r.get('settings') or {}).values() if s.get('status') == 'ok' and s.get('finite')]
         o = ours[f'burgers{dim}d'].get(str(L))
         if not o:
             continue
-        sg = same_gpu.get(f'burgers{dim}d', {}).get(str(L), {})
         for role in ('accurate', 'fast'):
             thr = o[role]['worst_percent'] / 100
             ok = sorted((s for s in S if s['worst_error'] <= thr and s['unconverged_steps_total'] == 0),
                         key=lambda s: s['time_s']['median'])
-            sgm = sg.get(role, {}).get('ms')
-            head = (f"| Burgers {dim}D {L}^{dim} | {role} | {o[role]['worst_percent']:.4g} | {o[role]['ms']:.4g} | "
-                    f"{'' if sgm is None else f'{sgm:.4g}'} | ")
+            head = f"| Burgers {dim}D {L}^{dim} | {role} | {o[role]['worst_percent']:.4g} | "
             if not ok:
                 P(head + 'none meets the error | | | | |')
                 continue
             b = ok[0]
             t = b['time_s']
+            paired = statistics.median(row['times'][0] for row in b['per_case'])
             P(head + f"{b['config']}, {b['variant']}, dt {b['dt']:g}, tol {'none' if b['ntol'] is None else f'{b['ntol']:g}'}, lin tol "
-              f"{b['ltol']:g} | {ms(t['median'])} ({ms(t['min'])}–{ms(t['max'])}) | {pct(b['worst_error'])} | "
-              f"{1e3 * t['median'] / o[role]['ms']:.3g} | {'' if sgm is None else f'{1e3 * t['median'] / sgm:.3g}'} |")
+              f"{b['ltol']:g} | {ms(t['median'])} ({ms(t['min'])}–{ms(t['max'])}) | {ms(paired)} | "
+              f"{pct(b['median_error'])} | {pct(b['worst_error'])} |")
 
 
 if __name__ == '__main__':

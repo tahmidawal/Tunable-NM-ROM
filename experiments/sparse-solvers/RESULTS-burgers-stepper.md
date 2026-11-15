@@ -91,8 +91,8 @@ Our model (paper values; worst-case error over the paper cohort) is listed under
 
 ### Burgers 2D 2048^2 (4190209 unknowns, 8 cases)
 
-- ours, accurate: 90.42 ms, worst-case 1.316 %, median 0.02962 % (paper, NVIDIA A100 80GB PCIe)
-- ours, fast: 35.2 ms, worst-case 3.059 %, median 0.2938 % (paper, NVIDIA A100 80GB PCIe)
+- ours, accurate: 90.42 ms, worst-case 1.316 %, median 0.02962 % (paper, NVIDIA A100 80GB PCIe); re-timed in this lane on NVIDIA H200: 48.72 ms, worst-case 1.316 %
+- ours, fast: 35.2 ms, worst-case 3.059 %, median 0.2938 % (paper, NVIDIA A100 80GB PCIe); re-timed in this lane on NVIDIA H200: 19.57 ms, worst-case 3.059 %
 
 | variant | Newton tol | ms median | ms min–max | worst % | median % | Newton its median (max) | refactorisations | solves | unconv. | refactor / solve / rest ms (case 0, synchronised) |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -181,26 +181,26 @@ Our model (paper values; worst-case error over the paper cohort) is listed under
 | refactorise every 10 steps | 0.003 | 1.237e+04 | 1.237e+04–1.238e+04 | 0.511 | 0.1787 | 50 (50) | 5 | 50 | 0 | 1.153e+04 / 843.4 / 12.37 |
 | full Newton (refactorise every iteration) | 0.003 | 1.161e+05 | 1.161e+05–1.162e+05 | 0.04306 | 0.01631 | 50 (50) | 50 | 50 | 0 | 1.153e+05 / 852 / 17.14 |
 
-## Accuracy-matched: fastest cuDSS setting whose worst-case error is no worse than ours
+## Fastest measured cuDSS setting meeting each ROM worst-error threshold
 
-cuDSS may use any variant, Newton tolerance, time step (0.005, 0.01, 0.025, 0.05) and mesh (same, 2x or 4x coarser, interpolated back and compared on the target mesh). Selection: smallest median time among settings with worst-case error <= our worst-case error (paper value). Settings with unconverged steps are selected only in the last column. Note: our worst case is over the full paper cohort, cuDSS's over the number of cases listed under Runs.
+cuDSS may use any variant, Newton tolerance, time step (0.005, 0.01, 0.025, 0.05) and mesh (same, 2x or 4x coarser, interpolated back and compared on the target mesh). Selection: smallest median time among settings with worst-case error <= our worst-case error (paper value). Settings with unconverged steps are selected only in the last column. The ROM threshold comes from the full paper cohort. cuDSS uses the cases listed under Runs. ROM and sparse-solver times were measured in separate allocations, even when the GPU model matches.
 
-| problem | ours | ours worst % | ours ms (paper) | ours ms (same GPU, this lane) | cuDSS setting | cuDSS ms median (min–max) | cuDSS worst % | cuDSS / ours (paper ms) | cuDSS / ours (same GPU) | fastest incl. unconverged |
-|---|---|---|---|---|---|---|---|---|---|---|
-| Burgers 2D 256^2 | accurate | 0.8749 | 45.24 | 29.3 | frozen, dt 0.005, tol 0.001, mesh 256 | 35.77 (33.38–56.39) | 0.6273 | 0.791 | 1.22 |  |
-| Burgers 2D 256^2 | fast | 3.846 | 14.24 | 10.21 | frozen, dt 0.01, tol 0.01, mesh 256 | 18.12 (18.02–24.19) | 2.585 | 1.27 | 1.77 |  |
-| Burgers 2D 512^2 | accurate | 1.128 | 46.66 | 29.35 | frozen, dt 0.005, tol 0.001, mesh 512 | 73.61 (69.11–118.6) | 0.6537 | 1.58 | 2.51 |  |
-| Burgers 2D 512^2 | fast | 4.103 | 15.06 | 9.972 | frozen, dt 0.01, tol 0.01, mesh 256 | 19.64 (19.47–25.78) | 3.2 | 1.3 | 1.97 |  |
-| Burgers 2D 1024^2 | accurate | 1.25 | 49.07 | 30.76 | frozen, dt 0.005, tol 0.001, mesh 512 | 76.4 (70.76–120.3) | 0.8252 | 1.56 | 2.48 |  |
-| Burgers 2D 1024^2 | fast | 4.255 | 19.14 | 12.51 | frozen, dt 0.01, tol 0.01, mesh 256 | 19.73 (19.63–24.37) | 3.529 | 1.03 | 1.58 |  |
-| Burgers 2D 2048^2 | accurate | 1.316 | 90.42 |  | frozen, dt 0.005, tol 0.001, mesh 512 | 80.88 (70.97–121.1) | 1.143 | 0.894 |  |  |
-| Burgers 2D 2048^2 | fast | 3.059 | 35.2 |  | frozen, dt 0.01, tol 0.01, mesh 512 | 40.84 (40.66–57.73) | 2.828 | 1.16 |  |  |
-| Burgers 2D 4096^2 | accurate | 1.35 | 119.4 |  | frozen, dt 0.005, tol 0.001, mesh 1024 | 232.3 (200–314.4) | 0.7484 | 1.94 |  |  |
-| Burgers 2D 4096^2 | fast | 3.111 | 46.61 |  | frozen, dt 0.01, tol 0.01, mesh 1024 | 118.4 (118–124.9) | 2.652 | 2.54 |  |  |
-| Burgers 3D 64^3 | accurate | 1.007 | 81.11 | 81.13 | frozen, dt 0.005, tol 0.003, mesh 64 | 221.4 (221–221.9) | 0.7873 | 2.73 | 2.73 |  |
-| Burgers 3D 64^3 | fast | 3.372 | 8.283 | 8.289 | frozen, dt 0.01, tol 0.01, mesh 64 | 162.2 (161.9–162.7) | 1.877 | 19.6 | 19.6 |  |
-| Burgers 3D 128^3 | accurate | 1.464 | 85 | 85.64 | frozen, dt 0.01, tol 0.001, mesh 128 | 3050 (2726–3159) | 1.162 | 35.9 | 35.6 |  |
-| Burgers 3D 128^3 | fast | 4.26 | 9.543 | 10.01 | frozen, dt 0.01, tol 0.01, mesh 64 | 164.3 (164.1–164.6) | 3.012 | 17.2 | 16.4 |  |
+| problem | ROM setting | ROM threshold, worst % | cuDSS setting | cuDSS ms median (min–max) | cuDSS worst % | fastest incl. unconverged |
+|---|---|---|---|---|---|---|
+| Burgers 2D 256^2 | accurate | 0.8749 | frozen, dt 0.005, tol 0.001, mesh 256 | 35.77 (33.38–56.39) | 0.6273 |  |
+| Burgers 2D 256^2 | fast | 3.846 | frozen, dt 0.01, tol 0.01, mesh 256 | 18.12 (18.02–24.19) | 2.585 |  |
+| Burgers 2D 512^2 | accurate | 1.128 | frozen, dt 0.005, tol 0.001, mesh 512 | 73.61 (69.11–118.6) | 0.6537 |  |
+| Burgers 2D 512^2 | fast | 4.103 | frozen, dt 0.01, tol 0.01, mesh 256 | 19.64 (19.47–25.78) | 3.2 |  |
+| Burgers 2D 1024^2 | accurate | 1.25 | frozen, dt 0.005, tol 0.001, mesh 512 | 76.4 (70.76–120.3) | 0.8252 |  |
+| Burgers 2D 1024^2 | fast | 4.255 | frozen, dt 0.01, tol 0.01, mesh 256 | 19.73 (19.63–24.37) | 3.529 |  |
+| Burgers 2D 2048^2 | accurate | 1.316 | frozen, dt 0.005, tol 0.001, mesh 512 | 80.88 (70.97–121.1) | 1.143 |  |
+| Burgers 2D 2048^2 | fast | 3.059 | frozen, dt 0.01, tol 0.01, mesh 512 | 40.84 (40.66–57.73) | 2.828 |  |
+| Burgers 2D 4096^2 | accurate | 1.35 | frozen, dt 0.005, tol 0.001, mesh 1024 | 232.3 (200–314.4) | 0.7484 |  |
+| Burgers 2D 4096^2 | fast | 3.111 | frozen, dt 0.01, tol 0.01, mesh 1024 | 118.4 (118–124.9) | 2.652 |  |
+| Burgers 3D 64^3 | accurate | 1.007 | frozen, dt 0.005, tol 0.003, mesh 64 | 221.4 (221–221.9) | 0.7873 |  |
+| Burgers 3D 64^3 | fast | 3.372 | frozen, dt 0.01, tol 0.01, mesh 64 | 162.2 (161.9–162.7) | 1.877 |  |
+| Burgers 3D 128^3 | accurate | 1.464 | frozen, dt 0.01, tol 0.001, mesh 128 | 3050 (2726–3159) | 1.162 |  |
+| Burgers 3D 128^3 | fast | 4.26 | frozen, dt 0.01, tol 0.01, mesh 64 | 164.3 (164.1–164.6) | 3.012 |  |
 
 ## Matched grid: all settings
 
@@ -720,9 +720,123 @@ Same kernels, Newton loop, timing contract and error metric as the cuDSS stepper
 
 | problem | cases | status | GPU | host | job | AmgX commit | peak device GB | pre-timing check (tight full Newton vs paper reference) |
 |---|---|---|---|---|---|---|---|---|
+| Burgers 2D 256^2 | 16 | ok | NVIDIA H200 | pax009 | 7229013 | 91a8413ef2 | 1.0 | PBICGSTAB_CLASSICAL_JACOBI: 2.0e-09 (pass); PBICGSTAB_JACOBI_NOAMG: 2.1e-08 (pass) |
+| Burgers 2D 512^2 | 16 | ok | NVIDIA H200 | pax009 | 7229013 | 91a8413ef2 | 1.2 | PBICGSTAB_CLASSICAL_JACOBI: 1.8e-09 (pass); PBICGSTAB_JACOBI_NOAMG: 3.2e-09 (pass) |
+| Burgers 2D 1024^2 | 16 | ok | NVIDIA H200 | pax009 | 7229013 | 91a8413ef2 | 2.0 | PBICGSTAB_CLASSICAL_JACOBI: 1.5e-09 (pass); PBICGSTAB_JACOBI_NOAMG: 5.8e-09 (pass) |
 | Burgers 3D 64^3 | 16 | ok | NVIDIA H200 | pax008 | 7221194 | 91a8413ef2 | 1.3 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS: 5.7e-09 (pass); PBICGSTAB_JACOBI_NOAMG: 4.5e-08 (pass) |
 | Burgers 3D 96^3 | 8 | ok | NVIDIA H200 | pax008 | 7221194 | 91a8413ef2 | 1.5 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS: 3.3e-09 (pass); PBICGSTAB_JACOBI_NOAMG: 4.7e-08 (pass) |
 | Burgers 3D 128^3 | 6 | ok | NVIDIA H200 | pax008 | 7221194 | 91a8413ef2 | 2.3 | FGMRES_CLASSICAL_AGGRESSIVE_PMIS: 4.2e-09 (pass); PBICGSTAB_JACOBI_NOAMG: 4.2e-08 (pass) |
+
+### AmgX, Burgers 2D 256^2 (16 cases)
+
+| configuration | variant | dt | Newton tol | lin tol | ms median | ms min–max | worst % | median % | Newton its median | linear its median | setups | unconv. | linear solves not converged | setup / solve / rest ms (case 0) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| PBICGSTAB_CLASSICAL_JACOBI | lin1 | 0.005 | — | 0.001 | 464.8 | 447.8–698.7 | 0.08912 | 0.02238 | 50 | 199 | 50 | 0 | 0 | 338.4 / 119 / 4.082 |
+| PBICGSTAB_CLASSICAL_JACOBI | k1 | 0.005 | 1e-06 | 0.01 | 525.3 | 507.2–577.6 | 0.0002884 | 3.969e-05 | 106 | 260 | 50 | 0 | 0 | 341.5 / 168.8 / 20.23 |
+| PBICGSTAB_CLASSICAL_JACOBI | frozen | 0.005 | 1e-06 | 0.01 | 359.9 | 270.3–535.6 | 0.0003573 | 0.0001379 | 196 | 585 | 1 | 0 | 0 | 7.032 / 386.5 / 24.88 |
+| PBICGSTAB_CLASSICAL_JACOBI | full | 0.005 | 1e-06 | 0.01 | 899.6 | 873.1–1161 | 0.0002892 | 2.48e-05 | 105 | 258 | 105 | 0 | 0 | 721 / 168.1 / 23.41 |
+| PBICGSTAB_CLASSICAL_JACOBI | k1 | 0.005 | 0.003 | 0.1 | 421.2 | 412.7–452.9 | 0.6431 | 0.184 | 54 | 106 | 50 | 0 | 0 | 341.4 / 63.17 / 15.67 |
+| PBICGSTAB_CLASSICAL_JACOBI | frozen | 0.005 | 0.003 | 0.1 | 76.42 | 55.49–94.84 | 0.9404 | 0.4527 | 56 | 109 | 1 | 0 | 0 | 6.93 / 58.41 / 11.01 |
+| PBICGSTAB_CLASSICAL_JACOBI | full | 0.005 | 0.003 | 0.1 | 455.6 | 425.3–528.5 | 0.6431 | 0.184 | 54 | 106 | 54 | 0 | 0 | 388.2 / 63.86 / 16.23 |
+| PBICGSTAB_JACOBI_NOAMG | lin1 | 0.005 | — | 0.001 | 96.6 | 52.18–152.6 | 0.09102 | 0.03279 | 50 | 540 | 50 | 0 | 0 | 1.54 / 114 / 2.277 |
+| PBICGSTAB_JACOBI_NOAMG | k1 | 0.005 | 1e-06 | 0.01 | 230.8 | 113.9–325.2 | 0.0005175 | 0.0002782 | 124 | 1226 | 50 | 0 | 0 | 1.709 / 239.1 / 16.07 |
+| PBICGSTAB_JACOBI_NOAMG | frozen | 0.005 | 1e-06 | 0.01 | 492.8 | 247.3–813.8 | 0.0003613 | 0.0001167 | 197 | 2693 | 1 | 0 | 0 | 0.06032 / 638.4 / 24.18 |
+| PBICGSTAB_JACOBI_NOAMG | full | 0.005 | 1e-06 | 0.01 | 225.3 | 113.2–317.2 | 0.0004728 | 0.000242 | 125 | 1180 | 125 | 0 | 0 | 4.196 / 230.9 / 16.38 |
+| PBICGSTAB_JACOBI_NOAMG | k1 | 0.005 | 0.003 | 0.1 | 48.82 | 29.4–79.07 | 1.894 | 1.073 | 57 | 208 | 50 | 0 | 0 | 1.667 / 44.71 / 10.74 |
+| PBICGSTAB_JACOBI_NOAMG | frozen | 0.005 | 0.003 | 0.1 | 50.55 | 28.15–80.49 | 2.346 | 1.134 | 56 | 223 | 1 | 0 | 0 | 0.04881 / 47.6 / 10.47 |
+| PBICGSTAB_JACOBI_NOAMG | full | 0.005 | 0.003 | 0.1 | 49.36 | 29.35–75.91 | 1.894 | 1.078 | 58 | 208 | 58 | 0 | 0 | 1.953 / 45.74 / 10.78 |
+| PBICGSTAB_CLASSICAL_JACOBI | frozen | 0.01 | 0.01 | 0.1 | 42.79 | 40.32–56.77 | 2.23 | 1.334 | 26 | 52 | 1 | 0 | 0 |  |
+| PBICGSTAB_CLASSICAL_JACOBI | frozen | 0.01 | 0.001 | 0.1 | 67.2 | 58.73–99.15 | 1.865 | 0.9325 | 50 | 100 | 1 | 0 | 0 |  |
+| PBICGSTAB_CLASSICAL_JACOBI | k1 | 0.01 | 0.01 | 0.1 | 210.2 | 205.9–214.1 | 2.015 | 0.9327 | 26 | 51 | 25 | 0 | 0 |  |
+| PBICGSTAB_CLASSICAL_JACOBI | k1 | 0.01 | 0.001 | 0.1 | 229.2 | 218.7–237.5 | 1.867 | 0.94 | 50 | 78 | 25 | 0 | 0 |  |
+| PBICGSTAB_CLASSICAL_JACOBI | frozen | 0.005 | 0.01 | 0.1 | 71.52 | 46.62–79.09 | 14.23 | 0.499 | 50 | 100 | 1 | 0 | 0 |  |
+| PBICGSTAB_CLASSICAL_JACOBI | frozen | 0.005 | 0.001 | 0.1 | 120.3 | 73.14–133.1 | 0.4722 | 0.04579 | 100 | 194 | 1 | 0 | 0 |  |
+| PBICGSTAB_CLASSICAL_JACOBI | k1 | 0.005 | 0.01 | 0.1 | 415.4 | 257–446.7 | 13.44 | 0.2508 | 50 | 100 | 50 | 0 | 0 |  |
+| PBICGSTAB_CLASSICAL_JACOBI | k1 | 0.005 | 0.001 | 0.1 | 458.9 | 426.5–491.5 | 0.141 | 0.01479 | 94 | 152 | 50 | 0 | 0 |  |
+| PBICGSTAB_CLASSICAL_JACOBI | lin1 | 0.01 | — | 0.01 | 214 | 208.7–223.4 | 2.04 | 0.9689 | 25 | 75 | 25 | 0 | 0 |  |
+| PBICGSTAB_JACOBI_NOAMG | frozen | 0.01 | 0.01 | 0.1 | 41.8 | 21.81–64.77 | 2.235 | 1.582 | 26 | 210 | 1 | 0 | 0 |  |
+| PBICGSTAB_JACOBI_NOAMG | frozen | 0.01 | 0.001 | 0.1 | 83.43 | 46.99–155.5 | 1.883 | 0.9455 | 52 | 436 | 1 | 0 | 0 |  |
+| PBICGSTAB_JACOBI_NOAMG | k1 | 0.01 | 0.01 | 0.1 | 35.73 | 21.24–55.05 | 2.014 | 1.544 | 26 | 168 | 25 | 0 | 0 |  |
+| PBICGSTAB_JACOBI_NOAMG | k1 | 0.01 | 0.001 | 0.1 | 67.21 | 40.72–91.77 | 1.889 | 0.9688 | 51 | 338 | 25 | 0 | 0 |  |
+| PBICGSTAB_JACOBI_NOAMG | frozen | 0.005 | 0.01 | 0.1 | 45.09 | 27.28–66.97 | 13.21 | 1.672 | 51 | 197 | 1 | 0 | 0 |  |
+| PBICGSTAB_JACOBI_NOAMG | frozen | 0.005 | 0.001 | 0.1 | 81.79 | 47.05–136.3 | 0.8679 | 0.2088 | 90 | 390 | 1 | 0 | 0 |  |
+| PBICGSTAB_JACOBI_NOAMG | k1 | 0.005 | 0.01 | 0.1 | 45.63 | 27.95–64.32 | 13.19 | 1.595 | 51 | 189 | 50 | 0 | 0 |  |
+| PBICGSTAB_JACOBI_NOAMG | k1 | 0.005 | 0.001 | 0.1 | 76.13 | 46.88–104.3 | 0.6572 | 0.3035 | 88 | 349 | 50 | 0 | 0 |  |
+| PBICGSTAB_JACOBI_NOAMG | lin1 | 0.01 | — | 0.01 | 55.78 | 29.24–82.38 | 2.165 | 1.062 | 25 | 314 | 25 | 0 | 0 |  |
+
+### AmgX, Burgers 2D 512^2 (16 cases)
+
+| configuration | variant | dt | Newton tol | lin tol | ms median | ms min–max | worst % | median % | Newton its median | linear its median | setups | unconv. | linear solves not converged | setup / solve / rest ms (case 0) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| PBICGSTAB_CLASSICAL_JACOBI | lin1 | 0.005 | — | 0.001 | 681.5 | 668.8–726.2 | 0.0934 | 0.02916 | 50 | 199 | 50 | 0 | 0 | 500.5 / 171.4 / 4.357 |
+| PBICGSTAB_CLASSICAL_JACOBI | k1 | 0.005 | 1e-06 | 0.01 | 771.3 | 736–852.9 | 0.0002804 | 4.291e-05 | 110 | 270 | 50 | 0 | 0 | 502.7 / 245.6 / 20.82 |
+| PBICGSTAB_CLASSICAL_JACOBI | frozen | 0.005 | 1e-06 | 0.01 | 525.5 | 384.4–831.9 | 0.000368 | 0.0001228 | 196 | 588 | 1 | 0 | 0 | 10.27 / 603.4 / 25.44 |
+| PBICGSTAB_CLASSICAL_JACOBI | full | 0.005 | 1e-06 | 0.01 | 1365 | 1256–1732 | 0.0002811 | 2.15e-05 | 110 | 269 | 110 | 0 | 0 | 1115 / 247.8 / 24.51 |
+| PBICGSTAB_CLASSICAL_JACOBI | k1 | 0.005 | 0.003 | 0.1 | 612.5 | 607.1–639.7 | 0.3173 | 0.02384 | 53 | 104 | 50 | 0 | 0 | 502.9 / 95.65 / 15.62 |
+| PBICGSTAB_CLASSICAL_JACOBI | frozen | 0.005 | 0.003 | 0.1 | 114 | 100.9–156.1 | 0.8148 | 0.4564 | 56 | 110 | 1 | 0 | 0 | 10.21 / 93.38 / 10.99 |
+| PBICGSTAB_CLASSICAL_JACOBI | full | 0.005 | 0.003 | 0.1 | 639.9 | 608.6–812.9 | 0.3173 | 0.02373 | 52 | 104 | 52 | 0 | 0 | 533.1 / 95.94 / 15.72 |
+| PBICGSTAB_JACOBI_NOAMG | lin1 | 0.005 | — | 0.001 | 220.7 | 115–316.7 | 0.1843 | 0.03621 | 50 | 1119 | 50 | 0 | 0 | 2.335 / 253 / 2.493 |
+| PBICGSTAB_JACOBI_NOAMG | k1 | 0.005 | 1e-06 | 0.01 | 505.3 | 239.6–773.9 | 0.0004625 | 0.0002556 | 130 | 2512 | 50 | 0 | 0 | 2.373 / 589.5 / 17.04 |
+| PBICGSTAB_JACOBI_NOAMG | frozen | 0.005 | 1e-06 | 0.01 | 1129 | 481.2–1884 | 0.0003892 | 0.0001155 | 197 | 5722 | 1 | 0 | 0 | 0.06431 / 1413 / 24.75 |
+| PBICGSTAB_JACOBI_NOAMG | full | 0.005 | 1e-06 | 0.01 | 481 | 233.3–724.4 | 0.0004184 | 0.0002471 | 126 | 2360 | 126 | 0 | 0 | 6.086 / 544.6 / 16.8 |
+| PBICGSTAB_JACOBI_NOAMG | k1 | 0.005 | 0.003 | 0.1 | 98.15 | 51.13–160 | 1.753 | 0.9728 | 59 | 431 | 50 | 0 | 0 | 2.362 / 102.7 / 11.08 |
+| PBICGSTAB_JACOBI_NOAMG | frozen | 0.005 | 0.003 | 0.1 | 98.92 | 48.45–166.5 | 1.881 | 0.9668 | 58 | 450 | 1 | 0 | 0 | 0.05618 / 113.8 / 10.81 |
+| PBICGSTAB_JACOBI_NOAMG | full | 0.005 | 0.003 | 0.1 | 97.71 | 50.94–157.3 | 1.753 | 0.9569 | 60 | 423 | 60 | 0 | 0 | 2.784 / 99.2 / 10.96 |
+| PBICGSTAB_CLASSICAL_JACOBI | frozen | 0.01 | 0.01 | 0.1 | 68.5 | 60.88–93.43 | 2.347 | 1.433 | 26 | 52 | 1 | 0 | 0 |  |
+| PBICGSTAB_CLASSICAL_JACOBI | frozen | 0.01 | 0.001 | 0.1 | 103.1 | 92.43–280.2 | 1.931 | 0.9347 | 51 | 101 | 1 | 0 | 0 |  |
+| PBICGSTAB_CLASSICAL_JACOBI | k1 | 0.01 | 0.01 | 0.1 | 309.7 | 304.4–314.8 | 1.96 | 0.9568 | 26 | 52 | 25 | 0 | 0 |  |
+| PBICGSTAB_CLASSICAL_JACOBI | k1 | 0.01 | 0.001 | 0.1 | 338.3 | 318.9–353.4 | 1.934 | 0.9432 | 50 | 98 | 25 | 0 | 0 |  |
+| PBICGSTAB_CLASSICAL_JACOBI | frozen | 0.005 | 0.01 | 0.1 | 108.5 | 71.2–130.7 | 14.34 | 0.5069 | 51 | 101 | 1 | 0 | 0 |  |
+| PBICGSTAB_CLASSICAL_JACOBI | frozen | 0.005 | 0.001 | 0.1 | 173.1 | 115–196 | 0.336 | 0.06621 | 100 | 196 | 1 | 0 | 0 |  |
+| PBICGSTAB_CLASSICAL_JACOBI | k1 | 0.005 | 0.01 | 0.1 | 608.7 | 356.9–615.7 | 14.35 | 0.03067 | 51 | 102 | 50 | 0 | 0 |  |
+| PBICGSTAB_CLASSICAL_JACOBI | k1 | 0.005 | 0.001 | 0.1 | 655 | 613.2–682.8 | 0.08506 | 0.009131 | 92 | 148 | 50 | 0 | 0 |  |
+| PBICGSTAB_CLASSICAL_JACOBI | lin1 | 0.01 | — | 0.01 | 318.4 | 313.4–325.4 | 2.112 | 0.9787 | 25 | 75 | 25 | 0 | 0 |  |
+| PBICGSTAB_JACOBI_NOAMG | frozen | 0.01 | 0.01 | 0.1 | 88.49 | 42.53–141.1 | 2.458 | 1.542 | 28 | 426 | 1 | 0 | 0 |  |
+| PBICGSTAB_JACOBI_NOAMG | frozen | 0.01 | 0.001 | 0.1 | 196.6 | 91.72–339.7 | 1.951 | 0.9649 | 53 | 976 | 1 | 0 | 0 |  |
+| PBICGSTAB_JACOBI_NOAMG | k1 | 0.01 | 0.01 | 0.1 | 77.01 | 42.65–107.7 | 2.014 | 1.486 | 27 | 363 | 25 | 0 | 0 |  |
+| PBICGSTAB_JACOBI_NOAMG | k1 | 0.01 | 0.001 | 0.1 | 143.9 | 77.28–205.8 | 1.941 | 0.9771 | 52 | 694 | 25 | 0 | 0 |  |
+| PBICGSTAB_JACOBI_NOAMG | frozen | 0.005 | 0.01 | 0.1 | 87.26 | 48.43–138.8 | 13.33 | 1.463 | 51 | 393 | 1 | 0 | 0 |  |
+| PBICGSTAB_JACOBI_NOAMG | frozen | 0.005 | 0.001 | 0.1 | 182.2 | 90.65–305.7 | 0.5707 | 0.1399 | 98 | 856 | 1 | 0 | 0 |  |
+| PBICGSTAB_JACOBI_NOAMG | k1 | 0.005 | 0.01 | 0.1 | 87.22 | 50.13–128.2 | 13.33 | 1.422 | 51 | 380 | 50 | 0 | 0 |  |
+| PBICGSTAB_JACOBI_NOAMG | k1 | 0.005 | 0.001 | 0.1 | 150.7 | 85.59–222 | 0.5592 | 0.2508 | 90 | 688 | 50 | 0 | 0 |  |
+| PBICGSTAB_JACOBI_NOAMG | lin1 | 0.01 | — | 0.01 | 117.7 | 62.73–180.5 | 3.65 | 1.27 | 25 | 596 | 25 | 0 | 0 |  |
+
+### AmgX, Burgers 2D 1024^2 (16 cases)
+
+| configuration | variant | dt | Newton tol | lin tol | ms median | ms min–max | worst % | median % | Newton its median | linear its median | setups | unconv. | linear solves not converged | setup / solve / rest ms (case 0) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| PBICGSTAB_CLASSICAL_JACOBI | lin1 | 0.005 | — | 0.001 | 1208 | 1191–1253 | 0.09608 | 0.03083 | 50 | 199 | 50 | 0 | 0 | 928.5 / 276.9 / 4.874 |
+| PBICGSTAB_CLASSICAL_JACOBI | k1 | 0.005 | 1e-06 | 0.01 | 1368 | 1334–1455 | 0.0002432 | 4.973e-05 | 116 | 294 | 50 | 0 | 0 | 930.3 / 425.2 / 21.62 |
+| PBICGSTAB_CLASSICAL_JACOBI | frozen | 0.005 | 1e-06 | 0.01 | 853.1 | 644.4–1367 | 0.0003125 | 0.0001262 | 196 | 594 | 1 | 0 | 0 | 18.93 / 1011 / 25.48 |
+| PBICGSTAB_CLASSICAL_JACOBI | full | 0.005 | 1e-06 | 0.01 | 2561 | 2343–2852 | 0.0002438 | 2.169e-05 | 114 | 284 | 114 | 0 | 0 | 2120 / 422.7 / 25.49 |
+| PBICGSTAB_CLASSICAL_JACOBI | k1 | 0.005 | 0.003 | 0.1 | 1109 | 1096–1148 | 0.04989 | 0.01968 | 52 | 106 | 50 | 0 | 0 | 930.8 / 159 / 15.6 |
+| PBICGSTAB_CLASSICAL_JACOBI | frozen | 0.005 | 0.003 | 0.1 | 185.2 | 173.5–248.5 | 0.922 | 0.4947 | 52 | 106 | 1 | 0 | 0 | 18.94 / 157.4 / 10.76 |
+| PBICGSTAB_CLASSICAL_JACOBI | full | 0.005 | 0.003 | 0.1 | 1145 | 1113–1303 | 0.04989 | 0.0189 | 52 | 106 | 52 | 0 | 0 | 967.1 / 159.7 / 15.72 |
+| PBICGSTAB_JACOBI_NOAMG | lin1 | 0.005 | — | 0.001 | 641.9 | 355.1–898.8 | 0.5991 | 0.06083 | 50 | 2249 | 50 | 0 | 0 | 5.971 / 757.6 / 2.861 |
+| PBICGSTAB_JACOBI_NOAMG | k1 | 0.005 | 1e-06 | 0.01 | 1460 | 679.1–2026 | 0.000558 | 0.0001829 | 134 | 5086 | 50 | 0 | 0 | 6.041 / 1741 / 17.9 |
+| PBICGSTAB_JACOBI_NOAMG | frozen | 0.005 | 1e-06 | 0.01 | 3177 | 1426–5442 | 0.0003405 | 0.0001263 | 197 | 11158 | 1 | 0 | 0 | 0.1227 / 3950 / 25.1 |
+| PBICGSTAB_JACOBI_NOAMG | full | 0.005 | 1e-06 | 0.01 | 1399 | 637.5–2027 | 0.0003505 | 0.0002192 | 130 | 4855 | 130 | 0 | 0 | 15.97 / 1602 / 17.23 |
+| PBICGSTAB_JACOBI_NOAMG | k1 | 0.005 | 0.003 | 0.1 | 266.4 | 129.6–443.3 | 1.739 | 0.8698 | 60 | 883 | 50 | 0 | 0 | 5.983 / 302.4 / 11.17 |
+| PBICGSTAB_JACOBI_NOAMG | frozen | 0.005 | 0.003 | 0.1 | 288.2 | 125.9–498 | 1.774 | 0.8432 | 60 | 980 | 1 | 0 | 0 | 0.1224 / 351.2 / 10.88 |
+| PBICGSTAB_JACOBI_NOAMG | full | 0.005 | 0.003 | 0.1 | 262.3 | 130.4–451.8 | 1.739 | 0.8282 | 60 | 866 | 60 | 0 | 0 | 8.283 / 303.9 / 11.59 |
+| PBICGSTAB_CLASSICAL_JACOBI | frozen | 0.01 | 0.01 | 0.1 | 103.9 | 99.84–133.8 | 2.437 | 1.416 | 26 | 53 | 1 | 0 | 0 |  |
+| PBICGSTAB_CLASSICAL_JACOBI | frozen | 0.01 | 0.001 | 0.1 | 177.8 | 141.4–240.5 | 1.97 | 0.9408 | 51 | 103 | 1 | 0 | 0 |  |
+| PBICGSTAB_CLASSICAL_JACOBI | k1 | 0.01 | 0.01 | 0.1 | 553.5 | 546.9–571.8 | 2.114 | 0.9617 | 26 | 52 | 25 | 0 | 0 |  |
+| PBICGSTAB_CLASSICAL_JACOBI | k1 | 0.01 | 0.001 | 0.1 | 600.5 | 552.8–612 | 1.975 | 0.9498 | 46 | 88 | 25 | 0 | 0 |  |
+| PBICGSTAB_CLASSICAL_JACOBI | frozen | 0.005 | 0.01 | 0.1 | 181.2 | 110–194.8 | 14.4 | 0.5203 | 51 | 103 | 1 | 0 | 0 |  |
+| PBICGSTAB_CLASSICAL_JACOBI | frozen | 0.005 | 0.001 | 0.1 | 276.9 | 186.9–341.7 | 0.4736 | 0.05923 | 100 | 198 | 1 | 0 | 0 |  |
+| PBICGSTAB_CLASSICAL_JACOBI | k1 | 0.005 | 0.01 | 0.1 | 1099 | 683.5–1138 | 13.61 | 0.02866 | 51 | 103 | 50 | 0 | 0 |  |
+| PBICGSTAB_CLASSICAL_JACOBI | k1 | 0.005 | 0.001 | 0.1 | 1172 | 1098–1203 | 0.02236 | 0.006375 | 86 | 146 | 50 | 0 | 0 |  |
+| PBICGSTAB_CLASSICAL_JACOBI | lin1 | 0.01 | — | 0.01 | 573.8 | 564.4–681 | 2.152 | 0.9783 | 25 | 76 | 25 | 0 | 0 |  |
+| PBICGSTAB_JACOBI_NOAMG | frozen | 0.01 | 0.01 | 0.1 | 268.1 | 116.9–427.7 | 2.127 | 1.611 | 28 | 932 | 1 | 0 | 0 |  |
+| PBICGSTAB_JACOBI_NOAMG | frozen | 0.01 | 0.001 | 0.1 | 551.3 | 259–986.4 | 1.991 | 0.9852 | 52 | 1930 | 1 | 0 | 0 |  |
+| PBICGSTAB_JACOBI_NOAMG | k1 | 0.01 | 0.01 | 0.1 | 220.1 | 116.2–324.3 | 2.172 | 1.486 | 27 | 752 | 25 | 0 | 0 |  |
+| PBICGSTAB_JACOBI_NOAMG | k1 | 0.01 | 0.001 | 0.1 | 428.3 | 211.6–623.1 | 1.972 | 0.9867 | 52 | 1482 | 25 | 0 | 0 |  |
+| PBICGSTAB_JACOBI_NOAMG | frozen | 0.005 | 0.01 | 0.1 | 238.1 | 119.4–421.1 | 13.22 | 1.348 | 52 | 808 | 1 | 0 | 0 |  |
+| PBICGSTAB_JACOBI_NOAMG | frozen | 0.005 | 0.001 | 0.1 | 540.9 | 259.1–877.7 | 0.4743 | 0.111 | 101 | 1864 | 1 | 0 | 0 |  |
+| PBICGSTAB_JACOBI_NOAMG | k1 | 0.005 | 0.01 | 0.1 | 237 | 122.4–368.7 | 13.23 | 1.305 | 52 | 782 | 50 | 0 | 0 |  |
+| PBICGSTAB_JACOBI_NOAMG | k1 | 0.005 | 0.001 | 0.1 | 454.1 | 228.7–684.1 | 0.5275 | 0.1857 | 92 | 1536 | 50 | 0 | 0 |  |
+| PBICGSTAB_JACOBI_NOAMG | lin1 | 0.01 | — | 0.01 | 337.3 | 180.8–530.1 | 4.884 | 1.683 | 25 | 1184 | 25 | 0 | 0 |  |
 
 ### AmgX, Burgers 3D 64^3 (16 cases)
 
@@ -835,13 +949,23 @@ Same kernels, Newton loop, timing contract and error metric as the cuDSS stepper
 | PBICGSTAB_JACOBI_NOAMG | k1 | 0.005 | 0.001 | 0.1 | 112.2 | 56.02–144.2 | 1.301 | 0.4901 | 78 | 184 | 50 | 0 | 0 |  |
 | PBICGSTAB_JACOBI_NOAMG | lin1 | 0.01 | — | 0.01 | 83.63 | 53.55–104.7 | 1.232 | 0.7306 | 25 | 171 | 25 | 0 | 0 |  |
 
-### AmgX, accuracy-matched: fastest setting whose worst-case error is no worse than ours
+### Fastest measured AmgX setting meeting each ROM worst-error threshold
 
-Same selection rule as for cuDSS (settings with unconverged Newton steps excluded). AmgX was run on the same mesh only, dt 0.005 and 0.01.
+Same selection rule as for cuDSS (settings with unconverged Newton steps excluded). AmgX was run on the same mesh only, dt 0.005 and 0.01. The error is recorded on the first timed repetition of each case. The paired median uses those same repetitions. The all-repeat median selects the setting under the registered rule. The limited AmgX cohort and the full ROM cohort have different sizes.
 
-| problem | ours | ours worst % | ours ms (paper) | ours ms (same GPU, this lane) | AmgX setting | AmgX ms median (min–max) | AmgX worst % | AmgX / ours (paper ms) | AmgX / ours (same GPU) |
-|---|---|---|---|---|---|---|---|---|---|
-| Burgers 3D 64^3 | accurate | 1.007 | 81.11 | 81.13 | PBICGSTAB_JACOBI_NOAMG, lin1, dt 0.005, tol none, lin tol 0.001 | 40.47 (27.39–49.64) | 0.04127 | 0.499 | 0.499 |
-| Burgers 3D 64^3 | fast | 3.372 | 8.283 | 8.289 | PBICGSTAB_JACOBI_NOAMG, frozen, dt 0.01, tol 0.01, lin tol 0.1 | 14.89 (11.47–19.26) | 2.515 | 1.8 | 1.8 |
-| Burgers 3D 128^3 | accurate | 1.464 | 85 | 85.64 | PBICGSTAB_JACOBI_NOAMG, lin1, dt 0.01, tol none, lin tol 0.01 | 83.63 (53.55–104.7) | 1.232 | 0.984 | 0.977 |
-| Burgers 3D 128^3 | fast | 4.26 | 9.543 | 10.01 | PBICGSTAB_JACOBI_NOAMG, frozen, dt 0.01, tol 0.01, lin tol 0.1 | 43.68 (24.36–72.14) | 2.335 | 4.58 | 4.36 |
+| problem | ROM setting | ROM threshold, worst % | AmgX setting | AmgX all-repeat ms median (min–max) | AmgX paired ms median | AmgX median % | AmgX worst % |
+|---|---|---|---|---|---|---|---|
+| Burgers 2D 256^2 | accurate | 0.8749 | PBICGSTAB_JACOBI_NOAMG, k1, dt 0.005, tol 0.001, lin tol 0.1 | 76.13 (46.88–104.3) | 76.08 | 0.3035 | 0.6572 |
+| Burgers 2D 256^2 | fast | 3.846 | PBICGSTAB_JACOBI_NOAMG, k1, dt 0.01, tol 0.01, lin tol 0.1 | 35.73 (21.24–55.05) | 35.79 | 1.544 | 2.014 |
+| Burgers 2D 512^2 | accurate | 1.128 | PBICGSTAB_CLASSICAL_JACOBI, frozen, dt 0.005, tol 0.003, lin tol 0.1 | 114 (100.9–156.1) | 113.5 | 0.4564 | 0.8148 |
+| Burgers 2D 512^2 | fast | 4.103 | PBICGSTAB_CLASSICAL_JACOBI, frozen, dt 0.01, tol 0.01, lin tol 0.1 | 68.5 (60.88–93.43) | 68.6 | 1.433 | 2.347 |
+| Burgers 2D 1024^2 | accurate | 1.25 | PBICGSTAB_CLASSICAL_JACOBI, frozen, dt 0.005, tol 0.003, lin tol 0.1 | 185.2 (173.5–248.5) | 185.1 | 0.4947 | 0.922 |
+| Burgers 2D 1024^2 | fast | 4.255 | PBICGSTAB_CLASSICAL_JACOBI, frozen, dt 0.01, tol 0.01, lin tol 0.1 | 103.9 (99.84–133.8) | 103.3 | 1.416 | 2.437 |
+| Burgers 3D 64^3 | accurate | 1.007 | PBICGSTAB_JACOBI_NOAMG, lin1, dt 0.005, tol none, lin tol 0.001 | 40.47 (27.39–49.64) | 40.48 | 0.01748 | 0.04127 |
+| Burgers 3D 64^3 | fast | 3.372 | PBICGSTAB_JACOBI_NOAMG, frozen, dt 0.01, tol 0.01, lin tol 0.1 | 14.89 (11.47–19.26) | 14.88 | 1.869 | 2.515 |
+| Burgers 3D 128^3 | accurate | 1.464 | PBICGSTAB_JACOBI_NOAMG, lin1, dt 0.01, tol none, lin tol 0.01 | 83.63 (53.55–104.7) | 83.58 | 0.7306 | 1.232 |
+| Burgers 3D 128^3 | fast | 4.26 | PBICGSTAB_JACOBI_NOAMG, frozen, dt 0.01, tol 0.01, lin tol 0.1 | 43.68 (24.36–72.14) | 43.63 | 1.485 | 2.335 |
+
+## Glossary
+
+A case is one initial field and viscosity. Each trajectory runs through the final time on the indicated mesh. Median and worst errors are percentages across the cases. A tolerance is a numerical stopping criterion. A Newton iteration updates the nonlinear solution. A linear solve computes that update. Setup and refactorisation construct or refresh a matrix solver. A timed repetition repeats a trajectory. AmgX is the iterative GPU linear solver, cuDSS is the direct GPU linear solver, and ROM is the reduced-order model.

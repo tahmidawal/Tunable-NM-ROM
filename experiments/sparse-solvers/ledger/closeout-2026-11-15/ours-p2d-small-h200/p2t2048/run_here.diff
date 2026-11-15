@@ -1,0 +1,10 @@
+11,12c11,12
+< #SBATCH --output=/cluster/tufts/paralab/tawal01/p2test_20260925/p2t2048/logs/%j.out
+< #SBATCH --error=/cluster/tufts/paralab/tawal01/p2test_20260925/p2t2048/logs/%j.err
+---
+> #SBATCH --output=/cluster/tufts/paralab/tawal01/sparse-solvers-20261113/jobs/ours-p2d-small-h200/p2t2048/logs/%j.out
+> #SBATCH --error=/cluster/tufts/paralab/tawal01/sparse-solvers-20261113/jobs/ours-p2d-small-h200/p2t2048/logs/%j.err
+14c14
+< TASK_ROOT=/cluster/tufts/paralab/tawal01/p2test_20260925/p2t2048
+---
+> TASK_ROOT=/cluster/tufts/paralab/tawal01/sparse-solvers-20261113/jobs/ours-p2d-small-h200/p2t2048

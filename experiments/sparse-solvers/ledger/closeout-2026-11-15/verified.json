@@ -1,0 +1,51 @@
+{
+  "outputs": {
+    "results/ours/h200/p2t1024.json": {
+      "cases": 32,
+      "failed_controls": [],
+      "job": "7229014",
+      "timing_usable": true
+    },
+    "results/ours/h200/p2t2048.json": {
+      "cases": 32,
+      "failed_controls": [],
+      "job": "7229014",
+      "timing_usable": true
+    },
+    "results/ours/h200/p2t256.json": {
+      "cases": 32,
+      "failed_controls": [
+        "neighbour"
+      ],
+      "job": "7229014",
+      "timing_usable": false
+    },
+    "results/ours/h200/t2048.json": {
+      "cases": 64,
+      "failed_controls": [],
+      "job": "7229016",
+      "timing_usable": true
+    },
+    "results/step/h200/amgx_b2d_L1024.json": {
+      "cases": 16,
+      "job": "7229013",
+      "settings": 32
+    },
+    "results/step/h200/amgx_b2d_L256.json": {
+      "cases": 16,
+      "job": "7229013",
+      "settings": 32
+    },
+    "results/step/h200/amgx_b2d_L512.json": {
+      "cases": 16,
+      "job": "7229013",
+      "settings": 32
+    }
+  },
+  "verified_archive_members": {
+    "amgx-2d-small.tar.zst": 43,
+    "ours-b2d-2048-h200.tar.zst": 1591,
+    "ours-p2d-small-h200.tar.zst": 1882
+  },
+  "verified_source_entries": 103
+}

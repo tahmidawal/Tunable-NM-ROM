@@ -1,0 +1,20 @@
+pax009
+Sun Nov 15 02:41:10 EST 2026
+name, memory.total [MiB], driver_version
+NVIDIA H200, 143771 MiB, 575.57.08
+cpu_model=INTEL(R) XEON(R) PLATINUM 8568Y+
+jax_backend=gpu
+=== p2t256 start Sun Nov 15 02:41:12 EST 2026
+=== p2t256 ok seconds=727
+PASS 576 errors recomputed, worst relative deviation 3.0e-11 (bar 1e-8), hashes match, repetitions identical: True; controls detected: swapped-case True, perturbed-error True
+ALL-DONE
+=== p2t1024 start Sun Nov 15 02:53:19 EST 2026
+=== p2t1024 ok seconds=829
+PASS 576 errors recomputed, worst relative deviation 3.0e-11 (bar 1e-8), hashes match, repetitions identical: True; controls detected: swapped-case True, perturbed-error True
+ALL-DONE
+=== p2t2048 start Sun Nov 15 03:07:08 EST 2026
+=== p2t2048 ok seconds=1346
+PASS 576 errors recomputed, worst relative deviation 5.1e-11 (bar 1e-8), hashes match, repetitions identical: True; controls detected: swapped-case True, perturbed-error True
+ALL-DONE
+Sun Nov 15 03:29:34 EST 2026
+task_completed

@@ -1,0 +1,132 @@
+sources verified
+vendored paper solver verified
+a6c0c8d09f4a197d5f6fe853df0dd6e88e96f245
+pax009
+Sun Nov 15 02:40:40 EST 2026
+name, memory.total [MiB], driver_version
+NVIDIA H200, 143771 MiB, 575.57.08
+cpu_model=INTEL(R) XEON(R) PLATINUM 8568Y+
+jax_backend=gpu
+amgx_commit=91a8413ef267b1c32aff4014c02820e1c5897ac2
+=== dim=2 L=256 cases=16 budget=0 Sun Nov 15 02:40:52 EST 2026
+ref dim=2 L=256 cases=16 all_converged=True seconds=2.2
+=== amgx dim=2 L=256 cases=16 budget=900 Sun Nov 15 02:41:00 EST 2026
+AMGX version 2.5.0
+Built on Nov 13 2026, 11:46:49
+Compiled with CUDA Runtime 12.9, using CUDA driver 12.9
+checks PBICGSTAB_CLASSICAL_JACOBI {'ltol': 0.001, 'tight_full_newton_vs_reference': 2.0265106003619826e-09, 'initial_field_difference': 0.0, 'tight_unconverged_steps': 0, 'tight_newton_total': 123, 'linear_not_converged': 0, 'passed': True}
+02:41:30 PBICGSTAB_CLASSICAL_JACOBI|lin1_dt0.005_ntolnone_ltol0.001: 464.81 ms [447.85, 698.72] worst 0.0891% newton 50 lin 199 setups 50 unconv 0
+02:41:57 PBICGSTAB_CLASSICAL_JACOBI|k1_dt0.005_ntol1e-06_ltol0.01: 525.32 ms [507.19, 577.65] worst 0.0003% newton 106 lin 260 setups 50 unconv 0
+02:42:15 PBICGSTAB_CLASSICAL_JACOBI|frozen_dt0.005_ntol1e-06_ltol0.01: 359.95 ms [270.27, 535.57] worst 0.0004% newton 196 lin 585 setups 1 unconv 0
+02:43:02 PBICGSTAB_CLASSICAL_JACOBI|full_dt0.005_ntol1e-06_ltol0.01: 899.62 ms [873.11, 1161.24] worst 0.0003% newton 105 lin 258 setups 105 unconv 0
+02:43:24 PBICGSTAB_CLASSICAL_JACOBI|k1_dt0.005_ntol0.003_ltol0.1: 421.24 ms [412.74, 452.88] worst 0.6431% newton 54 lin 106 setups 50 unconv 0
+02:43:27 PBICGSTAB_CLASSICAL_JACOBI|frozen_dt0.005_ntol0.003_ltol0.1: 76.42 ms [55.49, 94.84] worst 0.9404% newton 56 lin 109 setups 1 unconv 0
+02:43:50 PBICGSTAB_CLASSICAL_JACOBI|full_dt0.005_ntol0.003_ltol0.1: 455.60 ms [425.25, 528.49] worst 0.6431% newton 54 lin 106 setups 54 unconv 0
+checks PBICGSTAB_JACOBI_NOAMG {'ltol': 0.001, 'tight_full_newton_vs_reference': 2.1372039714685753e-08, 'initial_field_difference': 0.0, 'tight_unconverged_steps': 0, 'tight_newton_total': 140, 'linear_not_converged': 0, 'passed': True}
+02:43:56 PBICGSTAB_JACOBI_NOAMG|lin1_dt0.005_ntolnone_ltol0.001: 96.60 ms [52.18, 152.59] worst 0.0910% newton 50 lin 540 setups 50 unconv 0
+02:44:07 PBICGSTAB_JACOBI_NOAMG|k1_dt0.005_ntol1e-06_ltol0.01: 230.75 ms [113.91, 325.23] worst 0.0005% newton 124 lin 1226 setups 50 unconv 0
+02:44:33 PBICGSTAB_JACOBI_NOAMG|frozen_dt0.005_ntol1e-06_ltol0.01: 492.80 ms [247.26, 813.76] worst 0.0004% newton 197 lin 2693 setups 1 unconv 0
+02:44:44 PBICGSTAB_JACOBI_NOAMG|full_dt0.005_ntol1e-06_ltol0.01: 225.31 ms [113.16, 317.22] worst 0.0005% newton 125 lin 1180 setups 125 unconv 0
+02:44:46 PBICGSTAB_JACOBI_NOAMG|k1_dt0.005_ntol0.003_ltol0.1: 48.82 ms [29.40, 79.07] worst 1.8943% newton 57 lin 208 setups 50 unconv 0
+02:44:49 PBICGSTAB_JACOBI_NOAMG|frozen_dt0.005_ntol0.003_ltol0.1: 50.55 ms [28.15, 80.49] worst 2.3464% newton 56 lin 223 setups 1 unconv 0
+02:44:52 PBICGSTAB_JACOBI_NOAMG|full_dt0.005_ntol0.003_ltol0.1: 49.36 ms [29.35, 75.91] worst 1.8943% newton 58 lin 208 setups 58 unconv 0
+02:44:54 PBICGSTAB_CLASSICAL_JACOBI|frozen_dt0.01_ntol0.01_ltol0.1: 42.79 ms [40.32, 56.77] worst 2.2297% newton 26 lin 52 setups 1 unconv 0
+02:44:57 PBICGSTAB_CLASSICAL_JACOBI|frozen_dt0.01_ntol0.001_ltol0.1: 67.20 ms [58.73, 99.15] worst 1.8651% newton 50 lin 100 setups 1 unconv 0
+02:45:08 PBICGSTAB_CLASSICAL_JACOBI|k1_dt0.01_ntol0.01_ltol0.1: 210.21 ms [205.92, 214.09] worst 2.0152% newton 26 lin 51 setups 25 unconv 0
+02:45:19 PBICGSTAB_CLASSICAL_JACOBI|k1_dt0.01_ntol0.001_ltol0.1: 229.19 ms [218.67, 237.51] worst 1.8671% newton 50 lin 78 setups 25 unconv 0
+02:45:22 PBICGSTAB_CLASSICAL_JACOBI|frozen_dt0.005_ntol0.01_ltol0.1: 71.52 ms [46.62, 79.09] worst 14.2276% newton 50 lin 100 setups 1 unconv 0
+02:45:28 PBICGSTAB_CLASSICAL_JACOBI|frozen_dt0.005_ntol0.001_ltol0.1: 120.33 ms [73.14, 133.14] worst 0.4722% newton 100 lin 194 setups 1 unconv 0
+02:45:48 PBICGSTAB_CLASSICAL_JACOBI|k1_dt0.005_ntol0.01_ltol0.1: 415.37 ms [256.96, 446.72] worst 13.4448% newton 50 lin 100 setups 50 unconv 0
+02:46:10 PBICGSTAB_CLASSICAL_JACOBI|k1_dt0.005_ntol0.001_ltol0.1: 458.89 ms [426.45, 491.54] worst 0.1410% newton 94 lin 152 setups 50 unconv 0
+02:46:21 PBICGSTAB_CLASSICAL_JACOBI|lin1_dt0.01_ntolnone_ltol0.01: 213.99 ms [208.65, 223.37] worst 2.0397% newton 25 lin 75 setups 25 unconv 0
+02:46:23 PBICGSTAB_JACOBI_NOAMG|frozen_dt0.01_ntol0.01_ltol0.1: 41.80 ms [21.81, 64.77] worst 2.2354% newton 26 lin 210 setups 1 unconv 0
+02:46:27 PBICGSTAB_JACOBI_NOAMG|frozen_dt0.01_ntol0.001_ltol0.1: 83.43 ms [46.99, 155.55] worst 1.8827% newton 52 lin 436 setups 1 unconv 0
+02:46:29 PBICGSTAB_JACOBI_NOAMG|k1_dt0.01_ntol0.01_ltol0.1: 35.73 ms [21.24, 55.05] worst 2.0140% newton 26 lin 168 setups 25 unconv 0
+02:46:33 PBICGSTAB_JACOBI_NOAMG|k1_dt0.01_ntol0.001_ltol0.1: 67.21 ms [40.72, 91.77] worst 1.8892% newton 51 lin 338 setups 25 unconv 0
+02:46:35 PBICGSTAB_JACOBI_NOAMG|frozen_dt0.005_ntol0.01_ltol0.1: 45.09 ms [27.28, 66.97] worst 13.2086% newton 51 lin 197 setups 1 unconv 0
+02:46:39 PBICGSTAB_JACOBI_NOAMG|frozen_dt0.005_ntol0.001_ltol0.1: 81.79 ms [47.05, 136.35] worst 0.8679% newton 90 lin 390 setups 1 unconv 0
+02:46:41 PBICGSTAB_JACOBI_NOAMG|k1_dt0.005_ntol0.01_ltol0.1: 45.63 ms [27.95, 64.32] worst 13.1936% newton 51 lin 189 setups 50 unconv 0
+02:46:45 PBICGSTAB_JACOBI_NOAMG|k1_dt0.005_ntol0.001_ltol0.1: 76.13 ms [46.88, 104.28] worst 0.6572% newton 88 lin 349 setups 50 unconv 0
+02:46:48 PBICGSTAB_JACOBI_NOAMG|lin1_dt0.01_ntolnone_ltol0.01: 55.78 ms [29.24, 82.38] worst 2.1648% newton 25 lin 314 setups 25 unconv 0
+=== dim=2 L=512 cases=16 budget=0 Sun Nov 15 02:46:48 EST 2026
+ref dim=2 L=512 cases=16 all_converged=True seconds=2.9
+=== amgx dim=2 L=512 cases=16 budget=900 Sun Nov 15 02:46:56 EST 2026
+AMGX version 2.5.0
+Built on Nov 13 2026, 11:46:49
+Compiled with CUDA Runtime 12.9, using CUDA driver 12.9
+checks PBICGSTAB_CLASSICAL_JACOBI {'ltol': 0.001, 'tight_full_newton_vs_reference': 1.777099819932901e-09, 'initial_field_difference': 0.0, 'tight_unconverged_steps': 0, 'tight_newton_total': 127, 'linear_not_converged': 0, 'passed': True}
+02:47:33 PBICGSTAB_CLASSICAL_JACOBI|lin1_dt0.005_ntolnone_ltol0.001: 681.51 ms [668.82, 726.20] worst 0.0934% newton 50 lin 199 setups 50 unconv 0
+02:48:12 PBICGSTAB_CLASSICAL_JACOBI|k1_dt0.005_ntol1e-06_ltol0.01: 771.29 ms [735.99, 852.91] worst 0.0003% newton 110 lin 270 setups 50 unconv 0
+02:48:41 PBICGSTAB_CLASSICAL_JACOBI|frozen_dt0.005_ntol1e-06_ltol0.01: 525.50 ms [384.41, 831.90] worst 0.0004% newton 196 lin 588 setups 1 unconv 0
+02:49:50 PBICGSTAB_CLASSICAL_JACOBI|full_dt0.005_ntol1e-06_ltol0.01: 1364.85 ms [1256.05, 1732.46] worst 0.0003% newton 110 lin 269 setups 110 unconv 0
+02:50:21 PBICGSTAB_CLASSICAL_JACOBI|k1_dt0.005_ntol0.003_ltol0.1: 612.47 ms [607.06, 639.71] worst 0.3173% newton 53 lin 104 setups 50 unconv 0
+02:50:27 PBICGSTAB_CLASSICAL_JACOBI|frozen_dt0.005_ntol0.003_ltol0.1: 114.02 ms [100.88, 156.09] worst 0.8148% newton 56 lin 110 setups 1 unconv 0
+02:51:00 PBICGSTAB_CLASSICAL_JACOBI|full_dt0.005_ntol0.003_ltol0.1: 639.87 ms [608.63, 812.91] worst 0.3173% newton 52 lin 104 setups 52 unconv 0
+checks PBICGSTAB_JACOBI_NOAMG {'ltol': 0.001, 'tight_full_newton_vs_reference': 3.1528351025956946e-09, 'initial_field_difference': 0.0, 'tight_unconverged_steps': 0, 'tight_newton_total': 149, 'linear_not_converged': 0, 'passed': True}
+02:51:12 PBICGSTAB_JACOBI_NOAMG|lin1_dt0.005_ntolnone_ltol0.001: 220.67 ms [114.97, 316.69] worst 0.1843% newton 50 lin 1119 setups 50 unconv 0
+02:51:37 PBICGSTAB_JACOBI_NOAMG|k1_dt0.005_ntol1e-06_ltol0.01: 505.32 ms [239.61, 773.87] worst 0.0005% newton 130 lin 2512 setups 50 unconv 0
+02:52:34 PBICGSTAB_JACOBI_NOAMG|frozen_dt0.005_ntol1e-06_ltol0.01: 1128.71 ms [481.17, 1884.06] worst 0.0004% newton 197 lin 5722 setups 1 unconv 0
+02:52:58 PBICGSTAB_JACOBI_NOAMG|full_dt0.005_ntol1e-06_ltol0.01: 481.01 ms [233.26, 724.44] worst 0.0004% newton 126 lin 2360 setups 126 unconv 0
+02:53:03 PBICGSTAB_JACOBI_NOAMG|k1_dt0.005_ntol0.003_ltol0.1: 98.15 ms [51.13, 159.98] worst 1.7525% newton 59 lin 431 setups 50 unconv 0
+02:53:09 PBICGSTAB_JACOBI_NOAMG|frozen_dt0.005_ntol0.003_ltol0.1: 98.92 ms [48.45, 166.49] worst 1.8808% newton 58 lin 450 setups 1 unconv 0
+02:53:14 PBICGSTAB_JACOBI_NOAMG|full_dt0.005_ntol0.003_ltol0.1: 97.71 ms [50.94, 157.29] worst 1.7525% newton 60 lin 423 setups 60 unconv 0
+02:53:17 PBICGSTAB_CLASSICAL_JACOBI|frozen_dt0.01_ntol0.01_ltol0.1: 68.50 ms [60.88, 93.43] worst 2.3473% newton 26 lin 52 setups 1 unconv 0
+02:53:23 PBICGSTAB_CLASSICAL_JACOBI|frozen_dt0.01_ntol0.001_ltol0.1: 103.11 ms [92.43, 280.24] worst 1.9306% newton 51 lin 101 setups 1 unconv 0
+02:53:38 PBICGSTAB_CLASSICAL_JACOBI|k1_dt0.01_ntol0.01_ltol0.1: 309.69 ms [304.44, 314.79] worst 1.9596% newton 26 lin 52 setups 25 unconv 0
+02:53:55 PBICGSTAB_CLASSICAL_JACOBI|k1_dt0.01_ntol0.001_ltol0.1: 338.29 ms [318.92, 353.42] worst 1.9336% newton 50 lin 98 setups 25 unconv 0
+02:54:00 PBICGSTAB_CLASSICAL_JACOBI|frozen_dt0.005_ntol0.01_ltol0.1: 108.49 ms [71.20, 130.67] worst 14.3442% newton 51 lin 101 setups 1 unconv 0
+02:54:09 PBICGSTAB_CLASSICAL_JACOBI|frozen_dt0.005_ntol0.001_ltol0.1: 173.08 ms [115.02, 196.04] worst 0.3360% newton 100 lin 196 setups 1 unconv 0
+02:54:38 PBICGSTAB_CLASSICAL_JACOBI|k1_dt0.005_ntol0.01_ltol0.1: 608.68 ms [356.90, 615.69] worst 14.3546% newton 51 lin 102 setups 50 unconv 0
+02:55:10 PBICGSTAB_CLASSICAL_JACOBI|k1_dt0.005_ntol0.001_ltol0.1: 654.97 ms [613.18, 682.77] worst 0.0851% newton 92 lin 148 setups 50 unconv 0
+02:55:26 PBICGSTAB_CLASSICAL_JACOBI|lin1_dt0.01_ntolnone_ltol0.01: 318.40 ms [313.35, 325.37] worst 2.1119% newton 25 lin 75 setups 25 unconv 0
+02:55:30 PBICGSTAB_JACOBI_NOAMG|frozen_dt0.01_ntol0.01_ltol0.1: 88.49 ms [42.53, 141.09] worst 2.4577% newton 28 lin 426 setups 1 unconv 0
+02:55:40 PBICGSTAB_JACOBI_NOAMG|frozen_dt0.01_ntol0.001_ltol0.1: 196.60 ms [91.72, 339.72] worst 1.9511% newton 53 lin 976 setups 1 unconv 0
+02:55:44 PBICGSTAB_JACOBI_NOAMG|k1_dt0.01_ntol0.01_ltol0.1: 77.01 ms [42.65, 107.72] worst 2.0142% newton 27 lin 363 setups 25 unconv 0
+02:55:51 PBICGSTAB_JACOBI_NOAMG|k1_dt0.01_ntol0.001_ltol0.1: 143.87 ms [77.28, 205.76] worst 1.9407% newton 52 lin 694 setups 25 unconv 0
+02:55:55 PBICGSTAB_JACOBI_NOAMG|frozen_dt0.005_ntol0.01_ltol0.1: 87.26 ms [48.43, 138.81] worst 13.3288% newton 51 lin 393 setups 1 unconv 0
+02:56:04 PBICGSTAB_JACOBI_NOAMG|frozen_dt0.005_ntol0.001_ltol0.1: 182.21 ms [90.65, 305.70] worst 0.5707% newton 98 lin 856 setups 1 unconv 0
+02:56:09 PBICGSTAB_JACOBI_NOAMG|k1_dt0.005_ntol0.01_ltol0.1: 87.22 ms [50.13, 128.19] worst 13.3330% newton 51 lin 380 setups 50 unconv 0
+02:56:16 PBICGSTAB_JACOBI_NOAMG|k1_dt0.005_ntol0.001_ltol0.1: 150.74 ms [85.59, 221.96] worst 0.5592% newton 90 lin 688 setups 50 unconv 0
+02:56:22 PBICGSTAB_JACOBI_NOAMG|lin1_dt0.01_ntolnone_ltol0.01: 117.70 ms [62.73, 180.51] worst 3.6503% newton 25 lin 596 setups 25 unconv 0
+=== dim=2 L=1024 cases=16 budget=0 Sun Nov 15 02:56:22 EST 2026
+ref dim=2 L=1024 cases=16 all_converged=True seconds=6.2
+=== amgx dim=2 L=1024 cases=16 budget=1200 Sun Nov 15 02:56:33 EST 2026
+AMGX version 2.5.0
+Built on Nov 13 2026, 11:46:49
+Compiled with CUDA Runtime 12.9, using CUDA driver 12.9
+checks PBICGSTAB_CLASSICAL_JACOBI {'ltol': 0.001, 'tight_full_newton_vs_reference': 1.5486528111210753e-09, 'initial_field_difference': 0.0, 'tight_unconverged_steps': 0, 'tight_newton_total': 141, 'linear_not_converged': 0, 'passed': True}
+02:57:40 PBICGSTAB_CLASSICAL_JACOBI|lin1_dt0.005_ntolnone_ltol0.001: 1207.93 ms [1191.27, 1252.71] worst 0.0961% newton 50 lin 199 setups 50 unconv 0
+02:58:49 PBICGSTAB_CLASSICAL_JACOBI|k1_dt0.005_ntol1e-06_ltol0.01: 1368.22 ms [1333.73, 1454.57] worst 0.0002% newton 116 lin 294 setups 50 unconv 0
+02:59:35 PBICGSTAB_CLASSICAL_JACOBI|frozen_dt0.005_ntol1e-06_ltol0.01: 853.13 ms [644.40, 1367.27] worst 0.0003% newton 196 lin 594 setups 1 unconv 0
+03:01:43 PBICGSTAB_CLASSICAL_JACOBI|full_dt0.005_ntol1e-06_ltol0.01: 2560.54 ms [2343.29, 2852.19] worst 0.0002% newton 114 lin 284 setups 114 unconv 0
+03:02:39 PBICGSTAB_CLASSICAL_JACOBI|k1_dt0.005_ntol0.003_ltol0.1: 1108.59 ms [1095.71, 1147.60] worst 0.0499% newton 52 lin 106 setups 50 unconv 0
+03:02:49 PBICGSTAB_CLASSICAL_JACOBI|frozen_dt0.005_ntol0.003_ltol0.1: 185.21 ms [173.45, 248.47] worst 0.9220% newton 52 lin 106 setups 1 unconv 0
+03:03:47 PBICGSTAB_CLASSICAL_JACOBI|full_dt0.005_ntol0.003_ltol0.1: 1145.14 ms [1112.61, 1303.20] worst 0.0499% newton 52 lin 106 setups 52 unconv 0
+checks PBICGSTAB_JACOBI_NOAMG {'ltol': 0.001, 'tight_full_newton_vs_reference': 5.81941016955016e-09, 'initial_field_difference': 0.0, 'tight_unconverged_steps': 0, 'tight_newton_total': 147, 'linear_not_converged': 0, 'passed': True}
+03:04:22 PBICGSTAB_JACOBI_NOAMG|lin1_dt0.005_ntolnone_ltol0.001: 641.88 ms [355.08, 898.76] worst 0.5991% newton 50 lin 2249 setups 50 unconv 0
+03:05:36 PBICGSTAB_JACOBI_NOAMG|k1_dt0.005_ntol1e-06_ltol0.01: 1459.65 ms [679.10, 2026.20] worst 0.0006% newton 134 lin 5086 setups 50 unconv 0
+03:08:14 PBICGSTAB_JACOBI_NOAMG|frozen_dt0.005_ntol1e-06_ltol0.01: 3176.56 ms [1426.34, 5442.11] worst 0.0003% newton 197 lin 11158 setups 1 unconv 0
+03:09:23 PBICGSTAB_JACOBI_NOAMG|full_dt0.005_ntol1e-06_ltol0.01: 1398.67 ms [637.53, 2026.72] worst 0.0004% newton 130 lin 4855 setups 130 unconv 0
+03:09:38 PBICGSTAB_JACOBI_NOAMG|k1_dt0.005_ntol0.003_ltol0.1: 266.37 ms [129.60, 443.31] worst 1.7393% newton 60 lin 883 setups 50 unconv 0
+03:09:53 PBICGSTAB_JACOBI_NOAMG|frozen_dt0.005_ntol0.003_ltol0.1: 288.17 ms [125.93, 498.05] worst 1.7745% newton 60 lin 980 setups 1 unconv 0
+03:10:07 PBICGSTAB_JACOBI_NOAMG|full_dt0.005_ntol0.003_ltol0.1: 262.34 ms [130.41, 451.76] worst 1.7393% newton 60 lin 866 setups 60 unconv 0
+03:10:13 PBICGSTAB_CLASSICAL_JACOBI|frozen_dt0.01_ntol0.01_ltol0.1: 103.86 ms [99.84, 133.78] worst 2.4374% newton 26 lin 53 setups 1 unconv 0
+03:10:22 PBICGSTAB_CLASSICAL_JACOBI|frozen_dt0.01_ntol0.001_ltol0.1: 177.76 ms [141.44, 240.54] worst 1.9703% newton 51 lin 103 setups 1 unconv 0
+03:10:49 PBICGSTAB_CLASSICAL_JACOBI|k1_dt0.01_ntol0.01_ltol0.1: 553.45 ms [546.86, 571.76] worst 2.1139% newton 26 lin 52 setups 25 unconv 0
+03:11:18 PBICGSTAB_CLASSICAL_JACOBI|k1_dt0.01_ntol0.001_ltol0.1: 600.50 ms [552.81, 611.96] worst 1.9754% newton 46 lin 88 setups 25 unconv 0
+03:11:27 PBICGSTAB_CLASSICAL_JACOBI|frozen_dt0.005_ntol0.01_ltol0.1: 181.21 ms [110.02, 194.79] worst 14.3957% newton 51 lin 103 setups 1 unconv 0
+03:11:39 PBICGSTAB_CLASSICAL_JACOBI|frozen_dt0.005_ntol0.001_ltol0.1: 276.86 ms [186.95, 341.75] worst 0.4736% newton 100 lin 198 setups 1 unconv 0
+03:12:33 PBICGSTAB_CLASSICAL_JACOBI|k1_dt0.005_ntol0.01_ltol0.1: 1099.29 ms [683.45, 1138.38] worst 13.6085% newton 51 lin 103 setups 50 unconv 0
+03:13:29 PBICGSTAB_CLASSICAL_JACOBI|k1_dt0.005_ntol0.001_ltol0.1: 1171.85 ms [1097.74, 1203.08] worst 0.0224% newton 86 lin 146 setups 50 unconv 0
+03:13:58 PBICGSTAB_CLASSICAL_JACOBI|lin1_dt0.01_ntolnone_ltol0.01: 573.75 ms [564.44, 681.01] worst 2.1524% newton 25 lin 76 setups 25 unconv 0
+03:14:11 PBICGSTAB_JACOBI_NOAMG|frozen_dt0.01_ntol0.01_ltol0.1: 268.07 ms [116.85, 427.73] worst 2.1270% newton 28 lin 932 setups 1 unconv 0
+03:14:39 PBICGSTAB_JACOBI_NOAMG|frozen_dt0.01_ntol0.001_ltol0.1: 551.34 ms [259.01, 986.40] worst 1.9910% newton 52 lin 1930 setups 1 unconv 0
+03:14:49 PBICGSTAB_JACOBI_NOAMG|k1_dt0.01_ntol0.01_ltol0.1: 220.08 ms [116.24, 324.34] worst 2.1720% newton 27 lin 752 setups 25 unconv 0
+03:15:10 PBICGSTAB_JACOBI_NOAMG|k1_dt0.01_ntol0.001_ltol0.1: 428.34 ms [211.58, 623.05] worst 1.9716% newton 52 lin 1482 setups 25 unconv 0
+03:15:22 PBICGSTAB_JACOBI_NOAMG|frozen_dt0.005_ntol0.01_ltol0.1: 238.14 ms [119.38, 421.08] worst 13.2250% newton 52 lin 808 setups 1 unconv 0
+03:15:49 PBICGSTAB_JACOBI_NOAMG|frozen_dt0.005_ntol0.001_ltol0.1: 540.85 ms [259.08, 877.71] worst 0.4743% newton 101 lin 1864 setups 1 unconv 0
+03:16:01 PBICGSTAB_JACOBI_NOAMG|k1_dt0.005_ntol0.01_ltol0.1: 237.01 ms [122.35, 368.69] worst 13.2323% newton 52 lin 782 setups 50 unconv 0
+03:16:22 PBICGSTAB_JACOBI_NOAMG|k1_dt0.005_ntol0.001_ltol0.1: 454.07 ms [228.66, 684.14] worst 0.5275% newton 92 lin 1536 setups 50 unconv 0
+03:16:40 PBICGSTAB_JACOBI_NOAMG|lin1_dt0.01_ntolnone_ltol0.01: 337.31 ms [180.83, 530.07] worst 4.8837% newton 25 lin 1184 setups 25 unconv 0
+Sun Nov 15 03:16:40 EST 2026
+task_completed

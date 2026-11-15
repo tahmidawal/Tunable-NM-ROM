@@ -14,9 +14,9 @@ below it is append-only, oldest first.
 
 # Where things stand — 2026-11-15
 
-**JCP submission-readiness audit.** The [submission plan](reports/2026-11-15-jcp-submission-readiness.md) proposes a numerical study of classical quadrature for a continuous reduced basis. The current conference revision already includes a Burgers mesh-scaling figure. Author decisions on overlap, quadrature authorship and any prospective Burgers confirmation remain open.
+**JCP submission-readiness audit.** The [submission plan](reports/2026-11-15-jcp-submission-readiness.md) proposes a numerical study of classical quadrature for a continuous reduced basis. The current conference revision already includes a Burgers mesh-scaling figure. Coauthor decisions on overlap and quadrature authorship remain open.
 
-The November 15 11:11 EST Slurm snapshot shows no queued or running Tunable-NM-ROM allocation, and six separately scoped quadtree allocations. Sparse jobs `7229013`, `7229014` and `7229016` completed. Seven remote result hashes are recorded, collection and table verification are pending, and the small Poisson timing failed its neighbour test. The Burgers equal-error ROM width sweep and original NS3D coordinate-bank confirmation are complete. Frozen higher-accuracy operator evaluations and the original sealed Burgers E0 campaign remain separate open items.
+**Experiment closeout.** The [verified sparse and operator results](reports/2026-11-15-experiment-closeout.md) are available. All seven sparse outputs were checksum-verified and all 21 frozen operator checkpoints were scored on the held-out Burgers cases. The small Poisson timing failed its order-stability check. The user authorized prospectively freezing and evaluating the original in-range E0 cases. Their quadrature confirmation is underway in its own lane. The Burgers equal-error width sweep and NS3D coordinate-bank confirmation previously finished.
 
 ## Earlier state — 2026-11-06
 
@@ -21591,3 +21591,13 @@ Reviewed the canonical log, live Tufts account queue/accounting, saved run outpu
 Corrected stale status descriptions for the NS coordinate-bank confirmation, equal-error width sweep and three final sparse jobs. The small Poisson timing failed its order-stability check. Kept the mixed-precision Burgers accelerations, cross-job solver ratios, unqualified 2D equal-cost stepping result, and original failed cylinder setting separate from admitted measurements. No numerical failure was reversed. The live queue belonged entirely to the sibling quadtree project at the recorded snapshot. No experiment, cohort, worktree merge, external manuscript upload, venue withdrawal or reviewer communication was performed.
 
 Open work is coauthor scope/venue agreement, reconciling the sparse outputs and outstanding operator promise, deciding how to handle the original sealed Burgers campaign, and clean-checkout verification of a figure-generating release. Separate finished lanes stay on their branches.
+
+## 2026-11-15
+
+### Codex — verified the sparse-solver archive and the held-out neural-operator evaluation
+
+Closed the [sparse-solver and neural-operator studies](reports/2026-11-15-experiment-closeout.md). The [table builder](reports/build_2026_11_15_experiment_closeout.py) reads the stored numerical arrays in both lanes. The original in-range E0 quadrature confirmation uses a separate worktree, reference archive and approval binding. No sealed outcomes informed these two studies.
+
+Sparse jobs 7229013, 7229014 and 7229016 completed on H200s. All seven compact files matched the previously recorded checksums, and manifests for the 3,516-file archive were verified on both sides of the transfer. Sixteen-case AmgX trajectory medians at the historical accurate threshold were 76.08, 113.50 and 185.05 ms on the three meshes. The small Poisson timing failed its drift check and remains excluded. Sparse and ROM allocations differ. Separate branch `exp/2026-11-13-sparse-solvers`, code-only backup `4b3a989e9b2926a7e5ff341a5cdb06f3b3f06465`.
+
+Operator job 7243849 completed on an A100 80 GB using the user-confirmed registered float32 inference with TF32 disabled and float64 truth and scoring. All 21 saved checkpoints were fixed before opening this 64-case operator test. The validation-selected FNO and U-Net had held-out median errors of 0.06538% and 0.17668%. No checkpoint met the 0.0264% test-median target. Includes the surviving best checkpoints from interrupted runs. Both training budgets and the distinct historical timing allocation are documented. Separate branch `exp/2026-11-12-operator-scaling`, code-only backup `eb699ee396b23fdf3ba44f101221f14bfe033c83`. No merge or manuscript submission.

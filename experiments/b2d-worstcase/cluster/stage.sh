@@ -21,8 +21,8 @@ cat > "$OUT/run.sbatch" <<EOF
 #SBATCH --job-name=wc_$A
 #SBATCH --partition=gpu
 #SBATCH --qos=normal
-#SBATCH --gres=gpu:a100:1
-#SBATCH --constraint=a100-80G
+#SBATCH --gres=gpu:${WC_GPU:-a100}:1
+#SBATCH --constraint=${WC_CONSTRAINT:-a100-80G}
 #SBATCH --exclude=pax007
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=$MEM

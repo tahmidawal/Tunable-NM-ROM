@@ -127,3 +127,12 @@ Reason: validation run v5 shows that a bank trained on the original 4,352 trajec
 the same validation worst case as the extra-data bank once the fast solve is given 16R' tests. So that the report can
 separate "more data" from "same data", a fourth row is frozen: Fast solve, in budget = the fast-solve row's rule
 restricted to banks trained on the original 4,352 trajectories (written only if the fast-solve row used extra data).
+
+### A4 (before any final evaluation; validation only)
+
+Reason: from about 18:15 the A100-80GB nodes were fully allocated to other users (estimated start of the queued
+validation jobs v7-v9: 22:50). So that the freeze is not delayed by hours, the validation solves of the banks t9, t11
+and t12 are also run in one job on an RTX Pro 6000 (96 GB) node, with the deployed setting in the same job. Errors do
+not depend on the GPU. The time cap of the Primary rule is applied as written (ratio to the deployed width-384 time
+measured in the same job, here on the same RTX Pro 6000), and ties are broken by the times of that job. The final
+evaluation and every reported query time stay on an A100 80GB.

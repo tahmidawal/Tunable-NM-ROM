@@ -33,4 +33,4 @@ three meshes (largest absolute difference 8.2e-17), development deviation gate p
 identity 5e-16, `jax_backend=gpu` in both logs.  Offline compression 6 to 8 s per mesh; peak device memory
 51.5 GB at 4096^2.  Full tables: `tables/heat2d-a100-80G.md`, `tables/heat2d-a100-80G-4096.md`.
 
-The H200 heat 2D job (7221755, amendment A3) was still pending on queue priority when this was written (submitted 17:48 EST); H200 heat 2D is therefore not measured.
+The H200 heat 2D job (7221755, amendment A3) stayed pending on queue priority from 17:48 EST and was cancelled at 21:24 EST without starting; H200 heat 2D is therefore not measured.

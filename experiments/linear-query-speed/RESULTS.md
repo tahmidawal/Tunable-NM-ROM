@@ -117,7 +117,7 @@ three meshes (largest absolute difference 8.2e-17), development deviation gate p
 identity 5e-16, `jax_backend=gpu` in both logs.  Offline compression 6 to 8 s per mesh; peak device memory
 51.5 GB at 4096^2.  Full tables: `tables/heat2d-a100-80G.md`, `tables/heat2d-a100-80G-4096.md`.
 
-The H200 heat 2D job (7221755, amendment A3) was still pending on queue priority when this was written (submitted 17:48 EST); H200 heat 2D is therefore not measured.
+The H200 heat 2D job (7221755, amendment A3) stayed pending on queue priority from 17:48 EST and was cancelled at 21:24 EST without starting; H200 heat 2D is therefore not measured.
 
 
 ## What changed, in plain words
@@ -203,7 +203,7 @@ Does not support:
 | 7220235 | A100 80GB (pax050) | dev selection 256^2, 2048^2 -> freeze -> test 256^2..2048^2; 4096^2 test failed (compression out of device memory) | 01:06:10 | 1.10 | completed |
 | 7221131 | A100 80GB (pax106) | test 4096^2 only, frozen pair of 7220235, `--host-compress` (amendment A2) | 00:24:15 | 0.40 | completed |
 | 7221749 | H200 (requested) | heat 2D with the wrong fast arm (see A3a) | 0 | 0 | cancelled while pending, never started |
-| 7221755 | H200 (requested) | heat 2D: selection at 4096^2 on the development cohort, freeze, test 4096^2/2048^2/1024^2 (A3, A3a) | 0 so far | 0 | still pending on priority at 20:30 EST |
+| 7221755 | H200 (requested) | heat 2D: selection at 4096^2 on the development cohort, freeze, test 4096^2/2048^2/1024^2 (A3, A3a) | 0 | 0 | cancelled at 21:24 EST after 3.6 h pending on priority, never started |
 | 7228875 | A100 80GB (requested) | heat 2D fallback: selection at 2048^2 on the development cohort, freeze, test 2048^2/1024^2 (A3b) | 00:08:57 | 0.15 | completed (pax106) |
 | 7228913 | A100 80GB (requested) | heat 2D 4096^2 with the frozen file of 7228875 (A3c) | 00:05:22 | 0.09 | completed (pax106) |
 

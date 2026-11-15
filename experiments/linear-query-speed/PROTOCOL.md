@@ -233,3 +233,8 @@ One further A100 80GB job runs 4096^2 only, with the frozen file of job 7228875 
 driver option `--frozen`; no selection is run, nothing is re-chosen).  Gates, cohorts, scope and
 ablations as in A3.  If it runs out of device memory, that is reported as a failure and 4096^2 on A100
 stays unmeasured.
+
+## Note (21:24 EST, 14 Nov 2026)
+
+H200 heat 2D job 7221755 was cancelled while still pending (queued 17:48 EST, never started).  Heat 2D is
+reported from the A100 80GB jobs of A3b/A3c only.  Poisson 3D and heat 3D were not attempted.

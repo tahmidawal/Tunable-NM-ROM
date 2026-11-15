@@ -1,0 +1,65 @@
+{
+ "dim": 3,
+ "L": 128,
+ "cases": 6,
+ "jax": "0.10.2",
+ "dt": 0.005,
+ "steps": 50,
+ "case_records": [
+  {
+   "case": 0,
+   "nu": 0.05085316752423801,
+   "converged": true,
+   "max_rel_residual": 6.807064918881987e-11,
+   "newton_total": 104,
+   "seconds": 2.663411045446992
+  },
+  {
+   "case": 1,
+   "nu": 0.04055157391593897,
+   "converged": true,
+   "max_rel_residual": 9.280532528744081e-11,
+   "newton_total": 117,
+   "seconds": 1.0818231012672186
+  },
+  {
+   "case": 2,
+   "nu": 0.010844729727587816,
+   "converged": true,
+   "max_rel_residual": 1.143862835961363e-12,
+   "newton_total": 100,
+   "seconds": 0.8158374829217792
+  },
+  {
+   "case": 3,
+   "nu": 0.026989712891785575,
+   "converged": true,
+   "max_rel_residual": 9.538833432236526e-11,
+   "newton_total": 107,
+   "seconds": 0.9344293475151062
+  },
+  {
+   "case": 4,
+   "nu": 0.06392622662523142,
+   "converged": true,
+   "max_rel_residual": 9.282156536190563e-11,
+   "newton_total": 110,
+   "seconds": 0.6864847997203469
+  },
+  {
+   "case": 5,
+   "nu": 0.02725943980135431,
+   "converged": true,
+   "max_rel_residual": 7.96437634651059e-11,
+   "newton_total": 101,
+   "seconds": 0.8658986948430538
+  }
+ ],
+ "cohort": "table(923901, 32) (paper Burgers 3D held-out cohort)",
+ "cohort_sha256": "85cef1e7e736c8203a4161d5e7dc575f1291befe744086955d0823c6cbf673ea",
+ "reference": "common.make_fom(n, 0.005, 1e-10, 1e-11)",
+ "ntol": 1e-10,
+ "ltol": 1e-11,
+ "n": 129,
+ "all_converged": true
+}

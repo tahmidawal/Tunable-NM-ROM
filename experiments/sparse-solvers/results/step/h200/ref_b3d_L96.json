@@ -1,0 +1,81 @@
+{
+ "dim": 3,
+ "L": 96,
+ "cases": 8,
+ "jax": "0.10.2",
+ "dt": 0.005,
+ "steps": 50,
+ "case_records": [
+  {
+   "case": 0,
+   "nu": 0.05085316752423801,
+   "converged": true,
+   "max_rel_residual": 6.756363389861976e-11,
+   "newton_total": 104,
+   "seconds": 2.237375938333571
+  },
+  {
+   "case": 1,
+   "nu": 0.04055157391593897,
+   "converged": true,
+   "max_rel_residual": 9.43459963855294e-11,
+   "newton_total": 116,
+   "seconds": 0.49198337085545063
+  },
+  {
+   "case": 2,
+   "nu": 0.010844729727587816,
+   "converged": true,
+   "max_rel_residual": 1.1520426859078485e-12,
+   "newton_total": 100,
+   "seconds": 0.39575945399701595
+  },
+  {
+   "case": 3,
+   "nu": 0.026989712891785575,
+   "converged": true,
+   "max_rel_residual": 9.130765860323503e-11,
+   "newton_total": 107,
+   "seconds": 0.42886306066066027
+  },
+  {
+   "case": 4,
+   "nu": 0.06392622662523142,
+   "converged": true,
+   "max_rel_residual": 8.890766779562288e-11,
+   "newton_total": 110,
+   "seconds": 0.30183000583201647
+  },
+  {
+   "case": 5,
+   "nu": 0.02725943980135431,
+   "converged": true,
+   "max_rel_residual": 8.007577038513237e-11,
+   "newton_total": 101,
+   "seconds": 0.3806959493085742
+  },
+  {
+   "case": 6,
+   "nu": 0.03286761450556588,
+   "converged": true,
+   "max_rel_residual": 8.21886556470891e-11,
+   "newton_total": 105,
+   "seconds": 0.4081467902287841
+  },
+  {
+   "case": 7,
+   "nu": 0.06204033837630521,
+   "converged": true,
+   "max_rel_residual": 8.212763027505608e-11,
+   "newton_total": 105,
+   "seconds": 0.3090321933850646
+  }
+ ],
+ "cohort": "table(923901, 32) (paper Burgers 3D held-out cohort)",
+ "cohort_sha256": "85cef1e7e736c8203a4161d5e7dc575f1291befe744086955d0823c6cbf673ea",
+ "reference": "common.make_fom(n, 0.005, 1e-10, 1e-11)",
+ "ntol": 1e-10,
+ "ltol": 1e-11,
+ "n": 97,
+ "all_converged": true
+}

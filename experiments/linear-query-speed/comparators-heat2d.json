@@ -2,8 +2,50 @@
  "source": "worktrees/2026-11-13-sparse-solvers/experiments/sparse-solvers/RESULTS-h200.md at 93c9e4b7a, section 'heat 2D' (quoted, not rerun)",
  "units": "ms; H200; float64; n x n unknowns (the reduced model's mesh has (n-1)^2); per trajectory = 20 Crank-Nicolson solves; ARITHMETIC ESTIMATE from single-solve timings, not a measured end-to-end stepper (that lane's own wording)",
  "h200": {
-  "1024": {"cudss_single_solve": 2.95, "cudss_20_solves_factor_reused": 59, "amgx_single_solve_1e-6": 15.6, "amgx_setup_plus_20_solves_1e-6": 330, "paper_fom": 67.0},
-  "2048": {"cudss_single_solve": 9.35, "cudss_20_solves_factor_reused": 187, "amgx_single_solve_1e-6": 35, "amgx_setup_plus_20_solves_1e-6": 749, "paper_fom": 424.37},
-  "4096": {"cudss_single_solve": 36.5, "cudss_20_solves_factor_reused": 730, "amgx_single_solve_1e-6": 107, "amgx_setup_plus_20_solves_1e-6": 2318, "paper_fom": 1945.97}
+  "1024": {
+   "cudss_single_solve": 2.95,
+   "cudss_20_solves_factor_reused": 59,
+   "amgx_single_solve_1e-6": 15.6,
+   "amgx_setup_plus_20_solves_1e-6": 330,
+   "paper_fom": 67.0
+  },
+  "2048": {
+   "cudss_single_solve": 9.35,
+   "cudss_20_solves_factor_reused": 187,
+   "amgx_single_solve_1e-6": 35,
+   "amgx_setup_plus_20_solves_1e-6": 749,
+   "paper_fom": 424.37
+  },
+  "4096": {
+   "cudss_single_solve": 36.5,
+   "cudss_20_solves_factor_reused": 730,
+   "amgx_single_solve_1e-6": 107,
+   "amgx_setup_plus_20_solves_1e-6": 2318,
+   "paper_fom": 1945.97
+  }
+ },
+ "a100-80G": {
+  "source": "worktrees/2026-11-13-sparse-solvers/experiments/sparse-solvers/RESULTS-a100.md at f7857f627, section 'heat 2D' (quoted, not rerun); same arithmetic-estimate caveat",
+  "1024": {
+   "cudss_single_solve": 4.96,
+   "cudss_20_solves_factor_reused": 99.2,
+   "amgx_single_solve_1e-6": 23.1,
+   "amgx_setup_plus_20_solves_1e-6": 486,
+   "paper_fom": 67.0
+  },
+  "2048": {
+   "cudss_single_solve": 16.7,
+   "cudss_20_solves_factor_reused": 334,
+   "amgx_single_solve_1e-6": 69.2,
+   "amgx_setup_plus_20_solves_1e-6": 1455,
+   "paper_fom": 424.37
+  },
+  "4096": {
+   "cudss_single_solve": 66.1,
+   "cudss_20_solves_factor_reused": 1323,
+   "amgx_single_solve_1e-6": 255,
+   "amgx_setup_plus_20_solves_1e-6": 5370,
+   "paper_fom": 1945.97
+  }
  }
 }

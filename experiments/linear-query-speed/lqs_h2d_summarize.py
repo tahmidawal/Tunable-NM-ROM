@@ -11,9 +11,10 @@ def f(x, nd=3):
 
 def main():
     r = json.loads(Path(sys.argv[1]).read_text())
-    cmp_ = json.loads((HERE / 'comparators-heat2d.json').read_text())['h200']
+    key = 'h200' if 'H200' in r['nvidia_smi'] else 'a100-80G'
+    cmp_ = json.loads((HERE / 'comparators-heat2d.json').read_text())[key]
     fz = r['frozen']; fn = fz['F']['variant']
-    L = [f"# Heat 2D query time, H200 (job {r['job_id']}, node {r['node']}, `{r['nvidia_smi']}`)", '',
+    L = [f"# Heat 2D query time, {key} (stored paper values are H200) (job {r['job_id']}, node {r['node']}, `{r['nvidia_smi']}`)", '',
          f"Complete: {r['complete']}.  Frozen from the development cohort only at {fz['selection_mesh']}^2: "
          f"F = `{fn}` (frozen file SHA256 {r['frozen_sha256'][:16]}..., tied candidates {fz['F']['tied']}).", '',
          'Times: median GPU-query in ms over 16 test cases x %d repetitions; initial field on the device -> six output '

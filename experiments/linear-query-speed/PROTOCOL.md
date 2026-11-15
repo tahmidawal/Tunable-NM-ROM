@@ -205,3 +205,20 @@ Correction of A3: the paper's fast heat 2D arm is `lin_R32_cn` (stored test medi
 summary's rule-selected arm, not the one in the paper's table).  The arms are therefore accurate
 `lin_R128_cn` and fast `lin_R32_cn`.  Job 7221749, submitted with the wrong fast arm, was cancelled while
 pending and never started.  Nothing else in A3 changes.
+
+## Amendment A3b (20:06 EST, 14 Nov 2026): heat 2D fallback on A100 80GB (written before any heat outcome)
+
+Reason: the H200 heat 2D job 7221755 has been pending on priority for over two hours with no start
+estimate, and no heat outcome exists yet.  It stays queued unchanged.  In addition one job with the same
+driver and commit-identical code is submitted on A100 80GB with these differences, all forced by the
+device memory (the 4096^2 bank plus its compression does not fit 80 GB, as seen for Poisson 2D):
+
+- meshes 2048^2 and 1024^2 only; selection (development cohort only, same rule as A3) at 2048^2;
+- the stored paper timings (H200 job 4197350) are then a different GPU type and are shown only for
+  reference; "before" is the paper path timed in the same job;
+- comparators quoted from the sparse-solvers lane's `RESULTS-a100.md` (at f7857f627), same arithmetic-estimate
+  caveat.
+
+Everything else (arms, cohorts, gates, timing scope, ablations) is as in A3/A3a.  If both jobs complete,
+both are reported, H200 as the headline (it covers 4096^2); the two freezes are independent and both are
+stated.

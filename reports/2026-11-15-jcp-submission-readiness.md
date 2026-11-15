@@ -1,6 +1,6 @@
 # Bringing the quadrature study to JCP
 
-The fastest defensible route to the *Journal of Computational Physics* is a paper about **when a continuous reduced basis lets classical quadrature replace a stored nonlinear operator, how to choose enough points, and what that choice costs**. This November 15, 2026 audit uses completed results for the tested configurations. The remaining sparse-solver files have provisional status pending collection and verification.
+The fastest defensible route to the *Journal of Computational Physics* is a paper about **when a continuous reduced basis lets classical quadrature replace a stored nonlinear operator, how to choose enough points, and what that choice costs**. This November 15, 2026 audit uses completed results for the tested configurations. At the time of this audit, sparse-solver collection and the two held-out studies were pending. Their final results are in the [experiment closeout](2026-11-15-experiment-closeout.md).
 
 ## Settle the relationship to ICLR first
 

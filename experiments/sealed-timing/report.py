@@ -96,6 +96,39 @@ def write_md(S):
              'frozen closeout settings and the closeout-selected matched spectral solver. It is not prospective and is not '
              'part of the sealed confirmation; the closeout\'s sealed timing verdicts stand as recorded '
              '(PROTOCOL.md §1).\n')
+    done = [e for e in M.values() if e['status'] == 'complete']
+    a = [e for e in done if e['part_a']]
+    L.append('## Headline\n')
+    L.append(f"- **(a)** {sum(e['prepared_qualified'] for e in a)} of {len(a)} previously failing 2D meshes "
+             f"({', '.join(e['label'] for e in a)}) pass every closeout timing check on validation inputs. Lattice ROM / "
+             f"matched spectral query ratio: " + ', '.join(f"{e['label']} {e['prepared_ratio']:.2f}×" for e in a) +
+             ". The spectral solver is faster on every mesh.")
+    L.append(f"- Across all {len(done)} meshes the prepared-input ratio passes on {sum(e['prepared_qualified'] for e in done)} "
+             f"and ranges {min(e['prepared_ratio'] for e in done):.2f}–{max(e['prepared_ratio'] for e in done):.2f}×.")
+    L.append(f"- **(b)** ROM input preparation ranges {min(e['confirm_median_ms']['rom_prep'] for e in done):.2f}–"
+             f"{max(e['confirm_median_ms']['rom_prep'] for e in done):.1f} ms and grows with the mesh (it builds the initial "
+             f"field on every mesh node on the host); spectral preparation stays "
+             f"{min(e['confirm_median_ms']['fom_prep'] for e in done):.1f}–{max(e['confirm_median_ms']['fom_prep'] for e in done):.1f} ms. "
+             f"End-to-end ratio: " + ', '.join(f"{e['label']} {e['e2e_ratio']:.2f}×" + ('' if e['e2e_qualified'] else ' (checks FAIL)')
+                                              for e in done) + '.')
+    L.append(f"- End-to-end checks pass on {sum(e['e2e_qualified'] for e in done)} of {len(done)} meshes; failures: " +
+             ('; '.join(f"{e['label']}: " + '; '.join(f'{k} {v}' for k, v in e['reasons'].items()) for e in done
+                        if not e['e2e_qualified']) or 'none') + '.\n')
+    D = json.loads((HERE / 'diagnosis' / 'closeout-drift.json').read_text())
+    L.append('## Why the closeout 2D timing checks failed (diagnosis of the archived sealed-panel timing records)\n')
+    L.append('The closeout gate is panel-wide: the worst block drift over every subject timed in the job. Generated from '
+             '`diagnosis/closeout-drift.json` (timing fields only). This post-hoc reading does not change the sealed verdicts.\n')
+    L.append('| Closeout panel | GPU | Panel worst drift | Subjects over 1.10 (block index) | Compared pair worst drift | Pair main/confirm fold |')
+    L.append('|---|---|---:|---|---:|---|')
+    for t, v in D.items():
+        fb = '; '.join(f"`{k}` ({','.join(str(i) for i in v['failing_block_index'][k])})" for k in v['subjects_failing_drift']) or '—'
+        fold = ', '.join(f"{x:.3f}" for x in v['selected_pair_main_confirm_fold'].values())
+        L.append(f"| {t} | {v['gpu']} | {v['panel_worst_block_drift']:.4f} | {fb} | {v['selected_pair_worst_block_drift']:.4f} | {fold} |")
+    L.append('\nBlock indices count from 0 within the block where the failure occurred (all failing indices above are in the '
+             'confirmation block). The 1024² and 4096² failures sit in the first confirmation repetition (a warm-up transient '
+             'after the confirmation compile pass); the 256² failure is a 0.24 ms decode subject. This lane added a discarded '
+             'repetition before each timed block, three warm passes and 60 s burns, and timed only the compared subjects '
+             '(PROTOCOL.md §3).\n')
     L.append('## (a) Prepared-input ratio, lattice ROM / matched spectral solver\n')
     L.append('Ratio above one favours the spectral solver. "Closeout (sealed)" is the recorded sealed-panel ratio and '
              'its timing verdict; "this lane" is the same-job confirmation-block ratio on validation inputs.\n')
@@ -159,6 +192,19 @@ def write_md(S):
         L.append(f"| {e['label']} | {e['job_id']} | {e['host']} | {'yes' if e['same_gpu_type_as_closeout'] else 'NO'} | {sm} | "
                  f"{tc} | {la} | {f(fs['rom'], 3)}, {f(fs['fom'], 3)} | ROM {acc['rom_ST_median']:.4%}, "
                  f"spectral {acc['fom_ST_median']:.4%} |")
+    L.append('\n## What these numbers support and what they do not\n')
+    L.append('- They support: on validation inputs of the same family, same meshes, same GPU types and frozen settings, the '
+             'matched spectral solver is about 4.6–7.8× faster than the lattice ROM per prepared-input query, with every '
+             'timing check passing on the three 2D meshes that failed in the closeout; and, including input preparation as '
+             'the pipelines are built, the spectral solver is about 2.5× faster at the smallest meshes and over 20× faster at '
+             '4096² and 256³.\n'
+             '- They do not support: converting the closeout\'s failed sealed timing checks into passes; any prospective '
+             'claim; accuracy matching on validation inputs (established on the sealed cohort by the closeout, not re-tested); '
+             'a claim about an optimised ROM preparation. The ROM preparation measured here evaluates the analytic initial '
+             'field on every mesh node in NumPy on the host and copies it to the GPU, exactly as the frozen driver does; a '
+             'device-side evaluation would be faster, and the spectral preparation is likewise an unoptimised host quadrature.\n'
+             '- The validation errors in the provenance table are six-case sanity values (they match the frozen pipeline\'s '
+             'behaviour); they were not used for any selection.\n')
     L.append('\n## Glossary\n')
     L.append('- **Lattice ROM query**: the reduced-order model\'s full query (projection of the initial field, reduced '
              'solve, decode onto the 257² or 63³ scoring lattice).\n'

@@ -1,0 +1,70 @@
+{
+ "dim": 2,
+ "mesh": 256,
+ "cohort": "dev6",
+ "widths": [
+  64,
+  96,
+  128,
+  192,
+  256,
+  384,
+  512
+ ],
+ "frozen_width": 384,
+ "checkpoint": "vendor/tree/experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+ "rotation": "vendor/tree/experiments/quadrature-study/inputs/rotation_R512.npz",
+ "rules_manifest": "vendor/plateau/rules2d_manifest.json",
+ "rules_arrays": "vendor/plateau/rules2d.npz",
+ "gtol": 0.001,
+ "step_budget": 600,
+ "eq_tol": 1e-08,
+ "kernel_evals": 200,
+ "primary": "fibonacci",
+ "secondary": "gauss",
+ "families": {
+  "fibonacci": {
+   "ladder": [
+    "fib610",
+    "fib987",
+    "fib1597",
+    "fib2584",
+    "fib4181",
+    "fib6765",
+    "fib10946",
+    "fib17711",
+    "fib28657",
+    "fib46368"
+   ],
+   "conv": "fib46368",
+   "frozen": "fib987"
+  },
+  "gauss": {
+   "ladder": [
+    "gauss24",
+    "gauss32",
+    "gauss36",
+    "gauss40",
+    "gauss45",
+    "gauss50",
+    "gauss55",
+    "gauss60",
+    "gauss64",
+    "gauss72",
+    "gauss80",
+    "gauss96",
+    "gauss128",
+    "gauss256"
+   ],
+   "conv": "gauss256",
+   "frozen": "gauss45"
+  }
+ },
+ "timing": {
+  "reps": 5,
+  "kernel_reps": 5,
+  "burn": 0.1,
+  "initial_burn": 30.0,
+  "seed": 20261115
+ }
+}

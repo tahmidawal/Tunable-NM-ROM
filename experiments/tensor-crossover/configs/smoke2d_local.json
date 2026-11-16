@@ -1,0 +1,52 @@
+{
+ "dim": 2,
+ "mesh": 256,
+ "cohort": "dev6",
+ "widths": [
+  64,
+  96
+ ],
+ "frozen_width": 96,
+ "checkpoint": "vendor/tree/experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+ "rotation": "vendor/tree/experiments/quadrature-study/inputs/rotation_R512.npz",
+ "rules_manifest": "vendor/plateau/rules2d_manifest.json",
+ "rules_arrays": "vendor/plateau/rules2d.npz",
+ "gtol": 0.001,
+ "step_budget": 600,
+ "eq_tol": 1e-08,
+ "kernel_evals": 10,
+ "primary": "fibonacci",
+ "secondary": "gauss",
+ "families": {
+  "fibonacci": {
+   "ladder": [
+    "fib610",
+    "fib987",
+    "fib1597"
+   ],
+   "conv": "fib1597",
+   "frozen": "fib987"
+  },
+  "gauss": {
+   "ladder": [
+    "gauss24",
+    "gauss32",
+    "gauss45"
+   ],
+   "conv": "gauss45",
+   "frozen": "gauss32"
+  }
+ },
+ "timing": {
+  "reps": 2,
+  "kernel_reps": 2,
+  "burn": 0.01,
+  "initial_burn": 0.3,
+  "seed": 1
+ },
+ "local_smoke": true,
+ "cases": [
+  0,
+  1
+ ]
+}

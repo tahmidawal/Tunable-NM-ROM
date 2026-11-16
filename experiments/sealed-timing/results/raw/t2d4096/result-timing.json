@@ -1,0 +1,74 @@
+{
+ "job_id": "7250293",
+ "host": "pax008",
+ "gpu": "NVIDIA H200",
+ "commit": "4f974b9f2be23929a1a53dec970388ea06f4cb97",
+ "complete": true,
+ "cohort": "val32",
+ "cases": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5
+ ],
+ "gates": {
+  "G_coh": {
+   "cohort": "val32",
+   "sha256": "277743cbb99350ca94c12b052613e14c9fb080fc56f2f012600bca381eacec70",
+   "expected": null,
+   "passed": true
+  },
+  "G_ref": {
+   "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+   "loaded": 12,
+   "passed": true
+  },
+  "G_R": {
+   "checked": 1,
+   "bitwise": 1,
+   "mismatched": [],
+   "worst_dX": 0,
+   "worst_dw_rel": 0,
+   "passed": true
+  },
+  "G_lat": {
+   "compared": 6,
+   "max_rel": 2.9090080701004215e-15,
+   "passed": true
+  },
+  "G_time": {
+   "max_output_diff": 2.9090080701004215e-15,
+   "worst_block_drift": 1.0,
+   "outputs_pass": true,
+   "drift_pass": true
+  },
+  "G_fin": {
+   "nonfinite": []
+  },
+  "G_fom": {
+   "nonconverged": []
+  },
+  "G_score_vs_refstore": {
+   "compared": 2,
+   "max_rel": 0.0,
+   "passed": true
+  }
+ },
+ "fom_converged": [
+  true,
+  true,
+  true,
+  true,
+  true,
+  true
+ ],
+ "accuracy": {
+  "rom_ST_median": 0.01068454549745464,
+  "rom_ST_max": 0.031928543286527944,
+  "fom_ST_median": 2.348321675021633e-05,
+  "fom_ST_max": 0.008446890402571346,
+  "n": 6
+ }
+}

@@ -1,0 +1,52 @@
+{
+ "anchor_check_arm": "fib987",
+ "arms": [
+  {
+   "family": "fibonacci",
+   "name": "fib987",
+   "rule": "fib987"
+  }
+ ],
+ "audit_cases": [
+  0,
+  2
+ ],
+ "cases": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5
+ ],
+ "checkpoint": "vendor/tree/experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+ "cohort": "val32",
+ "controls": [
+  "ctrl_smolyak8"
+ ],
+ "conv_arm": "fib987",
+ "dim": 2,
+ "expected_store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+ "foms": [
+  {
+   "N": 48,
+   "dt": 0.0125,
+   "kind": "ps",
+   "name": "PS_N48"
+  }
+ ],
+ "gtol": 0.001,
+ "mesh": 1024,
+ "rotation": "vendor/tree/experiments/quadrature-study/inputs/rotation_R512.npz",
+ "rules_arrays": "rules2d.npz",
+ "rules_manifest": "rules2d_manifest.json",
+ "step_budget": 600,
+ "timing": {
+  "burn": 0.1,
+  "cases": 6,
+  "confirm_reps": 1,
+  "initial_burn": 0.0,
+  "reps": 1,
+  "seed": 20261105
+ }
+}

@@ -119,4 +119,10 @@ an outcome. A float64 arm that is non-finite is recorded as rejected (query-spee
 
 ## 9. Amendments
 
-(none yet)
+
+
+**A1 (2026-11-15, before any test64/fresh64 job).** Rehearsal job 7250249 (`p64dev`, six dev cases) stopped in the
+Q6 audit before any ROM arm ran: `jax.make_jaxpr` around the arm's query nests a jit that carries `compiler_options`
+(the `_graphs` compile mode), which JAX refuses. Fix: the audit traces the arm's own top-level jit with `.trace(...)`
+(same program, options kept). No setting changed. Rehearsal resubmitted as `p64dev2`; log of 7250249 kept in
+`results/p64dev-failed/`.

@@ -11,7 +11,7 @@ truth, baseline arms, A-B-A timing and gates are that text unchanged):
       to rep["batched"] and never enter the single-query invocations or gates.
   Q6  (fp64-query lane) `precision_audit`: before an ROM arm's first case, the arm's query is traced with
       jax.make_jaxpr on case 0 and every variable of every equation (recursively through jit/scan/while/cond
-      sub-jaxprs) and every leaf of the arm's data/cold inputs is counted by dtype; the counts, the primitives that
+      sub-jaxprs; traced with the arm's top-level jit .trace) and every leaf of the arm's data/cold inputs is counted by dtype; the counts, the primitives that
       touch a reduced-precision dtype (float32/float16/bfloat16/complex64) and the reduced-precision input leaves go
       to rep["precision_audit"][arm]. An arm spec with `require_fp64` aborts the job if any reduced dtype appears.
 
@@ -101,7 +101,8 @@ def precision_audit(fn, args, inputs):
                         walk(sub.jaxpr)
                     elif isinstance(sub, Jaxpr):
                         walk(sub)
-    walk(jax.make_jaxpr(fn)(*args).jaxpr)
+    cj = fn.trace(*args).jaxpr if hasattr(fn, 'trace') else jax.make_jaxpr(fn)(*args)   # top-level jit keeps its options
+    walk(cj.jaxpr)
     low_inputs = sorted(jax.tree_util.keystr(k) + ':' + str(x.dtype)
                         for k, x in jax.tree_util.tree_flatten_with_path(inputs)[0]
                         if hasattr(x, 'dtype') and str(x.dtype) in LOW_DTYPES)
@@ -577,7 +578,7 @@ def main():
                                    ic_budget=st['ic_budget'], ic_gtol=cfg['ic_gtol'], tangent_chunks=chunks_for(d),
                                    **common)
         built[name] = dict(name=name, kind='rom', family='rom', spec=s, data=data, cold=cold, coef=coef, tab=tab,
-                           query=(lambda u, nu, d_, c_, _t=tab, _f=fq: _f(u, nu, d_, c_, _t)),
+                           query=(lambda u, nu, d_, c_, _t=tab, _f=fq: _f(u, nu, d_, c_, _t)), fq=fq,
                            m=int(data['G5'].shape[0]), unknowns=d, exact_steps=j, knob=knob_key(s))
         rep['arm_setup'].append(dict(arm=name, family='rom', model=kind, R_prime=Rp, q=q, M=M, rule=s['rule'],
                                      m=int(data['G5'].shape[0]), unknowns=d, gtol=s['gtol'], variant=v,
@@ -624,8 +625,8 @@ def main():
         for name in names:
             b = built[name]
             if b['kind'] == 'rom' and cfg.get('precision_audit'):                 # Q6
-                pa = precision_audit(lambda u_: b['query'](u_, float(physical[0, 4]), b['data'], b['cold']),
-                                     (jnp.asarray(inputs_u[0]),), (b['data'], b['cold']))
+                pa = precision_audit(b['fq'], (jnp.asarray(inputs_u[0]), float(physical[0, 4]), b['data'], b['cold'],
+                                               b['tab']), (b['data'], b['cold']))
                 rep.setdefault('precision_audit', {})[name] = pa
                 print('PRECISION', name, 'all_float64', pa['all_float64'], 'reduced_vars', pa['reduced_precision_vars'],
                       pa['reduced_precision_primitives'], pa['reduced_precision_input_leaves'], flush=True)

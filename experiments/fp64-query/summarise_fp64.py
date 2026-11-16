@@ -106,6 +106,15 @@ def section(att, label, summary):
           f"(mixed precision in the same job: {min(x['speedup'] for x in mx):.2f}-{max(x['speedup'] for x in mx):.2f}x); "
           f"float64 / mixed time {min(sl):.2f}-{max(sl):.2f}; widths with float64 median within 2 % of the baseline: "
           f"{', '.join(map(str, unchanged)) or 'none'}.")
+        dif = {}
+        for w in WIDTHS:
+            for role in ('accurate', 'fast'):
+                if (w, role) in rows and (w, role + '_fp64') in rows:
+                    e1, e2 = np.array(rows[(w, role)]['per_case']), np.array(rows[(w, role + '_fp64')]['per_case'])
+                    dif[f'{w}/{role}'] = float(np.max(np.abs(e2 - e1) / e1))
+        P(f"Largest per-case relative change of the error between a float64 arm and its mixed-precision original: "
+          f"{max(dif.values()):.1e} (over {len(dif)} settings x {j['cases']} cases).")
+        summary[att]['fp64_vs_mixed_max_case_error_change'] = dif
         summary[att]['fp64_accurate'] = dict(speedup_min=min(sp), speedup_max=max(sp), slowdown_min=min(sl),
                                              slowdown_max=max(sl), median_within_2pct_widths=unchanged)
 
@@ -141,6 +150,48 @@ def section(att, label, summary):
         summary[att]['operator_comparison'] = cmp_
 
 
+def headline(summary):
+    """PROTOCOL.md section 7, generated from summary (test64 headline job; fresh64 beside it)."""
+    t, f = summary.get('p64test'), summary.get('p64fresh')
+    if not t or 'operator_comparison' not in t:
+        return
+    def acc(s_, key):
+        return [s_['arms'][f'{w}/accurate_fp64'][key] for w in WIDTHS]
+    medr_t, medr_f = max(abs(x - 1) for x in acc(t, 'median_ratio')), max(abs(x - 1) for x in acc(f, 'median_ratio'))
+    wr_t = max(acc(t, 'worst_ratio'))
+    fa, ft = t['fp64_accurate'], f['fp64_accurate']
+    dch = max(max(t['fp64_vs_mixed_max_case_error_change'].values()), max(f['fp64_vs_mixed_max_case_error_change'].values()))
+    c = {x['operator']: x for x in t['operator_comparison'] if x['role'] == 'accurate_fp64'}
+    ours = c['F0']['ours']
+    P('\n## Headline (pre-registered rule, PROTOCOL.md section 7)\n')
+    P(f"- test64 job {t['job_id']}: float64 \"accurate\" is {fa['speedup_min']:.1f}-{fa['speedup_max']:.1f}x faster than the "
+      f"same-job baseline at widths 96-384, median error within {100 * medr_t:.1f} % of the baseline at every width "
+      f"(fresh64 job {f['job_id']}: {ft['speedup_min']:.1f}-{ft['speedup_max']:.1f}x, within {100 * medr_f:.1f} %). Worst-case "
+      f"error up to {wr_t:.2f}x the baseline's on test64.")
+    P(f"- Float64 costs {fa['slowdown_min']:.2f}-{fa['slowdown_max']:.2f}x the time of the mixed-precision original "
+      f"(test64) and changes no per-case error by more than {dch:.0e} relative. The mixed-precision numbers are a "
+      f"separately labelled result, not the headline.")
+    P(f"- Width {EQW} float64: {ours['median']:.4f} % median / {ours['worst']:.3f} % worst in {ours['ms']:.2f} ms; "
+      f"FNO {c['F0']['op']['median']:.4f} % / {c['F0']['op']['worst']:.3f} % in {c['F0']['op']['ms']:.2f} ms "
+      f"({c['F0']['ratio']:.2f}x our time); U-Net {c['U0']['op']['median']:.4f} % / {c['U0']['op']['worst']:.3f} % in "
+      f"{c['U0']['op']['ms']:.2f} ms ({c['U0']['ratio']:.2f}x). Lower median error and lower time than both: "
+      f"{c['F0']['wins_both'] and c['U0']['wins_both']}. The operators keep the lower worst-case error.")
+    P('\n### Replacement sentences for the rebuttal (numbers generated from the job JSON)\n')
+    P(f"> With every array operation in double precision (checked by a dtype audit of the traced program), our frozen "
+      f"online solver answers a Burgers 2D $256^2$ query {fa['speedup_min']:.1f}-{fa['speedup_max']:.1f}x faster than our "
+      f"original solver at widths 96-384, with median error unchanged (within {100 * medr_t:.1f} %), all timed in one "
+      f"A100-80GB job on the 64 test cases ({ft['speedup_min']:.1f}-{ft['speedup_max']:.1f}x on 64 fresh cases). "
+      f"The gain comes from reusing one Jacobian factorisation per query (a lagged-test-space Petrov-Galerkin solve), "
+      f"not from reduced precision: the single-precision stencil behind our earlier 5.5-10x figure changes no per-case "
+      f"error by more than {dch:.0e} relative and accounts for only a {fa['slowdown_min']:.2f}-{fa['slowdown_max']:.2f}x "
+      f"time difference. At width {EQW}, the double-precision query reaches {ours['median']:.3f} % median error in "
+      f"{ours['ms']:.2f} ms, against FNO {c['F0']['op']['median']:.2f} % in {c['F0']['op']['ms']:.2f} ms and U-Net "
+      f"{c['U0']['op']['median']:.2f} % in {c['U0']['op']['ms']:.2f} ms measured in the same job "
+      f"({c['F0']['ratio']:.2f}x and {c['U0']['ratio']:.1f}x faster at about half their median error). The operators "
+      f"retain a lower worst-case error ({c['F0']['op']['worst']:.2f}-{c['U0']['op']['worst']:.2f} % against our "
+      f"{ours['worst']:.2f} %).")
+
+
 def main():
     summary = {}
     P('# fp64-query: Burgers 2D 256^2 query speed with every array operation in float64')
@@ -151,6 +202,7 @@ def main():
       'Single-query latency, A100 80GB, baseline, mixed-precision originals and operators in the same allocation.')
     section('p64test', 'test64 (headline job)', summary)
     section('p64fresh', 'fresh64', summary)
+    headline(summary)
     P('\n## Glossary\n')
     P('- **width (R\')**: number of bank columns (reduced unknowns) of the linear rung.')
     P('- **baseline**: the unchanged query of the query-speed lane (about one Levenberg-Marquardt step per time step, '

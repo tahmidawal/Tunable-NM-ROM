@@ -126,3 +126,8 @@ Q6 audit before any ROM arm ran: `jax.make_jaxpr` around the arm's query nests a
 (the `_graphs` compile mode), which JAX refuses. Fix: the audit traces the arm's own top-level jit with `.trace(...)`
 (same program, options kept). No setting changed. Rehearsal resubmitted as `p64dev2`; log of 7250249 kept in
 `results/p64dev-failed/`.
+
+**A2 (2026-11-16, after p64test 7250285 and p64fresh 7250286).** Presentation only: `summarise_fp64.py` gained,
+after the outcomes were seen, (a) the largest per-case relative error change between each float64 arm and its
+mixed-precision original and (b) the generated headline / rebuttal-sentence section applying section 7. No arm,
+cohort, metric or rule changed; both jobs passed both gates and are the single evaluation per cohort.

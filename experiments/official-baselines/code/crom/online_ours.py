@@ -144,17 +144,21 @@ def test(a):
     device = torch.device('cuda'); assert torch.cuda.is_available()
     os.makedirs(a.out, exist_ok=True)
     lo, hi = [int(x) for x in a.rows.split(':')]
-    tag = os.path.join(a.out, f'test-crom-{lo}-{hi}.json')
+    clo, chi = [int(x) for x in a.test_cases.split(':')]
+    whole = (clo, chi) == (0, 64)
+    tag = os.path.join(a.out, f'test-crom-{lo}-{hi}.json' if whole else f'test-crom-{lo}-{hi}-c{clo}_{chi}.json')
     assert not os.path.exists(tag), 'the test cohort is evaluated once'
     sel_text = open(a.selection).read()
     sel = json.loads(sel_text)['crom'][lo:hi]
     meta = np.load(a.test + '.meta.npz'); params = meta['params']
     assert hashlib.sha256(np.ascontiguousarray(params).tobytes()).hexdigest() == TEST_SHA
     fld = np.load(a.test + '.fields.npy'); assert fld.shape == (64, 6, L + 1, L + 1) and fld.dtype == np.float64
-    u0, ref = fld[:, 0], fld[:, 1:]
+    u0, ref = fld[clo:chi, 0], fld[clo:chi, 1:]   # case chunk (only for settings > 60 s/query, whose timing is the evaluation pass itself)
+    params = params[clo:chi]
     n0 = np.sqrt((u0 ** 2).sum((1, 2)))
     res = []
     for s in sel:
+        assert whole or s['rough_ms'] > 60_000, 'case chunks only for the per-case-timed (> 60 s) schedule'
         dtype = torch.float64 if s['dtype'] == 'float64' else torch.float32
         encoder, decoder, dec_path = load_nets(os.path.join(a.weights_root, s['weights']), dtype, device)
         rough = s['rough_ms']
@@ -176,12 +180,12 @@ def test(a):
                     torch.cuda.synchronize(); ms[r_, i] = 1e3 * (time.perf_counter() - t0)
         err = metric(f, ref, n0)
         msr = np.asarray(ms).reshape(-1)
-        r = dict(selection=s, test=summary(err), errors=err.tolist(), timing_warmup=warm, timing_repetitions=reps,
+        r = dict(selection=s, test=summary(err), errors=err.tolist(), timing_warmup=warm, timing_repetitions=reps, ms_cases=msr.tolist(),
                  ms_full=dict(median=float(np.median(msr)), p5=float(np.percentile(msr, 5)), p95=float(np.percentile(msr, 95)),
                               min=float(msr.min()), max=float(msr.max()), count=int(msr.size)), decoder=dec_path)
         res.append(r)
         print('TEST', json.dumps({k: v for k, v in r.items() if k != 'errors'}), flush=True)
-    open(tag, 'w').write(json.dumps(dict(rows=[lo, hi], cohort='test64 = params_draw(20260916, 64)', cohort_sha256=TEST_SHA,
+    open(tag, 'w').write(json.dumps(dict(rows=[lo, hi], test_cases=[clo, chi], cohort='test64 = params_draw(20260916, 64)', cohort_sha256=TEST_SHA,
                                          metric='max over t=0.05..0.25 of |u-u_ref|_2/|u0|_2', selection_sha256=hashlib.sha256(sel_text.encode()).hexdigest(),
                                          gpu=os.environ.get('NF_GPU_NAME'), job_id=os.environ.get('SLURM_JOB_ID'), node=os.environ.get('SLURMD_NODENAME'),
                                          torch=torch.__version__, results=res), indent=1) + '\n')
@@ -192,7 +196,7 @@ def main():
     a.add_argument('cmd', choices=('grid', 'test'))
     a.add_argument('--weights'); a.add_argument('--weights-root'); a.add_argument('--name'); a.add_argument('--arm'); a.add_argument('--setting')
     a.add_argument('--dtype', default='float64'); a.add_argument('--cases', default=f'0:{NGRID}'); a.add_argument('--budget-s', type=float, default=None)
-    a.add_argument('--data'); a.add_argument('--out'); a.add_argument('--selection'); a.add_argument('--test'); a.add_argument('--rows', default='0:999')
+    a.add_argument('--data'); a.add_argument('--out'); a.add_argument('--selection'); a.add_argument('--test'); a.add_argument('--rows', default='0:999'); a.add_argument('--test-cases', default='0:64')
     a = a.parse_args()
     dict(grid=grid, test=test)[a.cmd](a)
 

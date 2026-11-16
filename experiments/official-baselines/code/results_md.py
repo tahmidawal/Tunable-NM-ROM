@@ -82,6 +82,20 @@ def main():
     P('Our-method and operator rows: ' + src + '.')
     P('')
 
+    # ---------------- verdicts (computed, not typed)
+    ours = {r['width']: r for r in qs['rows'] if r['role'] == 'accurate' and r.get('width') in (176, 192, 384)}
+    P('## Head-to-head (computed from the rows above)')
+    P('')
+    P('Each official row against each paper-method accurate setting: "better"/"worse" on worst error, median error and time.')
+    P('')
+    P('| official row | vs width | worst | median | time |')
+    P('|---|---|---|---|---|')
+    cmp = lambda x, y: 'better' if x < y else ('worse' if x > y else 'equal')
+    for t in tests:
+        for w, r in sorted(ours.items()):
+            P(f"| {t['name']} ({t['dtype']}) | {w} | {cmp(t['worst'], r['worst'])} ({f(t['worst'])} vs {f(r['worst'])}) | "
+              f"{cmp(t['median'], r['median'])} ({f(t['median'])} vs {f(r['median'], 4)}) | {cmp(t['ms'], r['ms'])} ({f(t['ms'], 2)} vs {f(r['ms'], 2)} ms) |")
+    P('')
     # ---------------- selection
     sel = json.load(open(os.path.join(R, 'selection.json')))
     P('## Frozen selection (validation only)')

@@ -161,3 +161,15 @@ fails at the end of training (smoke jobs 7157003, 7157158). With TF32 disabled (
 `torch.backends.cuda.matmul.allow_tf32 = False`, env `CROM_TF32=0`, a two-line environment switch in `run_ours.py`) the
 export and all its assertions pass (job 7157279). All CROM training therefore runs in strict float32 (18 vs 25 steps/s
 at `scale_mlp` 64). The smoke models (≤600 steps) are not used for anything.
+
+**A2 (2026-11-16 ~00:45 EST; operational only; written before any CROM-E test outcome, after the CoLoRA-D and CROM-I
+test evaluations).** (i) Selection is applied per family/arm with the unchanged `select_frozen.py` as each arm's
+validation grid completed: `results/selection-colora.json` (CoLoRA-D), `results/selection-crom-I.json` (CROM-I, grid of
+the I arm only), `results/selection.json` (all arms, final). The rule is per arm (section 5.2), so the per-arm files give
+the same choice as the final file; `results/selection.json` is checked to reproduce every earlier choice. (ii) A CROM
+setting slower than 60 s per query is timed by its evaluation pass (section 6); such a test evaluation may be split into
+case chunks run as separate jobs on A100 80GB (`online_ours.py test --test-cases a:b`), each with one warm-up case, each
+case evaluated and timed exactly once; `code/merge_test_chunks.py` joins them. (iii) Recorded deviation: CROM `C16-s20`
+and `C16-s64` were trained on A100 40GB (jobs 7157348, 7157349; the `a100` constraint admitted both memory sizes);
+`C16-s128` on A100 80GB. All validation and test queries run on A100 80GB. (iv) The `C16-s128` E-arm grid ran its
+`ex` setting in a separate job (7250924) to finish in time; the first job (7250253) is cancelled before reaching `ex`.

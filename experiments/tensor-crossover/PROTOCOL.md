@@ -133,3 +133,12 @@ allocation).
 - **frozen rule**: the rule fixed by the sealed closeout before it opened the sealed cohort.
 - **dev cases**: development cases never used for any reported accuracy claim.
 - **IQR**: interquartile range (75th minus 25th percentile).
+
+## Amendments
+
+**A1 (2026-11-16, ~00:10).** Second meshes (the option of §3): 2D $L=1024$ (`configs/c2d1024.json`) and 3D $n=129$, $128^3$
+cells (`configs/c3d129.json`), identical configs except the mesh, each its own job with its own in-job qualification and
+$\tau$. Decided while the primary jobs were running and after their first widths had been logged (r=384/512 and r=64), because
+the primary jobs took ~10 min instead of the ~1–2 h budgeted, leaving GPU time. Purpose: show how the shared grid-bound part of a
+query (projection, decoding) dilutes the nonlinear-term difference on finer meshes. They do not change any primary definition;
+the figure's primary panels stay the smallest meshes; the finer meshes are a separate figure.

@@ -1,0 +1,6 @@
+{
+ "src/": "byte-identical copies from exp/2026-11-14-burgers2d-query-speed @ c8bd352aa, experiments/b2d-query-speed/ (qsdrive.py, qsfast.py, analyse.py, summarise.py, make_config.py, frozen.json, configs/ftest64.json, configs/ffresh64.json, ops/, cluster/) at the first lane commit; later edits are listed in PROTOCOL.md section 6",
+ "vendor/": "byte-identical copy of experiments/iso-error/vendor/ from the same commit (itself burgers2d-test @ 1b7b7f96, see vendor/PROVENANCE-t256.json)",
+ "checkpoint": "experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl, read in place from the query-speed worktree at staging time, SHA256 18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589 (not committed here)",
+ "operator_checkpoints": "/cluster/tufts/paralab/tawal01/rebuttal-burgers-ops/{c1,c2,tr2}/runs/*-n4608-* listed in src/ops/selection_manifest.json, read only, SHA256-checked by src/ops/pick_manifest.py"
+}

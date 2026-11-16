@@ -44,7 +44,7 @@ def crossover(widths, ratio, sep):
                 return dict(width=widths[0], bracket=None, interp=None, verdict='quadrature cheaper throughout the tested range')
             r0, r1 = ratio[k - 1], ratio[k]
             interp = None
-            if r0 and r1 and r0 > 0 and r1 > 0 and r0 != r1:
+            if r0 and r1 and 0 < r0 <= 1 < r1 and np.isfinite(r1):
                 t = (0 - np.log(r0)) / (np.log(r1) - np.log(r0))
                 interp = float(np.exp(np.log(widths[k - 1]) + t * (np.log(widths[k]) - np.log(widths[k - 1]))))
             return dict(width=widths[k], bracket=[widths[k - 1], widths[k]], interp=interp,
@@ -112,7 +112,7 @@ def plot(tabs, path, title):
         series = [('tensor', 'tensor_P', 'precomputed tensor'),
                   ('quad_P', 'quad_P', f"quadrature, {fn['P']} (qualified per width)"),
                   ('quad_S', 'quad_S', f"quadrature, {fn['S']} (qualified per width)"),
-                  ('quad_FP', 'quad_FP', f"quadrature, frozen {rows[0]['rules']['FP']} at every width")]
+                  ('quad_FP', 'quad_FP', "quadrature, frozen sealed-closeout rule at every width (2D fib987, 3D lat4096)")]
         for c, (meas, ylab) in enumerate((('bytes', 'stored advection operator (GB)'),
                                           ('kernel', 'one nonlinear-term evaluation (µs)'),
                                           ('query', 'full reduced query (ms)'))):
@@ -211,6 +211,13 @@ def results_md(tabs):
                      f"{x['kernel']['quad_FP']['per_eval_us']:.1f} | {x['query']['quad_FP']['median_ms']:.2f} | "
                      f"{gb(mem.get('query_tensor_P'))} | {gb(mem.get('query_quad_P'))} | "
                      f"{x['tensor_build_s'].get('P', float('nan')):.2f} | {gb(pk) if pk and pk > 0 else '–'} |")
+    L += ['', '## Reading notes', '',
+          '- Both paths evaluate the same quadrature term, so their trajectories agree to round-off (G-eq column) and equal LM iteration counts; the comparison is cost at identical accuracy by construction. The tensor\'s storage and contraction cost depend only on its shape (M×r×r), not on which rule or stencil produced it, so the tensor curves also stand for the incumbent mesh-stencil tensor of the October lanes.',
+          '- The full-query ratio can favour quadrature at a smaller width than the kernel ratio: the solver\'s predictor evaluates the nonlinear *value* (not the Jacobian) at three candidates per step; quadrature gets the value in O(mM) work, the tensor needs a full M×r×r contraction.',
+          '- At the frozen width the frozen rule is used even where the suffix rule on these dev cases would pick another rung (field `suffix_selection` in the result JSON); see the qualification rows.',
+          '- "process peak GB" is the job-wide maximum so far, dominated by the qualification ladder (largest rules), not by either timed path; use the per-executable device GB columns to compare paths.',
+          '- No tensor ran out of memory on the 80 GB A100 in the tested range; the bank has no columns beyond 512, so wider banks were not tested.',
+          '- Times are for one GPU type (A100 80GB PCIe), float64, highest matmul precision, development cases only; ratios on other hardware will differ (the tensor is memory-bandwidth bound at large r).']
     L += ['', '## Glossary', '',
           '- **r (bank width)**: number of reduced coefficients; the first r columns of the ordered 512-column bank.',
           '- **M**: number of sine test functions (≈4r).', '- **m**: number of quadrature points of the rule.',

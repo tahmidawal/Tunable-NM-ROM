@@ -1,0 +1,408 @@
+{
+  "anchor_check_arm": "fib46368",
+  "arms": [
+    {
+      "family": "gauss",
+      "name": "gauss24",
+      "rule": "gauss24"
+    },
+    {
+      "family": "gauss",
+      "name": "gauss32",
+      "rule": "gauss32"
+    },
+    {
+      "family": "gauss",
+      "name": "gauss36",
+      "rule": "gauss36"
+    },
+    {
+      "family": "gauss",
+      "name": "gauss40",
+      "rule": "gauss40"
+    },
+    {
+      "family": "gauss",
+      "name": "gauss45",
+      "rule": "gauss45"
+    },
+    {
+      "family": "gauss",
+      "name": "gauss50",
+      "rule": "gauss50"
+    },
+    {
+      "family": "gauss",
+      "name": "gauss55",
+      "rule": "gauss55"
+    },
+    {
+      "family": "gauss",
+      "name": "gauss60",
+      "rule": "gauss60"
+    },
+    {
+      "family": "gauss",
+      "name": "gauss64",
+      "rule": "gauss64"
+    },
+    {
+      "family": "gauss",
+      "name": "gauss72",
+      "rule": "gauss72"
+    },
+    {
+      "family": "gauss",
+      "name": "gauss80",
+      "rule": "gauss80"
+    },
+    {
+      "family": "gauss",
+      "name": "gauss96",
+      "rule": "gauss96"
+    },
+    {
+      "family": "gauss",
+      "name": "gauss128",
+      "rule": "gauss128"
+    },
+    {
+      "family": "gauss",
+      "name": "gauss256",
+      "rule": "gauss256"
+    },
+    {
+      "family": "fibonacci",
+      "name": "fib610",
+      "rule": "fib610"
+    },
+    {
+      "family": "fibonacci",
+      "name": "fib987",
+      "rule": "fib987"
+    },
+    {
+      "family": "fibonacci",
+      "name": "fib1597",
+      "rule": "fib1597"
+    },
+    {
+      "family": "fibonacci",
+      "name": "fib2584",
+      "rule": "fib2584"
+    },
+    {
+      "family": "fibonacci",
+      "name": "fib4181",
+      "rule": "fib4181"
+    },
+    {
+      "family": "fibonacci",
+      "name": "fib6765",
+      "rule": "fib6765"
+    },
+    {
+      "family": "fibonacci",
+      "name": "fib10946",
+      "rule": "fib10946"
+    },
+    {
+      "family": "fibonacci",
+      "name": "fib17711",
+      "rule": "fib17711"
+    },
+    {
+      "family": "fibonacci",
+      "name": "fib28657",
+      "rule": "fib28657"
+    },
+    {
+      "family": "fibonacci",
+      "name": "fib46368",
+      "rule": "fib46368"
+    },
+    {
+      "family": "sobol",
+      "name": "sobol1024",
+      "rule": "sobol1024"
+    },
+    {
+      "family": "sobol",
+      "name": "sobol2048",
+      "rule": "sobol2048"
+    },
+    {
+      "family": "sobol",
+      "name": "sobol4096",
+      "rule": "sobol4096"
+    },
+    {
+      "family": "sobol",
+      "name": "sobol8192",
+      "rule": "sobol8192"
+    },
+    {
+      "family": "sobol",
+      "name": "sobol16384",
+      "rule": "sobol16384"
+    },
+    {
+      "family": "sobol",
+      "name": "sobol32768",
+      "rule": "sobol32768"
+    },
+    {
+      "family": "control",
+      "name": "ctrl_smolyak8",
+      "rule": "smolyak8"
+    }
+  ],
+  "audit_cases": [
+    0,
+    2
+  ],
+  "cases": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66,
+    67,
+    68,
+    69,
+    70,
+    71,
+    72,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79,
+    80,
+    81,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95,
+    96,
+    97,
+    98,
+    99,
+    100,
+    101,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    108,
+    109,
+    110,
+    111,
+    112,
+    113,
+    114,
+    115,
+    116,
+    117,
+    118,
+    119,
+    120,
+    121,
+    122,
+    123,
+    124,
+    125,
+    126,
+    127
+  ],
+  "checkpoint": "vendor/tree/experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+  "cohort": "sealed128",
+  "controls": [
+    "ctrl_smolyak8"
+  ],
+  "conv_arm": "gauss256",
+  "dim": 2,
+  "expected_store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+  "foms": [
+    {
+      "L": 512,
+      "dt": 0.005,
+      "fam": "UB",
+      "kind": "fd",
+      "lev": "2",
+      "name": "UB_L512"
+    },
+    {
+      "L": 512,
+      "dt": 0.005,
+      "fam": "CC",
+      "kind": "fd",
+      "lev": "2",
+      "name": "CC_L512"
+    },
+    {
+      "L": 32,
+      "dt": 0.005,
+      "fam": "CC",
+      "kind": "fd",
+      "lev": "2",
+      "name": "CC_L32"
+    },
+    {
+      "L": 64,
+      "dt": 0.005,
+      "fam": "CC",
+      "kind": "fd",
+      "lev": "2",
+      "name": "CC_L64"
+    },
+    {
+      "L": 128,
+      "dt": 0.005,
+      "fam": "CC",
+      "kind": "fd",
+      "lev": "2",
+      "name": "CC_L128"
+    },
+    {
+      "L": 128,
+      "dt": 0.005,
+      "fam": "UB",
+      "kind": "fd",
+      "lev": "2",
+      "name": "UB_L128"
+    },
+    {
+      "N": 12,
+      "dt": 0.0125,
+      "kind": "ps",
+      "name": "PS_N12"
+    },
+    {
+      "N": 16,
+      "dt": 0.0125,
+      "kind": "ps",
+      "name": "PS_N16"
+    },
+    {
+      "N": 20,
+      "dt": 0.0125,
+      "kind": "ps",
+      "name": "PS_N20"
+    },
+    {
+      "N": 24,
+      "dt": 0.0125,
+      "kind": "ps",
+      "name": "PS_N24"
+    },
+    {
+      "N": 32,
+      "dt": 0.0125,
+      "kind": "ps",
+      "name": "PS_N32"
+    },
+    {
+      "N": 48,
+      "dt": 0.0125,
+      "kind": "ps",
+      "name": "PS_N48"
+    },
+    {
+      "N": 64,
+      "dt": 0.0125,
+      "kind": "ps",
+      "name": "PS_N64"
+    }
+  ],
+  "gtol": 0.001,
+  "mesh": 512,
+  "rotation": "vendor/tree/experiments/quadrature-study/inputs/rotation_R512.npz",
+  "rules_arrays": "rules2d.npz",
+  "rules_manifest": "rules2d_manifest.json",
+  "step_budget": 600,
+  "timing": {
+    "burn": 0.1,
+    "cases": 6,
+    "confirm_reps": 5,
+    "initial_burn": 30.0,
+    "reps": 3,
+    "seed": 20261105
+  }
+}

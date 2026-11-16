@@ -1,0 +1,921 @@
+{
+  "freeze_sha256": "659009ee48e40bfe5d57e176b8c08ad9a24840f0f342c5b48ea9aef5c3babd41",
+  "upstream_commit": "a2eae048a976c4d2124bdccb957c50391157dd47",
+  "matching_source_sha256": "43b61551371a5e481bfdb7257b0210bb0463c19e6e2f13ba33191cbe96ef1aea",
+  "generator_sha256": "1b6fee28409778178380d613d56f51dbba06f4a22c3d6468f41cf80b0a98d36b",
+  "selection": "The pinned matched_fom implementation chooses the fastest main-panel FOM among all-case-converged subjects meeting the frozen lattice's eligible ST maximum AND median with adverse uncertainty bounds. The same allocation supplies five confirmation repetitions on each of six fixed cases for this pair.",
+  "scope": "Both solvers return six fields on the scoring lattice. The timer begins with a prepared initial field for the bank and prepared initial sine coefficients for the matched spectral FOM. The bank projection, solve and lattice decode are included. Setup, compilation and preparing both inputs are excluded.",
+  "interpretation": "A confirmation ROM/FOM ratio above one favors the FOM. Qualified requires timed-output agreement, global repetition-block drift and both selected members' main/confirmation agreement. The separate sensitivity adds each case's singly measured, synchronized FOM preparation to each of its five timings. It omits the ROM's input preparation and is not an end-to-end comparison.",
+  "panels": {
+    "sealed2d256": {
+      "job_id": "7244114",
+      "gpu": "NVIDIA A100 80GB PCIe",
+      "quadrature_rule": "fib987",
+      "primary_ST": "PASS",
+      "result_sha256": "cfbb6bd1a492c7dde12d9e5511cc36fdd404c0ae4790389525836beb22f66414",
+      "audit_sha256": "1602e76b9af8f5dfc6ceff9a3ed3485afd1d7b044e3294c0618c9a573008fe21",
+      "config_sha256": "783fb50ac908bfecb6644f827cadc0cc7a384fa8bd8399fbe5d40e5161d04b46",
+      "decision_sha256": "1468fd4a870e6d7ed61d998bcde91a2d2162ce31ba5fe0128be59bd22c82538d",
+      "matched_fom": "PS_N48",
+      "eligible_ST": 123,
+      "all_fom_cases_converged": 128,
+      "ST": {
+        "rom": {
+          "W": 0.034152248592976414,
+          "T": 0.009683452435482975,
+          "W_lo": 0.0341392554020868,
+          "W_hi": 0.03416524178386603,
+          "T_lo": 0.009680741985133695,
+          "T_hi": 0.009686162885832255
+        },
+        "fom": {
+          "W": 0.0033745155177795916,
+          "T": 1.6038650464041782e-05,
+          "W_lo": 0.0033696895395718494,
+          "W_hi": 0.003379341495987334,
+          "T_lo": 1.3277450344263432e-05,
+          "T_hi": 1.995604541148112e-05
+        }
+      },
+      "timing_case_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "main_invocations_per_subject": 18,
+      "confirm_invocations_per_subject": 30,
+      "qualified": false,
+      "reasons": [
+        "panel repetition-block drift"
+      ],
+      "gates": {
+        "max_output_diff": 3.1474494512337232e-15,
+        "worst_block_drift": 1.1005524178428256,
+        "outputs_pass": true,
+        "drift_pass": false
+      },
+      "subject_timings": {
+        "rom_lat|fib987": {
+          "main_ms": 41.89472459256649,
+          "confirm_ms": 41.67012870311737,
+          "median_fold_change": 1.0053898535099153
+        },
+        "fom|PS_N48": {
+          "main_ms": 6.7059644497931,
+          "confirm_ms": 6.594584323465824,
+          "median_fold_change": 1.0168896356258494
+        }
+      },
+      "confirm_rom_over_fom": 6.318840833506452,
+      "confirm_fom_over_rom": 0.1582568743775557,
+      "per_case_confirm_ms": [
+        {
+          "case": 0,
+          "rom_ms": 42.0958586037159,
+          "fom_ms": 6.588904187083244,
+          "rom_over_fom": 6.388901311729464,
+          "fom_input_preparation_ms": 29.466917738318443
+        },
+        {
+          "case": 1,
+          "rom_ms": 42.24551934748888,
+          "fom_ms": 6.497065536677837,
+          "rom_over_fom": 6.502246146202552,
+          "fom_input_preparation_ms": 10.397940874099731
+        },
+        {
+          "case": 2,
+          "rom_ms": 41.774348355829716,
+          "fom_ms": 6.523691117763519,
+          "rom_over_fom": 6.403483488370765,
+          "fom_input_preparation_ms": 10.182775557041168
+        },
+        {
+          "case": 3,
+          "rom_ms": 41.516246274113655,
+          "fom_ms": 7.274894043803215,
+          "rom_over_fom": 5.7067836348046015,
+          "fom_input_preparation_ms": 10.460500605404377
+        },
+        {
+          "case": 4,
+          "rom_ms": 41.4004772901535,
+          "fom_ms": 6.810353137552738,
+          "rom_over_fom": 6.079050007240966,
+          "fom_input_preparation_ms": 10.331341065466404
+        },
+        {
+          "case": 5,
+          "rom_ms": 40.3747009113431,
+          "fom_ms": 6.388010457158089,
+          "rom_over_fom": 6.3203874167270975,
+          "fom_input_preparation_ms": 10.084444656968117
+        }
+      ],
+      "paired_rom_over_fom": {
+        "minimum": 5.7067836348046015,
+        "median": 6.354644364228281,
+        "maximum": 6.502246146202552
+      },
+      "fom_ms_with_input_preparation_sensitivity": 16.933463979512453
+    },
+    "sealed2d512": {
+      "job_id": "7244113",
+      "gpu": "NVIDIA A100 80GB PCIe",
+      "quadrature_rule": "fib987",
+      "primary_ST": "PASS",
+      "result_sha256": "a26a27e7652d0f68783f352839458098b3f00db8d083102be2c27cf302a16154",
+      "audit_sha256": "41227850710fc148bc7ae09edc91d37e46dc8be5a423731606bcd0833c83b449",
+      "config_sha256": "362e70a6993bbc18be66b5c7bd322bd409c4aeb6034a0705f3946897c1f434da",
+      "decision_sha256": "adca9cadbb453790c69dbf2001444349f196e05e37a5e54d81ca2f7fcdbd9fff",
+      "matched_fom": "PS_N48",
+      "eligible_ST": 123,
+      "all_fom_cases_converged": 128,
+      "ST": {
+        "rom": {
+          "W": 0.0341347912080158,
+          "T": 0.009665923065167788,
+          "W_lo": 0.034121798017126184,
+          "W_hi": 0.03414778439890541,
+          "T_lo": 0.009663212614818508,
+          "T_hi": 0.009668633515517068
+        },
+        "fom": {
+          "W": 0.0033745155177795916,
+          "T": 1.6038650464041782e-05,
+          "W_lo": 0.0033696895395718494,
+          "W_hi": 0.003379341495987334,
+          "T_lo": 1.3277450344263432e-05,
+          "T_hi": 1.995604541148112e-05
+        }
+      },
+      "timing_case_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "main_invocations_per_subject": 18,
+      "confirm_invocations_per_subject": 30,
+      "qualified": true,
+      "reasons": [],
+      "gates": {
+        "max_output_diff": 3.2835017488826853e-15,
+        "worst_block_drift": 1.0647392315112698,
+        "outputs_pass": true,
+        "drift_pass": true
+      },
+      "subject_timings": {
+        "rom_lat|fib987": {
+          "main_ms": 42.02522803097963,
+          "confirm_ms": 41.98279231786728,
+          "median_fold_change": 1.001010788248458
+        },
+        "fom|PS_N48": {
+          "main_ms": 6.607820279896259,
+          "confirm_ms": 6.414391100406647,
+          "median_fold_change": 1.0301555013502919
+        }
+      },
+      "confirm_rom_over_fom": 6.545093939657926,
+      "confirm_fom_over_rom": 0.1527861951592194,
+      "per_case_confirm_ms": [
+        {
+          "case": 0,
+          "rom_ms": 42.109912261366844,
+          "fom_ms": 6.41960185021162,
+          "rom_over_fom": 6.55958317103088,
+          "fom_input_preparation_ms": 30.547388829290867
+        },
+        {
+          "case": 1,
+          "rom_ms": 42.33457800000906,
+          "fom_ms": 6.422936916351318,
+          "rom_over_fom": 6.591155814131534,
+          "fom_input_preparation_ms": 10.42176689952612
+        },
+        {
+          "case": 2,
+          "rom_ms": 41.69601760804653,
+          "fom_ms": 6.370759569108486,
+          "rom_over_fom": 6.544905227663678,
+          "fom_input_preparation_ms": 10.465174913406372
+        },
+        {
+          "case": 3,
+          "rom_ms": 41.49382561445236,
+          "fom_ms": 6.368774920701981,
+          "rom_over_fom": 6.515197370152754,
+          "fom_input_preparation_ms": 10.262073948979378
+        },
+        {
+          "case": 4,
+          "rom_ms": 42.29417257010937,
+          "fom_ms": 6.409180350601673,
+          "rom_over_fom": 6.598998663867983,
+          "fom_input_preparation_ms": 10.159801691770554
+        },
+        {
+          "case": 5,
+          "rom_ms": 40.436990559101105,
+          "fom_ms": 6.438702344894409,
+          "rom_over_fom": 6.280301277036941,
+          "fom_input_preparation_ms": 9.865007363259792
+        }
+      ],
+      "paired_rom_over_fom": {
+        "minimum": 6.280301277036941,
+        "median": 6.552244199347279,
+        "maximum": 6.598998663867983
+      },
+      "fom_ms_with_input_preparation_sensitivity": 16.798044089227915
+    },
+    "sealed2d1024": {
+      "job_id": "7244112",
+      "gpu": "NVIDIA A100 80GB PCIe",
+      "quadrature_rule": "fib987",
+      "primary_ST": "PASS",
+      "result_sha256": "5ebd22f42cf311f6b92f6c4fb73b4b1d1ba7198023ec9a3475254ff6e0e13651",
+      "audit_sha256": "01dd01a4c37fab6d8d10018d4a4a5bf09ead8126ca1af7ffd5093d8d583f2e89",
+      "config_sha256": "af3076af472876c53934de4363f0f0891bd6d1690706315faaf4ba805517896c",
+      "decision_sha256": "6dfe6d76920b4a2ee0ef407e785205d38cadd8a77c735b4985ac13dd9bb4a508",
+      "matched_fom": "PS_N48",
+      "eligible_ST": 123,
+      "all_fom_cases_converged": 128,
+      "ST": {
+        "rom": {
+          "W": 0.03412238592186276,
+          "T": 0.009662634114076212,
+          "W_lo": 0.034109392730973145,
+          "W_hi": 0.03413537911275237,
+          "T_lo": 0.009659923663726932,
+          "T_hi": 0.009665344564425492
+        },
+        "fom": {
+          "W": 0.0033745155177795916,
+          "T": 1.6038650464041782e-05,
+          "W_lo": 0.0033696895395718494,
+          "W_hi": 0.003379341495987334,
+          "T_lo": 1.3277450344263432e-05,
+          "T_hi": 1.995604541148112e-05
+        }
+      },
+      "timing_case_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "main_invocations_per_subject": 18,
+      "confirm_invocations_per_subject": 30,
+      "qualified": false,
+      "reasons": [
+        "panel repetition-block drift"
+      ],
+      "gates": {
+        "max_output_diff": 2.9449831451284528e-15,
+        "worst_block_drift": 1.1423931386516086,
+        "outputs_pass": true,
+        "drift_pass": false
+      },
+      "subject_timings": {
+        "rom_lat|fib987": {
+          "main_ms": 41.97622835636139,
+          "confirm_ms": 41.85373708605766,
+          "median_fold_change": 1.0029266507325705
+        },
+        "fom|PS_N48": {
+          "main_ms": 6.693938281387091,
+          "confirm_ms": 6.116926204413176,
+          "median_fold_change": 1.0943303969496343
+        }
+      },
+      "confirm_rom_over_fom": 6.842282494083625,
+      "confirm_fom_over_rom": 0.14615006043154147,
+      "per_case_confirm_ms": [
+        {
+          "case": 0,
+          "rom_ms": 41.99573304504156,
+          "fom_ms": 6.243144161999226,
+          "rom_over_fom": 6.7266960293278535,
+          "fom_input_preparation_ms": 28.328384272754192
+        },
+        {
+          "case": 1,
+          "rom_ms": 42.04636998474598,
+          "fom_ms": 6.246717646718025,
+          "rom_over_fom": 6.730954136663565,
+          "fom_input_preparation_ms": 10.215509682893753
+        },
+        {
+          "case": 2,
+          "rom_ms": 41.441367007791996,
+          "fom_ms": 6.124051287770271,
+          "rom_over_fom": 6.766985621193342,
+          "fom_input_preparation_ms": 10.170183144509792
+        },
+        {
+          "case": 3,
+          "rom_ms": 41.45048838108778,
+          "fom_ms": 6.064043380320072,
+          "rom_over_fom": 6.835453802261544,
+          "fom_input_preparation_ms": 10.727169923484325
+        },
+        {
+          "case": 4,
+          "rom_ms": 41.91038105636835,
+          "fom_ms": 6.1273155733942986,
+          "rom_over_fom": 6.839925339956271,
+          "fom_input_preparation_ms": 10.061104781925678
+        },
+        {
+          "case": 5,
+          "rom_ms": 40.38025625050068,
+          "fom_ms": 6.06195256114006,
+          "rom_over_fom": 6.661262331440357,
+          "fom_input_preparation_ms": 10.000111535191536
+        }
+      ],
+      "paired_rom_over_fom": {
+        "minimum": 6.661262331440357,
+        "median": 6.748969878928453,
+        "maximum": 6.839925339956271
+      },
+      "fom_ms_with_input_preparation_sensitivity": 16.475144308060408
+    },
+    "sealed2d2048": {
+      "job_id": "7244110",
+      "gpu": "NVIDIA A100 80GB PCIe",
+      "quadrature_rule": "fib987",
+      "primary_ST": "PASS",
+      "result_sha256": "3953db0fe9f9208c8c4515f182ee8af08315a78ae0f0dfefc7a17565e8cbd859",
+      "audit_sha256": "ab1c6c1beeb6fac30bf6ee117859ef0afa79cb7754e89a1e7927ee4bdeee078a",
+      "config_sha256": "3ab38f5de7144673e433263f1de3dfcb2d11b7f10aad604c8ad88e00588962f5",
+      "decision_sha256": "40eeb0d25add07883907d0bc3359ab9f0e3c0d745aca1f0b247f6e2a3425c203",
+      "matched_fom": "PS_N48",
+      "eligible_ST": 123,
+      "all_fom_cases_converged": 128,
+      "ST": {
+        "rom": {
+          "W": 0.03411867677044165,
+          "T": 0.009660384456506991,
+          "W_lo": 0.034105683579552036,
+          "W_hi": 0.03413166996133126,
+          "T_lo": 0.009657674006157711,
+          "T_hi": 0.009663094906856271
+        },
+        "fom": {
+          "W": 0.0033745155177795916,
+          "T": 1.6038650464041782e-05,
+          "W_lo": 0.0033696895395718494,
+          "W_hi": 0.003379341495987334,
+          "T_lo": 1.3277450344263432e-05,
+          "T_hi": 1.995604541148112e-05
+        }
+      },
+      "timing_case_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "main_invocations_per_subject": 18,
+      "confirm_invocations_per_subject": 30,
+      "qualified": true,
+      "reasons": [],
+      "gates": {
+        "max_output_diff": 3.012948469483184e-15,
+        "worst_block_drift": 1.0418560930247172,
+        "outputs_pass": true,
+        "drift_pass": true
+      },
+      "subject_timings": {
+        "rom_lat|fib987": {
+          "main_ms": 42.021903209388256,
+          "confirm_ms": 41.84324527159333,
+          "median_fold_change": 1.0042696960198785
+        },
+        "fom|PS_N48": {
+          "main_ms": 6.5784575417637825,
+          "confirm_ms": 6.412808783352375,
+          "median_fold_change": 1.0258309212090388
+        }
+      },
+      "confirm_rom_over_fom": 6.524948222410471,
+      "confirm_fom_over_rom": 0.15325792112271755,
+      "per_case_confirm_ms": [
+        {
+          "case": 0,
+          "rom_ms": 42.322549037635326,
+          "fom_ms": 6.470070220530033,
+          "rom_over_fom": 6.541281252766408,
+          "fom_input_preparation_ms": 30.906759202480316
+        },
+        {
+          "case": 1,
+          "rom_ms": 42.06674359738827,
+          "fom_ms": 6.4101554453372955,
+          "rom_over_fom": 6.562515364270509,
+          "fom_input_preparation_ms": 10.61173900961876
+        },
+        {
+          "case": 2,
+          "rom_ms": 41.80065728724003,
+          "fom_ms": 6.4154621213674545,
+          "rom_over_fom": 6.515611267973666,
+          "fom_input_preparation_ms": 9.750204160809517
+        },
+        {
+          "case": 3,
+          "rom_ms": 41.54145624488592,
+          "fom_ms": 6.3112834468483925,
+          "rom_over_fom": 6.5820932611781355,
+          "fom_input_preparation_ms": 9.952480904757977
+        },
+        {
+          "case": 4,
+          "rom_ms": 42.20599960535765,
+          "fom_ms": 6.603570654988289,
+          "rom_over_fom": 6.391390629473396,
+          "fom_input_preparation_ms": 10.12044120579958
+        },
+        {
+          "case": 5,
+          "rom_ms": 40.490285493433475,
+          "fom_ms": 6.371813826262951,
+          "rom_over_fom": 6.354593306939243,
+          "fom_input_preparation_ms": 9.78778675198555
+        }
+      ],
+      "paired_rom_over_fom": {
+        "minimum": 6.354593306939243,
+        "median": 6.528446260370037,
+        "maximum": 6.5820932611781355
+      },
+      "fom_ms_with_input_preparation_sensitivity": 16.57026680186391
+    },
+    "sealed2d4096": {
+      "job_id": "7244108",
+      "gpu": "NVIDIA H200",
+      "quadrature_rule": "fib987",
+      "primary_ST": "PASS",
+      "result_sha256": "5c8f7b12221e0ace154bf49decdce309418ae843c14172b1a749b11437212f4c",
+      "audit_sha256": "d529bccffe692d2b192b3ed192d9c26973d538e7615ef7ccec6b0b550763476d",
+      "config_sha256": "6ee94e1a1338c585e10cc951fa504befba1a3840179439738efe72ab256439ed",
+      "decision_sha256": "9dc54294af33e56362a8cd0ad3989a0ae0d7c77f6720ac9255990a3fb2b4c5b0",
+      "matched_fom": "PS_N48",
+      "eligible_ST": 123,
+      "all_fom_cases_converged": 128,
+      "ST": {
+        "rom": {
+          "W": 0.03411796020658808,
+          "T": 0.009660335190535952,
+          "W_lo": 0.03410496701569847,
+          "W_hi": 0.034130953397477695,
+          "T_lo": 0.009657624740186672,
+          "T_hi": 0.009663045640885232
+        },
+        "fom": {
+          "W": 0.0033745155177795916,
+          "T": 1.6038650464041782e-05,
+          "W_lo": 0.0033696895395718494,
+          "W_hi": 0.003379341495987334,
+          "T_lo": 1.3277450344263432e-05,
+          "T_hi": 1.995604541148112e-05
+        }
+      },
+      "timing_case_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "main_invocations_per_subject": 18,
+      "confirm_invocations_per_subject": 30,
+      "qualified": false,
+      "reasons": [
+        "panel repetition-block drift"
+      ],
+      "gates": {
+        "max_output_diff": 2.979967619580325e-15,
+        "worst_block_drift": 1.1338802597016877,
+        "outputs_pass": true,
+        "drift_pass": false
+      },
+      "subject_timings": {
+        "rom_lat|fib987": {
+          "main_ms": 27.51458203420043,
+          "confirm_ms": 27.531149331480265,
+          "median_fold_change": 1.0006021278920116
+        },
+        "fom|PS_N48": {
+          "main_ms": 4.789808299392462,
+          "confirm_ms": 4.814320243895054,
+          "median_fold_change": 1.005117520988408
+        }
+      },
+      "confirm_rom_over_fom": 5.718595344045087,
+      "confirm_fom_over_rom": 0.17486811705278715,
+      "per_case_confirm_ms": [
+        {
+          "case": 0,
+          "rom_ms": 27.818202041089535,
+          "fom_ms": 4.863989539444447,
+          "rom_over_fom": 5.719215022050986,
+          "fom_input_preparation_ms": 36.14626917988062
+        },
+        {
+          "case": 1,
+          "rom_ms": 27.63176988810301,
+          "fom_ms": 4.942418076097965,
+          "rom_over_fom": 5.590739080073588,
+          "fom_input_preparation_ms": 8.905164897441864
+        },
+        {
+          "case": 2,
+          "rom_ms": 27.27207913994789,
+          "fom_ms": 4.766575060784817,
+          "rom_over_fom": 5.721525160553654,
+          "fom_input_preparation_ms": 8.546488359570503
+        },
+        {
+          "case": 3,
+          "rom_ms": 27.197315357625484,
+          "fom_ms": 4.934102296829224,
+          "rom_over_fom": 5.512110151243348,
+          "fom_input_preparation_ms": 8.77294223755598
+        },
+        {
+          "case": 4,
+          "rom_ms": 27.659159153699875,
+          "fom_ms": 4.8485202714800835,
+          "rom_over_fom": 5.704659897246651,
+          "fom_input_preparation_ms": 8.686497807502747
+        },
+        {
+          "case": 5,
+          "rom_ms": 26.66110172867775,
+          "fom_ms": 4.764212295413017,
+          "rom_over_fom": 5.59611958399651,
+          "fom_input_preparation_ms": 8.609853684902191
+        }
+      ],
+      "paired_rom_over_fom": {
+        "minimum": 5.512110151243348,
+        "median": 5.650389740621581,
+        "maximum": 5.721525160553654
+      },
+      "fom_ms_with_input_preparation_sensitivity": 13.633049093186855
+    },
+    "sealed3d65": {
+      "job_id": "7244111",
+      "gpu": "NVIDIA A100 80GB PCIe",
+      "quadrature_rule": "lat4096",
+      "primary_ST": "PASS",
+      "result_sha256": "9553b3d8f776ec6d29711a8db39392db93693ba421ca6869a67adfb238b0cf99",
+      "audit_sha256": "cbb714d7cf4b246d6f116d804fb0a490ba001a398e4eeaf45c5bd6835d6ada9e",
+      "config_sha256": "2c118382132c0c55fcaa98895a981083460bd71e740e50a0ca51928ab595553f",
+      "decision_sha256": "0d8cdb4c956a6694e94f5e28c1caa3a4c3afbf0cf641f88e7d597aaad4f97271",
+      "matched_fom": "PS_N16",
+      "eligible_ST": 64,
+      "all_fom_cases_converged": 64,
+      "ST": {
+        "rom": {
+          "W": 0.05422132983818371,
+          "T": 0.016067770661919327,
+          "W_lo": 0.05408459152703187,
+          "W_hi": 0.054358068149335546,
+          "T_lo": 0.01604656445447896,
+          "T_hi": 0.016088976869359697
+        },
+        "fom": {
+          "W": 0.027550636913718316,
+          "T": 5.499035007510424e-05,
+          "W_lo": 0.02741389860256648,
+          "W_hi": 0.027687375224870154,
+          "T_lo": 3.2748360155915e-05,
+          "T_hi": 7.746749357957311e-05
+        }
+      },
+      "timing_case_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "main_invocations_per_subject": 18,
+      "confirm_invocations_per_subject": 30,
+      "qualified": true,
+      "reasons": [],
+      "gates": {
+        "max_output_diff": 0.0,
+        "worst_block_drift": 1.0202938171601894,
+        "outputs_pass": true,
+        "drift_pass": true
+      },
+      "subject_timings": {
+        "rom_lat|lat4096": {
+          "main_ms": 39.39861198887229,
+          "confirm_ms": 39.51643733307719,
+          "median_fold_change": 1.0029905963245147
+        },
+        "fom|PS_N16": {
+          "main_ms": 8.765699807554483,
+          "confirm_ms": 8.779339957982302,
+          "median_fold_change": 1.0015560823125682
+        }
+      },
+      "confirm_rom_over_fom": 4.501071552326469,
+      "confirm_fom_over_rom": 0.22216931865549439,
+      "per_case_confirm_ms": [
+        {
+          "case": 0,
+          "rom_ms": 38.807918317615986,
+          "fom_ms": 8.757592178881168,
+          "rom_over_fom": 4.431345685541379,
+          "fom_input_preparation_ms": 25.752880610525608
+        },
+        {
+          "case": 1,
+          "rom_ms": 38.97280525416136,
+          "fom_ms": 8.78061167895794,
+          "rom_over_fom": 4.438506869351333,
+          "fom_input_preparation_ms": 15.299047343432903
+        },
+        {
+          "case": 2,
+          "rom_ms": 39.879998192191124,
+          "fom_ms": 8.770777843892574,
+          "rom_over_fom": 4.546916921394957,
+          "fom_input_preparation_ms": 15.766741707921028
+        },
+        {
+          "case": 3,
+          "rom_ms": 38.72567880898714,
+          "fom_ms": 8.799654431641102,
+          "rom_over_fom": 4.400818135510004,
+          "fom_input_preparation_ms": 16.019104979932308
+        },
+        {
+          "case": 4,
+          "rom_ms": 42.161586694419384,
+          "fom_ms": 8.760043419897556,
+          "rom_over_fom": 4.812942661751378,
+          "fom_input_preparation_ms": 6.560776382684708
+        },
+        {
+          "case": 5,
+          "rom_ms": 44.45238318294287,
+          "fom_ms": 8.77831969410181,
+          "rom_over_fom": 5.063882922014177,
+          "fom_input_preparation_ms": 15.053457580506802
+        }
+      ],
+      "paired_rom_over_fom": {
+        "minimum": 4.400818135510004,
+        "median": 4.492711895373145,
+        "maximum": 5.063882922014177
+      },
+      "fom_ms_with_input_preparation_sensitivity": 24.31354857981205
+    },
+    "sealed3d129": {
+      "job_id": "7244109",
+      "gpu": "NVIDIA A100 80GB PCIe",
+      "quadrature_rule": "lat4096",
+      "primary_ST": "PASS",
+      "result_sha256": "ee9f3cb7b9805b19d85e4e5164231fa967958597c8c872caff14144f60d2b43e",
+      "audit_sha256": "f9505ba919ab32df2f52dec067cf11a5a4086c0dba794cebda53531cd75bf3e4",
+      "config_sha256": "28abf68baec6c5a04d08b2375140903d598f4c784a2a7579824be3924aa0c2ce",
+      "decision_sha256": "e90b5ea642aac517917d930968882554bc152b537dc2a808067649056e16c352",
+      "matched_fom": "PS_N20",
+      "eligible_ST": 64,
+      "all_fom_cases_converged": 64,
+      "ST": {
+        "rom": {
+          "W": 0.05447511075873829,
+          "T": 0.016044466611363592,
+          "W_lo": 0.05433837244758645,
+          "W_hi": 0.054611849069890125,
+          "T_lo": 0.01601882921840693,
+          "T_hi": 0.01607010400432026
+        },
+        "fom": {
+          "W": 0.013252321712660208,
+          "T": 2.606207443908516e-05,
+          "W_lo": 0.013115583401508372,
+          "W_hi": 0.013389060023812044,
+          "T_lo": 9.768029410183468e-07,
+          "T_hi": 5.144630414090323e-05
+        }
+      },
+      "timing_case_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "main_invocations_per_subject": 18,
+      "confirm_invocations_per_subject": 30,
+      "qualified": true,
+      "reasons": [],
+      "gates": {
+        "max_output_diff": 0.0,
+        "worst_block_drift": 1.0193541489551183,
+        "outputs_pass": true,
+        "drift_pass": true
+      },
+      "subject_timings": {
+        "rom_lat|lat4096": {
+          "main_ms": 46.990009024739265,
+          "confirm_ms": 46.53368145227432,
+          "median_fold_change": 1.0098063930947083
+        },
+        "fom|PS_N20": {
+          "main_ms": 8.803514763712883,
+          "confirm_ms": 8.766585495322943,
+          "median_fold_change": 1.0042125030788376
+        }
+      },
+      "confirm_rom_over_fom": 5.308073648183832,
+      "confirm_fom_over_rom": 0.18839226172797205,
+      "per_case_confirm_ms": [
+        {
+          "case": 0,
+          "rom_ms": 45.74141371995211,
+          "fom_ms": 8.742071688175201,
+          "rom_over_fom": 5.232331116870543,
+          "fom_input_preparation_ms": 25.39610303938389
+        },
+        {
+          "case": 1,
+          "rom_ms": 45.808300375938416,
+          "fom_ms": 8.742311038076878,
+          "rom_over_fom": 5.239838776774438,
+          "fom_input_preparation_ms": 17.903078347444534
+        },
+        {
+          "case": 2,
+          "rom_ms": 47.136154025793076,
+          "fom_ms": 8.78424197435379,
+          "rom_over_fom": 5.3659899355471286,
+          "fom_input_preparation_ms": 17.91313663125038
+        },
+        {
+          "case": 3,
+          "rom_ms": 45.8849361166358,
+          "fom_ms": 8.770103566348553,
+          "rom_over_fom": 5.23197197952134,
+          "fom_input_preparation_ms": 17.795048654079437
+        },
+        {
+          "case": 4,
+          "rom_ms": 49.28251355886459,
+          "fom_ms": 8.776213973760605,
+          "rom_over_fom": 5.61546399235604,
+          "fom_input_preparation_ms": 6.995693780481815
+        },
+        {
+          "case": 5,
+          "rom_ms": 51.60071887075901,
+          "fom_ms": 8.698019199073315,
+          "rom_over_fom": 5.932467805573083,
+          "fom_input_preparation_ms": 17.77314580976963
+        }
+      ],
+      "paired_rom_over_fom": {
+        "minimum": 5.23197197952134,
+        "median": 5.302914356160784,
+        "maximum": 5.932467805573083
+      },
+      "fom_ms_with_input_preparation_sensitivity": 26.572001166641712
+    },
+    "sealed3d257": {
+      "job_id": "7244107",
+      "gpu": "NVIDIA H200",
+      "quadrature_rule": "lat4096",
+      "primary_ST": "PASS",
+      "result_sha256": "96b015fff12e6a9cf4b44f3f1289f0062531534850d8d52fe4768613d7c05e62",
+      "audit_sha256": "2b98f501ac96a9992a59e438b5b1cb3ae9082364ed966479fc2a5f0b10b5406c",
+      "config_sha256": "085945fc9f09ff86c1eab165759582991fb4f2e14a2db8e2c4435284effd35d6",
+      "decision_sha256": "edfdd4ce818be23bbc9409dc5282dcc52b6db7d551a3074e70743689acdc911b",
+      "matched_fom": "PS_N20",
+      "eligible_ST": 64,
+      "all_fom_cases_converged": 64,
+      "ST": {
+        "rom": {
+          "W": 0.05454553026237025,
+          "T": 0.016053530059015424,
+          "W_lo": 0.054408791951218415,
+          "W_hi": 0.05468226857352209,
+          "T_lo": 0.01602789266605876,
+          "T_hi": 0.01607916745197209
+        },
+        "fom": {
+          "W": 0.013252321712660208,
+          "T": 2.606207443908516e-05,
+          "W_lo": 0.013115583401508372,
+          "W_hi": 0.013389060023812044,
+          "T_lo": 9.768029410183468e-07,
+          "T_hi": 5.144630414090323e-05
+        }
+      },
+      "timing_case_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "main_invocations_per_subject": 18,
+      "confirm_invocations_per_subject": 30,
+      "qualified": true,
+      "reasons": [],
+      "gates": {
+        "max_output_diff": 0.0,
+        "worst_block_drift": 1.0263627647577178,
+        "outputs_pass": true,
+        "drift_pass": true
+      },
+      "subject_timings": {
+        "rom_lat|lat4096": {
+          "main_ms": 42.588879354298115,
+          "confirm_ms": 42.18529397621751,
+          "median_fold_change": 1.0095669684868886
+        },
+        "fom|PS_N20": {
+          "main_ms": 5.561004858464003,
+          "confirm_ms": 5.550401750952005,
+          "median_fold_change": 1.0019103315377447
+        }
+      },
+      "confirm_rom_over_fom": 7.60040369491846,
+      "confirm_fom_over_rom": 0.1315719585616996,
+      "per_case_confirm_ms": [
+        {
+          "case": 0,
+          "rom_ms": 41.569690220057964,
+          "fom_ms": 5.533144809305668,
+          "rom_over_fom": 7.512850585465587,
+          "fom_input_preparation_ms": 34.0936528518796
+        },
+        {
+          "case": 1,
+          "rom_ms": 41.54558572918177,
+          "fom_ms": 5.549903959035873,
+          "rom_over_fom": 7.485820662092871,
+          "fom_input_preparation_ms": 15.195510350167751
+        },
+        {
+          "case": 2,
+          "rom_ms": 42.225997895002365,
+          "fom_ms": 5.53852878510952,
+          "rom_over_fom": 7.624045939515214,
+          "fom_input_preparation_ms": 14.999646693468094
+        },
+        {
+          "case": 3,
+          "rom_ms": 41.56425315886736,
+          "fom_ms": 5.671903491020203,
+          "rom_over_fom": 7.328095977773983,
+          "fom_input_preparation_ms": 14.932388439774513
+        },
+        {
+          "case": 4,
+          "rom_ms": 43.37623994797468,
+          "fom_ms": 5.5582961067557335,
+          "rom_over_fom": 7.803873545933221,
+          "fom_input_preparation_ms": 5.54594025015831
+        },
+        {
+          "case": 5,
+          "rom_ms": 44.573708437383175,
+          "fom_ms": 5.533553659915924,
+          "rom_over_fom": 8.055168735466896,
+          "fom_input_preparation_ms": 14.788973145186901
+        }
+      ],
+      "paired_rom_over_fom": {
+        "minimum": 7.328095977773983,
+        "median": 7.568448262490401,
+        "maximum": 8.055168735466896
+      },
+      "fom_ms_with_input_preparation_sensitivity": 20.589254330843687
+    }
+  }
+}

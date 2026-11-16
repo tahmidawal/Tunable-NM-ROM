@@ -1,0 +1,1119 @@
+"""3D viscous Burgers testbed for the separable EQ-decoder (2026-09-03, design
+B3D-DESIGN.md r2, branch exp/2026-09-03-burgers3d-tensor).
+
+    u_t + u (u_x + u_y + u_z) = nu lap(u)   on (0,1)^3,  u = 0 on the walls
+
+FOM: interior-only unknowns (n-2)^3 with fixed ghost zeros, sign-upwind
+advection on all three axes switching on the SAME centre value, 7-point
+centred diffusion, backward Euler dt=0.005 x 50 steps, Newton with a
+matrix-free BiCGStab preconditioned by the EXACT Helmholtz inverse in the
+3D discrete sine basis (two separable 3D DSTs per application).  Weak form on
+the M lowest 3D sine modes, which are exact eigenvectors of the ghost-zero
+7-point Laplacian, so all linear terms are exact through A = Phi^T G and only
+advection is left (sampled in the `ex` arm, a precomputed quadratic tensor in
+the `tensor` arm, the full grid in the `full` arm).
+
+Self-contained on purpose (the 1D precedent, b1d_common.py): importing
+blat_common drags in the 2D FiLM stack.  nnls_capped and the _solve_nnls
+sequence are copied verbatim from blat_common / ctol_eq (same algorithm, same
+tolerances, same EQ seed); the decoder is the sep_common two-track model with
+a 3D coordinate and bc(x) = 64 x(1-x) y(1-y) z(1-z); the trainer is the
+sep_solvers.train_autodecoder_v2 recipe (explicit jit arguments, per-step
+point subsampling) without its optional levers.
+"""
+from __future__ import annotations
+
+import hashlib
+import os
+import pickle
+import time
+
+import numpy as np
+import scipy.sparse as sps
+import jax
+
+jax.config.update("jax_enable_x64", True)
+
+import jax.numpy as jnp
+import optax
+
+F64 = jnp.float64
+
+DT = 0.005
+NUM_STEPS = 50
+NEWTON_ITERS = 8            # truth generator: fixed iterations + skip guard
+LIN_TOL = 1e-10
+LIN_MAXITER = 2000
+MAX_NEWTON = 20             # tolerance ladders
+MAX_PICARD = 60
+WEAK_ALPHA = 1.0
+N_REF = 257                 # reference grid for the family's peak normalisation
+EQ_ROWS = 3072              # ctol_eq NNLS row subsample
+EQ_SEED = 20259
+EQ_SNAPS = 64
+
+
+def log(*a):
+    print(*a, flush=True)
+
+
+# ------------------------------- grid ---------------------------------------
+
+def grid_coords_3d(n):
+    """(n^3, 3) f64, flat index i*n^2 + j*n + k: i/x is the SLOWEST-varying index, k/z the fastest."""
+    x = np.linspace(0.0, 1.0, n)
+    X, Y, Z = np.meshgrid(x, x, x, indexing="ij")
+    return np.stack([X.reshape(-1), Y.reshape(-1), Z.reshape(-1)], axis=1)
+
+
+def interior_indices_3d(n):
+    """Flat full-grid indices of the interior nodes in interior order
+    i*(n-2)^2 + j*(n-2) + k."""
+    r = np.arange(1, n - 1)
+    I, J, K = np.meshgrid(r, r, r, indexing="ij")
+    return (I * n * n + J * n + K).reshape(-1)
+
+
+def bc_poly_3d(x):
+    """Smooth Dirichlet mask, max 1 at the centre: 64 x(1-x) y(1-y) z(1-z)."""
+    return (64.0 * x[:, 0] * (1.0 - x[:, 0]) * x[:, 1] * (1.0 - x[:, 1])
+            * x[:, 2] * (1.0 - x[:, 2]))
+
+
+# ------------------------------- family --------------------------------------
+
+def draw_param_table(seed, m):
+    """ONE raw parameter table (design [A12]): every row consumes the same
+    number of draws whatever its blob count, so prefixes are exact.  Returns
+    dict of numpy arrays: B (m,), c (m,3,3), w (m,3), rho (m,3), A (m,),
+    nu (m,)."""
+    rng = np.random.default_rng(seed)
+    B = np.zeros(m, dtype=np.int64)
+    c = np.zeros((m, 3, 3))
+    w = np.zeros((m, 3))
+    rho = np.zeros((m, 3))
+    A = np.zeros(m)
+    nu = np.zeros(m)
+    for j in range(m):
+        B[j] = rng.integers(1, 4)
+        for b in range(3):
+            c[j, b] = rng.uniform(0.2, 0.8, 3)
+            w[j, b] = rng.uniform(0.10, 0.20)
+            rho[j, b] = rng.uniform(0.5, 1.0)
+        A[j] = rng.uniform(0.5, 2.0)
+        nu[j] = np.exp(rng.uniform(np.log(0.01), np.log(0.1)))
+    # overlap diagnostic [A11]: min pairwise centre distance over the mean width
+    # (inf for single-blob rows)
+    overlap = np.full(m, np.inf)
+    for j in range(m):
+        if B[j] > 1:
+            dmin = min(np.linalg.norm(c[j, a] - c[j, b_]) for a in range(B[j]) for b_ in range(a + 1, B[j]))
+            overlap[j] = dmin / np.mean(w[j, :B[j]])
+    return dict(B=B, c=c, w=w, rho=rho, A=A, nu=nu, overlap=overlap, seed=int(seed), m=int(m))
+
+
+def _blob_sum(coords, row):
+    """m(x) * sum_b rho_b exp(-|x-c_b|^2 / 2 w_b^2) at coords (P,3), jax."""
+    x = jnp.asarray(coords, dtype=F64)
+    s = jnp.zeros((x.shape[0],), dtype=F64)
+    for b in range(int(row["B"])):
+        d2 = jnp.sum((x - jnp.asarray(row["c"][b])[None, :]) ** 2, axis=1)
+        s = s + float(row["rho"][b]) * jnp.exp(-d2 / (2.0 * float(row["w"][b]) ** 2))
+    mask = (64.0 * x[:, 0] * (1 - x[:, 0]) * x[:, 1] * (1 - x[:, 1])
+            * x[:, 2] * (1 - x[:, 2]))
+    return s * mask
+
+
+_blob_sum_j = jax.jit(_blob_sum, static_argnames=())
+
+
+def table_row(tab, j):
+    return dict(B=int(tab["B"][j]), c=np.asarray(tab["c"][j]), w=np.asarray(tab["w"][j]),
+                rho=np.asarray(tab["rho"][j]), A=float(tab["A"][j]), nu=float(tab["nu"][j]))
+
+
+def peak_on_reference_grid(tab, chunk=2 ** 21):
+    """s* = max over the N_REF^3 grid of the masked blob sum, per row
+    (resolution-independent normalisation, design [A7]).  On device, in
+    chunks of coordinates; deterministic."""
+    coords = grid_coords_3d(N_REF)
+    out = np.zeros(int(tab["m"]))
+    for j in range(int(tab["m"])):
+        row = table_row(tab, j)
+        best = 0.0
+        for s in range(0, coords.shape[0], chunk):
+            best = max(best, float(jnp.max(_blob_sum(coords[s:s + chunk], row))))
+        out[j] = best
+    return out
+
+
+def build_param_table(seed, m, path=None):
+    """Draw, normalise, persist (npz) and fingerprint the table."""
+    tab = draw_param_table(seed, m)
+    tab["s_star"] = peak_on_reference_grid(tab)
+    if path:
+        np.savez(path, **{k: v for k, v in tab.items()})
+    h = hashlib.sha256()
+    for k in ("B", "c", "w", "rho", "A", "nu", "s_star"):
+        h.update(np.ascontiguousarray(tab[k]).tobytes())
+    tab["sha256"] = h.hexdigest()
+    return tab
+
+
+def load_param_table(path):
+    d = np.load(path)
+    tab = {k: d[k] for k in d.files}
+    tab["seed"] = int(tab["seed"]); tab["m"] = int(tab["m"])
+    h = hashlib.sha256()
+    for k in ("B", "c", "w", "rho", "A", "nu", "s_star"):
+        h.update(np.ascontiguousarray(tab[k]).tobytes())
+    tab["sha256"] = h.hexdigest()
+    return tab
+
+
+def blob_ic_3d(n, tab, j, coords=None):
+    """u0 on the full n^3 grid (walls exactly zero through the mask)."""
+    coords = grid_coords_3d(n) if coords is None else coords
+    row = table_row(tab, j)
+    s = np.asarray(_blob_sum(coords, row))
+    return row["A"] * s / float(tab["s_star"][j])
+
+
+# ------------------------------- model --------------------------------------
+
+def init_mlp(key, sizes):
+    params = []
+    for i in range(len(sizes) - 1):
+        key, k1 = jax.random.split(key)
+        w = jax.random.normal(k1, (sizes[i], sizes[i + 1]), dtype=F64) * jnp.sqrt(2.0 / sizes[i])
+        params.append((w, jnp.zeros((sizes[i + 1],), dtype=F64)))
+    return params
+
+
+def apply_mlp(params, x):
+    for w, b in params[:-1]:
+        x = jax.nn.silu(x @ w + b)
+    w, b = params[-1]
+    return x @ w + b
+
+
+def init_separable_3d(key, k_lat, r_feat, n_ff=64, ff_scale=4.0, g_hidden=128,
+                      g_layers=2, h_hidden=128, h_layers=2, out_scale=1.0):
+    kb, kg, kh, kl = jax.random.split(key, 4)
+    B = jax.random.normal(kb, (3, n_ff), dtype=F64) * ff_scale        # fixed frequencies
+    g_mlp = init_mlp(kg, [2 * n_ff] + [g_hidden] * g_layers + [r_feat])
+    h_mlp = init_mlp(kh, [k_lat] + [h_hidden] * h_layers + [r_feat])
+    h_lin = jax.random.normal(kl, (k_lat, r_feat), dtype=F64) * 0.3
+    return dict(B=B, g=g_mlp, h=h_mlp, h_lin=h_lin,
+                out_scale=jnp.asarray(float(out_scale), dtype=F64))
+
+
+def features(params, x):
+    """bc(x) * g~(x): (n_pts, r).  ALL x-dependence of the decoder."""
+    ang = 2.0 * jnp.pi * (x @ params["B"])
+    ff = jnp.concatenate([jnp.sin(ang), jnp.cos(ang)], axis=-1)
+    return (params["out_scale"] * bc_poly_3d(x))[..., None] * apply_mlp(params["g"], ff)
+
+
+def head(params, z):
+    return apply_mlp(params["h"], z) + z @ params["h_lin"]
+
+
+def features_np(params, x):
+    """INDEPENDENT numpy evaluation of features() (gate D1 reference path)."""
+    p = jax.tree_util.tree_map(np.asarray, params)
+    x = np.asarray(x, dtype=np.float64)
+    ang = 2.0 * np.pi * (x @ p["B"])
+    ff = np.concatenate([np.sin(ang), np.cos(ang)], axis=-1)
+    h = ff
+    for w, b in p["g"][:-1]:
+        a = h @ w + b
+        h = a / (1.0 + np.exp(-a))                          # SiLU
+    w, b = p["g"][-1]
+    out = h @ w + b
+    mask = 64.0 * x[:, 0] * (1 - x[:, 0]) * x[:, 1] * (1 - x[:, 1]) * x[:, 2] * (1 - x[:, 2])
+    return (float(p["out_scale"]) * mask)[:, None] * out
+
+
+def head_np(params, z):
+    p = jax.tree_util.tree_map(np.asarray, params)
+    h = np.asarray(z, dtype=np.float64)
+    for w, b in p["h"][:-1]:
+        a = h @ w + b
+        h = a / (1.0 + np.exp(-a))
+    w, b = p["h"][-1]
+    return h @ w + b + np.asarray(z) @ p["h_lin"]
+
+
+class SeparableDecoder3D:
+    def __init__(self, params, k_lat, r_feat):
+        self.params = params
+        self.k = int(k_lat)
+        self.r = int(r_feat)
+
+    def __call__(self, z, x):
+        return features(self.params, x) @ head(self.params, z)
+
+    def feat_at(self, x, chunk=0):
+        """Bank builder (n_pts, r); chunking bounds the activation footprint and
+        is numerically identical (features acts pointwise)."""
+        x = jnp.asarray(x, dtype=F64)
+        if not chunk or x.shape[0] <= chunk:
+            return jnp.asarray(features(self.params, x))
+        return jnp.concatenate([features(self.params, x[s:s + chunk])
+                                for s in range(0, x.shape[0], chunk)], axis=0)
+
+    def head_fn(self):
+        p = self.params
+        return lambda z: head(p, z)
+
+
+# ------------------------------- FOM stencils ---------------------------------
+
+def _pad3(u_int, n):
+    ni = n - 2
+    return jnp.pad(u_int.reshape(ni, ni, ni), 1)
+
+
+def upwind_adv_field_3d(u_int, n):
+    """N(u) = u (u_x + u_y + u_z), sign-upwind on every axis switching on the
+    centre value, ghost zeros on all six faces.  Interior in, interior out."""
+    dx = 1.0 / (n - 1)
+    U = _pad3(u_int, n)
+    c = U[1:-1, 1:-1, 1:-1]
+    pos = c > 0
+    ux = jnp.where(pos, (c - U[:-2, 1:-1, 1:-1]) / dx, (U[2:, 1:-1, 1:-1] - c) / dx)
+    uy = jnp.where(pos, (c - U[1:-1, :-2, 1:-1]) / dx, (U[1:-1, 2:, 1:-1] - c) / dx)
+    uz = jnp.where(pos, (c - U[1:-1, 1:-1, :-2]) / dx, (U[1:-1, 1:-1, 2:] - c) / dx)
+    return (c * (ux + uy + uz)).reshape(-1)
+
+
+def backward_adv_field_3d(u_int, n):
+    """u (D-x u + D-y u + D-z u) with the FIXED backward branch (the form the
+    tensor reproduces exactly)."""
+    dx = 1.0 / (n - 1)
+    U = _pad3(u_int, n)
+    c = U[1:-1, 1:-1, 1:-1]
+    d = ((c - U[:-2, 1:-1, 1:-1]) + (c - U[1:-1, :-2, 1:-1]) + (c - U[1:-1, 1:-1, :-2])) / dx
+    return (c * d).reshape(-1)
+
+
+def central_adv_field_3d(u_int, n):
+    """Control stencil (gate F5 / gate A controls): central differences."""
+    dx = 1.0 / (n - 1)
+    U = _pad3(u_int, n)
+    c = U[1:-1, 1:-1, 1:-1]
+    d = ((U[2:, 1:-1, 1:-1] - U[:-2, 1:-1, 1:-1]) + (U[1:-1, 2:, 1:-1] - U[1:-1, :-2, 1:-1])
+         + (U[1:-1, 1:-1, 2:] - U[1:-1, 1:-1, :-2])) / (2.0 * dx)
+    return (c * d).reshape(-1)
+
+
+def downwind_adv_field_3d(u_int, n):
+    """Control stencil (gate F5 control): the upwind switch INVERTED
+    (forward difference where u_c > 0) -- anti-diffusive, not monotone."""
+    dx = 1.0 / (n - 1)
+    U = _pad3(u_int, n)
+    c = U[1:-1, 1:-1, 1:-1]
+    pos = c > 0
+    ux = jnp.where(pos, (U[2:, 1:-1, 1:-1] - c) / dx, (c - U[:-2, 1:-1, 1:-1]) / dx)
+    uy = jnp.where(pos, (U[1:-1, 2:, 1:-1] - c) / dx, (c - U[1:-1, :-2, 1:-1]) / dx)
+    uz = jnp.where(pos, (U[1:-1, 1:-1, 2:] - c) / dx, (c - U[1:-1, 1:-1, :-2]) / dx)
+    return (c * (ux + uy + uz)).reshape(-1)
+
+
+def lap_3d(u_int, n, zscale=1.0):
+    """7-point Laplacian with ghost zeros; `zscale` scales the z-direction
+    contribution (1.0 = the operator; != 1 only for gate controls)."""
+    dx = 1.0 / (n - 1)
+    U = _pad3(u_int, n)
+    c = U[1:-1, 1:-1, 1:-1]
+    lxy = (U[2:, 1:-1, 1:-1] + U[:-2, 1:-1, 1:-1] + U[1:-1, 2:, 1:-1] + U[1:-1, :-2, 1:-1] - 4.0 * c)
+    lz = (U[1:-1, 1:-1, 2:] + U[1:-1, 1:-1, :-2] - 2.0 * c)
+    return ((lxy + zscale * lz) / dx ** 2).reshape(-1)
+
+
+def fom_residual_int(u_int, up_int, nu, n, forcing=None):
+    """PRODUCTION backward-Euler interior residual u - u_prev + dt (N(u) - nu lap u
+    - f): no mutation knobs (design [A61]).  `forcing` (interior vector) is the
+    manufactured-solution source of gate F11 and is None on every FOM path."""
+    r = u_int - up_int + DT * (upwind_adv_field_3d(u_int, n) - nu * lap_3d(u_int, n))
+    if forcing is not None:
+        r = r - DT * forcing
+    return r
+
+
+def fom_residual_mutated(u_int, up_int, nu, n, adv="upwind", zscale=1.0, zadv=1.0, xadv=1.0):
+    """GATE-CONTROL residual: the same operator with a deliberate mutation
+    (adv = 'upwind' | 'central' | 'downwind'; zscale scales the z-Laplacian;
+    zadv / xadv scale the z / x advection).  Never called on a FOM path; an
+    unknown `adv` raises."""
+    if adv not in ("upwind", "central", "downwind"):
+        raise ValueError(adv)
+    if adv == "central":
+        Nu = central_adv_field_3d(u_int, n)
+    elif adv == "downwind":
+        Nu = downwind_adv_field_3d(u_int, n)
+    else:
+        dx = 1.0 / (n - 1)
+        U = _pad3(u_int, n)
+        c = U[1:-1, 1:-1, 1:-1]
+        pos = c > 0
+        ux = jnp.where(pos, (c - U[:-2, 1:-1, 1:-1]) / dx, (U[2:, 1:-1, 1:-1] - c) / dx)
+        uy = jnp.where(pos, (c - U[1:-1, :-2, 1:-1]) / dx, (U[1:-1, 2:, 1:-1] - c) / dx)
+        uz = jnp.where(pos, (c - U[1:-1, 1:-1, :-2]) / dx, (U[1:-1, 1:-1, 2:] - c) / dx)
+        Nu = (c * (xadv * ux + uy + zadv * uz)).reshape(-1)
+    return u_int - up_int + DT * (Nu - nu * lap_3d(u_int, n, zscale))
+
+
+# ------------------------------- sine basis / DST -----------------------------
+
+def dst_matrix(n):
+    """Orthonormal DST-I on the (n-2) interior points: S[i, p] =
+    sqrt(2/(n-1)) sin(pi p i / (n-1)), p, i = 1..n-2.  S^T S = I."""
+    p = np.arange(1, n - 1)
+    return np.sqrt(2.0 / (n - 1)) * np.sin(np.pi * np.outer(p, p) / (n - 1))
+
+
+def lam_1d(n):
+    p = np.arange(1, n - 1)
+    dx = 1.0 / (n - 1)
+    return (4.0 / dx ** 2) * np.sin(np.pi * p / (2 * (n - 1))) ** 2
+
+
+def lam_3d(n):
+    l1 = lam_1d(n)
+    return l1[:, None, None] + l1[None, :, None] + l1[None, None, :]     # (ni, ni, ni)
+
+
+def dst3_mm(V, S):
+    """Separable 3D DST by three one-axis matmuls: V (ni,ni,ni) -> S^T V S ... ;
+    with orthonormal S the same call is its own inverse (S symmetric)."""
+    V = jnp.einsum("ia,ajk->ijk", S, V)
+    V = jnp.einsum("jb,ibk->ijk", S, V)
+    return jnp.einsum("kc,ijc->ijk", S, V)
+
+
+def _dst1_fft_axis(V, axis, n):
+    """Orthonormal DST-I along one axis through the FFT of the odd extension:
+    y = [0, x_1..x_ni, 0, -x_ni..-x_1] (length 2(n-1)); X_k = -Im FFT(y)_k / 2."""
+    ni = n - 2
+    V = jnp.moveaxis(V, axis, -1)
+    shp = V.shape[:-1]
+    zero = jnp.zeros(shp + (1,), dtype=V.dtype)
+    y = jnp.concatenate([zero, V, zero, -V[..., ::-1]], axis=-1)      # length 2(n-1)
+    X = -jnp.imag(jnp.fft.fft(y, axis=-1))[..., 1:ni + 1] / 2.0
+    X = X * np.sqrt(2.0 / (n - 1))
+    return jnp.moveaxis(X, -1, axis)
+
+
+def dst3_fft(V, n):
+    for ax in range(3):
+        V = _dst1_fft_axis(V, ax, n)
+    return V
+
+
+def make_helmholtz_inv(n, dst="mm"):
+    """H_nu^{-1} v = S (S^T v / (1 + dt nu lam)) on interior vectors, with
+    H_nu = I + dt nu (-L).  Two separable 3D DSTs (six one-axis transforms)."""
+    ni = n - 2
+    S = jnp.asarray(dst_matrix(n))
+    lam = jnp.asarray(lam_3d(n))
+
+    def hinv(v, nu, nu_scale=1.0):
+        V = v.reshape(ni, ni, ni)
+        C = dst3_mm(V, S) if dst == "mm" else dst3_fft(V, n)
+        C = C / (1.0 + DT * (nu * nu_scale) * lam)
+        Y = dst3_mm(C, S) if dst == "mm" else dst3_fft(C, n)
+        return Y.reshape(-1)
+    return hinv
+
+
+# ------------------------------- truth generator ------------------------------
+
+def make_truth_rollout(n, dst="mm"):
+    """Vmapped fixed-iteration Newton (NEWTON_ITERS) with the exact-Helmholtz
+    preconditioned BiCGStab, skip guard on converged residuals, non-finite
+    steps rejected, NaN-propagating residual audit.  Interior unknowns only.
+    rollout(U0_int (B, n_i), nu (B,)) -> snaps (B, T+1, n_i), worst rel res."""
+    hinv = make_helmholtz_inv(n, dst)
+
+    def newton_step(u_int, up_int, nu):
+        def body(u, _):
+            r = fom_residual_int(u, up_int, nu, n)
+
+            def Jv(v):
+                return jax.jvp(lambda uu: fom_residual_int(uu, up_int, nu, n), (u,), (v,))[1]
+
+            du, _ = jax.scipy.sparse.linalg.bicgstab(
+                Jv, -r, tol=LIN_TOL, maxiter=LIN_MAXITER, M=lambda v: hinv(v, nu))
+            ok = jnp.all(jnp.isfinite(du)) & \
+                (jnp.linalg.norm(r) > 1e-12 * (jnp.linalg.norm(up_int) + 1e-300))
+            return jnp.where(ok, u + du, u), None
+        u, _ = jax.lax.scan(body, u_int, None, length=NEWTON_ITERS)
+        rfin = jnp.linalg.norm(fom_residual_int(u, up_int, nu, n)) \
+            / (jnp.linalg.norm(up_int) + 1e-300)
+        return u, rfin
+
+    def rollout(U0_int, nu):
+        def body(carry, _):
+            u, worst = carry
+            u2, r = jax.vmap(newton_step, in_axes=(0, 0, 0))(u, u, nu)
+            return (u2, jnp.maximum(worst, jnp.max(r))), u2
+        (uT, worst), traj = jax.lax.scan(
+            body, (jnp.asarray(U0_int), jnp.asarray(0.0, F64)), None, length=NUM_STEPS)
+        snaps = jnp.concatenate([jnp.asarray(U0_int)[None], traj], axis=0)
+        return jnp.transpose(snaps, (1, 0, 2)), worst
+
+    return jax.jit(rollout)
+
+
+def make_truth_rollout_iters(n, iters, dst="mm"):
+    """Same generator with a different fixed iteration count (gate F3 control)."""
+    hinv = make_helmholtz_inv(n, dst)
+
+    def newton_step(u_int, up_int, nu):
+        def body(u, _):
+            r = fom_residual_int(u, up_int, nu, n)
+            Jv = lambda v: jax.jvp(lambda uu: fom_residual_int(uu, up_int, nu, n), (u,), (v,))[1]
+            du, _ = jax.scipy.sparse.linalg.bicgstab(
+                Jv, -r, tol=LIN_TOL, maxiter=LIN_MAXITER, M=lambda v: hinv(v, nu))
+            ok = jnp.all(jnp.isfinite(du)) & \
+                (jnp.linalg.norm(r) > 1e-12 * (jnp.linalg.norm(up_int) + 1e-300))
+            return jnp.where(ok, u + du, u), None
+        u, _ = jax.lax.scan(body, u_int, None, length=iters)
+        rfin = jnp.linalg.norm(fom_residual_int(u, up_int, nu, n)) \
+            / (jnp.linalg.norm(up_int) + 1e-300)
+        return u, rfin
+
+    def rollout(U0_int, nu):
+        def body(carry, _):
+            u, worst = carry
+            u2, r = jax.vmap(newton_step)(u, u, nu)
+            return (u2, jnp.maximum(worst, jnp.max(r))), u2
+        (uT, worst), traj = jax.lax.scan(
+            body, (jnp.asarray(U0_int), jnp.asarray(0.0, F64)), None, length=NUM_STEPS)
+        snaps = jnp.concatenate([jnp.asarray(U0_int)[None], traj], axis=0)
+        return jnp.transpose(snaps, (1, 0, 2)), worst
+    return jax.jit(rollout)
+
+
+def make_control_rollout_adv(n, adv, dst="mm"):
+    """Gate F5 control: the same Newton generator with a NON-monotone advection
+    stencil (adv = 'central' or 'downwind'); must produce negative values."""
+    hinv = make_helmholtz_inv(n, dst)
+
+    def newton_step(u_int, up_int, nu):
+        def body(u, _):
+            r = fom_residual_mutated(u, up_int, nu, n, adv=adv)
+            Jv = lambda v: jax.jvp(lambda uu: fom_residual_mutated(uu, up_int, nu, n, adv=adv),
+                                   (u,), (v,))[1]
+            du, _ = jax.scipy.sparse.linalg.bicgstab(
+                Jv, -r, tol=LIN_TOL, maxiter=LIN_MAXITER, M=lambda v: hinv(v, nu))
+            ok = jnp.all(jnp.isfinite(du))
+            return jnp.where(ok, u + du, u), None
+        u, _ = jax.lax.scan(body, u_int, None, length=NEWTON_ITERS)
+        rfin = jnp.linalg.norm(fom_residual_mutated(u, up_int, nu, n, adv=adv)) \
+            / (jnp.linalg.norm(up_int) + 1e-300)
+        return u, rfin
+
+    def rollout(U0_int, nu):
+        def body(carry, _):
+            u, worst = carry
+            u2, r = jax.vmap(newton_step)(u, u, nu)
+            return (u2, jnp.maximum(worst, jnp.max(r))), u2
+        (uT, worst), traj = jax.lax.scan(
+            body, (jnp.asarray(U0_int), jnp.asarray(0.0, F64)), None, length=NUM_STEPS)
+        snaps = jnp.concatenate([jnp.asarray(U0_int)[None], traj], axis=0)
+        return jnp.transpose(snaps, (1, 0, 2)), worst
+    return jax.jit(rollout)
+
+
+def make_control_rollout_zadv(n, zadv, dst="mm"):
+    """Gate F1 control: z-advection coefficient scaled (breaks axis symmetry)."""
+    hinv = make_helmholtz_inv(n, dst)
+
+    def newton_step(u_int, up_int, nu):
+        def body(u, _):
+            r = fom_residual_mutated(u, up_int, nu, n, zadv=zadv)
+            Jv = lambda v: jax.jvp(lambda uu: fom_residual_mutated(uu, up_int, nu, n, zadv=zadv),
+                                   (u,), (v,))[1]
+            du, _ = jax.scipy.sparse.linalg.bicgstab(
+                Jv, -r, tol=LIN_TOL, maxiter=LIN_MAXITER, M=lambda v: hinv(v, nu))
+            ok = jnp.all(jnp.isfinite(du)) & \
+                (jnp.linalg.norm(r) > 1e-12 * (jnp.linalg.norm(up_int) + 1e-300))
+            return jnp.where(ok, u + du, u), None
+        u, _ = jax.lax.scan(body, u_int, None, length=NEWTON_ITERS)
+        rfin = jnp.linalg.norm(fom_residual_mutated(u, up_int, nu, n, zadv=zadv)) \
+            / (jnp.linalg.norm(up_int) + 1e-300)
+        return u, rfin
+
+    def rollout(U0_int, nu):
+        def body(carry, _):
+            u, worst = carry
+            u2, r = jax.vmap(newton_step)(u, u, nu)
+            return (u2, jnp.maximum(worst, jnp.max(r))), u2
+        (uT, worst), traj = jax.lax.scan(
+            body, (jnp.asarray(U0_int), jnp.asarray(0.0, F64)), None, length=NUM_STEPS)
+        snaps = jnp.concatenate([jnp.asarray(U0_int)[None], traj], axis=0)
+        return jnp.transpose(snaps, (1, 0, 2)), worst
+    return jax.jit(rollout)
+
+
+# ------------------------------- classical ladders ----------------------------
+
+def make_newton_tol_rollout(n, dst="mm"):
+    """`newton` arm: tolerance-terminated Newton (stop when ||R|| <= ntol
+    ||u_prev||, at most MAX_NEWTON), BiCGStab preconditioned by the exact
+    Helmholtz inverse; (ntol, lin_tol) are runtime arguments.  Single
+    trajectory, whole 50-step rollout on device.  Returns (snaps (T+1, n_i)
+    incl. u0, iters per step, rel residual per step)."""
+    hinv = make_helmholtz_inv(n, dst)
+
+    def step(u_prev, nu, ntol, lin_tol):
+        u_scale = jnp.maximum(jnp.linalg.norm(u_prev), 1e-300)
+
+        def cond(s):
+            _, it, rn = s
+            return (rn > ntol * u_scale) & (it < MAX_NEWTON)
+
+        def body(s):
+            u, it, rn = s
+            r = fom_residual_int(u, u_prev, nu, n)
+            Jv = lambda v: jax.jvp(lambda uu: fom_residual_int(uu, u_prev, nu, n), (u,), (v,))[1]
+            du, _ = jax.scipy.sparse.linalg.bicgstab(
+                Jv, -r, tol=lin_tol, maxiter=LIN_MAXITER, M=lambda v: hinv(v, nu))
+            ok = jnp.isfinite(du).all()
+            u2 = u + jnp.where(ok, du, 0.0)
+            rn2 = jnp.linalg.norm(fom_residual_int(u2, u_prev, nu, n))
+            good = jnp.isfinite(rn2)
+            u = jnp.where(good, u2, u)
+            rn = jnp.where(good, rn2, rn)
+            it2 = jnp.where(good & ok, it + 1, jnp.int32(MAX_NEWTON))
+            return (u, it2, rn)
+
+        rn0 = jnp.linalg.norm(fom_residual_int(u_prev, u_prev, nu, n))
+        u, its, rn = jax.lax.while_loop(cond, body, (u_prev, jnp.int32(0), rn0))
+        return u, its, rn / u_scale
+
+    def roll(u0_int, nu, ntol, lin_tol):
+        def body(u, _):
+            u2, its, rel = step(u, nu, ntol, lin_tol)
+            return u2, (u2, its, rel)
+        _, (snaps, its, rels) = jax.lax.scan(body, u0_int, None, length=NUM_STEPS)
+        return jnp.concatenate([u0_int[None], snaps], axis=0), its, rels
+
+    return jax.jit(roll)
+
+
+def make_defect_tol_rollout(n, dst="mm"):
+    """`defect` arm (design r3 [A28, A34, A35]): SAFEGUARDED Helmholtz defect
+    correction.  d = -H_nu^{-1} R(u_k); the first alpha in {1, 1/2, 1/4, 1/8}
+    with ||R(u_k + alpha d)|| < ||R(u_k)|| is taken; if none decreases the
+    residual the iteration stops (stall, recorded as its residual).  Predictor:
+    cubic history extrapolation 4u^n - 6u^{n-1} + 4u^{n-2} - u^{n-3} with an
+    order-reducing bootstrap (u^0; 2u^1 - u^0; 3u^2 - 3u^1 + u^0).  Stops when
+    ||R|| <= ntol ||u_prev|| or after max_iter corrections; ntol = 0 never
+    stops early, so (0, k) is the fixed-work rung with UP TO k accepted
+    corrections (a step whose line search fails stops early and is flagged;
+    k = 0: predictor only, every predictor/output op charged).  Returns
+    (snaps (T+1, n_i), corrections per step, rel residual per step)."""
+    hinv = make_helmholtz_inv(n, dst)
+    alphas = jnp.asarray([1.0, 0.5, 0.25, 0.125], dtype=F64)
+
+    def step(hist, k, nu, ntol, max_iter):
+        u_prev, u1, u2, u3 = hist                             # u^n, u^{n-1}, u^{n-2}, u^{n-3}
+        u_scale = jnp.maximum(jnp.linalg.norm(u_prev), 1e-300)
+        u0 = jnp.where(k == 0, u_prev,
+             jnp.where(k == 1, 2.0 * u_prev - u1,
+             jnp.where(k == 2, 3.0 * u_prev - 3.0 * u1 + u2,
+                       4.0 * u_prev - 6.0 * u1 + 4.0 * u2 - u3)))
+        rn0 = jnp.linalg.norm(fom_residual_int(u0, u_prev, nu, n))
+
+        def cond(s):
+            _, it, rn, stalled = s
+            return (rn > ntol * u_scale) & (it < max_iter) & (~stalled)
+
+        def body(s):
+            u, it, rn, _ = s
+            r = fom_residual_int(u, u_prev, nu, n)
+            d = -hinv(r, nu)
+
+            def try_alpha(a):
+                u2_ = u + a * d
+                rn2 = jnp.linalg.norm(fom_residual_int(u2_, u_prev, nu, n))
+                return u2_, jnp.where(jnp.isfinite(rn2), rn2, jnp.inf)
+            us, rns = jax.vmap(try_alpha)(alphas)
+            ok = rns < rn
+            any_ok = jnp.any(ok)
+            first = jnp.argmax(ok)
+            u_new = jnp.where(any_ok, us[first], u)
+            rn_new = jnp.where(any_ok, rns[first], rn)
+            return (u_new, jnp.where(any_ok, it + 1, it), rn_new, ~any_ok)
+
+        # `it` counts ACCEPTED corrections; a step whose every alpha fails stops (stalled=True)
+        u, its, rn, stalled = jax.lax.while_loop(cond, body, (u0, jnp.int32(0), rn0, False))
+        return u, its, rn / u_scale, stalled
+
+    def roll(u0_int, nu, ntol, max_iter):
+        def body(carry, k):
+            u, u1, u2, u3 = carry
+            un, its, rel, st = step((u, u1, u2, u3), k, nu, ntol, max_iter)
+            return (un, u, u1, u2), (un, its, rel, st)
+        _, (snaps, its, rels, sts) = jax.lax.scan(body, (u0_int, u0_int, u0_int, u0_int),
+                                                   jnp.arange(NUM_STEPS))
+        return jnp.concatenate([u0_int[None], snaps], axis=0), its, rels, sts
+
+    return jax.jit(roll)
+
+
+def make_mms_rollout(n, forcing_fn, dst="mm"):
+    """Gate F11: the truth generator with a time-dependent interior forcing
+    f(t) added to the residual (manufactured solution).  forcing_fn(t) -> (n_i,)
+    jax array, evaluated at t_{k+1} for step k.  Returns (snaps, worst rel res)."""
+    hinv = make_helmholtz_inv(n, dst)
+
+    def newton_step(u_int, up_int, nu, f):
+        def body(u, _):
+            r = fom_residual_int(u, up_int, nu, n, forcing=f)
+            Jv = lambda v: jax.jvp(lambda uu: fom_residual_int(uu, up_int, nu, n, forcing=f),
+                                   (u,), (v,))[1]
+            du, _ = jax.scipy.sparse.linalg.bicgstab(
+                Jv, -r, tol=LIN_TOL, maxiter=LIN_MAXITER, M=lambda v: hinv(v, nu))
+            ok = jnp.all(jnp.isfinite(du)) & \
+                (jnp.linalg.norm(r) > 1e-12 * (jnp.linalg.norm(up_int) + 1e-300))
+            return jnp.where(ok, u + du, u), None
+        u, _ = jax.lax.scan(body, u_int, None, length=NEWTON_ITERS)
+        rfin = jnp.linalg.norm(fom_residual_int(u, up_int, nu, n, forcing=f)) \
+            / (jnp.linalg.norm(up_int) + 1e-300)
+        return u, rfin
+
+    def rollout(u0_int, nu):
+        def body(carry, k):
+            u, worst = carry
+            f = forcing_fn((k + 1) * DT)
+            u2, r = newton_step(u, u, nu, f)
+            return (u2, jnp.maximum(worst, r)), u2
+        (uT, worst), traj = jax.lax.scan(body, (u0_int, jnp.asarray(0.0, F64)),
+                                         jnp.arange(NUM_STEPS))
+        return jnp.concatenate([u0_int[None], traj], axis=0), worst
+    return jax.jit(rollout)
+
+
+# ------------------------------- data ------------------------------------------
+
+def build_truth(n, tab, rows, chunk, rollout, coords=None, keep_full=True, log_fn=log):
+    """Regenerate the trajectories `rows` of the table at resolution n in
+    chunks.  Returns (U_int (len(rows), T+1, n_i) if keep_full else None,
+    worst rel residual, min u, max u, fraction of points <= 0, seconds)."""
+    interior = interior_indices_3d(n)
+    coords = grid_coords_3d(n) if coords is None else coords
+    out, worst, umin, umax, nle, npts = [], 0.0, np.inf, -np.inf, 0, 0
+    t0 = time.time()
+    for s in range(0, len(rows), chunk):
+        rr = rows[s:s + chunk]
+        U0 = np.stack([blob_ic_3d(n, tab, j, coords)[interior] for j in rr])
+        sn, wr = rollout(jnp.asarray(U0), jnp.asarray(tab["nu"][rr]))
+        if not (bool(jnp.all(jnp.isfinite(sn))) and np.isfinite(float(wr))):
+            worst = float("inf")                                     # NaN anywhere is FAIL
+        worst = max(worst, float(wr))
+        umin = min(umin, float(jnp.min(sn[:, 1:])))
+        umax = max(umax, float(jnp.max(sn)))
+        nle += int(jnp.sum(sn[:, 1:] <= 0)); npts += int(sn[:, 1:].size)
+        if keep_full:
+            out.append(np.asarray(sn))
+        del sn
+    U = np.concatenate(out, axis=0) if keep_full else None
+    return U, worst, umin, umax, nle / max(npts, 1), time.time() - t0
+
+
+# ------------------------------- weak form -----------------------------------
+
+def test_modes_3d(n, M):
+    """The M lowest 3D sine modes by DISCRETE eigenvalue, M extended to the end
+    of its degenerate shell (so the test space has no axis preference).
+    Returns kx, ky, kz (M,), Phi (n_i, M) with unit-2-norm columns (exact:
+    orthonormal 1D factors), lam_disc (M,); M may exceed the request."""
+    ni = n - 2
+    l1 = lam_1d(n)
+    lam = l1[:, None, None] + l1[None, :, None] + l1[None, None, :]
+    lam_flat = lam.reshape(-1)
+    order_all = np.argsort(lam_flat, kind="stable")
+    # complete the degenerate eigenshell at the cut (design [A70]): extend M so that every mode
+    # whose eigenvalue equals lam[M-1] (to 1e-9 relative) is included
+    if M < lam_flat.size:
+        lam_M = lam_flat[order_all[M - 1]]
+        while M < lam_flat.size and abs(lam_flat[order_all[M]] - lam_M) <= 1e-9 * lam_M:
+            M += 1
+    order = order_all[:M]
+    kx, ky, kz = np.unravel_index(order, (ni, ni, ni))
+    kx, ky, kz = kx + 1, ky + 1, kz + 1
+    S = dst_matrix(n)                                                  # (ni, p)
+    Phi = np.empty((ni * ni * ni, M))
+    for m_ in range(M):
+        Phi[:, m_] = np.einsum("i,j,k->ijk", S[:, kx[m_] - 1], S[:, ky[m_] - 1],
+                               S[:, kz[m_] - 1]).reshape(-1)
+    return kx, ky, kz, Phi, lam.reshape(-1)[order]
+
+
+def assemble_L_3d(n):
+    """Independent scipy-sparse 7-point ghost-zero Laplacian on the interior
+    (for gates F2, F4, F6, L)."""
+    ni = n - 2
+    dx = 1.0 / (n - 1)
+    idx = np.arange(ni ** 3).reshape(ni, ni, ni)
+    rows, cols, vals = [idx.reshape(-1)], [idx.reshape(-1)], [np.full(ni ** 3, -6.0)]
+    for ax in range(3):
+        for sgn in (1, -1):
+            sl_from = [slice(None)] * 3
+            sl_to = [slice(None)] * 3
+            if sgn == 1:
+                sl_from[ax] = slice(0, ni - 1); sl_to[ax] = slice(1, ni)
+            else:
+                sl_from[ax] = slice(1, ni); sl_to[ax] = slice(0, ni - 1)
+            rows.append(idx[tuple(sl_from)].reshape(-1))
+            cols.append(idx[tuple(sl_to)].reshape(-1))
+            vals.append(np.ones(rows[-1].size))
+    L = sps.csr_matrix((np.concatenate(vals), (np.concatenate(rows), np.concatenate(cols))),
+                       shape=(ni ** 3, ni ** 3))
+    return L / dx ** 2
+
+
+def assemble_Dminus_3d(n):
+    """Independent scipy-sparse D-x + D-y + D-z (fixed backward branch, ghost zeros)."""
+    ni = n - 2
+    dx = 1.0 / (n - 1)
+    idx = np.arange(ni ** 3).reshape(ni, ni, ni)
+    rows, cols, vals = [idx.reshape(-1)], [idx.reshape(-1)], [np.full(ni ** 3, 3.0)]
+    for ax in range(3):
+        sl_from = [slice(None)] * 3
+        sl_to = [slice(None)] * 3
+        sl_from[ax] = slice(1, ni); sl_to[ax] = slice(0, ni - 1)
+        rows.append(idx[tuple(sl_from)].reshape(-1))
+        cols.append(idx[tuple(sl_to)].reshape(-1))
+        vals.append(-np.ones(rows[-1].size))
+    D = sps.csr_matrix((np.concatenate(vals), (np.concatenate(rows), np.concatenate(cols))),
+                       shape=(ni ** 3, ni ** 3))
+    return D / dx
+
+
+# ------------------------------- NNLS (verbatim) -------------------------------
+
+def nnls_capped(G, b, max_support, tol=1e-10, inner_max=200):
+    """Lawson-Hanson active-set NNLS that STOPS when the support reaches
+    max_support (ECSW-style) or at optimality.  Verbatim blat_common."""
+    n = G.shape[1]
+    w = np.zeros(n)
+    P = np.zeros(n, bool)
+    r = b - G @ w
+    outer = 0
+    while outer < 5 * max_support + 10:
+        grad = G.T @ r
+        cand = np.where(~P)[0]
+        if cand.size == 0 or P.sum() >= max_support:
+            break
+        j = cand[np.argmax(grad[cand])]
+        if grad[j] <= tol * (np.linalg.norm(b) + 1e-300):
+            break
+        P[j] = True
+        outer += 1
+        for _ in range(inner_max):
+            idx = np.where(P)[0]
+            s_, *_ = np.linalg.lstsq(G[:, idx], b, rcond=None)
+            if np.all(s_ > 0):
+                w[:] = 0.0
+                w[idx] = s_
+                break
+            neg = s_ <= 0
+            alpha = np.min(w[idx][neg] / (w[idx][neg] - s_[neg] + 1e-300))
+            w[idx] = w[idx] + alpha * (s_ - w[idx])
+            P[idx[w[idx] <= 1e-14]] = False
+            w[~P] = 0.0
+        r = b - G @ w
+    return w, float(np.linalg.norm(r)), outer
+
+
+def candidate_pool(n_i, cap, seed=EQ_SEED):
+    if n_i <= cap:
+        return np.arange(n_i)
+    return np.sort(np.random.default_rng(seed).choice(n_i, size=cap, replace=False))
+
+
+def eq_fit_adv_3d(u_full_int, adv_full, Phi, cand_pos, Z_snap, m, label):
+    """exlin_common.eq_fit_burgers_adv + ctol_eq._solve_nnls in one place:
+    advection-only rows Phi_c^T * N(u)|cand, targets Phi^T N(u); row scaling;
+    capped Lawson-Hanson on an EQ_ROWS subsample; support padding on mean |N|;
+    nonnegative refit on ALL rows.  Returns keep (into cand_pos), w, info."""
+    t0 = time.time()
+    r_eq = np.random.default_rng(EQ_SEED)
+    n_s = Z_snap.shape[0]
+    pick = r_eq.choice(n_s, size=min(EQ_SNAPS, n_s), replace=False)
+    Phi_c = Phi[cand_pos]
+    Gs, bs, snap_c = [], [], []
+    for i in pick:
+        uf = np.asarray(u_full_int(jnp.asarray(Z_snap[i])))
+        Nf = np.asarray(adv_full(jnp.asarray(uf)))
+        bs.append(Phi.T @ Nf)
+        Gs.append(Phi_c.T * Nf[cand_pos][None, :])
+        snap_c.append(Nf[cand_pos])
+    pad_score = np.abs(np.stack(snap_c)).mean(0)
+    G = np.concatenate(Gs, axis=0)
+    b = np.concatenate(bs)
+    sc = np.linalg.norm(G, axis=1) + 1e-300
+    G = G / sc[:, None]
+    b = b / sc
+    n_c = G.shape[1]
+    rows = r_eq.choice(G.shape[0], size=min(G.shape[0], EQ_ROWS), replace=False)
+    wts, rnorm, _ = nnls_capped(G[rows], b[rows], max_support=m)
+    supp = np.nonzero(wts > 0)[0]
+    if len(supp) >= m:
+        keep = supp[np.argsort(-wts[supp])[:m]]
+        padded = 0
+    else:
+        rest = np.setdiff1d(np.arange(n_c), supp)
+        pad = rest[np.argsort(-pad_score[rest])[:m - len(supp)]]
+        keep = np.concatenate([supp, pad])
+        padded = len(pad)
+    Gk = G[:, keep]
+    wq, _, _ = nnls_capped(Gk, b, max_support=len(keep))
+    wq = np.where(wq > 0, wq, 1e-8 * max(wq.max(), 1e-300))
+    res = Gk @ wq - b
+    rel_rows = np.abs(res) / (np.abs(b) + 1e-300)
+    info = dict(m=int(len(keep)), support=int(len(supp)), padded=int(padded),
+                rnorm_capped=float(rnorm), rnorm_final=float(np.linalg.norm(res)),
+                rel_fit=float(np.linalg.norm(res) / (np.linalg.norm(b) + 1e-300)),
+                row_rel_median=float(np.median(rel_rows)),
+                row_rel_p95=float(np.quantile(rel_rows, 0.95)),
+                row_rel_max=float(np.max(rel_rows)), n_rows_total=int(G.shape[0]),
+                n_rows_fit=int(len(rows)), n_cand=int(n_c), eq_snaps=EQ_SNAPS,
+                eq_rows=EQ_ROWS, eq_seed=EQ_SEED, secs=time.time() - t0,
+                kind="weak_burgers_adv_only")
+    log(f"  NNLS-EQ {label}: pool {n_c} support {len(supp)} (+{padded} pad) rel fit "
+        f"{info['rel_fit']:.2e} (row p95 {info['row_rel_p95']:.1e}, max "
+        f"{info['row_rel_max']:.1e}) [{info['secs']:.0f}s]")
+    return keep, wq, info
+
+
+# ------------------------------- training ------------------------------------
+
+def train_autodecoder_3d(key, coords, U, k_lat, r_feat, steps=60000, lr=1e-3,
+                         lam_orth=1e-4, p_sub=16384, log_every=5000, tag="",
+                         recon_chunk=1024, **arch):
+    """Joint Adam over (g, h, per-snapshot codes Z): the sep_solvers
+    train_autodecoder_v2 recipe with the SAME sampling measure at every N
+    (design [A24]): p_sub interior points drawn iid per step from the training
+    pool `coords`: the reconstruction term is an unbiased estimate of the
+    global relative MSE; the feature-Gram term on the subsample is a
+    STOCHASTIC REGULARISER (its square is biased upward by sampling variance,
+    design [A63]); no full-grid finishing steps, no EMA, no weight decay.  U (S, P) and coords
+    (P, 3) are EXPLICIT jit arguments (never captured)."""
+    coords = jnp.asarray(coords, dtype=F64)
+    U = jnp.asarray(U, dtype=F64)
+    S, P = U.shape
+    key, kz, kp = jax.random.split(key, 3)
+    u_rms = float(jnp.sqrt(jnp.mean(U * U)))
+    params = init_separable_3d(kp, k_lat, r_feat, out_scale=u_rms, **arch)
+    B0 = params["B"]
+    Z = 0.1 * jax.random.normal(kz, (S, k_lat), dtype=F64)
+    u_ms = jnp.mean(U * U)
+    sched = optax.warmup_cosine_decay_schedule(0.0, lr, min(500, steps // 10 + 1), steps, lr * 1e-2)
+    opt = optax.adam(sched)
+    state = opt.init((params, Z))
+    use_sub = 0 < p_sub < P
+
+    def loss_at(pz, U_, C_):
+        p, z = pz
+        G = features(p, C_)
+        H = head(p, z)
+        err = H @ G.T - U_
+        rel = jnp.mean(err * err) / u_ms
+        C = (G.T @ G) / (G.shape[0] * p["out_scale"] ** 2)
+        orth = jnp.mean((C - jnp.eye(C.shape[0], dtype=F64)) ** 2)
+        return rel + lam_orth * orth, rel
+
+    def _apply(pz, st, U_, C_):
+        (val, rel), grads = jax.value_and_grad(loss_at, has_aux=True)(pz, U_, C_)
+        grads[0]["out_scale"] = jnp.zeros_like(grads[0]["out_scale"])
+        grads[0]["B"] = jnp.zeros_like(grads[0]["B"])          # the Fourier frequencies are FIXED [A62]
+        upd, st = opt.update(grads, st)
+        return optax.apply_updates(pz, upd), st, rel
+
+    @jax.jit
+    def step_sub(pz, st, k_, U_all, C_all):
+        pts = jax.random.choice(k_, P, shape=(p_sub,), replace=False)
+        return _apply(pz, st, U_all[:, pts], C_all[pts])
+
+    @jax.jit
+    def step_full(pz, st, U_all, C_all):
+        return _apply(pz, st, U_all, C_all)
+
+    pz = (params, Z)
+    t0 = time.time()
+    rel = jnp.inf
+    for i in range(steps):
+        if use_sub:
+            key, k_ = jax.random.split(key)
+            pz, state, rel = step_sub(pz, state, k_, U, coords)
+        else:
+            pz, state, rel = step_full(pz, state, U, coords)
+        if (i + 1) % log_every == 0 or i == 0:
+            log(f"   train3d[{tag}] step {i+1:6d}/{steps}  rel-MSE {float(rel):.3e}  "
+                f"[{time.time()-t0:.0f}s]")
+    params, Z = pz
+    assert bool(jnp.all(params["B"] == B0)), "Fourier matrix B changed during training"
+    G = features(params, coords)
+    H = head(params, Z)
+    per = []
+    for s in range(0, S, recon_chunk):
+        Uh = H[s:s + recon_chunk] @ G.T
+        per.append(jnp.linalg.norm(Uh - U[s:s + recon_chunk], axis=1)
+                   / jnp.linalg.norm(U[s:s + recon_chunk], axis=1))
+    per = jnp.concatenate(per)
+    info = dict(final_rel_mse=float(rel), steps=steps, lr=lr, lam_orth=lam_orth,
+                p_sub=int(p_sub), used_subsampling=bool(use_sub), seconds=time.time() - t0,
+                recon_rel_l2_mean=float(jnp.mean(per)), recon_rel_l2_max=float(jnp.max(per)),
+                n_snapshots=int(S), n_points=int(P), arch=dict(arch))
+    log(f"   train3d[{tag}] done: recon rel-L2 (training pool) mean "
+        f"{info['recon_rel_l2_mean']:.3e} max {info['recon_rel_l2_max']:.3e} "
+        f"[{info['seconds']:.0f}s]")
+    return params, np.asarray(Z), info
+
+
+# ------------------------------- io ------------------------------------------
+
+def save_pkl(path, params, Z_tr, cfg):
+    host = jax.tree_util.tree_map(np.asarray, params)
+    with open(path, "wb") as f:
+        pickle.dump(dict(params=host, Z_tr=np.asarray(Z_tr), cfg=cfg), f)
+
+
+def load_pkl(path):
+    with open(path, "rb") as f:
+        d = pickle.load(f)
+    return jax.tree_util.tree_map(jnp.asarray, d["params"]), d["Z_tr"], d["cfg"]
+
+
+def sha256_file(path):
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for blk in iter(lambda: f.read(1 << 20), b""):
+            h.update(blk)
+    return h.hexdigest()
+
+
+# ------------------------------- tables ----------------------------------------
+
+def get_tables(table_dir, n_train_table, n_test, seed, test_seed, log_fn=log, with_test=True):
+    """Load (or build once and persist) the train and (unless with_test=False:
+    the pilot never opens it) test parameter tables."""
+    os.makedirs(table_dir, exist_ok=True)
+    out = {}
+    specs = [("train", seed, n_train_table)] + ([("test", test_seed, n_test)] if with_test else [])
+    for name, sd, m in specs:
+        path = os.path.join(table_dir, f"b3d_params_{name}_seed{sd}_m{m}.npz")
+        if os.path.exists(path):
+            tab = load_param_table(path)
+        else:
+            t0 = time.time()
+            tab = build_param_table(sd, m, path)
+            log_fn(f"  table[{name}] built: {m} rows, seed {sd}, s* on {N_REF}^3 "
+                   f"[{time.time()-t0:.0f}s] -> {path}")
+        tab["path"] = path
+        out[name] = tab
+    return out
+
+
+# ------------------------------- LM (IC fit) -----------------------------------
+
+def make_lm(f, K, budget, trust_delta=np.inf):
+    """Damped LM minimising ||f(z)||: lam0 = 1e-6, /3 on accept, x10 on
+    reject, clamp [1e-12, 1e12]; accept iff finite and strictly decreasing;
+    stop on rel decrease < 1e-12 or step < 1e-13 or lam max (ctol_tol
+    .lm_tau_generic with tau = 0).  Returns (z, rn, rn0, n_jac, attempts,
+    reason)."""
+    rJ = lambda z: (f(z), jax.jacfwd(f)(z))
+    rn_fn = lambda z: jnp.linalg.norm(f(z))
+
+    def lm(z0):
+        r0, J0 = rJ(z0)
+        rn0 = jnp.linalg.norm(r0)
+        init_reason = jnp.where(~jnp.isfinite(rn0), jnp.int32(5), jnp.int32(0))
+        init = (z0, r0, J0, rn0, jnp.asarray(1e-6, F64), jnp.int32(0), jnp.int32(1), init_reason)
+
+        def cond(s):
+            return (s[7] == 0) & (s[5] < budget)
+
+        def body(s):
+            z, r, J, rn, lam, att, n_J, _ = s
+            H = J.T @ J
+            g = J.T @ r
+            D = jnp.diag(jnp.diag(H)) + 1e-30 * jnp.eye(K, dtype=F64)
+            dz = jnp.linalg.solve(H + lam * D, -g)
+            finite = jnp.all(jnp.isfinite(dz))
+            admissible = finite & (jnp.linalg.norm(dz) <= trust_delta)
+            z_new = z + jnp.where(admissible, dz, 0.0)
+            rn_new = jnp.where(admissible, rn_fn(z_new), jnp.inf)
+            accept = admissible & jnp.isfinite(rn_new) & (rn_new < rn)
+            rel_dec = jnp.where(accept, (rn - rn_new) / rn, 1.0)
+            step = jnp.linalg.norm(dz) / (1.0 + jnp.linalg.norm(z))
+            r2, J2 = jax.lax.cond(accept, lambda: rJ(z_new), lambda: (r, J))
+            z = jnp.where(accept, z_new, z)
+            rn = jnp.where(accept, rn_new, rn)
+            lam = jnp.where(accept, jnp.maximum(lam / 3.0, 1e-12), jnp.minimum(lam * 10.0, 1e12))
+            n_J = n_J + accept.astype(jnp.int32)
+            reason = jnp.where(accept & ((rel_dec < 1e-12) | (step < 1e-13)), jnp.int32(1),
+                               jnp.where((~accept) & (lam >= 1e12),
+                                         jnp.where(finite, jnp.int32(3), jnp.int32(4)), jnp.int32(0)))
+            return (z, r2, J2, rn, lam, att + 1, n_J, reason)
+
+        z, r, J, rn, lam, att, n_J, reason = jax.lax.while_loop(cond, body, init)
+        return z, rn, rn0, n_J, att, reason
+
+    return jax.jit(lm)
+
+
+# ------------------------------- timing ----------------------------------------
+
+def burn_in(seconds=1.5, n=1024):
+    """Spin the GPU before a timing block (ctol_tol.burn_in)."""
+    a = jnp.ones((n, n), F64)
+    t0 = time.perf_counter()
+    while time.perf_counter() - t0 < seconds:
+        a = jax.block_until_ready(a @ a * 1e-3)
+
+
+def time_pair(fa, fb, reps=4, warm=2):
+    """Paired AB | BA | AB ... timing of two subjects (sep_common.time_pair);
+    all raw repetitions returned."""
+    for _ in range(warm):
+        fa(); fb()
+    ta, tb, order = [], [], []
+    for i in range(reps):
+        for side in ("ab" if i % 2 == 0 else "ba"):
+            t0 = time.perf_counter()
+            (fa if side == "a" else fb)()
+            dt = time.perf_counter() - t0
+            (ta if side == "a" else tb).append(dt)
+            order.append(side)
+    return dict(a_ms=float(np.median(ta) * 1e3), b_ms=float(np.median(tb) * 1e3),
+                a_raw_ms=[t * 1e3 for t in ta], b_raw_ms=[t * 1e3 for t in tb],
+                order="".join(order), reps=int(reps), warm=int(warm))
+
+
+def balanced_time(subjects, reps=7, warm=2):
+    """[(name, fn)] timed in a balanced order (forward on even sweeps, reversed
+    on odd); every fn blocks before returning; all raw times returned plus
+    each subject's outputs from its final timed invocation
+    (sep_common.balanced_time)."""
+    raw = {name: [] for name, _ in subjects}
+    results = {}
+    for name, fn in subjects:
+        for _ in range(warm):
+            results[name] = fn()
+    for rep in range(reps):
+        order = subjects if rep % 2 == 0 else list(reversed(subjects))
+        for name, fn in order:
+            t0 = time.perf_counter()
+            res = fn()
+            raw[name].append(time.perf_counter() - t0)
+            results[name] = res
+    return raw, results

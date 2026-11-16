@@ -1,0 +1,488 @@
+{
+ "rule": "PROTOCOL.md 4 and 5.2",
+ "fast_gate_percent": 3.85,
+ "crom": [],
+ "colora": [
+  {
+   "name": "K16-deep",
+   "dtype": "float64",
+   "k": 16,
+   "worst_percent": 0.7828494210118346,
+   "median_percent": 0.3770734618611644,
+   "mean_percent": 0.4059422677771832,
+   "nonfinite": 0,
+   "rough_ms": 1.8108338117599487,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 25,
+    "rank": 3,
+    "full": false,
+    "h_width": 15,
+    "steps": 600000
+   },
+   "role": "k16"
+  },
+  {
+   "name": "K16-deep",
+   "dtype": "float32",
+   "k": 16,
+   "worst_percent": 0.7929495699562993,
+   "median_percent": 0.3764151463228971,
+   "mean_percent": 0.40284290338489376,
+   "nonfinite": 0,
+   "rough_ms": 1.8314467743039131,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 25,
+    "rank": 3,
+    "full": false,
+    "h_width": 15,
+    "steps": 600000
+   },
+   "role": "k16-float32"
+  },
+  {
+   "name": "D7",
+   "dtype": "float64",
+   "k": 7,
+   "worst_percent": 3.727499097309644,
+   "median_percent": 1.0365825892747567,
+   "mean_percent": 1.139023753327108,
+   "nonfinite": 0,
+   "rough_ms": 0.8471799083054066,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 25,
+    "rank": 3,
+    "full": false,
+    "h_width": 15,
+    "steps": 100000
+   },
+   "role": "authors-default"
+  },
+  {
+   "name": "D7-600k",
+   "dtype": "float64",
+   "k": 7,
+   "worst_percent": 1.6125595537810038,
+   "median_percent": 0.46416558597480856,
+   "mean_percent": 0.582488854368231,
+   "nonfinite": 0,
+   "rough_ms": 1.6404823400080204,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 25,
+    "rank": 3,
+    "full": false,
+    "h_width": 15,
+    "steps": 600000
+   },
+   "role": "authors-default"
+  }
+ ],
+ "all_crom_validation_rows": [],
+ "all_colora_validation_rows": [
+  {
+   "name": "D7-600k",
+   "dtype": "float64",
+   "k": 7,
+   "worst_percent": 1.6125595537810038,
+   "median_percent": 0.46416558597480856,
+   "mean_percent": 0.582488854368231,
+   "nonfinite": 0,
+   "rough_ms": 1.6404823400080204,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 25,
+    "rank": 3,
+    "full": false,
+    "h_width": 15,
+    "steps": 600000
+   }
+  },
+  {
+   "name": "D7-600k",
+   "dtype": "float32",
+   "k": 7,
+   "worst_percent": 1.6031305382058627,
+   "median_percent": 0.4801644786348027,
+   "mean_percent": 0.5875165121620793,
+   "nonfinite": 0,
+   "rough_ms": 1.6546715050935745,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 25,
+    "rank": 3,
+    "full": false,
+    "h_width": 15,
+    "steps": 600000
+   }
+  },
+  {
+   "name": "D7",
+   "dtype": "float64",
+   "k": 7,
+   "worst_percent": 3.727499097309644,
+   "median_percent": 1.0365825892747567,
+   "mean_percent": 1.139023753327108,
+   "nonfinite": 0,
+   "rough_ms": 0.8471799083054066,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 25,
+    "rank": 3,
+    "full": false,
+    "h_width": 15,
+    "steps": 100000
+   }
+  },
+  {
+   "name": "D7",
+   "dtype": "float32",
+   "k": 7,
+   "worst_percent": 3.7235857180315572,
+   "median_percent": 1.0354478354897758,
+   "mean_percent": 1.1396466662059221,
+   "nonfinite": 0,
+   "rough_ms": 0.8529485203325748,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 25,
+    "rank": 3,
+    "full": false,
+    "h_width": 15,
+    "steps": 100000
+   }
+  },
+  {
+   "name": "K16-deep",
+   "dtype": "float64",
+   "k": 16,
+   "worst_percent": 0.7828494210118346,
+   "median_percent": 0.3770734618611644,
+   "mean_percent": 0.4059422677771832,
+   "nonfinite": 0,
+   "rough_ms": 1.8108338117599487,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 25,
+    "rank": 3,
+    "full": false,
+    "h_width": 15,
+    "steps": 600000
+   }
+  },
+  {
+   "name": "K16-deep",
+   "dtype": "float32",
+   "k": 16,
+   "worst_percent": 0.7929495699562993,
+   "median_percent": 0.3764151463228971,
+   "mean_percent": 0.40284290338489376,
+   "nonfinite": 0,
+   "rough_ms": 1.8314467743039131,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 25,
+    "rank": 3,
+    "full": false,
+    "h_width": 15,
+    "steps": 600000
+   }
+  },
+  {
+   "name": "K16-w128",
+   "dtype": "float64",
+   "k": 16,
+   "worst_percent": 91.06023893034475,
+   "median_percent": 79.76975007191942,
+   "mean_percent": 79.1147516552121,
+   "nonfinite": 0,
+   "rough_ms": 4.894256591796875,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 128,
+    "rank": 2,
+    "full": true,
+    "h_width": 64,
+    "steps": 600000
+   }
+  },
+  {
+   "name": "K16-w128",
+   "dtype": "float32",
+   "k": 16,
+   "worst_percent": 91.06023893034475,
+   "median_percent": 79.76975007191942,
+   "mean_percent": 79.1147516552121,
+   "nonfinite": 0,
+   "rough_ms": 4.892655648291111,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 128,
+    "rank": 2,
+    "full": true,
+    "h_width": 64,
+    "steps": 600000
+   }
+  },
+  {
+   "name": "K16-w25",
+   "dtype": "float64",
+   "k": 16,
+   "worst_percent": 1.2227579299631934,
+   "median_percent": 0.5324372988662198,
+   "mean_percent": 0.5927667923120433,
+   "nonfinite": 0,
+   "rough_ms": 0.9616333991289139,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 25,
+    "rank": 2,
+    "full": true,
+    "h_width": 15,
+    "steps": 600000
+   }
+  },
+  {
+   "name": "K16-w25",
+   "dtype": "float32",
+   "k": 16,
+   "worst_percent": 1.1488284239353128,
+   "median_percent": 0.5378592595524101,
+   "mean_percent": 0.5910034993425897,
+   "nonfinite": 0,
+   "rough_ms": 0.9724833071231842,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 25,
+    "rank": 2,
+    "full": true,
+    "h_width": 15,
+    "steps": 600000
+   }
+  },
+  {
+   "name": "K16-w64",
+   "dtype": "float64",
+   "k": 16,
+   "worst_percent": 0.8472373882975739,
+   "median_percent": 0.2921426107725023,
+   "mean_percent": 0.3401997905866093,
+   "nonfinite": 0,
+   "rough_ms": 4.848571959882975,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 64,
+    "rank": 2,
+    "full": true,
+    "h_width": 64,
+    "steps": 600000
+   }
+  },
+  {
+   "name": "K16-w64",
+   "dtype": "float32",
+   "k": 16,
+   "worst_percent": 0.8267408260802847,
+   "median_percent": 0.30085915598025886,
+   "mean_percent": 0.34307799240565956,
+   "nonfinite": 0,
+   "rough_ms": 4.727452527731657,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 64,
+    "rank": 2,
+    "full": true,
+    "h_width": 64,
+    "steps": 600000
+   }
+  }
+ ]
+}

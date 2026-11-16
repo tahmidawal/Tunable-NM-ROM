@@ -153,3 +153,11 @@ statements of the template's section 7 are applied to each official row, and eac
 worse than its re-implementation counterpart on worst error, median error and time.
 
 ## Amendments
+
+**A1 (2026-11-12 ~21:30 EST; before any CROM or CoLoRA training outcome; reason: the authors' own export
+self-check fails in the pinned environment).** With torch 1.11's default TF32 matmuls on the A100, the released
+`callbacks.Exporter` assertion `criterion(grad_gt_auto, grad_gt) < 1e-10` (analytic vs autograd decoder Jacobian)
+fails at the end of training (smoke jobs 7157003, 7157158). With TF32 disabled (strict float32,
+`torch.backends.cuda.matmul.allow_tf32 = False`, env `CROM_TF32=0`, a two-line environment switch in `run_ours.py`) the
+export and all its assertions pass (job 7157279). All CROM training therefore runs in strict float32 (18 vs 25 steps/s
+at `scale_mlp` 64). The smoke models (≤600 steps) are not used for anything.

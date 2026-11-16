@@ -7,6 +7,10 @@ import os
 import copy
 
 from ours_data import OursDataModule as SimulationDataModule   # ADAPTER: our pool instead of per-frame h5 files
+import torch
+if os.environ.get('CROM_TF32', '1') == '0':   # ADAPTER (environment): torch 1.11 enables TF32 matmuls on Ampere by default
+    torch.backends.cuda.matmul.allow_tf32 = False
+    torch.backends.cudnn.allow_tf32 = False
 from cromnet import CROMnet
 from callbacks import *
 

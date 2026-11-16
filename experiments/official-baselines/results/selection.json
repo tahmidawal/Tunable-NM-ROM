@@ -1,0 +1,1118 @@
+{
+ "rule": "PROTOCOL.md 4 and 5.2",
+ "fast_gate_percent": 3.85,
+ "crom": [
+  {
+   "name": "C16-s64",
+   "arm": "E",
+   "setting": "ex",
+   "dtype": "float64",
+   "gn": [
+    1e-15,
+    1e-15,
+    50
+   ],
+   "cases": [
+    0,
+    32
+   ],
+   "complete": true,
+   "worst_percent": 9.560646276372454,
+   "median_percent": 4.85786765508188,
+   "nonfinite": 0,
+   "rough_ms": 247807.8756807372,
+   "weights": "/cluster/tufts/paralab/tawal01/rebuttal-official/weights/C16-s64",
+   "jobs": [
+    "7249561",
+    "7251855",
+    "7251856"
+   ],
+   "gpus": [
+    "NVIDIA A100 80GB PCIe"
+   ],
+   "role": "accurate"
+  },
+  {
+   "name": "C16-s128",
+   "arm": "I",
+   "setting": "def2",
+   "dtype": "float64",
+   "gn": [
+    1e-06,
+    0.001,
+    2
+   ],
+   "cases": [
+    0,
+    32
+   ],
+   "complete": true,
+   "worst_percent": 13.997503644866221,
+   "median_percent": 6.176752473557258,
+   "nonfinite": 0,
+   "rough_ms": 3099.3345067836344,
+   "weights": "/cluster/tufts/paralab/tawal01/rebuttal-official/weights/C16-s128",
+   "jobs": [
+    "7249557"
+   ],
+   "gpus": [
+    "NVIDIA A100 80GB PCIe"
+   ],
+   "role": "accurate"
+  }
+ ],
+ "colora": [
+  {
+   "name": "K16-deep",
+   "dtype": "float64",
+   "k": 16,
+   "worst_percent": 0.7828494210118346,
+   "median_percent": 0.3770734618611644,
+   "mean_percent": 0.4059422677771832,
+   "nonfinite": 0,
+   "rough_ms": 1.8108338117599487,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 25,
+    "rank": 3,
+    "full": false,
+    "h_width": 15,
+    "steps": 600000
+   },
+   "role": "k16"
+  },
+  {
+   "name": "K16-deep",
+   "dtype": "float32",
+   "k": 16,
+   "worst_percent": 0.7929495699562993,
+   "median_percent": 0.3764151463228971,
+   "mean_percent": 0.40284290338489376,
+   "nonfinite": 0,
+   "rough_ms": 1.8314467743039131,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 25,
+    "rank": 3,
+    "full": false,
+    "h_width": 15,
+    "steps": 600000
+   },
+   "role": "k16-float32"
+  },
+  {
+   "name": "D7",
+   "dtype": "float64",
+   "k": 7,
+   "worst_percent": 3.727499097309644,
+   "median_percent": 1.0365825892747567,
+   "mean_percent": 1.139023753327108,
+   "nonfinite": 0,
+   "rough_ms": 0.8471799083054066,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 25,
+    "rank": 3,
+    "full": false,
+    "h_width": 15,
+    "steps": 100000
+   },
+   "role": "authors-default"
+  },
+  {
+   "name": "D7-600k",
+   "dtype": "float64",
+   "k": 7,
+   "worst_percent": 1.6125595537810038,
+   "median_percent": 0.46416558597480856,
+   "mean_percent": 0.582488854368231,
+   "nonfinite": 0,
+   "rough_ms": 1.6404823400080204,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 25,
+    "rank": 3,
+    "full": false,
+    "h_width": 15,
+    "steps": 600000
+   },
+   "role": "authors-default"
+  }
+ ],
+ "all_crom_validation_rows": [
+  {
+   "name": "C16-s128",
+   "arm": "E",
+   "setting": "def5",
+   "dtype": "float64",
+   "gn": [
+    1e-06,
+    0.001,
+    5
+   ],
+   "cases": [
+    0,
+    32
+   ],
+   "complete": true,
+   "worst_percent": 57.54502489549142,
+   "median_percent": 21.807545104722866,
+   "nonfinite": 0,
+   "rough_ms": 87366.91148439422,
+   "weights": "/cluster/tufts/paralab/tawal01/rebuttal-official/weights/C16-s128",
+   "jobs": [
+    "7250253"
+   ],
+   "gpus": [
+    "NVIDIA A100 80GB PCIe"
+   ]
+  },
+  {
+   "name": "C16-s128",
+   "arm": "E",
+   "setting": "def50",
+   "dtype": "float64",
+   "gn": [
+    1e-06,
+    0.001,
+    50
+   ],
+   "cases": [
+    0,
+    32
+   ],
+   "complete": true,
+   "worst_percent": 57.54502489549142,
+   "median_percent": 21.807545104722866,
+   "nonfinite": 0,
+   "rough_ms": 87038.78798056394,
+   "weights": "/cluster/tufts/paralab/tawal01/rebuttal-official/weights/C16-s128",
+   "jobs": [
+    "7250253"
+   ],
+   "gpus": [
+    "NVIDIA A100 80GB PCIe"
+   ]
+  },
+  {
+   "name": "C16-s128",
+   "arm": "E",
+   "setting": "ex",
+   "dtype": "float64",
+   "gn": [
+    1e-15,
+    1e-15,
+    50
+   ],
+   "cases": [
+    0,
+    8
+   ],
+   "complete": false,
+   "worst_percent": 6.769100908832777,
+   "median_percent": 3.0452193369129024,
+   "nonfinite": 0,
+   "rough_ms": 552168.4733235743,
+   "weights": "/cluster/tufts/paralab/tawal01/rebuttal-official/weights/C16-s128",
+   "jobs": [
+    "7250924"
+   ],
+   "gpus": [
+    "NVIDIA A100 80GB PCIe"
+   ]
+  },
+  {
+   "name": "C16-s128",
+   "arm": "I",
+   "setting": "def2",
+   "dtype": "float32",
+   "gn": [
+    1e-06,
+    0.001,
+    2
+   ],
+   "cases": [
+    0,
+    32
+   ],
+   "complete": true,
+   "worst_percent": 67.86614798317503,
+   "median_percent": 6.77188932852826,
+   "nonfinite": 0,
+   "rough_ms": 1399.0511852316558,
+   "weights": "/cluster/tufts/paralab/tawal01/rebuttal-official/weights/C16-s128",
+   "jobs": [
+    "7250371"
+   ],
+   "gpus": [
+    "NVIDIA A100 80GB PCIe"
+   ]
+  },
+  {
+   "name": "C16-s128",
+   "arm": "I",
+   "setting": "def2",
+   "dtype": "float64",
+   "gn": [
+    1e-06,
+    0.001,
+    2
+   ],
+   "cases": [
+    0,
+    32
+   ],
+   "complete": true,
+   "worst_percent": 13.997503644866221,
+   "median_percent": 6.176752473557258,
+   "nonfinite": 0,
+   "rough_ms": 3099.3345067836344,
+   "weights": "/cluster/tufts/paralab/tawal01/rebuttal-official/weights/C16-s128",
+   "jobs": [
+    "7249557"
+   ],
+   "gpus": [
+    "NVIDIA A100 80GB PCIe"
+   ]
+  },
+  {
+   "name": "C16-s128",
+   "arm": "I",
+   "setting": "def5",
+   "dtype": "float64",
+   "gn": [
+    1e-06,
+    0.001,
+    5
+   ],
+   "cases": [
+    0,
+    32
+   ],
+   "complete": true,
+   "worst_percent": 14.535695619905281,
+   "median_percent": 4.770907094067713,
+   "nonfinite": 0,
+   "rough_ms": 6180.627706460655,
+   "weights": "/cluster/tufts/paralab/tawal01/rebuttal-official/weights/C16-s128",
+   "jobs": [
+    "7249557"
+   ],
+   "gpus": [
+    "NVIDIA A100 80GB PCIe"
+   ]
+  },
+  {
+   "name": "C16-s128",
+   "arm": "I",
+   "setting": "def50",
+   "dtype": "float64",
+   "gn": [
+    1e-06,
+    0.001,
+    50
+   ],
+   "cases": [
+    0,
+    32
+   ],
+   "complete": true,
+   "worst_percent": 19.27838439791212,
+   "median_percent": 4.434607401943199,
+   "nonfinite": 0,
+   "rough_ms": 8184.560998342931,
+   "weights": "/cluster/tufts/paralab/tawal01/rebuttal-official/weights/C16-s128",
+   "jobs": [
+    "7249557"
+   ],
+   "gpus": [
+    "NVIDIA A100 80GB PCIe"
+   ]
+  },
+  {
+   "name": "C16-s20",
+   "arm": "E",
+   "setting": "def5",
+   "dtype": "float64",
+   "gn": [
+    1e-06,
+    0.001,
+    5
+   ],
+   "cases": [
+    0,
+    32
+   ],
+   "complete": true,
+   "worst_percent": 51.508342571351506,
+   "median_percent": 10.885631448864679,
+   "nonfinite": 0,
+   "rough_ms": 21594.94934603572,
+   "weights": "/cluster/tufts/paralab/tawal01/rebuttal-official/weights/C16-s20",
+   "jobs": [
+    "7249559"
+   ],
+   "gpus": [
+    "NVIDIA A100 80GB PCIe"
+   ]
+  },
+  {
+   "name": "C16-s20",
+   "arm": "E",
+   "setting": "def50",
+   "dtype": "float64",
+   "gn": [
+    1e-06,
+    0.001,
+    50
+   ],
+   "cases": [
+    0,
+    32
+   ],
+   "complete": true,
+   "worst_percent": 51.508342571351506,
+   "median_percent": 10.885632584997898,
+   "nonfinite": 0,
+   "rough_ms": 21293.469621101394,
+   "weights": "/cluster/tufts/paralab/tawal01/rebuttal-official/weights/C16-s20",
+   "jobs": [
+    "7249559"
+   ],
+   "gpus": [
+    "NVIDIA A100 80GB PCIe"
+   ]
+  },
+  {
+   "name": "C16-s20",
+   "arm": "E",
+   "setting": "ex",
+   "dtype": "float32",
+   "gn": [
+    1e-15,
+    1e-15,
+    50
+   ],
+   "cases": [
+    0,
+    32
+   ],
+   "complete": true,
+   "worst_percent": 84.69521457835079,
+   "median_percent": 56.45948187800218,
+   "nonfinite": 0,
+   "rough_ms": 61850.0260473229,
+   "weights": "/cluster/tufts/paralab/tawal01/rebuttal-official/weights/C16-s20",
+   "jobs": [
+    "7251685"
+   ],
+   "gpus": [
+    "NVIDIA A100 80GB PCIe"
+   ]
+  },
+  {
+   "name": "C16-s20",
+   "arm": "E",
+   "setting": "ex",
+   "dtype": "float64",
+   "gn": [
+    1e-15,
+    1e-15,
+    50
+   ],
+   "cases": [
+    0,
+    32
+   ],
+   "complete": true,
+   "worst_percent": 15.391858800240477,
+   "median_percent": 7.039260049412997,
+   "nonfinite": 0,
+   "rough_ms": 112101.91377415322,
+   "weights": "/cluster/tufts/paralab/tawal01/rebuttal-official/weights/C16-s20",
+   "jobs": [
+    "7249559"
+   ],
+   "gpus": [
+    "NVIDIA A100 80GB PCIe"
+   ]
+  },
+  {
+   "name": "C16-s20",
+   "arm": "I",
+   "setting": "def2",
+   "dtype": "float64",
+   "gn": [
+    1e-06,
+    0.001,
+    2
+   ],
+   "cases": [
+    0,
+    32
+   ],
+   "complete": true,
+   "worst_percent": 37.38489969464355,
+   "median_percent": 13.972965274211397,
+   "nonfinite": 0,
+   "rough_ms": 758.2133547402918,
+   "weights": "/cluster/tufts/paralab/tawal01/rebuttal-official/weights/C16-s20",
+   "jobs": [
+    "7249557"
+   ],
+   "gpus": [
+    "NVIDIA A100 80GB PCIe"
+   ]
+  },
+  {
+   "name": "C16-s20",
+   "arm": "I",
+   "setting": "def5",
+   "dtype": "float64",
+   "gn": [
+    1e-06,
+    0.001,
+    5
+   ],
+   "cases": [
+    0,
+    32
+   ],
+   "complete": true,
+   "worst_percent": 22.0321784858121,
+   "median_percent": 13.044229103552162,
+   "nonfinite": 0,
+   "rough_ms": 1536.08544357121,
+   "weights": "/cluster/tufts/paralab/tawal01/rebuttal-official/weights/C16-s20",
+   "jobs": [
+    "7249557"
+   ],
+   "gpus": [
+    "NVIDIA A100 80GB PCIe"
+   ]
+  },
+  {
+   "name": "C16-s20",
+   "arm": "I",
+   "setting": "def50",
+   "dtype": "float64",
+   "gn": [
+    1e-06,
+    0.001,
+    50
+   ],
+   "cases": [
+    0,
+    32
+   ],
+   "complete": true,
+   "worst_percent": 20.80502943374274,
+   "median_percent": 12.399319854124244,
+   "nonfinite": 0,
+   "rough_ms": 2059.2904039658606,
+   "weights": "/cluster/tufts/paralab/tawal01/rebuttal-official/weights/C16-s20",
+   "jobs": [
+    "7249557"
+   ],
+   "gpus": [
+    "NVIDIA A100 80GB PCIe"
+   ]
+  },
+  {
+   "name": "C16-s64",
+   "arm": "E",
+   "setting": "def5",
+   "dtype": "float64",
+   "gn": [
+    1e-06,
+    0.001,
+    5
+   ],
+   "cases": [
+    0,
+    32
+   ],
+   "complete": true,
+   "worst_percent": 62.34242220110463,
+   "median_percent": 14.288606143547103,
+   "nonfinite": 0,
+   "rough_ms": 43710.83197603002,
+   "weights": "/cluster/tufts/paralab/tawal01/rebuttal-official/weights/C16-s64",
+   "jobs": [
+    "7249561"
+   ],
+   "gpus": [
+    "NVIDIA A100 80GB PCIe"
+   ]
+  },
+  {
+   "name": "C16-s64",
+   "arm": "E",
+   "setting": "def50",
+   "dtype": "float64",
+   "gn": [
+    1e-06,
+    0.001,
+    50
+   ],
+   "cases": [
+    0,
+    32
+   ],
+   "complete": true,
+   "worst_percent": 62.34242220110463,
+   "median_percent": 14.288606143547103,
+   "nonfinite": 0,
+   "rough_ms": 43693.99530114606,
+   "weights": "/cluster/tufts/paralab/tawal01/rebuttal-official/weights/C16-s64",
+   "jobs": [
+    "7249561"
+   ],
+   "gpus": [
+    "NVIDIA A100 80GB PCIe"
+   ]
+  },
+  {
+   "name": "C16-s64",
+   "arm": "E",
+   "setting": "ex",
+   "dtype": "float32",
+   "gn": [
+    1e-15,
+    1e-15,
+    50
+   ],
+   "cases": [
+    0,
+    32
+   ],
+   "complete": true,
+   "worst_percent": 89.64501501277611,
+   "median_percent": 57.770992666861495,
+   "nonfinite": 0,
+   "rough_ms": 98899.04665085487,
+   "weights": "/cluster/tufts/paralab/tawal01/rebuttal-official/weights/C16-s64",
+   "jobs": [
+    "7251969",
+    "7251970"
+   ],
+   "gpus": [
+    "NVIDIA A100 80GB PCIe"
+   ]
+  },
+  {
+   "name": "C16-s64",
+   "arm": "E",
+   "setting": "ex",
+   "dtype": "float64",
+   "gn": [
+    1e-15,
+    1e-15,
+    50
+   ],
+   "cases": [
+    0,
+    32
+   ],
+   "complete": true,
+   "worst_percent": 9.560646276372454,
+   "median_percent": 4.85786765508188,
+   "nonfinite": 0,
+   "rough_ms": 247807.8756807372,
+   "weights": "/cluster/tufts/paralab/tawal01/rebuttal-official/weights/C16-s64",
+   "jobs": [
+    "7249561",
+    "7251855",
+    "7251856"
+   ],
+   "gpus": [
+    "NVIDIA A100 80GB PCIe"
+   ]
+  },
+  {
+   "name": "C16-s64",
+   "arm": "I",
+   "setting": "def2",
+   "dtype": "float64",
+   "gn": [
+    1e-06,
+    0.001,
+    2
+   ],
+   "cases": [
+    0,
+    32
+   ],
+   "complete": true,
+   "worst_percent": 43.78190032475468,
+   "median_percent": 8.872864625014742,
+   "nonfinite": 0,
+   "rough_ms": 1500.5845879204571,
+   "weights": "/cluster/tufts/paralab/tawal01/rebuttal-official/weights/C16-s64",
+   "jobs": [
+    "7249557"
+   ],
+   "gpus": [
+    "NVIDIA A100 80GB PCIe"
+   ]
+  },
+  {
+   "name": "C16-s64",
+   "arm": "I",
+   "setting": "def5",
+   "dtype": "float64",
+   "gn": [
+    1e-06,
+    0.001,
+    5
+   ],
+   "cases": [
+    0,
+    32
+   ],
+   "complete": true,
+   "worst_percent": 18.234378543246514,
+   "median_percent": 8.478128440569666,
+   "nonfinite": 0,
+   "rough_ms": 3016.451744828373,
+   "weights": "/cluster/tufts/paralab/tawal01/rebuttal-official/weights/C16-s64",
+   "jobs": [
+    "7249557"
+   ],
+   "gpus": [
+    "NVIDIA A100 80GB PCIe"
+   ]
+  },
+  {
+   "name": "C16-s64",
+   "arm": "I",
+   "setting": "def50",
+   "dtype": "float64",
+   "gn": [
+    1e-06,
+    0.001,
+    50
+   ],
+   "cases": [
+    0,
+    32
+   ],
+   "complete": true,
+   "worst_percent": 18.51730566886914,
+   "median_percent": 7.8020889063158725,
+   "nonfinite": 0,
+   "rough_ms": 4126.730057876557,
+   "weights": "/cluster/tufts/paralab/tawal01/rebuttal-official/weights/C16-s64",
+   "jobs": [
+    "7249557"
+   ],
+   "gpus": [
+    "NVIDIA A100 80GB PCIe"
+   ]
+  }
+ ],
+ "all_colora_validation_rows": [
+  {
+   "name": "D7-600k",
+   "dtype": "float64",
+   "k": 7,
+   "worst_percent": 1.6125595537810038,
+   "median_percent": 0.46416558597480856,
+   "mean_percent": 0.582488854368231,
+   "nonfinite": 0,
+   "rough_ms": 1.6404823400080204,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 25,
+    "rank": 3,
+    "full": false,
+    "h_width": 15,
+    "steps": 600000
+   }
+  },
+  {
+   "name": "D7-600k",
+   "dtype": "float32",
+   "k": 7,
+   "worst_percent": 1.6031305382058627,
+   "median_percent": 0.4801644786348027,
+   "mean_percent": 0.5875165121620793,
+   "nonfinite": 0,
+   "rough_ms": 1.6546715050935745,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 25,
+    "rank": 3,
+    "full": false,
+    "h_width": 15,
+    "steps": 600000
+   }
+  },
+  {
+   "name": "D7",
+   "dtype": "float64",
+   "k": 7,
+   "worst_percent": 3.727499097309644,
+   "median_percent": 1.0365825892747567,
+   "mean_percent": 1.139023753327108,
+   "nonfinite": 0,
+   "rough_ms": 0.8471799083054066,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 25,
+    "rank": 3,
+    "full": false,
+    "h_width": 15,
+    "steps": 100000
+   }
+  },
+  {
+   "name": "D7",
+   "dtype": "float32",
+   "k": 7,
+   "worst_percent": 3.7235857180315572,
+   "median_percent": 1.0354478354897758,
+   "mean_percent": 1.1396466662059221,
+   "nonfinite": 0,
+   "rough_ms": 0.8529485203325748,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 25,
+    "rank": 3,
+    "full": false,
+    "h_width": 15,
+    "steps": 100000
+   }
+  },
+  {
+   "name": "K16-deep",
+   "dtype": "float64",
+   "k": 16,
+   "worst_percent": 0.7828494210118346,
+   "median_percent": 0.3770734618611644,
+   "mean_percent": 0.4059422677771832,
+   "nonfinite": 0,
+   "rough_ms": 1.8108338117599487,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 25,
+    "rank": 3,
+    "full": false,
+    "h_width": 15,
+    "steps": 600000
+   }
+  },
+  {
+   "name": "K16-deep",
+   "dtype": "float32",
+   "k": 16,
+   "worst_percent": 0.7929495699562993,
+   "median_percent": 0.3764151463228971,
+   "mean_percent": 0.40284290338489376,
+   "nonfinite": 0,
+   "rough_ms": 1.8314467743039131,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 25,
+    "rank": 3,
+    "full": false,
+    "h_width": 15,
+    "steps": 600000
+   }
+  },
+  {
+   "name": "K16-w128",
+   "dtype": "float64",
+   "k": 16,
+   "worst_percent": 91.06023893034475,
+   "median_percent": 79.76975007191942,
+   "mean_percent": 79.1147516552121,
+   "nonfinite": 0,
+   "rough_ms": 4.894256591796875,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 128,
+    "rank": 2,
+    "full": true,
+    "h_width": 64,
+    "steps": 600000
+   }
+  },
+  {
+   "name": "K16-w128",
+   "dtype": "float32",
+   "k": 16,
+   "worst_percent": 91.06023893034475,
+   "median_percent": 79.76975007191942,
+   "mean_percent": 79.1147516552121,
+   "nonfinite": 0,
+   "rough_ms": 4.892655648291111,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 128,
+    "rank": 2,
+    "full": true,
+    "h_width": 64,
+    "steps": 600000
+   }
+  },
+  {
+   "name": "K16-w25",
+   "dtype": "float64",
+   "k": 16,
+   "worst_percent": 1.2227579299631934,
+   "median_percent": 0.5324372988662198,
+   "mean_percent": 0.5927667923120433,
+   "nonfinite": 0,
+   "rough_ms": 0.9616333991289139,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 25,
+    "rank": 2,
+    "full": true,
+    "h_width": 15,
+    "steps": 600000
+   }
+  },
+  {
+   "name": "K16-w25",
+   "dtype": "float32",
+   "k": 16,
+   "worst_percent": 1.1488284239353128,
+   "median_percent": 0.5378592595524101,
+   "mean_percent": 0.5910034993425897,
+   "nonfinite": 0,
+   "rough_ms": 0.9724833071231842,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 25,
+    "rank": 2,
+    "full": true,
+    "h_width": 15,
+    "steps": 600000
+   }
+  },
+  {
+   "name": "K16-w64",
+   "dtype": "float64",
+   "k": 16,
+   "worst_percent": 0.8472373882975739,
+   "median_percent": 0.2921426107725023,
+   "mean_percent": 0.3401997905866093,
+   "nonfinite": 0,
+   "rough_ms": 4.848571959882975,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 64,
+    "rank": 2,
+    "full": true,
+    "h_width": 64,
+    "steps": 600000
+   }
+  },
+  {
+   "name": "K16-w64",
+   "dtype": "float32",
+   "k": 16,
+   "worst_percent": 0.8267408260802847,
+   "median_percent": 0.30085915598025886,
+   "mean_percent": 0.34307799240565956,
+   "nonfinite": 0,
+   "rough_ms": 4.727452527731657,
+   "cfg": {
+    "u_layers": [
+     "P",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C",
+     "C"
+    ],
+    "width": 64,
+    "rank": 2,
+    "full": true,
+    "h_width": 64,
+    "steps": 600000
+   }
+  }
+ ]
+}

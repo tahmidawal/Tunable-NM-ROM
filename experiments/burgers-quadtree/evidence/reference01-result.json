@@ -1,0 +1,726 @@
+{
+  "meta": {
+    "job": "7310994",
+    "commit": "575be7f355439193cbc99aed416014b2aeac7342",
+    "device": "[CudaDevice(id=0)]",
+    "jax": "0.10.2",
+    "x64": true,
+    "precision": "highest"
+  },
+  "status": "computed_pending_independent_qualification",
+  "fixtures": [
+    {
+      "L": 32,
+      "dt": 0.000625,
+      "error": [
+        0.0,
+        0.00014185691181594273,
+        0.0002567585768983352,
+        0.00034742053299570967,
+        0.0004165202768166193,
+        0.00046679360556649817
+      ],
+      "seconds": 1.9129255814477801
+    },
+    {
+      "L": 64,
+      "dt": 0.000625,
+      "error": [
+        0.0,
+        3.5476780880046725e-05,
+        6.417577573122112e-05,
+        8.679400748802952e-05,
+        0.00010400231083173733,
+        0.0001164907548480825
+      ],
+      "seconds": 1.7618085499852896
+    },
+    {
+      "L": 128,
+      "dt": 0.000625,
+      "error": [
+        0.0,
+        8.875567683477228e-06,
+        1.6033801889937058e-05,
+        2.1674306916552482e-05,
+        2.5964229694937753e-05,
+        2.9076147565946784e-05
+      ],
+      "seconds": 1.81515771150589
+    }
+  ],
+  "cases": [
+    {
+      "case": 0,
+      "L": 128,
+      "dt": 0.000625,
+      "seconds": 1.3067980781197548,
+      "residual": 4.3490127657866045e-16,
+      "finite": true,
+      "file": "dev0_fd128_dt0.000625.npz"
+    },
+    {
+      "case": 0,
+      "L": 256,
+      "dt": 0.000625,
+      "seconds": 1.6728899953886867,
+      "residual": 2.2249036218216486e-14,
+      "finite": true,
+      "file": "dev0_fd256_dt0.000625.npz"
+    },
+    {
+      "case": 0,
+      "L": 512,
+      "dt": 0.000625,
+      "seconds": 2.1635053660720587,
+      "residual": 1.8111155851436881e-12,
+      "finite": true,
+      "file": "dev0_fd512_dt0.000625.npz"
+    },
+    {
+      "case": 0,
+      "L": 512,
+      "dt": 0.0025,
+      "seconds": 0.35105057898908854,
+      "residual": 3.792457418019924e-12,
+      "finite": true,
+      "file": "dev0_fd512_dt0.0025.npz"
+    },
+    {
+      "case": 0,
+      "L": 512,
+      "dt": 0.00125,
+      "seconds": 0.5612705955281854,
+      "residual": 6.517778559857028e-13,
+      "finite": true,
+      "file": "dev0_fd512_dt0.00125.npz"
+    },
+    {
+      "case": 0,
+      "L": 128,
+      "dt": 0.0025,
+      "seconds": 0.17348554451018572,
+      "residual": 1.3713651015915612e-12,
+      "finite": true,
+      "file": "dev0_fd128_dt0.0025.npz"
+    },
+    {
+      "case": 0,
+      "L": 256,
+      "dt": 0.00125,
+      "seconds": 0.3155716098845005,
+      "residual": 7.360156686274913e-13,
+      "finite": true,
+      "file": "dev0_fd256_dt0.00125.npz"
+    },
+    {
+      "case": 0,
+      "N": 64,
+      "dt": 0.000625,
+      "seconds": 3.516652504913509,
+      "method": "spectral"
+    },
+    {
+      "case": 0,
+      "N": 128,
+      "dt": 0.000625,
+      "seconds": 3.679758229292929,
+      "method": "spectral"
+    },
+    {
+      "case": 0,
+      "N": 256,
+      "dt": 0.000625,
+      "seconds": 3.048456897959113,
+      "method": "spectral"
+    },
+    {
+      "case": 1,
+      "L": 128,
+      "dt": 0.000625,
+      "seconds": 0.41370952781289816,
+      "residual": 1.6867441165987692e-13,
+      "finite": true,
+      "file": "dev1_fd128_dt0.000625.npz"
+    },
+    {
+      "case": 1,
+      "L": 256,
+      "dt": 0.000625,
+      "seconds": 0.4569643810391426,
+      "residual": 6.560889778749477e-12,
+      "finite": true,
+      "file": "dev1_fd256_dt0.000625.npz"
+    },
+    {
+      "case": 1,
+      "L": 512,
+      "dt": 0.000625,
+      "seconds": 0.7909160582348704,
+      "residual": 3.2667332983599117e-12,
+      "finite": true,
+      "file": "dev1_fd512_dt0.000625.npz"
+    },
+    {
+      "case": 1,
+      "L": 512,
+      "dt": 0.0025,
+      "seconds": 0.25237612146884203,
+      "residual": 3.843789126534731e-12,
+      "finite": true,
+      "file": "dev1_fd512_dt0.0025.npz"
+    },
+    {
+      "case": 1,
+      "L": 512,
+      "dt": 0.00125,
+      "seconds": 0.43699316773563623,
+      "residual": 4.194285013232163e-12,
+      "finite": true,
+      "file": "dev1_fd512_dt0.00125.npz"
+    },
+    {
+      "case": 1,
+      "L": 128,
+      "dt": 0.0025,
+      "seconds": 0.13081353530287743,
+      "residual": 9.856491125559526e-12,
+      "finite": true,
+      "file": "dev1_fd128_dt0.0025.npz"
+    },
+    {
+      "case": 1,
+      "L": 256,
+      "dt": 0.00125,
+      "seconds": 0.2531366450712085,
+      "residual": 3.659072607154913e-12,
+      "finite": true,
+      "file": "dev1_fd256_dt0.00125.npz"
+    },
+    {
+      "case": 1,
+      "N": 64,
+      "dt": 0.000625,
+      "seconds": 0.7299511162564158,
+      "method": "spectral"
+    },
+    {
+      "case": 1,
+      "N": 128,
+      "dt": 0.000625,
+      "seconds": 0.706839345395565,
+      "method": "spectral"
+    },
+    {
+      "case": 1,
+      "N": 256,
+      "dt": 0.000625,
+      "seconds": 0.8533207355067134,
+      "method": "spectral"
+    },
+    {
+      "case": 2,
+      "L": 128,
+      "dt": 0.000625,
+      "seconds": 0.4406633321195841,
+      "residual": 2.8354087234787163e-14,
+      "finite": true,
+      "file": "dev2_fd128_dt0.000625.npz"
+    },
+    {
+      "case": 2,
+      "L": 256,
+      "dt": 0.000625,
+      "seconds": 0.49672497529536486,
+      "residual": 3.0115237403293754e-14,
+      "finite": true,
+      "file": "dev2_fd256_dt0.000625.npz"
+    },
+    {
+      "case": 2,
+      "L": 512,
+      "dt": 0.000625,
+      "seconds": 0.846892012283206,
+      "residual": 6.184242609879411e-13,
+      "finite": true,
+      "file": "dev2_fd512_dt0.000625.npz"
+    },
+    {
+      "case": 2,
+      "L": 512,
+      "dt": 0.0025,
+      "seconds": 0.3010363783687353,
+      "residual": 8.892349552344778e-12,
+      "finite": true,
+      "file": "dev2_fd512_dt0.0025.npz"
+    },
+    {
+      "case": 2,
+      "L": 512,
+      "dt": 0.00125,
+      "seconds": 0.48095233365893364,
+      "residual": 4.70847531978519e-12,
+      "finite": true,
+      "file": "dev2_fd512_dt0.00125.npz"
+    },
+    {
+      "case": 2,
+      "L": 128,
+      "dt": 0.0025,
+      "seconds": 0.153331957757473,
+      "residual": 8.665676003909904e-12,
+      "finite": true,
+      "file": "dev2_fd128_dt0.0025.npz"
+    },
+    {
+      "case": 2,
+      "L": 256,
+      "dt": 0.00125,
+      "seconds": 0.2758568227291107,
+      "residual": 2.4631646005256616e-12,
+      "finite": true,
+      "file": "dev2_fd256_dt0.00125.npz"
+    },
+    {
+      "case": 2,
+      "N": 64,
+      "dt": 0.000625,
+      "seconds": 0.7053315052762628,
+      "method": "spectral"
+    },
+    {
+      "case": 2,
+      "N": 128,
+      "dt": 0.000625,
+      "seconds": 0.771209510974586,
+      "method": "spectral"
+    },
+    {
+      "case": 2,
+      "N": 256,
+      "dt": 0.000625,
+      "seconds": 0.7830363512039185,
+      "method": "spectral"
+    },
+    {
+      "case": 3,
+      "L": 128,
+      "dt": 0.000625,
+      "seconds": 0.46082618087530136,
+      "residual": 6.865940653943769e-17,
+      "finite": true,
+      "file": "dev3_fd128_dt0.000625.npz"
+    },
+    {
+      "case": 3,
+      "L": 256,
+      "dt": 0.000625,
+      "seconds": 0.4925864730030298,
+      "residual": 1.4630851670699287e-16,
+      "finite": true,
+      "file": "dev3_fd256_dt0.000625.npz"
+    },
+    {
+      "case": 3,
+      "L": 512,
+      "dt": 0.000625,
+      "seconds": 0.8596067512407899,
+      "residual": 6.76992656338565e-16,
+      "finite": true,
+      "file": "dev3_fd512_dt0.000625.npz"
+    },
+    {
+      "case": 3,
+      "L": 512,
+      "dt": 0.0025,
+      "seconds": 0.32813215255737305,
+      "residual": 2.689776263987486e-13,
+      "finite": true,
+      "file": "dev3_fd512_dt0.0025.npz"
+    },
+    {
+      "case": 3,
+      "L": 512,
+      "dt": 0.00125,
+      "seconds": 0.5407364824786782,
+      "residual": 7.602699977441341e-15,
+      "finite": true,
+      "file": "dev3_fd512_dt0.00125.npz"
+    },
+    {
+      "case": 3,
+      "L": 128,
+      "dt": 0.0025,
+      "seconds": 0.1621657656505704,
+      "residual": 2.61142676346394e-13,
+      "finite": true,
+      "file": "dev3_fd128_dt0.0025.npz"
+    },
+    {
+      "case": 3,
+      "L": 256,
+      "dt": 0.00125,
+      "seconds": 0.3079553609713912,
+      "residual": 2.5911749800687525e-15,
+      "finite": true,
+      "file": "dev3_fd256_dt0.00125.npz"
+    },
+    {
+      "case": 3,
+      "N": 64,
+      "dt": 0.000625,
+      "seconds": 0.6940533230081201,
+      "method": "spectral"
+    },
+    {
+      "case": 3,
+      "N": 128,
+      "dt": 0.000625,
+      "seconds": 0.7533778576180339,
+      "method": "spectral"
+    },
+    {
+      "case": 3,
+      "N": 256,
+      "dt": 0.000625,
+      "seconds": 0.7918744897469878,
+      "method": "spectral"
+    },
+    {
+      "case": 4,
+      "L": 128,
+      "dt": 0.000625,
+      "seconds": 0.4348621079698205,
+      "residual": 2.7292011746372525e-16,
+      "finite": true,
+      "file": "dev4_fd128_dt0.000625.npz"
+    },
+    {
+      "case": 4,
+      "L": 256,
+      "dt": 0.000625,
+      "seconds": 0.47698887810111046,
+      "residual": 6.51530406682276e-16,
+      "finite": true,
+      "file": "dev4_fd256_dt0.000625.npz"
+    },
+    {
+      "case": 4,
+      "L": 512,
+      "dt": 0.000625,
+      "seconds": 0.8287568083032966,
+      "residual": 2.4102543057452776e-15,
+      "finite": true,
+      "file": "dev4_fd512_dt0.000625.npz"
+    },
+    {
+      "case": 4,
+      "L": 512,
+      "dt": 0.0025,
+      "seconds": 0.26864023692905903,
+      "residual": 1.8069962135857698e-12,
+      "finite": true,
+      "file": "dev4_fd512_dt0.0025.npz"
+    },
+    {
+      "case": 4,
+      "L": 512,
+      "dt": 0.00125,
+      "seconds": 0.4605920035392046,
+      "residual": 2.2291608077201093e-14,
+      "finite": true,
+      "file": "dev4_fd512_dt0.00125.npz"
+    },
+    {
+      "case": 4,
+      "L": 128,
+      "dt": 0.0025,
+      "seconds": 0.13894016295671463,
+      "residual": 1.7790789396088458e-12,
+      "finite": true,
+      "file": "dev4_fd128_dt0.0025.npz"
+    },
+    {
+      "case": 4,
+      "L": 256,
+      "dt": 0.00125,
+      "seconds": 0.26561868749558926,
+      "residual": 2.170125068670677e-14,
+      "finite": true,
+      "file": "dev4_fd256_dt0.00125.npz"
+    },
+    {
+      "case": 4,
+      "N": 64,
+      "dt": 0.000625,
+      "seconds": 0.8132458962500095,
+      "method": "spectral"
+    },
+    {
+      "case": 4,
+      "N": 128,
+      "dt": 0.000625,
+      "seconds": 0.7239327654242516,
+      "method": "spectral"
+    },
+    {
+      "case": 4,
+      "N": 256,
+      "dt": 0.000625,
+      "seconds": 0.7806932097300887,
+      "method": "spectral"
+    },
+    {
+      "case": 5,
+      "L": 128,
+      "dt": 0.000625,
+      "seconds": 0.4610003801062703,
+      "residual": 3.677559999380604e-14,
+      "finite": true,
+      "file": "dev5_fd128_dt0.000625.npz"
+    },
+    {
+      "case": 5,
+      "L": 256,
+      "dt": 0.000625,
+      "seconds": 0.5069736875593662,
+      "residual": 3.843275739792354e-14,
+      "finite": true,
+      "file": "dev5_fd256_dt0.000625.npz"
+    },
+    {
+      "case": 5,
+      "L": 512,
+      "dt": 0.000625,
+      "seconds": 0.8847688632085919,
+      "residual": 3.886620466640085e-14,
+      "finite": true,
+      "file": "dev5_fd512_dt0.000625.npz"
+    },
+    {
+      "case": 5,
+      "L": 512,
+      "dt": 0.0025,
+      "seconds": 0.3249461203813553,
+      "residual": 8.468968165758946e-12,
+      "finite": true,
+      "file": "dev5_fd512_dt0.0025.npz"
+    },
+    {
+      "case": 5,
+      "L": 512,
+      "dt": 0.00125,
+      "seconds": 0.4995945980772376,
+      "residual": 3.2218173769859e-12,
+      "finite": true,
+      "file": "dev5_fd512_dt0.00125.npz"
+    },
+    {
+      "case": 5,
+      "L": 128,
+      "dt": 0.0025,
+      "seconds": 0.1653748694807291,
+      "residual": 8.320042983609567e-12,
+      "finite": true,
+      "file": "dev5_fd128_dt0.0025.npz"
+    },
+    {
+      "case": 5,
+      "L": 256,
+      "dt": 0.00125,
+      "seconds": 0.28950723353773355,
+      "residual": 3.1908770179608624e-12,
+      "finite": true,
+      "file": "dev5_fd256_dt0.00125.npz"
+    },
+    {
+      "case": 5,
+      "N": 64,
+      "dt": 0.000625,
+      "seconds": 0.8050833363085985,
+      "method": "spectral"
+    },
+    {
+      "case": 5,
+      "N": 128,
+      "dt": 0.000625,
+      "seconds": 0.7381500974297523,
+      "method": "spectral"
+    },
+    {
+      "case": 5,
+      "N": 256,
+      "dt": 0.000625,
+      "seconds": 0.8149231132119894,
+      "method": "spectral"
+    },
+    {
+      "case": 6,
+      "L": 128,
+      "dt": 0.000625,
+      "seconds": 0.3890159707516432,
+      "residual": 4.207045428539603e-15,
+      "finite": true,
+      "file": "dev6_fd128_dt0.000625.npz"
+    },
+    {
+      "case": 6,
+      "L": 256,
+      "dt": 0.000625,
+      "seconds": 0.42586435191333294,
+      "residual": 2.172424822991334e-13,
+      "finite": true,
+      "file": "dev6_fd256_dt0.000625.npz"
+    },
+    {
+      "case": 6,
+      "L": 512,
+      "dt": 0.000625,
+      "seconds": 0.7340607699006796,
+      "residual": 5.210639480729988e-12,
+      "finite": true,
+      "file": "dev6_fd512_dt0.000625.npz"
+    },
+    {
+      "case": 6,
+      "L": 512,
+      "dt": 0.0025,
+      "seconds": 0.23691879119724035,
+      "residual": 1.97360456008578e-12,
+      "finite": true,
+      "file": "dev6_fd512_dt0.0025.npz"
+    },
+    {
+      "case": 6,
+      "L": 512,
+      "dt": 0.00125,
+      "seconds": 0.42569764889776707,
+      "residual": 5.391649197523685e-13,
+      "finite": true,
+      "file": "dev6_fd512_dt0.00125.npz"
+    },
+    {
+      "case": 6,
+      "L": 128,
+      "dt": 0.0025,
+      "seconds": 0.122455645352602,
+      "residual": 2.061271327295991e-12,
+      "finite": true,
+      "file": "dev6_fd128_dt0.0025.npz"
+    },
+    {
+      "case": 6,
+      "L": 256,
+      "dt": 0.00125,
+      "seconds": 0.2456252845004201,
+      "residual": 4.79956528976441e-12,
+      "finite": true,
+      "file": "dev6_fd256_dt0.00125.npz"
+    },
+    {
+      "case": 6,
+      "N": 64,
+      "dt": 0.000625,
+      "seconds": 0.7123100683093071,
+      "method": "spectral"
+    },
+    {
+      "case": 6,
+      "N": 128,
+      "dt": 0.000625,
+      "seconds": 0.7205284927040339,
+      "method": "spectral"
+    },
+    {
+      "case": 6,
+      "N": 256,
+      "dt": 0.000625,
+      "seconds": 0.8939231494441628,
+      "method": "spectral"
+    },
+    {
+      "case": 7,
+      "L": 128,
+      "dt": 0.000625,
+      "seconds": 0.3970076059922576,
+      "residual": 1.0881997177107186e-16,
+      "finite": true,
+      "file": "dev7_fd128_dt0.000625.npz"
+    },
+    {
+      "case": 7,
+      "L": 256,
+      "dt": 0.000625,
+      "seconds": 0.4369637183845043,
+      "residual": 3.2836413225147684e-16,
+      "finite": true,
+      "file": "dev7_fd256_dt0.000625.npz"
+    },
+    {
+      "case": 7,
+      "L": 512,
+      "dt": 0.000625,
+      "seconds": 0.7535093193873763,
+      "residual": 1.356840356037753e-15,
+      "finite": true,
+      "file": "dev7_fd512_dt0.000625.npz"
+    },
+    {
+      "case": 7,
+      "L": 512,
+      "dt": 0.0025,
+      "seconds": 0.2309335870668292,
+      "residual": 2.6060751839140727e-14,
+      "finite": true,
+      "file": "dev7_fd512_dt0.0025.npz"
+    },
+    {
+      "case": 7,
+      "L": 512,
+      "dt": 0.00125,
+      "seconds": 0.4317022645846009,
+      "residual": 5.144369613008559e-15,
+      "finite": true,
+      "file": "dev7_fd512_dt0.00125.npz"
+    },
+    {
+      "case": 7,
+      "L": 128,
+      "dt": 0.0025,
+      "seconds": 0.12077449914067984,
+      "residual": 2.6063727629070996e-15,
+      "finite": true,
+      "file": "dev7_fd128_dt0.0025.npz"
+    },
+    {
+      "case": 7,
+      "L": 256,
+      "dt": 0.00125,
+      "seconds": 0.2500621136277914,
+      "residual": 8.279049584968755e-16,
+      "finite": true,
+      "file": "dev7_fd256_dt0.00125.npz"
+    },
+    {
+      "case": 7,
+      "N": 64,
+      "dt": 0.000625,
+      "seconds": 0.7785476669669151,
+      "method": "spectral"
+    },
+    {
+      "case": 7,
+      "N": 128,
+      "dt": 0.000625,
+      "seconds": 1.2438524942845106,
+      "method": "spectral"
+    },
+    {
+      "case": 7,
+      "N": 256,
+      "dt": 0.000625,
+      "seconds": 1.2924312939867377,
+      "method": "spectral"
+    }
+  ]
+}

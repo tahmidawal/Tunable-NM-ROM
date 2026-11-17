@@ -2,10 +2,10 @@ from pathlib import Path
 import subprocess as s,sys,json,os,hashlib
 H=Path(__file__).resolve().parents[1];root=H.parents[1]
 job,driver,minutes=sys.argv[1:];minutes=int(minutes)
-assert job.isalnum() and driver in ('reference','baseline','representation') and 0<minutes<=240
+assert job.isalnum() and driver in ('reference','baseline','representation','reference_dense','representation_repair','dynamics') and 0<minutes<=240
 ns='/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117';remote=ns+'/'+job
 ledger=H/'cluster/ledger.json';old=json.loads(ledger.read_text()) if ledger.exists() else []
-assert sum(x['reserved_minutes'] for x in old)+minutes<=480,'initial batch reserved hours exhausted; reconcile actuals before expansion'
+assert sum(x.get('elapsed_seconds',0)/60 if x.get('state') in ('COMPLETED','FAILED','TIMEOUT','CANCELLED') else x['reserved_minutes'] for x in old)+minutes<=480,'initial batch reserved hours exhausted; reconcile actuals before expansion'
 def ssh(c):return s.check_output(['ssh','-o','BatchMode=yes','tufts-login',c],text=True)
 q=ssh('squeue -u tawal01 -h -o "%i %j %T %Z"');print(q,flush=True)
 assert len([x for x in q.splitlines() if 'bqt_' in x])<2

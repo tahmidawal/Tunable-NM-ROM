@@ -27,16 +27,20 @@ def run_panel(o):
   query=make(N,dt,restriction)
   for i,ph in enumerate(dev[:8]):
    initial=jnp.asarray(E.initial(4095,ph));jax.block_until_ready(initial)
-   v,cold=timer(lambda:query(initial,ph[4]));times=[];errs=[]
+   v,cold=timer(lambda:query(initial,ph[4]));times=[];errs=[];dense_errors=[]
+   fine=np.load(verified('reference01',f'dev{i}_fd512_dt0.000625.npz'))['out'].reshape(6,511,511)
+   fine_coeff=jax.vmap(lambda u:P.analysis(u,512))(jnp.asarray(fine[1:]))
+   fine_dense=[PJ.synth_mesh(c,4095) for c in fine_coeff]
    for rep in range(5):
     E.burn(.4);v,sec=timer(lambda:query(initial,ph[4]));times.append(sec)
     cs,field=v;pred=np.asarray(jax.vmap(lambda c:PJ.synth_mesh(c,256))(cs))
     ref=np.load(verified('reference01',f'dev{i}_fd512_dt0.000625.npz'))['out'].reshape(6,511,511)
     ref=np.pad(ref,((0,0),(1,1),(1,1)))[:,::2,::2]
+    dense_errors.append([float(jnp.linalg.norm(PJ.synth_mesh(cs[t+1],4095)-fine_dense[t])/jnp.linalg.norm(initial)) for t in range(5)])
     errs.append((np.linalg.norm((pred-ref).reshape(6,-1),axis=1)/np.linalg.norm(ref[0])).tolist())
     np.savez_compressed(o/f'spectral{N}_case{i}_rep{rep}.npz',coefficients=cs,output_norm=float(jnp.linalg.norm(field)))
    if i==0:np.savez_compressed(o/f'spectral{N}_final4096.npz',field=field)
-   rows.append(dict(N=N,dt=dt,restriction=restriction,case=i,cold_seconds=cold,seconds=times,error_per_repetition=errs,output_shape=list(field.shape)))
+   rows.append(dict(N=N,dt=dt,restriction=restriction,case=i,cold_seconds=cold,seconds=times,error_per_repetition=errs,dense4096_errors=dense_errors,output_shape=list(field.shape)))
    save(o/'spectral.json',dict(meta=meta(),rows=rows));print('spectral',N,i,max(errs[-1][1:]),np.median(times),flush=True)
  return rows
 

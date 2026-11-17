@@ -14,7 +14,7 @@ rep=dict(meta=meta(),rows=[],contract='common resident 4096 input to resident 40
 from spectral_cost import run_panel
 rep['spectral']=run_panel(o)
 # Continuous sine extension of trained coarse POD, with source-grid normalization retained.
-Vc=jax.vmap(lambda v:P.analysis(v.reshape(63,63),64),in_axes=1)(V[:,:128])
+Vc=jax.vmap(lambda v:P.analysis(v.reshape(63,63),64),in_axes=1)(V[:,:192])
 L=128;xy=jnp.asarray(E.coords(L,True));patches=B.uniform(1)
 
 def make_decoder(r,k,kind):
@@ -31,7 +31,7 @@ def make_decoder(r,k,kind):
    out=jax.lax.fori_loop(0,128,body,out)
   return out.at[0,:].set(0).at[-1,:].set(0).at[:,0].set(0).at[:,-1].set(0)
  return dense
-for name,r,k,kind in [('pod64',64,0,'poly'),('pod128',128,0,'poly'),('localpoly',64,16,'poly'),('localneural',64,16,'neural')]:
+for name,r,k,kind in [('pod128',128,0,'poly'),('pod192',192,0,'poly'),('localpoly',64,32,'poly'),('localneural',64,32,'neural')]:
  base=jax.vmap(lambda b:PJ.synth_mesh(b,L)[1:-1,1:-1].reshape(-1))(Vc[:r]).T
  bank=base if not k else jnp.concatenate([base,B.features(xy,patches,k,kind,params)],axis=1)
  Rk=bank.shape[1];phi,lam,_=E.modes(L,4*Rk);phi=jnp.asarray(phi);lam=jnp.asarray(lam);A=phi.T@bank

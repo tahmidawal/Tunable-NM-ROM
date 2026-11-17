@@ -1,0 +1,11 @@
+{
+ "batch":"A0", "maximum_allocated_gpu_hours":8, "max_concurrent":2,
+ "jobs":{"reference01":{"limit_minutes":240},"baseline01":{"limit_minutes":120},"representation01":{"limit_minutes":120}},
+ "train_seed":2026111701,"train_draw_count":256,"train_prefix":32,
+ "dev_seed":2026111702,"dev_draw_count":64,"dev_prefix":8,
+ "test_solutions":"closed until method freeze",
+ "reference":{"L":[128,256,512],"dt":[0.0025,0.00125,0.000625],"scheme":"Rannacher CN","ntol":1e-11,"ltol":1e-10,"spectral_N":[64,128,256],"admission_max_uncertainty":0.001},
+ "representation":{"global_ranks":[16,32],"prefixes":[4,8,16,32],"depths":[1,2],"overlap":0.25,"neural_width":128,"hidden_layers":3,"throughput_updates":200,"svd_cutoff":1e-10},
+ "pass_stop":"All fixtures, reference residuals and spatial/time/cross-method checks required before physical accuracy claims. Retain failures. Projection alone cannot pass PDE objective.",
+ "prospective_amendment":"Inherited params_draw is column-wise, so progressive sets use prefixes of full 256/64 draws, never redraw 32/8. Training data generation initially provisional until reference qualification; no final test generation. Reference first batch saves six times; 11-time training generation is a separate runner."
+}

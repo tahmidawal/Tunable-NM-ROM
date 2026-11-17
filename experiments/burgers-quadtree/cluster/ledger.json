@@ -8,7 +8,8 @@
     "driver": "reference",
     "state": "COMPLETED",
     "elapsed_seconds": 98,
-    "allocated_cpus": 8
+    "allocated_cpus": 8,
+    "remote_archive": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/archive/reference01"
   },
   {
     "name": "baseline01",
@@ -19,7 +20,8 @@
     "driver": "baseline",
     "state": "COMPLETED",
     "elapsed_seconds": 111,
-    "allocated_cpus": 8
+    "allocated_cpus": 8,
+    "remote_archive": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/archive/baseline01"
   },
   {
     "name": "representation01",
@@ -30,7 +32,8 @@
     "driver": "representation",
     "state": "COMPLETED",
     "elapsed_seconds": 53,
-    "allocated_cpus": 8
+    "allocated_cpus": 8,
+    "remote_archive": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/archive/representation01"
   },
   {
     "name": "dense01",
@@ -41,7 +44,8 @@
     "driver": "reference_dense",
     "state": "COMPLETED",
     "elapsed_seconds": 54,
-    "allocated_cpus": 8
+    "allocated_cpus": 8,
+    "remote_archive": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/archive/dense01"
   },
   {
     "name": "repair01",
@@ -52,7 +56,8 @@
     "driver": "representation_repair",
     "state": "COMPLETED",
     "elapsed_seconds": 441,
-    "allocated_cpus": 8
+    "allocated_cpus": 8,
+    "remote_archive": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/archive/repair01"
   },
   {
     "name": "spectral01",
@@ -63,7 +68,8 @@
     "driver": "spectral_cost",
     "state": "COMPLETED",
     "elapsed_seconds": 84,
-    "allocated_cpus": 8
+    "allocated_cpus": 8,
+    "remote_archive": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/archive/spectral01"
   },
   {
     "name": "ae01",
@@ -74,7 +80,8 @@
     "driver": "autoencoder",
     "state": "COMPLETED",
     "elapsed_seconds": 107,
-    "allocated_cpus": 8
+    "allocated_cpus": 8,
+    "remote_archive": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/archive/ae01"
   },
   {
     "name": "dynamics01",
@@ -85,7 +92,8 @@
     "driver": "dynamics",
     "state": "COMPLETED",
     "elapsed_seconds": 219,
-    "allocated_cpus": 8
+    "allocated_cpus": 8,
+    "remote_archive": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/archive/dynamics01"
   },
   {
     "name": "output01",
@@ -96,6 +104,19 @@
     "driver": "output_control",
     "state": "COMPLETED",
     "elapsed_seconds": 73,
-    "allocated_cpus": 8
+    "allocated_cpus": 8,
+    "remote_archive": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/archive/output01"
+  },
+  {
+    "name": "diagnosis01",
+    "id": 7311959,
+    "reserved_minutes": 30,
+    "commit": "2a1115f0aa2f04476275e78a6511cc51780c0e9d",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/diagnosis01",
+    "driver": "diagnose_fom",
+    "state": "COMPLETED",
+    "elapsed_seconds": 41,
+    "allocated_cpus": 8,
+    "remote_archive": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/archive/diagnosis01"
   }
 ]

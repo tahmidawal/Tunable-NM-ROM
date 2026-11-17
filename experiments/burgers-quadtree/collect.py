@@ -2,7 +2,7 @@
 from pathlib import Path
 import subprocess,json,hashlib,sys,shutil
 H=Path(__file__).resolve().parent;name=sys.argv[1];rows=json.loads((H/'cluster/ledger.json').read_text());row=next(r for r in rows if r['name']==name)
-remote=row['remote'];assert remote.startswith('/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/')
+remote=row.get('remote_archive',row['remote']);assert remote.startswith('/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/')
 root=H/'results'/name;root.mkdir(parents=True,exist_ok=True)
 for sub in ['output','logs']:
  subprocess.run(['rsync','-a',f'tufts-login:{remote}/{sub}/',str(root/sub)+'/'],check=True)

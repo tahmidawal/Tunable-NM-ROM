@@ -1,0 +1,11 @@
+# Reproducing this scoped pilot
+
+Use the prescribed parent worktree and Python environments. The code-only branch is `codeonly/exp/2026-11-17-burgers-quadtree`; it contains the verified vendor checkpoint, all newly trained model checkpoints, settings, source and compact evidence. Large numerical fields are bound by `evidence/*-retention.json` and retained both locally and in the exclusive owned remote namespace. No sealed data are required.
+
+`cluster/ledger.json` identifies every exact source commit and job directory. A source checkout at that commit plus the recorded `run.sbatch` and `MANIFEST.sha256` defines a job. Never reuse an old submission directory. `cluster/submit.py` enforces unique names, the two-job limit and reconciled finite-budget accounting; it stages committed bytes directly to paralab and checks every SHA256 before execution. All real calculations use the Tufts environment and GPU preflight.
+
+The dependency order is reference → dense reference extension; representation throughput → mixed-training repair and autoencoder screen; repair + references → fixed dynamics and same-job spectral comparisons. Classical output tuning and full-order discretization diagnosis read the checked reference artifacts. `owned_inputs.py` validates each input against the completed producer's output manifest. Source stages regenerate registered parameter/data tables on the cluster; inherited neural weights have explicit provenance.
+
+For the existing retained jobs, `collect.py JOB_NAME` downloads only this lane's outputs/logs, checks every output SHA256, and creates a durable retention manifest. `audit_saved.py` independently rescores saved projection fields in NumPy, and `audit_dense.py` independently checks stored actual4096 rollout fields. `build_results.py` regenerates RESULTS.md entirely from compact JSON evidence. Reproducing the audits requires the raw results paths specified in the manifests. A fresh scientific replay must use a new isolated namespace and update the producer bindings prospectively; do not overwrite these archived records.
+
+No adaptive PDE result is claimed. Autoencoder results are encoded reconstructions and POD truncations, not online autoencoder solves. The report explicitly distinguishes all those objects and records the remaining cold-setup/timing limitations.

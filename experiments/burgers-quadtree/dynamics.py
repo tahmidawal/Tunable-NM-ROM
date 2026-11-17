@@ -63,8 +63,10 @@ for name,r,k,kind in [('pod64',64,0,'poly'),('pod128',128,0,'poly'),('localpoly'
   cs,stats,field=v;pred=np.asarray((bank@cs.T).T).reshape(6,L-1,L-1)
   ref=np.load(verified('reference01',f'dev{i}_fd512_dt0.000625.npz'))['out'].reshape(6,511,511)[:,3::4,3::4]
   error=np.linalg.norm((pred-ref).reshape(6,-1),axis=1)/np.linalg.norm(ref[0])
+  dense_ref=jnp.asarray(np.load(verified('dense01',f'dev{i}_final4096.npz'))['field'])
+  final_error=float(jnp.linalg.norm(field-dense_ref)/jnp.linalg.norm(u0))
   # Save full final field for first two cases, coefficients reconstruct every remaining return.
   np.savez_compressed(o/f'{name}_{i}.npz',coefficients=cs,residual=stats[0],iterations=stats[1],reason=stats[2],stationarity=stats[3],rejected=stats[4],**({'final4096':field} if i<2 else {}))
-  rep['rows'].append(dict(method=name,case=i,rank=rank,columns=Rk,error=error,cold_seconds=coldsec,warm_seconds=warmsec,output_shape=list(field.shape),output_norm=float(jnp.linalg.norm(field)),max_stationarity=float(jnp.max(stats[3])),reasons=np.asarray(stats[2])))
+  rep['rows'].append(dict(method=name,case=i,rank=rank,columns=Rk,error=error,cold_seconds=coldsec,warm_seconds=warmsec,final4096_error=final_error,output_shape=list(field.shape),output_norm=float(jnp.linalg.norm(field)),max_stationarity=float(jnp.max(stats[3])),reasons=np.asarray(stats[2])))
   save(o/'result.json',rep);print(name,i,error[1:].max(),warmsec,flush=True)
 rep['complete']=True;save(o/'result.json',rep)

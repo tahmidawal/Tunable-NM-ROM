@@ -3,7 +3,7 @@ from campaign import *
 from owned_inputs import verified
 sys.path.insert(0,str(T/'jcp-fom2d'));import psjax2d as PJ
 
-def make(N=64,dt=.00125,restriction=512):
+def make(N=64,dt=.00125,restriction=512,output_mode="sine"):
  xy=jnp.asarray(E.coords(restriction,True));kv=jnp.arange(1,N,dtype=jnp.float64)
  eig=-jnp.pi**2*(kv[:,None]**2+kv[None,:]**2)
  @jax.jit
@@ -18,7 +18,14 @@ def make(N=64,dt=.00125,restriction=512):
   def interval(v,_):
    v=jax.lax.fori_loop(0,round(.05/dt),lambda i,v:step(v),v);return v,v
   final,cs=jax.lax.scan(interval,b,None,length=5)
-  return jnp.concatenate([b[None],cs]),PJ.synth_mesh(final,4095)
+  if output_mode=='bilinear256':
+   from jax.scipy.ndimage import map_coordinates
+   small=PJ.synth_mesh(final,256)
+   x=jnp.arange(4096,dtype=jnp.float64)*256/4095
+   coords=jnp.stack(jnp.meshgrid(x,x,indexing='ij')).reshape(2,-1)
+   field=map_coordinates(small,coords,order=1,mode='nearest').reshape(4096,4096)
+  else:field=PJ.synth_mesh(final,4095)
+  return jnp.concatenate([b[None],cs]),field
  return query
 
 def run_panel(o):

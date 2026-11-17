@@ -50,8 +50,8 @@
     "commit": "f6bad66d2bae2deceb4294ebc27ccb26ee96c984",
     "remote": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/repair01",
     "driver": "representation_repair",
-    "state": "RUNNING",
-    "elapsed_seconds": 410,
+    "state": "COMPLETED",
+    "elapsed_seconds": 441,
     "allocated_cpus": 8
   },
   {
@@ -74,6 +74,17 @@
     "driver": "autoencoder",
     "state": "COMPLETED",
     "elapsed_seconds": 107,
+    "allocated_cpus": 8
+  },
+  {
+    "name": "dynamics01",
+    "id": 7311712,
+    "reserved_minutes": 60,
+    "commit": "63aeb42741e1f2f6b1860cab7de0b6094261291c",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/dynamics01",
+    "driver": "dynamics",
+    "state": "RUNNING",
+    "elapsed_seconds": 36,
     "allocated_cpus": 8
   }
 ]

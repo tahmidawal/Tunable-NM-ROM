@@ -14,8 +14,12 @@ commit=s.check_output(['git','rev-parse','HEAD'],cwd=H,text=True).strip()
 ssh(f'test ! -e {remote} && mkdir -p {remote}/logs')
 archive=s.check_output(['git','archive',commit,'experiments/burgers-quadtree'],cwd=root)
 s.run(['ssh','tufts-login',f'tar -x -C {remote}'],input=archive,check=True)
+dependency=''
+if driver=='dynamics':
+ dependency='#SBATCH --dependency=afterok:'+str(next(x['id'] for x in old if x['name']=='repair01'))
 script=f'''#!/bin/bash
 #SBATCH --job-name=bqt_{job}
+{dependency}
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:a100:1
 #SBATCH --constraint=a100-80G

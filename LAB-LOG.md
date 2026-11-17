@@ -12,11 +12,22 @@ below it is append-only, oldest first.
 
 ---
 
-# Where things stand — 2026-11-15
+# Where things stand — 2026-11-17
+
+**Burgers quadtree pilot complete: scoped negative evidence.** `exp/2026-11-17-burgers-quadtree`, namespace `burgers-quadtree-20261117`, owner Archimedes. Reference ladders and actual4096 output extension passed preliminary numerical checks on dev8. Incumbent reproduction, classical/local-neural projection and matched-data POD-autoencoder screening completed. Two local-neural repairs leave a best worst evolved projection error of1.63335% on the pilot grid, so adaptive development for these checkpoints is stopped. Coupled fixed-space PDE and paired classical output controls completed; the coarse upwind discretization independently fails physical accuracy. All ten owned jobs are terminal, totaling0.355833 allocated GPU-hours. Report: `reports/2026-11-17-burgers-quadtree-pilot.md`. No neural speed/accuracy success, no fresh final-test opening and no merge. Code-only lane backups and raw-retention manifests are current.
+
+## Earlier state — 2026-11-15
 
 **JCP submission-readiness audit.** The [submission plan](reports/2026-11-15-jcp-submission-readiness.md) proposes a numerical study of classical quadrature for a continuous reduced basis. The current conference revision already includes a Burgers mesh-scaling figure. Coauthor decisions on overlap and quadrature authorship remain open.
 
 **Experiment closeout.** The [three verified experiment results](reports/2026-11-15-experiment-closeout.md) are final. All four selected Burgers quadratures passed the primary space-and-time test on all registered meshes. Both 3D rules also passed the secondary space-only test. Both 2D rules failed across meshes on that secondary reference. The sparse GPU files are recovered and checksum-verified. None of the frozen operators reached the registered test-median accuracy target. The Burgers equal-error width sweep and NS3D coordinate-bank confirmation previously finished.
+
+## Earlier state — 2026-11-13
+
+**2026-11-13 — ICLR rebuttal manuscript updated locally and deployed to Overleaf (Codex).**
+- Lane `exp/2026-11-13-manuscript-rebuttal`, worktree `worktrees/2026-11-13-manuscript-rebuttal`, source `paper_revision/main.tex`, compiled `paper_revision/main.pdf`, importable `manuscript-rebuttal-source.zip`. Forked from the canonical consolidated fork point; incorporated Claude's committed manuscript revision while preserving the uploaded submission and its preamble additions.
+- Completed rebuttal studies, a new raw-JSON-generated head/span main-text figure, the verified heat-3D POD-weighted training loss, cylinder reference/comparator distinctions, CPU AMG scope, output-cost caveats and amortisation wording are included. Ten pages of main text; 38 pages total after the accuracy-only operator update. Source and independently extracted ZIP both compile without errors, undefined references or overfull boxes; selected rendered pages inspected.
+- Live rebuttal Google Doc is concise and addressed directly to reviewers; references and loss explanation are aligned with this local revision. Neural operators are now compared by error only; a separate confidential AC-comment draft is included. Operator-accuracy notes retain the November 14 reporting promise; the user’s latest instruction changes the cuDSS/AmgX single-solve wording to running and results as soon as available. Pending sparse-solver and equal-median-error studies were left untouched and are not reported as completed results. The live `neurips26` Overleaf project is now updated with the latest manuscript and 11 figure assets; its build produces 38 pages with zero errors, two package warnings and no missing-file/undefined-reference diagnostics. A source export confirms all 18 required source/style/figure files match the local revision byte for byte. Before/after source archives, compiled Overleaf PDF, screenshots and the verification manifest are retained in the lane under `manuscript_tools/overleaf/`. OpenReview submission 49310 now serves the identical verified PDF and matching abstract, submitted under the explicit reupload request before the subsequent draft-only instruction. All three reviewer texts have persistent local copies under `manuscript_tools/openreview/`. On a later November 13 check, the earlier iMp8 response was observed publicly posted as note `rIrHPeK8Ro` (14:27), with four total forum replies; this agent did not submit that comment. The user subsequently confirmed submitting the original replies; a fresh forum view shows six replies. Following the user’s latest instruction, CPU timing/speedup/break-even claims are removed from the entire rebuttal draft, its summary table and AC note, while cylinder accuracy evidence remains. The corrected iMp8 response is staged as an unsent edit in browser tab 4; its published version remains unchanged. The user explicitly approved submitting the later results-focused AC note. It is now posted as `V5v5cThhU8` (November 13, 16:44), visible to Program Chairs, Senior Area Chairs, Area Chairs and Authors; Everyone and Reviewers are excluded. The Google Doc AC record matches the posted text and is marked submitted. The separate iMp8 rebuttal edit remains unsubmitted. The uploaded manuscript has not been changed or resubmitted; the latest request concerns the rebuttal. OpenReview’s original TL;DR is not editable in the rebuttal revision form and remains stale. Lane remains separate and unmerged; code-only GitHub backup verified.
 
 ## Earlier state — 2026-11-06
 
@@ -21582,6 +21593,224 @@ remote `quad-floor/` was deleted. Design: `experiments/quad-floor/DESIGN.md` ame
 - **R2** (job 6924298, 7m25s; export 1,036,497 Q points, 24.5 GB peak): development Re 95 velocity floors (median/max): frozen run-09 bank 2.55e-1/2.60e-1 (**fails**, H-rep0 confirmed), POD r4 3.79e-2, r8 1.63e-2, r12 9.09e-3/1.07e-2 (fail), **r16 4.83e-3/5.74e-3 (first pass)**, r24 2.35e-3/2.75e-3. → **R3 required at r_b = 16**. R3 training 6924961 and R4 POD/frozen arms r4-pod01 submitted.
 - **G5 closure (2026-11-06).** R3 (6924961, 37 min): parent and child stopped at iteration limits. R4 (6926886) dev Re 95: POD r16 e_u-RMS 9.49e-3 (6/6 targets), r24 5.73e-3 (6/6), retrained bank r16 1.45e-2 (5/6, divergence 4.6e-2), frozen bank 2.81e-1 (0/6). Quadrature check: attempt 1 (in 6926886) refused at its identity guard (independently recomputed FE modes differ at 1e-10); attempt 2 (6927926, modes reused by hash) has floors ≤ 4e-9 and metrics ≤ 1.6e-7, but the operator criterion fails solely via BL (‖BL‖ ≈ 3.7e-15 vs ‖B‖ ≈ 3.49) → ranking reported unresolved by rule. R5 (6929094, held-out Re 105 opened once): POD r16 8.47e-3 (6/6), r24 3.47e-3 (6/6), bank r16 1.10e-2 (5/6, divergence 5.0e-2), frozen 3.03e-1 (0/6). Paired timing: FE 647 s warm per 0.1 s workload versus ROM 0.08–0.54 s (≈1.2e3–8.2e3×). FE repetitions are non-bitwise at 1e-13 (thread order); every repetition reproduces the record to 6e-15. Incident: one ad-hoc diagnostic was started on the login node by mistake and killed within about 2 minutes; the measurement was redone inside R5. Total 38.99 GPU-h. Report published on main. Open: merge decision; longer horizons; Re outside [90,110]; accuracy-matched FE ladder; bank divergence handling; 3D.
 
+## 2026-11-12
+
+### Codex — requested browser check of latest Claude review session
+
+- Read the canonical lab-log current state and closing entries. Attempted to inspect the latest Claude review session through the browser as requested.
+- Browser inventory returned no connected browsers or apps; creating an in-app Claude tab returned `Browser is not available: iab`. The app panel open request for `https://claude.ai` was queued, and the subsequent browser inventory remained empty.
+- No Claude session was inspected and no review findings are claimed. No experiments, jobs, code changes or merges. Open: connect a browser and inspect the latest review-related Claude session.
+
+### Codex — located the separate Claude ICLR review session
+
+- Correction to the preceding entry: the user wanted the browser opened separately and the Claude session found independently, not through the browser. Read local Claude transcripts; no Claude prompt sent.
+- Located session `e8c5e8de-cca5-59d3-a21a-7fbede9c98ab` under `/home/tahmid/.claude/projects/-home-tahmid-Dev-Tunable-NM-ROM/`. It began with the ICLR/OpenReview review request on November 9; latest recorded exchange November 12 at 14:45 ET concerns Fourier spectral methods.
+- Session reports the rebuttal Google Doc at `https://docs.google.com/document/d/138Azs3DYoGh9eFw_3vgN1NlDGkYzV9fHX9kRvrrsp-k/edit` and revised-paper draft at `worktrees/2026-11-12-paper-revision/paper_revision/main.pdf`. These are session-reported status, not independently audited findings in this chat.
+- Session's pending items: post responses, resolve paper-figure choices and loss-equation caveat, review/upload revised PDF; the suggested cylinder multigrid comparison was not authorized by the latest exchange. No experiments or code changes made here.
+
+### Codex — requested OpenReview page and read saved official reviews
+
+- User requested checking/opening the reviews. Recovered submission URL `https://openreview.net/forum?id=hxRqdR3Rn7` from the Claude session and requested it in the app browser pane; the tool returned queued. Browser control still returned `Browser is not available: iab`; web retrieval could not access the forum.
+- Read the saved November 9 review copy at `/tmp/claude-1002/-home-tahmid-Dev-Tunable-NM-ROM/e8c5e8de-cca5-59d3-a21a-7fbede9c98ab/scratchpad/nmrom/reviews.md`. Saved scores: 1dYR 2 (weak reject), iMp8 1 (clear reject), 8ZEF 3 (weak accept). Shared concerns are comparator strength, matched training data/budgets and evidence for the nonlinear head; additional requests cover costs, geometry, mesh independence and plots.
+- These are historical saved reviews, not a live check. New comments or changed ratings remain unverified. No posts, submissions, experiments or code changes.
+
+### Codex — identified usable rebuttal evidence from Claude's saved drafts
+
+- User clarified the question: which results in the Claude review session can support the rebuttal. Read the latest saved general/1dYR responses and experiment protocols for hard NS, matched Burgers operators, neural-field baselines and cylinder geometry.
+- Recommended leading with the harder periodic NS head-versus-span/accuracy-matched spectral comparison and the unsteady cylinder geometry/tunability comparison. Keep the per-mesh POD basis in the headline NS table distinct from the separate coordinate-network cohort. Cylinder uses Galerkin/lifting and matches POD; it does not establish superiority of the neural bank or the original LSPG pipeline.
+- Use Burgers neural-field and matched-data operator results to answer baseline requests with their mixed outcomes and re-implementation/training caveats. Original simple-box transform comparisons are limits/correctness evidence. No new raw numerical audit, experiments, submissions or code changes performed.
+
+### Codex — verified ICLR rebuttal manuscript revision policy
+
+- Checked official `https://iclr.cc/Conferences/2027/AuthorGuidelines` and `https://iclr.cc/Conferences/2027/Dates`. Author guidelines explicitly permit manuscript/supplement revisions until public discussion closes November 18, with repeated uploads allowed and changes communicated to reviewers/AC. Significant departures may be ignored; reviewers need not read every revision.
+- Correction to earlier guidance in this chat and Claude's draft status: the rebuttal main-text limit is ten pages, not the original submission's nine; references and appendices are additional. This permits a main-text results figure without forcing the revision to retain the original page limit. No upload performed.
+- The AC-guide FAQ contains a conflicting later date; recommended following the explicit author instructions and dates page's November 18 cutoff, without assuming an unverified cutoff timezone.
+
+### Codex — browser pane request
+
+- User requested opening the browser pane; invoked the app panel-opening tool with a browser target. No experiments or project code changes.
+
+### Codex — OpenReview submission/resubmission lookup
+
+- User asked whether “cen-jhi” submitted or resubmitted. The in-app browser reports OpenReview open, but browser control returned `Browser is not available: iab` and an empty inventory. Public web searches for the exact identifier and spaced variant returned no results.
+- Submission status remains unverified; requested a full name, paper title or OpenReview link to identify the target. No submissions, posts, experiments or code changes.
+
+### Codex — identified requested OpenReview revision from user screenshot
+
+- User clarified the target is another paper with Aditya and Cen-Jhih, then supplied an OpenReview notification screenshot for `Pretraining Design Drives Gains in Zero-Shot PDE Rollouts`.
+- Screenshot explicitly says ICLR 2027 received a new revision of the submission; notification sent September 26, 2026 at 12:52:05 AM (displayed timezone unspecified). This supports a received revision by that date, not a later resubmission or acceptance. Browser inventory still has no connected browsers; no live submission history inspected. Earlier sparse-fine-tuning search results were a different paper and do not answer the user's question.
+
+### Codex — rebuttal submission date remains unverified
+
+- User asked when the rebuttal was submitted after identifying the pretraining paper. Browser inventory still returned no connected browsers. Connected Gmail search for the exact title phrase after October 1 returned no messages.
+- The supplied September 26 revision notification is not evidence of a rebuttal posting. Rebuttal date remains unknown; need its author-response notification or discussion timestamp. No external writes or submissions.
+
+### Codex — recovered and opened the pretraining paper forum
+
+- Located the exact forum link for `Pretraining Design Drives Gains in Zero-Shot PDE Rollouts` in the user's pasted OpenReview content saved in Claude session `e8c5e8de-cca5-59d3-a21a-7fbede9c98ab`: `https://openreview.net/forum?id=emjRLrc3QY` (Cen-Jhih Li, Tahmid Awal, Hari Sundar, Aditya Bhaskara).
+- Requested that exact forum in the app browser pane. No rebuttal timestamp inferred from the historical transcript and no external posts or submissions.
+
+### Codex — checked pasted pretraining forum discussion
+
+- User supplied current forum text for submission 50660 (`emjRLrc3QY`). It shows `3 / 3 replies shown`, all official reviews (HLNH, A7tT, UjBu), and no author response. No posted rebuttal is visible in this supplied view; private/draft responses cannot be ruled out. Manuscript header says modified October 5, 2026. No live browser access or external writes.
+
+## 2026-11-13
+
+### Codex — resumed Claude rebuttal context and requested local browser
+
+- Read current canonical log state and closing chronology, then inspected the user-specified Claude transcript `/home/tahmid/.claude/projects/-home-tahmid-Dev-Tunable-NM-ROM/e8c5e8de-cca5-59d3-a21a-7fbede9c98ab.jsonl`, including its latest exchanges through November 13. This is the NM-ROM rebuttal for forum `hxRqdR3Rn7`, with reviewer responses for 1dYR, iMp8 and 8ZEF; the earlier pretraining-paper discussion is a separate submission.
+- Latest saved context reports overnight cylinder AMG, batched NS throughput and flat reduced-solve timings added to rebuttal drafts, with official-method baselines and operator accuracy-matching work pending at the morning update. These are transcript claims, not a new numerical or live-document audit.
+- Saved chat explicitly says the user is editing Google Doc `138Azs3DYoGh9eFw_3vgN1NlDGkYzV9fHX9kRvrrsp-k` and Claude stopped full-document publication to preserve those edits. No Google Doc changes made here.
+- Requested the local app browser pane, first at OpenReview and then at `https://openreview.net/forum?id=hxRqdR3Rn7`. Both requests returned queued; computer/browser inventory returned no connected browsers or apps, so visible opening is unverified. No external posts, uploads, experiments, jobs, code changes or merges.
+
+### Codex — requested Overleaf browser tab
+
+- User requested opening Overleaf to work on the paper themselves. Requested `https://www.overleaf.com/project` in the local app browser pane. No Overleaf project content changed.
+
+### Codex — attempted access to the user's open ICLR Overleaf project
+
+- User opened Overleaf project `https://www.overleaf.com/project/69e24ea5c892a462592d47af` and requested working on it. Ambient app context reports three browser tabs and this project as current.
+- Binding that exact URL through browser control failed with `Browser is not available: iab`; refreshed inventory returned no browsers or apps. Visible UI metadata therefore does not provide connected read/edit access. No project source inspected or changed in Overleaf.
+
+### Codex — shortened the live rebuttal Google Doc with verified manuscript references
+
+- User requested concise responses, paper references only where useful, and leaving the ongoing experiments to finish. Read the latest Claude transcript through its November 13 16:43 UTC update: sparse cuDSS/AmgX and equal-median-error studies are running; no new experiment, cancellation, resubmission or cluster action was taken here.
+- Read and edited the existing Google Doc `https://docs.google.com/document/d/138Azs3DYoGh9eFw_3vgN1NlDGkYzV9fHX9kRvrrsp-k/edit` through its connected editor. Browser-opening request returned queued, but the connector provided full read/edit access. Preserved all reviewer text and all sixteen author-created reviewer-comment prompts, the response structure and the general response's four central native tables.
+- Replaced repeated individual tables and long technical explanations with concise direct answers plus references to the revised manuscript. Verified section/table/equation numbering against `worktrees/2026-11-12-paper-revision/paper_revision/main.tex` and its compiled `main.aux`: Sections 5.1–5.5, Tables 1–4, Appendices C/E/F/G, losses (20)–(23), Tables C.3/C.4/E.1/F.3. Local revision already contains the completed cylinder AMG, NS batching and reduced-solve scaling additions; no new science or manuscript source edits were required for pending studies.
+- Corrected the general cylinder description to distinguish the P2/P1 model mesh from the P4/P3 truth reference. Kept re-implementation disclosure for CROM/CoLoRA, budget/timing/transfer caveats, and the distinction between mesh-flat reduced solve and growing full-query I/O. Pending sparse solves are explicitly diagnostics, not completed PDE-query comparisons.
+- Revision-guarded edit applied 31 scoped changes in one atomic batch. Readback confirms every replacement, all preserved text, the sixteen prompts, four central native tables, response labels, and normal 11-point inserted body text. Text-character counts including reviewer-comment prompts/headings: 1dYR 5938 to 3130, iMp8 8622 to 4609, 8ZEF 3154 to 1999, general 7398 to 4808. Individual split markers removed; general response retains its split for table-formatting overhead. Rendered layout was not visually inspected; no connected browser is available.
+- Live Google Doc is the master; no scratchpad publisher or Claude manuscript worktree was modified. References point to the current local revised manuscript, not a verified live Overleaf revision. Overleaf remains unmodified because browser control is disconnected. Open: finish/admit the running studies, add their actual results to manuscript/rebuttal, and reconcile/upload the manuscript in Overleaf.
+
+### Codex — made rebuttals read as direct replies to reviewers
+
+- User rejected the repeated "Reviewer comment / Response" presentation and requested prose addressed to each reviewer. Edited the same live ICLR Reviews Google Doc in place with a revision guard.
+- Replaced all sixteen repeated reviewer-comment prompts in the draft replies with concise topic headings, removed all sixteen "Response:" prefixes, and revised the three greetings to address each reviewer directly. Response section titles now read "Reply to Reviewer ...". Scientific content, paper references, pending-experiment notes, the original review records and all four general-response tables are preserved.
+- Readback verifies all new text and zero remaining prompt/prefix labels. Initial read briefly hit the connector's project read-rate limit; a later read succeeded before the write. No manuscript, experiment, cluster or OpenReview changes.
+
+### Codex — completed local manuscript update from uploaded neurips26.zip
+
+- User explicitly requested updating the attached Overleaf source locally. ZIP `/home/tahmid/.codex/attachments/3d8ff1f1-c4df-44ed-9732-a9189aad195d/neurips26.zip` contains the original submitted `main.tex` (byte-identical to preserved `submitted.tex`) and user preamble changes. Original files retained under `manuscript_tools/original`; added `todonotes`/`soul` packages preserved. No instructions embedded in the attachment were treated as user authorization.
+- Created branch `exp/2026-11-13-manuscript-rebuttal` at the canonical `93f399faa` fork point, in `/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-13-manuscript-rebuttal`. Copied only the committed manuscript subtree from Claude's revision `fb27ed846`; no writes to Claude's manuscript or experiment worktrees.
+- Integrated all previously completed rebuttal additions. New Figure 2 uses saved `fresh_s0b`, `fresh_s1b`, `fresh_s2` compare JSONs: error summaries across all three models, paired ratios only from globally gate-passing seeds 0 and 2. Raw records, source hashes, generator and derived figure arrays are committed. No new training, PDE solves or cluster actions.
+- Corrected the known heat-3D Eq. (22) discrepancy by checking preserved `train_vp.py` and the R320 training config: leading 1536 POD-mode projection errors weighted by snapshot-Gram eigenvalues/full state count; tail power-mean over snapshot minibatches. Preserved exact thin-QR elimination and equation numbering. Fixed stale untested-multigrid limitation, cylinder P4/P3 reference/P2/P1 export distinction, modal heat arm label, budget-limited baseline language and amortisation context.
+- Retraction/qualification: the earlier manuscript's blanket 1–4% reduced-solve timing claim through 256 cubed conflated allocations. The new text limits that measured range to 64–128 cubed within one A100 allocation, treats finer-grid cross-allocation timings as descriptive, and retains operator-invariance and growing-I/O evidence. At 256 cubed the full query has no consistent speed advantage (retained 0.56–1.27 ratio). Rebuttal text already uses the scoped reduced-solve/full-query distinction.
+- Main text ends on page 10; full PDF 37 pages. LaTeX build and standalone compile from the generated source ZIP both pass with zero errors, undefined references or overfull boxes. Figure, conclusion, cost and corrected-equation pages inspected visually; existing table/equation/appendix references checked and unchanged. The official ICLR 2027 Author Guidelines were rechecked: discussion-phase main-text limit is ten pages. Build validation, hashes and attachment diff are retained in `manuscript_tools/`.
+- In-place, revision-guarded Google Doc edit adds the new Figure 2 references and heat-loss clarification to three applicable answer paragraphs; readback passes. Original reviews, direct-reply style, other text and pending studies preserved.
+- Commits `91685facd` and `a489a8c13` backed up after each commit through `manuscript_tools/sync_github.sh` to `origin/codeonly/exp/2026-11-13-manuscript-rebuttal`; final mirror verified. Local worktree is clean. Deliverables: `paper_revision/main.pdf` and `manuscript-rebuttal-source.zip`. Browser-opening request for the PDF returned queued; no Overleaf or OpenReview upload performed. Lane is unmerged; remaining work is admit the ongoing experiment results and integrate them when ready, then upload the paper.
+
+### Codex — aligned direct rebuttals with the reviewers' W/Q numbering
+
+- User requested W1/W2/... and Q1/Q2/... labels and better flow as direct replies. Read the current live Google Doc, mapped each weakness/question to its order in the preserved review, and rewrote only the three reply bodies with a revision guard.
+- 1dYR now has W1–W4 and Q1–Q3; iMp8 has W1–W5 and Q1–Q4; 8ZEF has W1–W2 and Q1–Q3, plus the separate Figure 1 presentation suggestion. Related questions refer to the relevant W answer to avoid repeating detailed comparisons. No "Reviewer comment / Response" labels reintroduced.
+- Kept direct author voice, verified manuscript references, scientific caveats and pending-experiment statements. No scientific results added or changed. Readback verifies every rewritten body, all original review text, the unchanged general response and its four native tables. No manuscript/Overleaf/OpenReview/experiment changes.
+
+### Codex — removed bullet formatting from the rebuttal Google Doc
+
+- User requested removing bullets. Cleared native bullet formatting from all 46 bulleted paragraphs in the existing document and reset their list indentation, preserving their text and W/Q headings.
+- Readback confirms zero remaining native bullets, byte-equivalent concatenated paragraph text and all 21 W/Q headings retained. This also clears inherited list formatting in the 1dYR reply and general response. No manuscript or experiment changes.
+
+### Codex — strengthened iMp8 W1–W4 pushback while preserving scientific scope
+
+- User supplied Hari's recommendation for stronger pushback and asked whether the replies should be firmer. Rewrote only iMp8 W1–W4 answer bodies in the live Google Doc, with a revision guard; headings, questions, other reviews/replies and pending studies remain unchanged.
+- W1 now explicitly disagrees that fast GPU solvers remove the motivation for reduced models, leads with matched-accuracy and batched-query evidence, and explains the mesh-size distinction. W2 states the contribution directly; W3 explains the representation/online/setup distinction; W4 leads with fresh cases and independent models rather than concession-led phrasing.
+- Did not copy the personal attack or blanket technical assertions from the quoted advice. Checked NVIDIA cuDSS docs and hypre/MIT primary references; cuDSS analysis/factorisation/solve and reuse differ, and neither FFT nor multigrid is accurately described by an unrestricted exclusivity statement. No generic direct-solver complexity exponent inserted.
+- Retained transform-solver wins, full-query I/O limit at 256 cubed, the freedom of matched solvers to coarsen, CPU-only cylinder AMG scope, POD transfer control and timing-gate caveats. Pending GPU sparse-solve measurements remain clearly pending diagnostics. Complete iMp8 reply is approximately 4750 text characters before platform markup.
+- Readback confirms all four changes, no native bullets and all W/Q headings. No manuscript, experiment, cluster, Overleaf or OpenReview writes.
+
+### Codex — interpreted Aditya's rebuttal strategy from the attached call transcript
+
+- Read the user-supplied call transcript at `/home/tahmid/.codex/attachments/e61c6f1b-8356-4527-842a-ebeea001bb19/Pasted text.txt`. Speaker labels are inconsistent; attributed advice only where the surrounding conversation identifies Aditya. Unrelated opening conversation excluded.
+- Main advice: compare query times at equal error instead of predicting that larger operators must become slower; explain the ROM's role between classical PDE solvers and learned representations; acknowledge amortisation as a valid question; send a separate, measured note to the area chair distinguishing broad field-level motivation criticism from paper-specific evidence; start the discussion early and make manuscript changes easy to locate.
+- User requested interpretation and recommendations, not sending an AC note or changing the doc. No external writes, experiment actions or manuscript edits. Ongoing equal-error and sparse-solver studies remain untouched. Technical claims made by the paper's presenter on the call are not independently validated merely by appearing in this transcript.
+
+### Codex — accuracy-only operators, repeated-query motivation, AC draft and November 14 follow-up wording
+
+- User explicitly chose error-only neural-operator comparisons, endorsed the motivation update and preparation of an AC note, and said posting would happen soon. User then requested saying pending results will be reported by tomorrow. Updated the same Google Doc and the existing local manuscript lane; no new worktree or experimental lane.
+- Removed neural-operator inference times/relative-speed statements from the reply text and manuscript. FNO/U-Net rows in mixed Table 4 show no times; historical Table B.1 and matched-data Table F.1 now report errors only; NS/cylinder operator descriptions and cylinder captions omit inference times. Training durations/budgets remain for comparability. Numerical-solver and neural-field/projection-ROM timings remain scoped separately.
+- Regenerated Figure G.1 from its saved plotting JSON with ROM and numerical-solver points only. Original measurements are retained in version history and saved evidence. Mechanical verification confirms unchanged error cells across all eight historical rows, eight matched-data rows and nine mixed-table rows; retention report is committed.
+- Strengthened the learned-representation/online-PDE/repeated-query motivation in the manuscript and iMp8 W1/Q1. Added one separately headed draft confidential note to the Area Chair in the Google Doc, following Aditya's field-motivation/paper-contribution distinction, with no personal criticism. Draft only: nothing sent or posted.
+- Set all five applicable pending sparse-solver/operator-accuracy notes to report results "by tomorrow (14 November)" as requested. This is author-response wording, not evidence that the experiments have finished; no jobs were started, cancelled, rescheduled or otherwise changed and no automation was created. iMp8 reply trimmed to 4733 text characters; all W/Q headings and zero-bullet presentation retained.
+- Verified Google Doc readback: all edits, five dated follow-up notes, exactly one preserved AC draft, no operator-speed claims in the author replies and no native bullets. Original reviewer records remain unchanged.
+- Rebuilt PDF/source archive: ten main-text pages, 38 total. No LaTeX errors, undefined references or overfull boxes; main/appendix operator tables and regenerated plot visually inspected. The source ZIP compiles independently from a fresh extraction. Table/equation/figure identifiers used in the rebuttal remain unchanged. Overleaf and OpenReview remain unmodified.
+- Commit `91e0d9e6a` backed up through the lane mirror; working tree clean and remote verified. Updated deliverables retain paths `paper_revision/main.pdf` and `manuscript-rebuttal-source.zip` in `worktrees/2026-11-13-manuscript-rebuttal`. Open: finish and admit pending results, then author posts/uploads; lane remains separate and unmerged.
+
+### Codex — confirmed restored access to the logged-in Overleaf project
+
+- User asked whether the newly logged-in local Overleaf tab is visible. Browser inventory now exposes in-app browser ID `2`, tab `1`, project `https://www.overleaf.com/project/69e24ea5c892a462592d47af`, title `neurips26 - Online LaTeX Editor Overleaf`.
+- Successfully read the editor and file tree through browser control. `main.tex` is selected and shows the earlier submission abstract; PDF preview reports 23 pages. This is direct live access, replacing the earlier disconnected-browser state.
+- No Overleaf edits, uploads, compile actions or project changes made during this read-only check. Local revised manuscript/source ZIP remains separate and backed up.
+
+
+## 2026-11-13
+
+### Codex — deploy revised manuscript and figures to existing Overleaf project
+
+User explicitly requested updating project `https://www.overleaf.com/project/69e24ea5c892a462592d47af` and ensuring it compiles. Backed up the live source before editing; all eight pre-update files matched the author-supplied ZIP, so there were no newer remote edits to reconcile. Uploaded the revised main source and preamble, required bibliography support, and all eleven referenced assets in `figs/`. Existing project files were preserved. Overleaf kept an initial source-ZIP upload as an unused archive; individual source/figure uploads are the active compilation inputs.
+
+Explicit Overleaf recompile succeeded: 38 pages, zero errors, two package warnings (`showhyphens` compatibility and unused `todonotes` margin width), thirteen underfull typesetting notices. No missing-file, undefined-reference or overfull diagnostics. Downloaded source and compiled PDF through the UI. `manuscript_tools/verify_overleaf.py` checks all eighteen required files against the local revision byte for byte and confirms Figure 2 on page 8, Table 4 on page 9, conclusion on page 10, and the operator prediction-error comparison wording. Retained before/after source archives, PDF/text export, screenshots and SHA-256 manifest in `manuscript_tools/overleaf/`. Local package validation and bundled CHANGES predate deployment; the new upload manifest is the authoritative live-deployment record. Deployment evidence committed as `b6cc5a264` in `exp/2026-11-13-manuscript-rebuttal` and mirrored successfully to `origin/codeonly/exp/2026-11-13-manuscript-rebuttal` as `2c2e6668e`.
+
+No new experiments, jobs, scientific results, or pending-result substitutions. No OpenReview posting. Lane remains separate and unmerged.
+
+
+## 2026-11-13
+
+### Codex — OpenReview PDF revision and unsent rebuttal drafts
+
+User requested checking OpenReview, reuploading the updated PDF and drafting rebuttals; confirmed local sign-in. Identified the correct ICLR submission 49310, forum `hxRqdR3Rn7`, and read all three current reviews (1dYR, iMp8, 8ZEF). W/Q order agrees with the existing Google Doc replies. Through the Rebuttal Revision form, uploaded the already verified Overleaf PDF and replaced the abstract with the revised manuscript's abstract (revision-markup footnote omitted). The form's Submit completed before the user's later instruction “do not submit but just draft.” Immediately disclosed the completed PDF/abstract submission and kept all subsequent work draft-only. No reviewer comment, general response or confidential AC note was submitted.
+
+Downloaded the live OpenReview PDF: byte-for-byte identical to the uploaded Overleaf output, 38 pages. Submission modification date changed to November 13. Before/after UI snapshots, revision screenshot, live/uploaded PDF copies and status metadata retained in `manuscript_tools/openreview/` in the existing manuscript worktree. The revision form exposes title, abstract, PDF and supplementary material only; the original TL;DR retains stale speed claims, and this limitation was reported to the user. No attempted workaround or further submission.
+
+Prepared three OpenReview-ready replies from the current Google Doc, added a link to the revised manuscript, and checked the exact review order, W/Q headings, absence of bullets, manuscript references and character counts. All fit the 5,000-character limit: 1dYR 3,281, iMp8 4,854, 8ZEF 2,303. Operator comparisons remain error-only; pending-results promises remain November 14 per prior instruction. OpenReview offers Submit/Cancel without a persistent Save Draft control. Left three separate unsent preview forms open (browser tabs 3/4/5), marked for handoff, with durable text backups `reply-{1dYR,iMp8,8ZEF}.txt`. Each page still shows exactly three original reviews and a New Official Comment form. These are unsent browser forms, not server-saved draft notes. No experiments or manuscript scientific content changed. Evidence/drafts committed as `c223e5b85` and mirrored to `origin/codeonly/exp/2026-11-13-manuscript-rebuttal` as `d40d0eda1`; lane remains unmerged.
+
+
+## 2026-11-13
+
+### Codex — GPU-only solver rebuttal draft; posted iMp8 comment discovered
+
+User rejected using CPU solver evidence for the reviewer’s GPU-solvers objection and asked for GPU only. Scoped the immediate edit to iMp8 W1: removed the CPU cylinder-speed/AMG paragraph, explicitly identified the flat Burgers solve-cost plot as H200 GPU evidence, and distinguished reduced-solve from full-query costs. Retained same-GPU accuracy-matched Navier–Stokes comparisons, the output-cost limits and pending GPU sparse-solver diagnostic note. Google Doc edited in place with a guarded batch and verified: W1 heading bold, body paragraphs normal, no bullets; no other section changed. Local reply and current OpenReview edit body match (4,619 characters, within the form limit).
+
+On reopening tab 4, the earlier iMp8 draft was no longer an unsent form: an Authors Official Comment `rIrHPeK8Ro`, timestamp November 13 14:27, was public and the forum had four replies. This appeared between this agent’s prior draft verification and this check; this agent did not submit it. Immediately disclosed the discovery. Saved the posted original, opened its Edit → Official Comment form, checked that W2 onward matched the local backup, and staged only the GPU-only W1 changes. Submit was not clicked. The live posted response therefore still includes the original CPU paragraph. New unsent-edit screenshot/UI snapshot and original posted text retained under `manuscript_tools/openreview/`. Draft-only instruction remains in force.
+
+Asked asynchronously whether GPU-only should also remove explicitly labelled CPU cylinder timings from the manuscript or apply just to the rebuttal argument. No answer received by closing; no manuscript, Overleaf, live comment, PDF submission, experiment or job changed. Existing CPU measurements were not relabelled as GPU. Draft/evidence committed as `da903c0f5` in the existing manuscript lane and mirrored successfully as `8f3fad940` to its code-only GitHub branch. Lane remains unmerged.
+
+
+## 2026-11-13
+
+### Codex — CPU-free rebuttal draft, GPU sparse-solve ASAP wording, confidential AC draft
+
+User explicitly requested removing CPU evidence from the rebuttal and saying cuDSS/AmgX single-solve results are running and will be reported ASAP. Then confirmed having submitted the original replies and instructed editing without submitting the edit; asked how to handle Aditya’s suggestion. Preserved that boundary: no Submit action was taken for any comment or edit in this session. A fresh forum view now shows six replies, consistent with the user’s confirmation.
+
+Edited the existing Google Doc in place with revision guards. Removed the remaining CPU cylinder timing-spread/break-even wording from iMp8’s reply. W1/Q4 now say “We are running GPU cuDSS and AmgX single-solve benchmarks and will report the results as soon as they are available”; single-solve diagnostics remain separate from complete PDE-query comparisons. General response and AC note now rely on GPU Navier–Stokes speed evidence. Removed both native timing/speedup columns from the general cylinder table, preserving settings/errors and geometry/accuracy discussion. Removed CPU AMG/LU prose and the CPU speedup summary references. Entire rebuttal export contains zero CPU mentions. Other operator-training November 14 notes remain unchanged. No benchmark was launched, changed or checked by this drafting task; running/ASAP wording follows the user’s explicit instruction.
+
+Verified the structured readback, retained four native tables, checked the cylinder table has only two accuracy columns, and exported the Google Doc to PDF. Small page-break fixes keep its cylinder table together on page 11 and the confidential AC note together on page 12; both rendered pages inspected. Updated local iMp8 reply and the existing posted-response edit form (tab 4), leaving Submit untouched. Local reply is 4,579 characters, within the 5,000 limit; the one-character difference from the native Doc extraction is whitespace.
+
+For Aditya’s suggestion, prepared a separate 1,163-character confidential AC note in a new unsent Official Comment form (tab 7). It distinguishes iMp8’s broad area-level motivation objection from the paper-specific methods/evidence and asks for assessment of the narrower contribution; GPU Table 1 is the supporting speed comparison. PC/SAC mandatory readers, Area Chairs and Authors are checked; Everyone and Reviewers are unchecked. Verified readers and four rendered paragraphs; kept the tab for handoff. No AC note, reviewer edit or general response submitted. Manuscript/Overleaf/OpenReview PDF remain unchanged.
+
+Backups, exported PDF/text, layout checks, unsent form snapshots/screenshots, local reply and AC text, and status are retained under `manuscript_tools/openreview/`. Committed as `00633eaf2` in the existing manuscript lane and mirrored successfully to its code-only GitHub branch as `656c59f6f`. Lane remains separate and unmerged.
+
+
+## 2026-11-13
+
+### Codex — submit explicitly approved results-focused confidential AC note
+
+User instructed “update the area chair draft with this version, and submit it,” referring to the immediately preceding results-focused text. Replaced the earlier motivation-complaint draft verbatim with that approved version, renamed the optional title to “Additional GPU solver comparisons and reduced-solve scaling,” and kept five readable paragraphs. The 1,086-character note highlights the GPU Navier–Stokes matched comparison, H200 Burgers flat reduced-solve cost, measured limits and pending cuDSS/AmgX single-solve results. It contains no accusation about the reviewer or request to discount a review.
+
+Before Submit, verified exact approved text against rendered preview and checked readers: Program Chairs and Senior Area Chairs (mandatory), Area Chairs and Authors selected; Everyone and Reviewers unchecked. Clicked Submit once under the explicit authorization. OpenReview confirms the posted Authors Official Comment `V5v5cThhU8`, November 13 16:44, with reader line “Program Chairs, Senior Area Chairs, Area Chairs, Authors.” The forum now shows seven replies. Direct note: https://openreview.net/forum?id=hxRqdR3Rn7&noteId=V5v5cThhU8 . Saved pre-submit form, posted forum snapshot and screenshot in `manuscript_tools/openreview/ac-results-*`.
+
+Updated the existing Google Doc AC body to the same approved text, changed its heading/status to submitted, and verified exact body equality on readback. Local text/status and posted evidence committed as `b3f327bc2` in the existing manuscript lane and mirrored successfully as `56dc1acd0` to its code-only GitHub branch. No iMp8 rebuttal edit, other comment, paper revision, experiment or job was submitted or changed. The iMp8 edit remains staged and unsubmitted. Lane remains separate and unmerged.
+
+## 2026-11-13
+
+### Codex — requested OpenReview and Overleaf browser tabs
+
+User requested opening OpenReview and Overleaf in the local browser. Browser automation inventory returned no available browsers; creating an in-app browser tab reported `Browser is not available: iab`. Used the Codex panel-opening tool for https://openreview.net and https://www.overleaf.com; both returned `queued` for this chat. A subsequent inventory still showed no browser, so page loading could not be verified. No manuscript, comment, submission, experiment, or project source was changed.
+
+## 2026-11-13
+
+### Codex — clarified request for machine browser
+
+User clarified that OpenReview and Overleaf should open in the machine's own browser. Refreshed browser inventory: no apps or browsers exposed. Explicit Chrome-tab creation returned `Browser is not available: chrome`. Could not open or verify either site in the machine browser through the available UI tools; earlier in-app panel requests do not satisfy the clarified request. No project source or external content changed.
+
 ## 2026-11-15
 
 ### Codex — JCP submission readiness, Slurm reconciliation and claim audit
@@ -21591,6 +21820,12 @@ Reviewed the canonical log, live Tufts account queue/accounting, saved run outpu
 Corrected stale status descriptions for the NS coordinate-bank confirmation, equal-error width sweep and three final sparse jobs. The small Poisson timing failed its order-stability check. Kept the mixed-precision Burgers accelerations, cross-job solver ratios, unqualified 2D equal-cost stepping result, and original failed cylinder setting separate from admitted measurements. No numerical failure was reversed. The live queue belonged entirely to the sibling quadtree project at the recorded snapshot. No experiment, cohort, worktree merge, external manuscript upload, venue withdrawal or reviewer communication was performed.
 
 Open work is coauthor scope/venue agreement, reconciling the sparse outputs and outstanding operator promise, deciding how to handle the original sealed Burgers campaign, and clean-checkout verification of a figure-generating release. Separate finished lanes stay on their branches.
+
+## 2026-11-15
+
+### Codex — located the October research presentation
+
+The strongest match is the October 23 [Research Update](https://claude.ai/artifact/JqsVj9a21N8xFKudoxGHFk). The [preserved 15-slide PDF](reports/2026-10-26-burgers3d-refinement/research-update-original/Research-Update.pdf) predates the eight-slide Burgers refinement extension. The live-deck save at 10:57 a.m. Eastern and the 11:04 a.m. quadrature slide update bracket the scheduled 11 a.m. Research Call. The calendar did not identify a speaker or attachment, so use of this particular deck remains inferred. A separate [October 16 progress deck](reports/2026-10-16-progress-deck/deck.pdf) is explicitly identified in its commit as prepared for that meeting.
 
 ## 2026-11-15
 
@@ -21611,3 +21846,37 @@ The [generated closeout report](reports/2026-11-15-experiment-closeout.md) now i
 Eight fixed mesh panels and two native POD comparisons completed under `exp/2026-11-15-jcp-sealed-closeout`. All original per-case uncertainty judgments were retained. Eligible ST/S counts were 123/107 in 2D and 64/64 in 3D. The across-mesh primary/secondary decisions were fib987 PASS/FAIL, gauss45 PASS/FAIL, lat4096 PASS/PASS, gl20 PASS/PASS. In 2D, Fibonacci passed the secondary criterion on 0 of five meshes and Gauss on 2 of five. Report the distinction between references explicitly. Classical POD had lower native primary error than each selected rule on 119 of the 123 eligible 2D cases and all 64 3D cases. This confirms quadrature sufficiency relative to the dense reduced model within the declared conditions. The data support stronger native classical baselines on most cases. In the 2D bank study the 256/1024/4096 timing panels failed their drift checks. Controls in separate allocations cannot supply paired speed ratios.
 
 Verification includes original file hashes, independent field/coefficient rescoring, deliberate error injection and a replay of all mesh decisions. A development 2D timing drift and an initial 3D POD input locator that failed its hash before a solve are retained. The ancillary timing report was corrected to label subjects measured only in the longer block, without changing F1 or the solver. Raw numerical records remain in the checksummed Tufts archive `/cluster/tufts/paralab/tawal01/burgers-archive/jcp-sealed-closeout-20261115/`; the source, manifests and decisions have a [GitHub mirror](https://github.com/tahmidawal/Tunable-NM-ROM/tree/61b52f6de54a37f21f9514eb69d97ea42a62f649/experiments/jcp-sealed-closeout). On 5 same-job timing-qualified meshes, an accuracy-matched spectral full-order solver was 4.50–7.60× faster than the selected lattice for six prepared inputs. Every timed return was compared to the corresponding scored field. Input preprocessing was outside the timed query. All three remaining 2D timings failed drift. No general solver-speed advantage is supported. The [final code-only lane](https://github.com/tahmidawal/Tunable-NM-ROM/tree/0751cea90eca0801afbce26b5073d98fd2cf3f52/experiments/jcp-sealed-closeout) includes the independently rebuilt, checksum-bound matched-FOM supplement. Experimental branches remain separate. The paper still needs the coauthors’ scope/overlap decision, final manuscript and figure release. No journal submission occurred.
+
+## 2026-11-17
+
+### Quadtree NM-ROM Burgers protocol and authorized execution handoff (Codex)
+
+Drafted `/home/tahmid/Dev/QuadtreeNMROM/BURGERS-EXPERIMENT-PLAN.md` and added a current-priority pointer to that directory's `PLAN.md`. User redirected the immediate campaign to Burgers, requested comparisons against other NM-ROM methods, authorized starting a separate development session, and explicitly permitted compute expansion. October Poisson-first ordering is superseded for this campaign; October architecture/review cautions remain applicable.
+
+Protocol proposes scalar 2D Burgers, existing Gaussian and separate boundary-compatible localized families, trajectory-level train/development/fresh-test splits, numerical reference qualification, a 1% per-case target against the fine reference, and actual 4096-by-4096 output. Required comparisons include existing latent-head/direct-bank models, matched-data global models, nonlinear POD-autoencoder ROM, POD ROM, uniform/fixed/adaptive local neural and classical controls, and tuned classical PDE solvers. Full online costs and training/amortization are distinguished. Compute begins with an eight GPU-hour batch and can expand autonomously in finite documented batches; later checkpoints are estimates, not spending targets. No numerical experiment or model training was performed by this planning session, and no speedup is claimed. No results were retracted; old reconstruction/latent-hierarchy failures and newer reference/timing qualifications remain in force. Separate execution session is being started; it must establish its own isolated versioned lane and provenance before numerical work. Existing parent worktrees/jobs are unchanged.
+
+Execution handoff update: the desktop create-thread call stalled, returned no task ID, and was terminated; its backend outcome remains unknown. Added `/home/tahmid/Dev/QuadtreeNMROM/EXECUTION-OWNER.md` and a mandatory protocol pointer to prevent delayed duplicate execution. Started separate delegated worker Archimedes, agent `01a1ebba-56be-7b22-99a3-1688c9b509c1`, explicitly assigned token `burgers-development-worker-20261117`. Worker owns implementation and subsequent ownership-file updates, including its isolated lane and any future cluster submissions. Planning session submits no GPU jobs. User's compute expansion authorization is passed through with finite batch accounting and scientific stop criteria.
+
+## 2026-11-17
+
+### Burgers quadtree execution lane started — Archimedes/Codex
+
+Explicit owner `burgers-development-worker-20261117`, agent `01a1ebba-56be-7b22-99a3-1688c9b509c1`, established `exp/2026-11-17-burgers-quadtree` at the current consolidated fork. Implementation lives in that worktree's `experiments/burgers-quadtree`; exclusive remote namespace `/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117`. Initial code/protocol/vendor freeze `575be7f35`, code-only mirror `ddca71753`. Vendored 26 verified source/input files, 43,021,689 bytes, including the historical 512-feature bank and 16-dimensional head; every source is tied to original Git content and SHA256. No archived/sealed outcome data copied.
+
+First bounded local manufactured-solution smoke passed in float64/highest on CUDA, with final normalized errors 0.00767101869 at 8 intervals and 0.00187723764 at 16 intervals. Initial import-name collision was fixed by renaming the campaign helper; failure retained. This is interface/fixture evidence, not reference admission. Registered full-count column-wise parameter draws and progressive prefixes, preserving inherited RNG semantics. Initial batch reserves at most eight GPU-hours, two concurrent jobs. Reference job 7310994 submitted and running; baseline reproduction submission follows separately. No comparative speed or physical-accuracy claim. Complete raw records and resource ledger will follow. Local disk has approximately 9 GB free; avoid unbounded copies. Other lanes remain untouched, no merge.
+
+### Burgers quadtree architectural freedom authorization
+
+The user explicitly authorized any architectural changes needed for the active Burgers goal, including decoder, hierarchy, coordinates, windows, refinement, training, coupling and hyper-reduction. The proposed candidate list is not a restriction. Owner records this in the lane's AMENDMENTS.md; no running job was interrupted. Accuracy, actual 4096x4096 output, physics solves, comparison fairness, untouched confirmation and complete finite-batch accounting stay fixed. No unrelated PDE/3D scope was added.
+
+### Burgers quadtree initial pilot closeout — scoped negative evidence (Archimedes/Codex)
+
+Completed ten owned A100 allocations: reference7310994, incumbent7311048, representation7311403, dense-output7311495, neural-repair7311500, spectral7311588, POD-autoencoder7311631, dynamics7311712, output-policy7311887 and discretization diagnosis7311959. Total1281 allocated GPU-seconds (0.355833GPU-hours),2.846667 allocated CPU-hours; no active owned jobs. Initial eight-hour reservation was not exhausted and no permission was needed for the finite repair/diagnostic batches. Three successful local CUDA smoke tests were each timeout-bounded below one minute; their full combined GPU time was not instrumented. Initial import collision was retained and fixed; no failed cluster allocation.
+
+The generated report is `reports/2026-11-17-burgers-quadtree-pilot.md`, rebuilt by `reports/build_2026_11_17_burgers_quadtree.py` from committed evidence. Dev8 reference space/time ladders, independent spectral checks, manufactured fixtures and exact4096 output extension pass the recorded numerical checks. Maximum conditional reference uncertainty0.010294%, not a rigorous bound. Frozen incumbent head/direct-bank reproduction completed on exposed dev6. New matched-data local POD/polynomial/neural and global POD controls used train32/dev8; a 200-update neural throughput pilot and full20,000 mixed-configuration updates ran. Coarse-rank and training repairs leave best worst evolved projection1.63335% on the pilot grid (coarse64,depth2,k16,total320), only2/8 below0.5%. Stop adaptive-selector construction for these checkpoints under the two-repair rule.
+
+Coupled fixed-space PDE diagnostics return actual4096x4096 fields from the identical resident input. All steps reach stationarity. Local neural worst final physical error5.67726%, median warm query882.431ms; same-job spectral N64 worst evolved actual4096 error0.00902%, median57.885ms. ROM timing uses one warm call/case and prepared reusable tables, so this is an exploratory failed candidate, not a final matched-accuracy speed claim; complete cold setup was not measured. Separate paired spectral output tuning gives52.808ms with bilinear output and worst final0.02016%; no cross-job ROM ratio. The exact full-order upwind control at the ROM's coarse settings has5.65114% worst error, explaining the common rollout bias; finer upwind1024/dt0.00125 reduces the pilot-scoring worst to0.93729%. Do not attribute all physical error to learned features.
+
+POD-autoencoder screen ran lifts128/256 and latent16/32/64, retaining models and separating encoder reconstruction from true best-fit manifold projection. Pilot POD truncation alone reaches worst5.19806%/1.44562%; no online autoencoder result is claimed. No fresh final-test solution, family-B campaign, adaptive PDE solve, full hyper-reduced local solve, or general architecture impossibility is claimed. The full neural accuracy/speed objective remains unmet. User's architectural freedom is preserved for a new scoped architecture branch.
+
+Independent NumPy rescoring verifies21 projection records and all8 saved dense rollout witnesses, including deliberately wrong normalization detection. All raw fields, coefficients, timings, checkpoints and logs have checksum-bound local and owned-remote copies. New trained model checkpoints are included in the code-only lane backup; completed job directories are archived only inside the owned namespace after both local and remote verification. Other archived results/jobs/worktrees untouched. Lane remains separate and unmerged; report, canonical log and model/source/evidence backups are finalized before yielding.

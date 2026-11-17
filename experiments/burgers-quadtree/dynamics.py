@@ -11,6 +11,8 @@ ap=argparse.ArgumentParser();ap.add_argument('--out',required=True);a=ap.parse_a
 params=jax.tree_util.tree_map(jnp.asarray,pickle.load(open(verified('repair01','best.pkl'),'rb')))
 V=jnp.asarray(np.load(verified('representation01','global_pod.npz'))['basis']);train,dev=draw()
 rep=dict(meta=meta(),rows=[],contract='common resident 4096 input to resident 4096 final field; diagnostic single cold/warm pair',internal_mesh=128)
+from spectral_cost import run_panel
+rep['spectral']=run_panel(o)
 # Continuous sine extension of trained coarse POD, with source-grid normalization retained.
 Vc=jax.vmap(lambda v:P.analysis(v.reshape(63,63),64),in_axes=1)(V[:,:128])
 L=128;xy=jnp.asarray(E.coords(L,True));patches=B.uniform(1)

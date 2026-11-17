@@ -1,0 +1,5 @@
+# Prospective implementation amendments
+
+2026-11-17, before representation01 submission: the 200-update throughput recipe uses uniform depth-1 trees and k=8, with the prescribed three 128-wide tanh layers and 32 outputs. It evaluates all registered feasible uniform depth-1/2 prefixes after training. This is only a throughput/gradient fixture, not the full trained candidate. The full recipe still requires the equal mixture of uniform, random-connected and training-guided configurations and refitted prefixes. Classical controls run first in the same job. Data remain provisional until reference qualification; no projection result is a PDE solve or final-test claim.
+
+The first local POD control uses bilinear evaluation of a 17x17 shared residual basis and retains its interpolation error. It is an approximate local POD control, not an asserted optimum. The smooth polynomial and neural supports remain C2; interpolated POD features are not called C2 and require separate derivative qualification before PDE use.

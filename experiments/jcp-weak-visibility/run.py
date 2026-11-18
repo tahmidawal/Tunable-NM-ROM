@@ -112,8 +112,12 @@ def main():
     assert jax.config.jax_enable_x64
     assert os.environ['JAX_DEFAULT_MATMUL_PRECISION'] == 'highest'
     print('jax_backend=gpu x64=True precision=highest', flush=True)
-    assert cfg['cohort'] == 'dev6' and cfg['seed_first_draw'] == 7090702
-    assert set(cfg['case_ids']).issubset({0, 1}), 'Initial protocol opens only dev6 indices 0 and 1.'
+    assert cfg['cohort'] == 'dev6' and cfg['seed_first_draw'] == 7090702 and cfg['seed_first_count'] == 4
+    if cfg.get('cohort_phase', 'initial-dev2') == 'remaining-dev6':
+        assert cfg['case_ids'] == [2, 3, 4, 5]
+        assert cfg['seed_second_draw'] == 911702 and cfg['seed_second_count'] == 2
+    else:
+        assert cfg['case_ids'] == [0, 1], 'Initial protocol opens exactly dev6 indices 0 and 1.'
     n, width = cfg['mesh_intervals'], cfg['bank_width']
     dt, steps = cfg['dt'], int(round(cfg['horizon']/cfg['dt']))
     assert abs(steps*dt-cfg['horizon']) < 1e-12
@@ -160,6 +164,15 @@ def main():
         stable_fom = C.make_reference(n, dt, steps, True)
         original_instrumented_fom = C.make_reference(n, dt, steps, False)
     physical = e.params_draw(cfg['seed_first_draw'], cfg['seed_first_count'])
+    if cfg.get('cohort_phase') == 'remaining-dev6':
+        physical = np.concatenate((physical, e.params_draw(cfg['seed_second_draw'], cfg['seed_second_count'])))
+        assert hashlib.sha256(np.ascontiguousarray(physical).tobytes()).hexdigest() == cfg['canonical_parameter_sha256']
+    save_json(out/'cohort-drawing.json', dict(phase=cfg.get('cohort_phase', 'initial-dev2'),
+        first_draw_seed=cfg['seed_first_draw'], first_draw_count=cfg['seed_first_count'],
+        second_draw_seed=cfg.get('seed_second_draw'), second_draw_count=cfg.get('seed_second_count'),
+        parameter_sha256=hashlib.sha256(np.ascontiguousarray(physical).tobytes()).hexdigest(),
+        selected_parameter_sha256=hashlib.sha256(np.ascontiguousarray(physical[cfg['case_ids']]).tobytes()).hexdigest(),
+        selected_case_ids=cfg['case_ids']))
     save_json(out/'cases.json', [{'cohort':'dev6', 'index':i, 'physical':physical[i]} for i in cfg['case_ids']])
     summary = dict(scope='same-grid same-step discrete target; preliminary development cases', cases={}, environmental_acceptance_pending=True)
     first = True

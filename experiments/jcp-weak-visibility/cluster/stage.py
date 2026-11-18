@@ -10,12 +10,14 @@ import sys
 lane = Path(__file__).resolve().parents[1]
 attempt = sys.argv[1]
 assert re.fullmatch('[a-z][a-z0-9]+', attempt)
+config_name = sys.argv[2] if len(sys.argv) > 2 else 'pilot.json'
+assert re.fullmatch(r'[a-z0-9_]+\.json', config_name) and (lane/'configs'/config_name).is_file()
 target = lane/'runs'/attempt
 target.mkdir(exist_ok=False)
 code = target/'code'
 code.mkdir()
 for name in ['core.py','run.py','fixture.py','PROTOCOL.md','PROVENANCE.json','OWNER.json',
-             'configs/pilot.json','vendor/engines.py','vendor/sep_common.py',
+             'configs/'+config_name,'vendor/engines.py','vendor/sep_common.py',
              'inputs/frozen.pkl','inputs/rotation_R512.npz']:
     dest = code/name
     dest.parent.mkdir(parents=True, exist_ok=True)
@@ -49,7 +51,7 @@ $PY -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={{b}}'); sy
 nvidia-smi --query-gpu=name,uuid,memory.total --format=csv,noheader
 mkdir -p checks
 $PY -u fixture.py
-$PY -u run.py --config configs/pilot.json --output ../output
+$PY -u run.py --config configs/{config_name} --output ../output
 '''
 (target/'run.sbatch').write_text(batch)
 (target/'reservation.json').write_text(json.dumps(dict(attempt=attempt, ceiling_allocated_gpu_seconds=2700,

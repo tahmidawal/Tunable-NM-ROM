@@ -1,0 +1,33 @@
+jax_backend=gpu
+NVIDIA RTX PRO 6000 Blackwell Server Edition, GPU-de6a5505-adb6-dd73-8cf5-245096eaeca2, 97887 MiB
+{"passed": true, "backend": "gpu", "x64": true, "ad_relative_error": 9.916758950512095e-17, "parity": {"residual_relative": 3.286534822430868e-15, "residual_absolute": 4.694150198424765e-18, "directions": [{"seed": 1701, "explicit_action_relative": 6.27894370029461e-16, "explicit_action_absolute": 6.287157597213246e-16, "finite_difference": [{"epsilon": 0.0001, "relative_error": 3.373608066034855e-14, "switched_nodes": 0}, {"epsilon": 1e-05, "relative_error": 1.4194513898341076e-13, "switched_nodes": 0}, {"epsilon": 1e-06, "relative_error": 2.960469711167758e-12, "switched_nodes": 0}, {"epsilon": 1e-07, "relative_error": 4.357871688325512e-11, "switched_nodes": 0}, {"epsilon": 1e-08, "relative_error": 1.0943263340784027e-10, "switched_nodes": 0}], "passed": true}, {"seed": 1702, "explicit_action_relative": 7.13458446676326e-16, "explicit_action_absolute": 7.149246985523805e-16, "finite_difference": [{"epsilon": 0.0001, "relative_error": 6.895366164130063e-14, "switched_nodes": 0}, {"epsilon": 1e-05, "relative_error": 2.0362775751974739e-13, "switched_nodes": 0}, {"epsilon": 1e-06, "relative_error": 2.6651627965832654e-12, "switched_nodes": 0}, {"epsilon": 1e-07, "relative_error": 5.896557386632625e-11, "switched_nodes": 0}, {"epsilon": 1e-08, "relative_error": 2.3178579794978148e-10, "switched_nodes": 0}], "passed": true}, {"seed": 1703, "explicit_action_relative": 7.004288583875471e-16, "explicit_action_absolute": 7.016250170391835e-16, "finite_difference": [{"epsilon": 0.0001, "relative_error": 1.479808900221396e-14, "switched_nodes": 0}, {"epsilon": 1e-05, "relative_error": 6.817764850130498e-13, "switched_nodes": 0}, {"epsilon": 1e-06, "relative_error": 7.281411545990602e-13, "switched_nodes": 0}, {"epsilon": 1e-07, "relative_error": 6.882706336173774e-11, "switched_nodes": 0}, {"epsilon": 1e-08, "relative_error": 3.6612853712031987e-10, "switched_nodes": 0}], "passed": true}], "passed": true}, "solver_stats": [[3.0, 1.0, 1.5326109522022762e-10, 5.014905497782178e-05, 0.0, 3.703703703703703e-05], [3.0, 1.0, 1.5269854305949685e-10, 4.9938447204549266e-05, 0.0, 3.703703703703703e-05]], "serialization_witness": {"scalar": 1.0, "nested": [[1.0, null], {"x": null}]}, "reference_arithmetic_parity": {"primal": 1.1177828557469731e-17, "action": 4.246640859255049e-17}, "seconds": 9.610387685708702}
+jax_backend=gpu x64=True precision=highest
+case=0 start
+case=0 M=256 level=prod error=0.0190438 stationarity=2.95e-06 eligible=True
+case=0 M=256 level=tight error=0.0190437 stationarity=1.51e-09 eligible=True
+case=0 M=256 level=tighter error=0.0190437 stationarity=1.51e-09 eligible=True
+case=0 M=512 level=prod error=0.0146205 stationarity=1.75e-06 eligible=True
+case=0 M=512 level=tight error=0.0146204 stationarity=3.04e-10 eligible=True
+case=0 M=512 level=tighter error=0.0146204 stationarity=3.04e-10 eligible=True
+case=0 M=1024 level=prod error=0.0119075 stationarity=1.48e-06 eligible=True
+case=0 M=1024 level=tight error=0.0119075 stationarity=4.59e-10 eligible=True
+case=0 M=1024 level=tighter error=0.0119075 stationarity=4.59e-10 eligible=True
+case=0 M=2048 level=prod error=0.0101466 stationarity=1.3e-06 eligible=True
+case=0 M=2048 level=tight error=0.0101466 stationarity=6.59e-10 eligible=True
+case=0 M=2048 level=tighter error=0.0101466 stationarity=6.59e-10 eligible=True
+case=0 finished
+case=1 start
+case=1 M=256 level=prod error=0.00215723 stationarity=9.55e-06 eligible=True
+case=1 M=256 level=tight error=0.00215723 stationarity=2.57e-09 eligible=True
+case=1 M=256 level=tighter error=0.00215723 stationarity=2.57e-09 eligible=True
+case=1 M=512 level=prod error=0.00215723 stationarity=9.02e-06 eligible=True
+case=1 M=512 level=tight error=0.00215723 stationarity=1.82e-09 eligible=True
+case=1 M=512 level=tighter error=0.00215723 stationarity=1.82e-09 eligible=True
+case=1 M=1024 level=prod error=0.00215723 stationarity=9.51e-06 eligible=True
+case=1 M=1024 level=tight error=0.00215723 stationarity=1.49e-09 eligible=True
+case=1 M=1024 level=tighter error=0.00215723 stationarity=1.49e-09 eligible=True
+case=1 M=2048 level=prod error=0.00215723 stationarity=8.72e-06 eligible=True
+case=1 M=2048 level=tight error=0.00215723 stationarity=1.34e-09 eligible=True
+case=1 M=2048 level=tighter error=0.00215723 stationarity=1.34e-09 eligible=True
+case=1 finished
+completed=True

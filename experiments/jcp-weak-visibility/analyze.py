@@ -7,25 +7,42 @@ import numpy as np
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('output', type=Path)
+    parser.add_argument('output', type=Path, nargs='+')
     parser.add_argument('--destination', type=Path, required=True)
     args = parser.parse_args()
-    out, dest = args.output, args.destination
+    outs, dest = args.output, args.destination
     dest.mkdir(parents=True, exist_ok=True)
-    summary = json.loads((out/'summary.json').read_text())
+    out = outs[0]
+    summary = dict(scope='same-grid same-step discrete target; exposed development cases', cases={})
+    source_for_case, banks_by_source, gram_errors = {}, {}, {}
     env = json.loads((out/'environment.json').read_text())
     cfg = env['config']
     ms = cfg['solve_rows']
-    banks = sorted(out.glob('bank-columns-*.npz'))
-    G = np.concatenate([np.load(p)['bank'] for p in banks], axis=1)
     n = cfg['mesh_intervals']
-    operators = np.load(out/'operators.npz')
-    gram_error = np.linalg.norm((G.T @ G)/n**2-operators['gram'])/np.linalg.norm(operators['gram'])
-    audit = dict(scope=summary['scope'], gram_relative_error=float(gram_error), cases={}, transitions=[])
+    for source in outs:
+        this_env = json.loads((source/'environment.json').read_text())
+        for key in ['mesh_intervals','bank_width','solve_rows','observer_rows','dt','horizon','reference_arithmetic']:
+            assert this_env['config'].get(key) == cfg.get(key), key
+        assert this_env['checkpoint_sha256'] == env['checkpoint_sha256'] and this_env['rotation_sha256'] == env['rotation_sha256']
+        this_summary = json.loads((source/'summary.json').read_text())
+        assert set(this_summary['cases']) == set(map(str, this_env['config']['case_ids']))
+        for case_id, case in this_summary['cases'].items():
+            assert case_id not in summary['cases'], 'Do not pool duplicate pilot and repaired cases.'
+            summary['cases'][case_id] = case
+            source_for_case[case_id] = source
+        banks = sorted(source.glob('bank-columns-*.npz'))
+        G = np.concatenate([np.load(p)['bank'] for p in banks], axis=1)
+        banks_by_source[source] = G
+        operators = np.load(source/'operators.npz')
+        gram_errors[str(source)] = float(np.linalg.norm((G.T @ G)/n**2-operators['gram'])/np.linalg.norm(operators['gram']))
+    gram_error = max(gram_errors.values())
+    audit = dict(scope=summary['scope'], source_outputs=list(map(str, outs)), gram_relative_error=gram_error,
+                 per_source_gram_errors=gram_errors, cases={}, transitions=[])
     times = np.arange(round(cfg['horizon']/cfg['dt'])+1)*cfg['dt']
     table = []
     for case_id, case in summary['cases'].items():
-        folder = out/f'case-{int(case_id):02d}'
+        folder = source_for_case[case_id]/f'case-{int(case_id):02d}'
+        G = banks_by_source[source_for_case[case_id]]
         ref0 = np.load(folder/'reference-0.npz')['fields']
         ref = np.load(folder/'reference-1.npz')['fields']
         norm0 = np.linalg.norm(ref0[0])
@@ -94,10 +111,15 @@ def main():
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
     plt.rcParams.update({'font.size':10, 'axes.spines.top':False, 'axes.spines.right':False})
-    fig, axs = plt.subplots(2, 2, figsize=(11, 7.5))
+    count = len(audit['cases'])
+    curve_rows = (count+1)//2
+    fig = plt.figure(figsize=(11, 3.7*(curve_rows+1)))
+    grid = fig.add_gridspec(curve_rows+1, 2)
+    curve_axes = [fig.add_subplot(grid[i//2, i%2]) for i in range(count)]
+    sigma_axis, shell_axis = fig.add_subplot(grid[-1, 0]), fig.add_subplot(grid[-1, 1])
     colors = plt.cm.viridis(np.linspace(.08, .88, len(ms)))
     for case_index, (case_id, case) in enumerate(audit['cases'].items()):
-        ax = axs[0, case_index]
+        ax = curve_axes[case_index]
         for color, m in zip(colors, ms):
             arm = case['arms'][str(m)]
             suffix = '' if arm['numerically_eligible'] else ' (unqualified)'
@@ -109,12 +131,12 @@ def main():
     for case_index, (case_id, case) in enumerate(summary['cases'].items()):
         rec=case['fixed_state_spectra'][-1]
         label = f'case {case_id}' + ('' if all(v['numerically_eligible'] for v in case['arms'].values()) else ' (unqualified)')
-        axs[1, 0].semilogy(ms, [rec['spectra'][str(m)]['physical_min'] for m in ms], marker='o', label=label+', same state')
-        axs[1, 1].semilogy(ms, [audit['cases'][case_id]['arms'][str(m)]['independent_scaled_shell_max'] for m in ms], marker='o', label=label)
-    axs[1, 0].set(xlabel='Smooth test rows M', ylabel='Smallest physical tangent singular value', title='Fixed projected-reference state at final time')
-    axs[1, 1].set(xlabel='Smooth test rows M', ylabel='Maximum independent shell residual', title='Next 1024 rows; maximum over all evolved steps')
-    axs[1, 0].legend(fontsize=8)
-    axs[1, 1].legend(fontsize=8)
+        sigma_axis.semilogy(ms, [rec['spectra'][str(m)]['physical_min'] for m in ms], marker='o', label=label+', same state')
+        shell_axis.semilogy(ms, [audit['cases'][case_id]['arms'][str(m)]['independent_scaled_shell_max'] for m in ms], marker='o', label=label)
+    sigma_axis.set(xlabel='Smooth test rows M', ylabel='Smallest physical tangent singular value', title='Fixed projected-reference state at final time')
+    shell_axis.set(xlabel='Smooth test rows M', ylabel='Maximum independent shell residual', title='Next 1024 rows; maximum over all evolved steps')
+    sigma_axis.legend(fontsize=8)
+    shell_axis.legend(fontsize=8)
     fig.suptitle('MEASURED development pilot — discrete reference only; qualification shown per curve', fontsize=12)
     fig.tight_layout()
     fig.savefig(dest/'measured-visibility.png', dpi=180)

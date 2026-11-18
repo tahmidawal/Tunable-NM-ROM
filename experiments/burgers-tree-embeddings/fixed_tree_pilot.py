@@ -22,12 +22,20 @@ def main():
     ap.add_argument('--integrator',choices=['be','cn'],default='be')
     ap.add_argument('--allow-integrator-comparison',action='store_true')
     ap.add_argument('--quadrature',type=int,default=0,help='0 means exact dense integration; otherwise structured fine-stencil integration')
+    ap.add_argument('--stable-global',help='qualified construction record for the prescribed global960 control')
+    ap.add_argument('--stationarity',type=float,default=1e-8);ap.add_argument('--update-tolerance',type=float,default=1e-10)
     a=ap.parse_args();out=Path(a.out);out.mkdir(parents=True,exist_ok=True);meta=preflight()
     admission=json.loads((Path(a.admission)/'result.json').read_text());assert admission['representation_gate']
     cachepath=Path(a.cache);cache_rec=json.loads((cachepath/'result.json').read_text())
     assert digest(cachepath/'local_POD.pkl')==cache_rec['local_POD_sha256'];rotation=read_checkpoint(cachepath/'local_POD.pkl')['rotation'][:,:24]
     spanpath=Path(a.span);spanrec=json.loads((spanpath/'result.json').read_text());assert digest(spanpath/'pod_basis.npz')==spanrec['basis_sha256']
     allbasis=np.load(spanpath/'pod_basis.npz')['coefficients'];assert len(allbasis)==768
+    global_basis=allbasis;global_name='global_POD768';global_hash=spanrec['basis_sha256']
+    if a.stable_global:
+        gp=Path(a.stable_global);gr=json.loads((gp/'result.json').read_text())
+        assert gr['status']=='complete_stable_global_controls' and gr['base_sha256']==spanrec['basis_sha256']
+        assert digest(gp/'stable_global_basis.npz')==gr['basis_sha256']
+        global_basis=np.load(gp/'stable_global_basis.npz')['coefficients'][:960];global_name='global_stable960';global_hash=gr['basis_sha256']
     refmap={r['case']:(p,r) for p,r in cohort(a.dev)};metric=TM.make_geometry(6);rule=TM.rule()
     result=dict(meta=meta,status='fixed_tree_pilot_running',L=a.L,dt=a.dt,labels=a.labels.split(','),cases=[],
         operator='incumbent scaled tested weak residual; exact fine-grid sign-upwind; discrete sine eigen-diffusion; '+('backward Euler' if a.integrator=='be' else 'Crank-Nicolson'),
@@ -39,6 +47,8 @@ def main():
         admission_sha256=digest(Path(a.admission)/'result.json'),global_basis_sha256=spanrec['basis_sha256'],
         local_rotation_sha256=cache_rec['local_POD_sha256'],final_test_opened=False,
         timing_claim='diagnostic query wall times include assembly/compilation; no paired performance inference',timing_burn_in=True)
+    result.update(global_control=global_name,global_control_sha256=global_hash,
+                  stationarity_tolerance=a.stationarity,update_tolerance=a.update_tolerance)
     if a.compare_previous:
         previous_path=Path(a.compare_previous);assert str(previous_path).startswith(os.environ['STUDY_NAMESPACE']+'/')
         previous_result=json.loads((previous_path/'result.json').read_text())
@@ -57,7 +67,7 @@ def main():
         T=expand_matrix(jnp.asarray(rotation),52,128);Gtree=T.T@Gfull@T
         models={};M0=a.test_factor*(128+52*24);Mmax=4*M0
         for name,basis,cc,tt,U,G in [('tree_direct24',allbasis[:128],cells,tr,rotation,Gtree),
-                                    ('global_POD768',allbasis,[],[],np.empty((36,0)),jnp.eye(768))]:
+                                    (global_name,global_basis,[],[],np.empty((36,0)),jnp.eye(len(global_basis)))]:
             ca,slices=W.prepare(basis,cc,tt,U,a.L,Mmax,G);audits=[];chosen=Mmax
             for M in (M0,2*M0,4*M0):
                 v=visibility(ca,M);audits.append(v)
@@ -88,7 +98,7 @@ def main():
             u0=initial(xy);c,e0,lin=initial_fit(u0,ca);jax.block_until_ready(c)
             cold=time.perf_counter()-start;states=[np.asarray(c)];statuses=[];valid=True
             for it in range(1,round(.25/a.dt)+1):
-                c,status=step(c,ca,a.dt,data.NU,1e-8,1e-10);jax.block_until_ready(c)
+                c,status=step(c,ca,a.dt,data.NU,a.stationarity,a.update_tolerance);jax.block_until_ready(c)
                 statuses.append(np.asarray(status))
                 if not bool(jnp.all(jnp.isfinite(c))) or float(jnp.sqrt(jnp.maximum(c@ca['gram']@c,0)))>10*float(jnp.linalg.norm(u0)/fitN):
                     valid=False;break
@@ -99,7 +109,7 @@ def main():
             method=dict(active_variables=len(c),initial_fit_error=float(e0),initial_linear_residual=float(lin),
                 cold_start_including_compilation_seconds=cold,query_before_output_seconds=query,visibility=model['visibility'],
                 finite_trajectory=valid,step_status=np.asarray(statuses),status_columns=['scaled_tested_residual','scaled_stationarity','relative_update','relative_linear_residual','LM_iterations','accepted_steps'],
-                all_steps_stationary=bool(np.max(np.asarray(statuses)[:,1])<=1e-8))
+                all_steps_stationary=bool(np.max(np.asarray(statuses)[:,1])<=a.stationarity))
             model['states']=np.asarray(states);rowout['methods'][name]=method
             save(out/'result.json',dict(result,cases=result['cases']+[rowout]))
         # Independent physical scoring; it never feeds the solver or policy.

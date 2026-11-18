@@ -1,0 +1,68 @@
+host=pax106 source_commit=367166195313d03c04a3227ffcc7d122b8e55431 job=7354236
+NVIDIA A100 80GB PCIe, GPU-4d93df32-aec8-40bc-f107-d8fc98bdf033, 81920 MiB
+Filesystem                       Size  Used Avail Use% Mounted on
+10.235.106.26:/projects/paralab  4.6T  2.5T  2.1T  55% /cluster/tufts/paralab
+jax_backend=gpu
+experiments/jcp-head-mechanism/PROTOCOL.md: OK
+experiments/jcp-head-mechanism/SOURCE_MANIFEST.json: OK
+experiments/jcp-head-mechanism/assets/bank_selected.npz: OK
+experiments/jcp-head-mechanism/assets/head_k8_n64.npz: OK
+experiments/jcp-head-mechanism/check_fixtures.py: OK
+experiments/jcp-head-mechanism/cluster/job.sbatch: OK
+experiments/jcp-head-mechanism/cluster/submit.sh: OK
+experiments/jcp-head-mechanism/configs/pilot.json: OK
+experiments/jcp-head-mechanism/configs/source_confirm_dev64.json: OK
+experiments/jcp-head-mechanism/fixture_results.json: OK
+experiments/jcp-head-mechanism/run_mechanism.py: OK
+experiments/jcp-head-mechanism/sync_github.sh: OK
+experiments/jcp-head-mechanism/vendor/bankio.py: OK
+experiments/jcp-head-mechanism/vendor/coordnet.py: OK
+experiments/jcp-head-mechanism/vendor/head_rom.py: OK
+experiments/jcp-head-mechanism/vendor/ns2d_decoder.py: OK
+experiments/jcp-head-mechanism/vendor/ns2d_fom.py: OK
+experiments/jcp-head-mechanism/vendor/ns2d_rom.py: OK
+experiments/jcp-head-mechanism/vendor/ns3d_fom.py: OK
+experiments/jcp-head-mechanism/vendor/ns3d_model.py: OK
+experiments/jcp-head-mechanism/vendor/ns3d_rom.py: OK
+experiments/jcp-head-mechanism/vendor/sep_common.py: OK
+experiments/jcp-head-mechanism/vendor/shift_rom.py: OK
+Sampling frozen bank
+Building exact weak operator with independent dense checks
+case=0 head_common_m292_dt0.02_g1e-07
+case=0 span_common_m292_dt0.02_g1e-07
+case=0 span_native_m292_dt0.02_g1e-07
+case=0 head_common_m292_dt0.02_g1e-09
+case=0 span_common_m292_dt0.02_g1e-09
+case=0 span_native_m292_dt0.02_g1e-09
+case=0 head_common_m584_dt0.02_g1e-07
+case=0 span_common_m584_dt0.02_g1e-07
+case=0 span_native_m584_dt0.02_g1e-07
+case=0 head_common_m584_dt0.02_g1e-09
+case=0 span_common_m584_dt0.02_g1e-09
+case=0 span_native_m584_dt0.02_g1e-09
+case=0 head_common_m584_dt0.01_g1e-07
+case=0 span_common_m584_dt0.01_g1e-07
+case=0 span_native_m584_dt0.01_g1e-07
+case=0 head_common_m584_dt0.01_g1e-09
+case=0 span_common_m584_dt0.01_g1e-09
+case=0 span_native_m584_dt0.01_g1e-09
+case=1 head_common_m292_dt0.02_g1e-07
+case=1 span_common_m292_dt0.02_g1e-07
+case=1 span_native_m292_dt0.02_g1e-07
+case=1 head_common_m292_dt0.02_g1e-09
+case=1 span_common_m292_dt0.02_g1e-09
+case=1 span_native_m292_dt0.02_g1e-09
+case=1 head_common_m584_dt0.02_g1e-07
+case=1 span_common_m584_dt0.02_g1e-07
+case=1 span_native_m584_dt0.02_g1e-07
+case=1 head_common_m584_dt0.02_g1e-09
+case=1 span_common_m584_dt0.02_g1e-09
+case=1 span_native_m584_dt0.02_g1e-09
+case=1 head_common_m584_dt0.01_g1e-07
+case=1 span_common_m584_dt0.01_g1e-07
+case=1 span_native_m584_dt0.01_g1e-07
+case=1 head_common_m584_dt0.01_g1e-09
+case=1 span_common_m584_dt0.01_g1e-09
+case=1 span_native_m584_dt0.01_g1e-09
+DONE {"all_stationary": false, "all_tight_tighter": true, "all_action_checks": true, "common_ic": true, "ic_fit_passed": false, "operator_passed": true, "reference_passed": false, "cases_completed": 2, "passed": false}
+RUN_EXIT=0

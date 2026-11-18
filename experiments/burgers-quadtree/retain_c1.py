@@ -11,7 +11,7 @@ for job in sys.argv[1:]:
  for line in manifest.splitlines():
   digest,name=line.split('  ',1);p=Path(name);assert not p.is_absolute() and '..' not in p.parts
   full=job in ('c1data','c1familyb','c1ref32')
-  local=full or p.suffix in ('.json','.pkl')
+  local=full or p.suffix in ('.json','.pkl') or (job=='c1cost' and '_block' in p.name)
   if local:
    target=o/p;target.parent.mkdir(parents=True,exist_ok=True)
    if not target.exists() or hashlib.sha256(target.read_bytes()).hexdigest()!=digest:s.run(['scp','-q',f'tufts-login:{root}/{name}',str(target)],check=True)

@@ -14,7 +14,7 @@ for rank in (128,256):
    if not cases:continue
    V=jnp.asarray(np.load(verified('c1tiles',f'r{rank}_tile{i}{j}.npz'))['basis']);W,eigs,rot=C.diffusion_basis(V,128)
    np.savez_compressed(o/f'r{rank}_tile{i}{j}_basis.npz',basis=W,eigenvalues=eigs,rotation=rot)
-   for q in (48,64,80,96,128):
+   for q in (48,64,80,96,128,192):
     G,H=C.flux_tables(W,128,q)
     for dt in (.0125,.00625,.005,.0025):
      for case in cases:

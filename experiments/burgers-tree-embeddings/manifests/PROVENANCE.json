@@ -56,5 +56,20 @@
       "unused cohort/lattice functions omitted"
     ],
     "sha256": "5cd400bf17cc5b49279eee5c5b2cd716fb969c4164fb4f6a1ea250593ae1935d"
+  },
+  {
+    "destination": "operators.py",
+    "adapted_from": "vendor/engines.py",
+    "functions": [
+      "spatial",
+      "modes",
+      "weak"
+    ],
+    "modifications": [
+      "separate coefficient interface removes incumbent head dependency",
+      "dense and sampled weak arithmetic and eigenvalue row scaling retained"
+    ],
+    "sha256": "f1132c5d4aea478ce544e9be09e0747d6a2bfd12f110ada216dea1801d4da1f4",
+    "verification": "smoke/weak.json: vendor spatial bitwise agreement and dense tested identity"
   }
 ]

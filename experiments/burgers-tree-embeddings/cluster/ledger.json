@@ -476,7 +476,7 @@
     "gpu": "a100",
     "submitted_utc": "2026-11-18T22:34:35.682135+00:00",
     "state": "RUNNING",
-    "elapsed_seconds": 2909,
+    "elapsed_seconds": 2941,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
   },
@@ -539,5 +539,16 @@
     "elapsed_seconds": 24,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b1headspan2",
+    "id": 7356197,
+    "reserved_minutes": 15,
+    "commit": "e006e834b6b604eb0e7b2b8d5a3aa927ba852fc9",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1headspan2",
+    "driver": "audit_global_head_span.py",
+    "args": "--models /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1parent16/output,/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1global64/output,/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1global128/output --spans /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1attrib01/output,/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1expanded/output,/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1expanded/output",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-18T23:23:43.131810+00:00"
   }
 ]

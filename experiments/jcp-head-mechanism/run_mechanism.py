@@ -14,6 +14,7 @@ import ns3d_fom as F
 import shift_rom as SR
 import head_rom as H
 import bankio as BI
+from shared_geometry import shared_state_geometry
 
 def sha(path): return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 def plain(x):
@@ -192,6 +193,9 @@ def main():
     manifest=json.loads((HERE/'SOURCE_MANIFEST.json').read_text())
     for rel,meta in manifest['files'].items():
         if sha(HERE/rel)!=meta['sha256']:raise RuntimeError('source mismatch: '+rel)
+    if cfg.get('reproducibility_reference'):
+        for rel,expected in json.loads((HERE/'REPRO_MANIFEST.json').read_text()).items():
+            if sha(HERE/rel)!=expected:raise RuntimeError('reproducibility fixture mismatch: '+rel)
     report={'schema':'jcp-head-mechanism-result-v1','config':cfg,'source_manifest':manifest,
             'source_commit':os.environ.get('SOURCE_COMMIT'),'job_id':os.environ.get('SLURM_JOB_ID'),
             'backend':jax.default_backend(),'precision':str(jnp.ones(1).dtype),'matmul_precision':str(jax.config.jax_default_matmul_precision),
@@ -271,6 +275,13 @@ def main():
                     if diag:
                         item['jacobian_action_worst_best_epsilon']=max(r['jacobian_action']['minimum'] for r in recs)
                         item['head_fit_distance']=[f['relative_distance'] for f in ans['span_head_fits']]
+                    if ci in cfg.get('reproducibility_case_indices',[]):
+                        prior=np.load(HERE/'reproducibility'/cfg['reproducibility_reference']/f'case_{ci:03d}'/(tag+'.npz'))
+                        field_gaps=[]
+                        for olda,oldc,newfield in zip(prior['coefficients'],prior['centers'],ans['fields']):
+                            oldfield=np.asarray(reconstruct(basis,jnp.asarray(olda),jnp.asarray(oldc)))
+                            field_gaps.append(float(np.linalg.norm(oldfield-newfield)/norm0))
+                        item['pilot_reproducibility']={'coefficient_gap':float(np.max(np.linalg.norm(prior['coefficients']-ans['coefficients'],axis=1))/norm0),'wrapped_frame_gap':float(np.max(np.abs((prior['centers']-ans['centers']+.5)%1-.5))),'physical_field_gaps':field_gaps,'passed':max(field_gaps)<=cfg['qualification']['pilot_field_reproducibility']}
                     cache[(arm,gtol)]=ans
                     np.savez_compressed(casepath/(tag+'.npz'),states=ans['states'],centers=ans['centers'],coefficients=ans['coefficients'],time=np.arange(steps+1)*dt)
                     dump(casepath/(tag+'.json'),{'records':recs,'span_head_fits':ans['span_head_fits']})
@@ -286,13 +297,27 @@ def main():
             for t in range(steps):
                 start=np.r_[base['coefficients'][t+1],base['states'][t+1,-3:]]
                 previous=base['coefficients'][t]
-                r0,_=sev(jnp.asarray(start),jnp.asarray(previous),selected,p)
+                r0,jspan=sev(jnp.asarray(start),jnp.asarray(previous),selected,p)
                 opt,info=solve(sev,start,(jnp.asarray(previous),selected,p),min(cfg['solver']['gtols']),cfg['solver']['budget'])
                 pred=reconstruct(basis,jnp.asarray(opt[:-3]),jnp.asarray((base['centers'][t]+opt[-3:])%1))
                 reset.append({'step':t,'head_seed_residual_norm':float(jnp.linalg.norm(r0)),'span_result':info,
                               'head_physical_error':base['metrics'][t+1]['relative_error'],
                               'span_physical_error':float(jnp.linalg.norm(pred-jnp.asarray(ref[t+1])))/norm0,
                               'span_state':opt})
+            if cfg.get('shared_state_geometry',False):
+                _,hev=make_eval(dt,n,len(ahead),k,'head')
+                for t,probe in enumerate(reset):
+                    start=np.r_[base['coefficients'][t+1],base['states'][t+1,-3:]]
+                    previous=base['coefficients'][t]
+                    _,js=sev(jnp.asarray(start),jnp.asarray(previous),selected,p)
+                    _,jh=hev(jnp.asarray(base['states'][t+1]),jnp.asarray(previous),selected,p)
+                    dc=np.asarray(H.head_jacobian(p,jnp.asarray(base['states'][t+1,:k])))
+                    gram=np.asarray(tangent_gram(basis,jnp.asarray(start[:-3]),jnp.eye(len(ahead)),geom))
+                    geometry=shared_state_geometry(np.asarray(js),dc,gram,np.asarray(probe['span_state'])-start)
+                    chained=np.c_[np.asarray(js)[:,:len(ahead)]@dc,np.asarray(js)[:,len(ahead):]]
+                    geometry['analytic_chain_relative']=float(np.linalg.norm(chained-np.asarray(jh))/max(np.linalg.norm(jh),1e-300))
+                    geometry['containment_probe_stationary']=probe['span_result']['reason']=='stationarity'
+                    probe['shared_state_geometry']=geometry
             dump(casepath/f'reset_m{rows}_dt{dt:g}.json',reset);save()
             del cache
         np.savez_compressed(casepath/'truth_slices.npz',times=np.arange(len(truth))*cfg['truth_output_dt'],velocity_zmid=truth[:,:,:,n//2,:])
@@ -305,7 +330,7 @@ def main():
         'all_tight_tighter':all(a['passed'] for c in report['cases'] for a in c['tight_tighter']),
         'all_action_checks':all(a.get('jacobian_action_worst_best_epsilon',0)<=cfg['qualification']['jacobian_action_relative'] for a in allruns),
         'common_ic':all(c['shared_ic_parity']<=cfg['qualification']['shared_ic_relative'] for c in report['cases']),
-        'ic_fit_passed':all(c['head_ic_fit']['qualified'] for c in report['cases']),'operator_passed':True,'reference_passed':all(c['reference_check']['passed'] for c in report['cases']),'cases_completed':len(report['cases'])}
+        'ic_fit_passed':all(c['head_ic_fit']['qualified'] for c in report['cases']),'pilot_reproducibility':all(a.get('pilot_reproducibility',{'passed':True})['passed'] for a in allruns),'operator_passed':True,'reference_passed':all(c['reference_check']['passed'] for c in report['cases']),'cases_completed':len(report['cases'])}
     report['qualification']['passed']=all(v for key,v in report['qualification'].items() if key!='cases_completed')
     save();log('DONE '+json.dumps(report['qualification']))
 

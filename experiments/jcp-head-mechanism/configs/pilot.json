@@ -5,10 +5,24 @@
   "rank": 64,
   "k": 8,
   "eval_seed": 202609202,
-  "eval_cases": 2,
+  "eval_cases": 16,
   "initial_case_indices": [
     0,
-    1
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
   ],
   "closed_seeds": [
     202609203,
@@ -78,7 +92,8 @@
     "budget_termination_allowed": false,
     "reference_absolute": 1e-05,
     "reference_fraction_of_rom_error": 0.01,
-    "tight_tighter_normalization": "norm of original physical initial field"
+    "tight_tighter_normalization": "norm of original physical initial field",
+    "pilot_field_reproducibility": 1e-10
   },
   "primary_criteria": {
     "head_benefit": "paired common-IC head max-over-time physical error lower than span under numerically qualified common settings; report all cases, median, worst, outliers; do not require favorable outcome for acceptance",
@@ -125,10 +140,17 @@
     "absolute_cutoff": 1e-30,
     "report_all_eigenvalues_and_retained_rank": true
   },
-  "amendment": "p02_reference_and_roundoff_solver",
+  "amendment": "p03_exposed_development_extension",
   "independent_shell": {
     "first_row_zero_based": 584,
     "last_exclusive": 1168,
     "full_residual_vector_saved": true
-  }
+  },
+  "shared_state_geometry": true,
+  "reproducibility_reference": "p02",
+  "reproducibility_case_indices": [
+    0,
+    1
+  ],
+  "family": "original periodic NS3D two-potential family; source INITIAL_AMPLITUDE=0.2"
 }

@@ -14,6 +14,7 @@ def main():
     report=json.loads((args.run/'summary.json').read_text());figdir=args.run/'figures';figdir.mkdir(exist_ok=True)
     plt.rcParams.update({'font.size':10,'axes.spines.top':False,'axes.spines.right':False,'figure.dpi':140})
     cfg=report['config'];gtol=min(cfg['solver']['gtols']);cases=report['cases'];settings=cfg['test_settings']
+    fit_flags=[]
     qualified=bool(report.get('qualification',{}).get('passed',False));status='Numerically qualified' if qualified else 'PROVISIONAL — numerical qualification incomplete or failed'
     fig,axes=plt.subplots(2,len(settings),figsize=(13,7),squeeze=False)
     for col,setting in enumerate(settings):
@@ -28,7 +29,8 @@ def main():
             ax.fill_between(times,errors.min(0),errors.max(0),color=color,alpha=.11)
             expanded=[]
             for c,r in selected:
-                rec=json.loads((args.run/f"case_{c['index']:03d}"/r['records_file']).read_text())['records']
+                saved=json.loads((args.run/f"case_{c['index']:03d}"/r['records_file']).read_text());rec=saved['records']
+                fit_flags.extend(f['starts'][f['best_index']]['reason']=='stationarity' for f in saved['span_head_fits'])
                 expanded.append([x.get('fixed_independent_shell_norm',x['expanded_residual_norm'])/c['norm_u0'] for x in rec])
             arr=np.asarray(expanded)
             axes[1,col].semilogy(times[1:],np.median(arr,axis=0),color=color,ls=style,lw=2)
@@ -58,6 +60,6 @@ def main():
             axes[2].plot(times,np.median(dist,0),color=color,lw=2,label=LABELS[arm]);axes[2].fill_between(times,dist.min(0),dist.max(0),color=color,alpha=.12)
     for ax,title,ylabel in zip(axes,('Physical phase drift','Shape error after centroid alignment','Best-found distance to head\n(fixed reached frame)'),('Centroid displacement (periodic domain)','Error (% initial norm)','Distance (% initial norm)')):
         ax.set(title=title,xlabel='Time',ylabel=ylabel);ax.grid(alpha=.2)
-    axes[0].legend(fontsize=8);fig.suptitle(f'{rows} rows; dt={dt:g} — {status}',fontsize=11);fig.text(.5,.01,'Lines: pointwise case medians. Shading: case range. Best-found distances are upper bounds; inspect fit convergence.',ha='center',fontsize=8);fig.tight_layout(rect=[0,.035,1,.95]);fig.savefig(figdir/'drift_diagnostics.png');fig.savefig(figdir/'drift_diagnostics.pdf')
+    axes[0].legend(fontsize=8);fig.suptitle(f'{rows} rows; dt={dt:g} — {status}',fontsize=11);fig.text(.5,.01,f'Lines: pointwise case medians. Shading: case range. Best-found distances are upper bounds.\nStationary chosen distance fits: {sum(fit_flags)}/{len(fit_flags)}; remaining fits are explicitly unqualified.',ha='center',fontsize=8);fig.tight_layout(rect=[0,.065,1,.95]);fig.savefig(figdir/'drift_diagnostics.png');fig.savefig(figdir/'drift_diagnostics.pdf')
     print(figdir)
 if __name__=='__main__':main()

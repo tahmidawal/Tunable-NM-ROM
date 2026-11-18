@@ -34,7 +34,9 @@ def main():
     cap=json.loads((H/'cluster/BATCHES.json').read_text())['cumulative_ceiling_gpu_seconds']
     assert charged+a.minutes*60<=cap,(charged,a.minutes*60,cap)
     dirty=sp.check_output(['git','-c','gc.auto=0','status','--porcelain','--',str(H)],cwd=ROOT,text=True)
-    assert not dirty,'Commit and mirror source before submission: '+dirty
+    # Reconciliation intentionally updates the live ledger before this check.
+    source_dirty=[line for line in dirty.splitlines() if not line.endswith('/cluster/ledger.json')]
+    assert not source_dirty,'Commit and mirror source before submission: '+str(source_dirty)
     commit=sp.check_output(['git','-c','gc.auto=0','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
     remote=ns+'/'+a.name
     ssh(f'test ! -e {shlex.quote(remote)} && mkdir -p {shlex.quote(remote)}/logs')

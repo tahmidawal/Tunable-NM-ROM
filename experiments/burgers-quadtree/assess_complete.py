@@ -49,7 +49,7 @@ for name in r['rows'][0]['times']:
   else:
    n=int(name.removeprefix('spectral'));x=next(x for x in json.loads((H/'evidence/c1classical-assessment.json').read_text())['rows'] if x['N']==n and x['dt']==.0125);checks['query_time_change']=x['worst_time_change'];checks['query_integration_change']=x['worst_integration_change']
   qualified=qualified and all(v<=.001 for v in checks.values())
- methods.append(dict(name=name,worst_error=float(err.max()),worst_error_plus_uncertainty=float((err+uncert).max()),qualified=bool(qualified),checks=checks,median_seconds=float(np.median(timings)),per_case_block_medians=np.median(timings,axis=2).tolist()))
+ methods.append(dict(name=name,worst_error=float(err.max()),worst_error_plus_uncertainty=float((err+uncert).max()),qualified=bool(qualified),checks=checks,first_case_cold_query_seconds=r['rows'][0]['cold_query_seconds'][name],median_seconds=float(np.median(timings)),per_case_block_medians=np.median(timings,axis=2).tolist()))
 classical=[x for x in methods if x['name'] not in romnames and x['qualified']];speed=[]
 if classical:
  best=min(classical,key=lambda x:x['median_seconds']);rng=np.random.default_rng(2026111815);sample=rng.integers(0,count,(10000,count))

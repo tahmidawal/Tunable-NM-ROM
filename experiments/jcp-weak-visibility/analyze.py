@@ -44,6 +44,12 @@ def main():
         operators = np.load(source/'operators.npz')
         gram_errors[str(source)] = float(np.linalg.norm((G.T @ G)/n**2-operators['gram'])/np.linalg.norm(operators['gram']))
     gram_error = max(gram_errors.values())
+    first_bank = banks_by_source[outs[0]]
+    (dest/'bank-cross-job-parity.json').write_text(json.dumps(dict(
+        same_checkpoint=True, reference_source=str(outs[0]), comparisons=[dict(source=str(source),
+            relative_difference=float(np.linalg.norm(bank-first_bank)/np.linalg.norm(first_bank)),
+            maximum_absolute_difference=float(np.max(np.abs(bank-first_bank))))
+            for source, bank in banks_by_source.items()]), indent=2)+'\n')
     summary['source_for_case'] = {k:str(v.resolve()) for k,v in source_for_case.items()}
     summary['frozen_scientific_configuration'] = {k:cfg[k] for k in ['mesh_intervals','bank_width','solve_rows','observer_rows','dt','horizon',
         'solver_gtols','solver_max_iterations','reference_tolerances','reference_max_disagreement','tangent_relative_eigenvalue_threshold']}
@@ -108,6 +114,17 @@ def main():
         useful=all_eligible and all(v['error_ratio'] <= 1.02 for v in pair) and any(v['resolved_error_improvement'] and v['shell_ratio'] < 1 for v in pair)
         audit['transitions'].append(dict(smaller=small, larger=large, all_cases_eligible=all_eligible,
                                         predeclared_useful_region=useful, cases=pair))
+    pointwise = []
+    for small, large in zip(ms[:-1], ms[1:]):
+        for case_id, case in audit['cases'].items():
+            difference = np.asarray(case['arms'][str(large)]['error'])-np.asarray(case['arms'][str(small)]['error'])
+            pointwise.append(dict(case=int(case_id), smaller=small, larger=large,
+                increased_time_count=int(np.sum(difference > 1e-10)),
+                maximum_increase_in_reported_relative_error=float(difference.max()),
+                time_of_maximum_increase=float(times[int(np.argmax(difference))])))
+    (dest/'pointwise-counterexamples.json').write_text(json.dumps(dict(
+        status='post-run diagnostic; primary maximum metric unchanged',
+        increase_count_threshold=1e-10, comparisons=pointwise), indent=2)+'\n')
     # Fixed-state row enrichment must obey the algebraic singular-value monotonicity.
     monotonic=[]
     for case in summary['cases'].values():

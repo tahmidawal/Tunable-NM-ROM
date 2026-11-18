@@ -126,9 +126,9 @@ def native_subject(name, family, kind, rank, cfg, asset_path, override=None):
         raise RuntimeError("deployed operator row/rank slice differs from registered numerical configuration")
 
     def use(u0, viscosity, active):
-        output, stats, initial = compiled(jnp.asarray(u0), jnp.asarray(viscosity), *active,
+        output, stats, initial, fit_info = compiled(jnp.asarray(u0), jnp.asarray(viscosity), *active,
             jnp.asarray(settings["gtol"]), jnp.asarray(settings["fit_gtol"]))
-        fields, stats, initial = np.asarray(output), np.asarray(stats), np.asarray(initial)
+        fields, stats, initial, fit_info = map(np.asarray, (output, stats, initial, fit_info))
         valid = bool(np.all(stats[:, 0] == 1) and initial[0] == 1
                      and np.all(np.isfinite(stats)) and np.all(np.isfinite(initial)))
         diagnostics = {
@@ -141,6 +141,8 @@ def native_subject(name, family, kind, rank, cfg, asset_path, override=None):
             "initial_fit_raw_winner": int(initial[6]), "initial_fit_selected": int(initial[7]),
             "initial_fit_tie_band": float(initial[8]),
             "initial_fit_raw_selected_coefficient_gap": float(initial[9]),
+            "initial_fit_all_starts": fit_info.tolist(),
+            "initial_fit_all_starts_columns": ["reason", "gradient", "cost", "iterations", "accepted", "roundoff_acceptances"],
         }
         return QueryResult(fields, valid, diagnostics)
 
@@ -160,7 +162,7 @@ def native_subject(name, family, kind, rank, cfg, asset_path, override=None):
         "actual_online_unknowns_including_frame": (8 if kind == "head" else rank)+3,
         "solver": "compiled adaptive diagonally scaled LM; returned-state stationarity",
         "settings": settings, "assets_manifest_sha256": sha(asset_path / "MANIFEST.json"),
-        "initialization": "native from same original physical input field; recomputed each call",
+        "initialization": "native from same original physical input field; four sequential compiled starts; recomputed each call",
     }, cold)
 
 
@@ -247,16 +249,6 @@ def main():
     save_assets(learned_assets, G, operators, params, codes)
     setup.append({"phase": "learned mesh bank and exact operators", "wall_seconds": time.perf_counter()-start,
                   "operator_checks": checks, "bank_info": bank_info, "timing_scope": "offline setup including compilation"})
-    start = time.perf_counter()
-    log("regenerating original POD bank from training seed")
-    pod_G, pod_info = rebuild_pod(original, cfg["n"], cfg["horizon"])
-    pod_rows = max([cfg["rom"]["rows"]] + [v["rows"] for v in cfg.get("pod_head_settings", [])])
-    pod_ops, pod_checks = SR.build_operators_fast(pod_G, cfg["n"], pod_rows, check_modes=8)
-    pod_params, pod_codes = load_head(HERE / "assets/pod_head_k8_n64.npz")
-    pod_assets = args.out / "deployed_assets/pod"
-    save_assets(pod_assets, pod_G, pod_ops, pod_params, pod_codes)
-    setup.append({"phase": "frozen POD recipe regeneration and exact operators", "wall_seconds": time.perf_counter()-start,
-                  "pod_info": pod_info, "operator_checks": pod_checks, "timing_scope": "offline setup including compilation"})
     write_json(args.out / "offline_setup.json", setup)
     dt_truth = cfg["truth_dt"]
     steps_truth = round(cfg["horizon"] / dt_truth)
@@ -282,52 +274,70 @@ def main():
     write_json(args.out / "references.json", reference)
     subjects = [native_subject("learned_head", "target", "head", 64, cfg, learned_assets),
                 native_subject("learned_span64", "target", "span", 64, cfg, learned_assets)]
-    for setting in cfg.get("pod_head_settings", [{"rows": cfg["rom"]["rows"], "dt": cfg["rom"]["dt"]}]):
-        name = f"pod_head_m{setting['rows']}_dt{setting['dt']:g}"
-        subjects.append(native_subject(name, "pod", "head", 64, cfg, pod_assets, setting))
-    for rank in cfg["pod_span_ranks"]:
-        subjects.append(native_subject(f"pod_span{rank}", "pod", "span", rank, cfg, pod_assets))
-    subjects.extend(classical_subject(candidate, cfg) for candidate in cfg["classical_candidates"])
-
     # Every implementation is evaluated before timing. The target field output
     # must match P1's admitted native head/span coefficients and centers.
     parity, warmups = [], []
-    for subject in subjects:
-        log(f"compile and numerical check: {subject.name}")
-        for case in cases:
-            started = time.perf_counter()
-            value = subject.query(case.initial, case.viscosity)
-            warmups.append({"subject": subject.name, "case": case.case_id,
-                            "first_invocation_seconds": time.perf_counter()-started,
-                            "numerical_valid": value.numerical_valid,
-                            "solver_diagnostics": value.diagnostics})
-            if subject.name in ("learned_head", "learned_span64"):
-                entry = cfg["approved_reference_states"][subject.name][str(case.case_id)]
-                state_path = HERE / entry["file"]
-                if sha(state_path) != entry["sha256"]:
-                    raise RuntimeError("admitted P1 state checksum changed")
-                state = np.load(state_path)
-                stride = (len(state["coefficients"])-1)//5
-                expected = np.stack([np.asarray(SR.shift_field((jnp.asarray(G) @ jnp.asarray(a)).reshape(3, cfg["n"], cfg["n"], cfg["n"]), jnp.asarray(c)*cfg["n"]))
-                    for a, c in zip(state["coefficients"][::stride], state["centers"][::stride])])
-                error = float(np.max(np.linalg.norm((value.fields-expected).reshape(6, -1), axis=1))/np.linalg.norm(case.initial))
-                physical_error = float(np.max(np.linalg.norm((value.fields-case.truth)[1:].reshape(5, -1), axis=1))/np.linalg.norm(case.initial))
-                refinement = next(x["dt_refinement_max"] for x in reference if x["case"] == case.case_id)
-                reference_bound = min(cfg["reference_absolute_gate"], cfg["reference_fraction_of_target_error"]*physical_error)
-                passed = bool(value.numerical_valid and error <= cfg["implementation_parity_gate"]
-                              and refinement <= reference_bound)
-                parity.append({"subject": subject.name, "case": case.case_id,
-                               "max_relative_field_difference": error, "passed": passed,
-                               "physical_evolved_max_error": physical_error,
-                               "reference_refinement_difference": refinement,
-                               "reference_refinement_bound": reference_bound,
-                               "pinned_reference": entry, "solver_diagnostics": value.diagnostics})
-                if not passed:
-                    write_json(args.out / "implementation_parity.json", parity)
-                    write_json(args.out / "first_invocations.json", warmups)
-                    raise RuntimeError("compiled query failed admitted scientific reference parity")
-        write_json(args.out / "first_invocations.json", warmups)
-        write_json(args.out / "implementation_parity.json", parity)
+    def qualify(new_subjects):
+        for subject in new_subjects:
+            log(f"compile and numerical check: {subject.name}")
+            for case in cases:
+                started = time.perf_counter()
+                value = subject.query(case.initial, case.viscosity)
+                warmups.append({"subject": subject.name, "case": case.case_id,
+                                "first_invocation_seconds": time.perf_counter()-started,
+                                "numerical_valid": value.numerical_valid,
+                                "solver_diagnostics": value.diagnostics})
+                if subject.name in ("learned_head", "learned_span64"):
+                    entry = cfg["approved_reference_states"][subject.name][str(case.case_id)]
+                    state_path = HERE / entry["file"]
+                    if sha(state_path) != entry["sha256"]:
+                        raise RuntimeError("admitted P1 state checksum changed")
+                    state = np.load(state_path)
+                    stride = (len(state["coefficients"])-1)//5
+                    expected = np.stack([np.asarray(SR.shift_field((jnp.asarray(G) @ jnp.asarray(a)).reshape(3, cfg["n"], cfg["n"], cfg["n"]), jnp.asarray(c)*cfg["n"]))
+                        for a, c in zip(state["coefficients"][::stride], state["centers"][::stride])])
+                    error = float(np.max(np.linalg.norm((value.fields-expected).reshape(6, -1), axis=1))/np.linalg.norm(case.initial))
+                    physical_error = float(np.max(np.linalg.norm((value.fields-case.truth)[1:].reshape(5, -1), axis=1))/np.linalg.norm(case.initial))
+                    refinement = next(x["dt_refinement_max"] for x in reference if x["case"] == case.case_id)
+                    reference_bound = min(cfg["reference_absolute_gate"], cfg["reference_fraction_of_target_error"]*physical_error)
+                    passed = bool(value.numerical_valid and error <= cfg["implementation_parity_gate"]
+                                  and refinement <= reference_bound)
+                    parity.append({"subject": subject.name, "case": case.case_id,
+                                   "max_relative_field_difference": error, "passed": passed,
+                                   "physical_evolved_max_error": physical_error,
+                                   "reference_refinement_difference": refinement,
+                                   "reference_refinement_bound": reference_bound,
+                                   "pinned_reference": entry, "solver_diagnostics": value.diagnostics})
+                    if not passed:
+                        write_json(args.out / "implementation_parity.json", parity)
+                        write_json(args.out / "first_invocations.json", warmups)
+                        raise RuntimeError("compiled query failed admitted scientific reference parity")
+            write_json(args.out / "first_invocations.json", warmups)
+            write_json(args.out / "implementation_parity.json", parity)
+
+    # Fail cheaply on all target cases before regenerating the POD bank.
+    qualify(subjects)
+    start = time.perf_counter()
+    log("regenerating original POD bank from training seed")
+    pod_G, pod_info = rebuild_pod(original, cfg["n"], cfg["horizon"])
+    pod_rows = max([cfg["rom"]["rows"]] + [v["rows"] for v in cfg.get("pod_head_settings", [])])
+    pod_ops, pod_checks = SR.build_operators_fast(pod_G, cfg["n"], pod_rows, check_modes=8)
+    pod_params, pod_codes = load_head(HERE / "assets/pod_head_k8_n64.npz")
+    pod_assets = args.out / "deployed_assets/pod"
+    save_assets(pod_assets, pod_G, pod_ops, pod_params, pod_codes)
+    setup.append({"phase": "frozen POD recipe regeneration and exact operators", "wall_seconds": time.perf_counter()-start,
+                  "pod_info": pod_info, "operator_checks": pod_checks, "timing_scope": "offline setup including compilation"})
+    write_json(args.out / "offline_setup.json", setup)
+    comparators = []
+    for setting in cfg.get("pod_head_settings", [{"rows": cfg["rom"]["rows"], "dt": cfg["rom"]["dt"]}]):
+        name = f"pod_head_m{setting['rows']}_dt{setting['dt']:g}"
+        comparators.append(native_subject(name, "pod", "head", 64, cfg, pod_assets, setting))
+    for rank in cfg["pod_span_ranks"]:
+        comparators.append(native_subject(f"pod_span{rank}", "pod", "span", rank, cfg, pod_assets))
+    comparators.extend(classical_subject(candidate, cfg) for candidate in cfg["classical_candidates"])
+
+    qualify(comparators)
+    subjects.extend(comparators)
     write_json(args.out / "implementation_parity.json", parity)
     write_json(args.out / "first_invocations.json", warmups)
     result = run_suite(subjects, cases, target_names=["learned_head", "learned_span64"],

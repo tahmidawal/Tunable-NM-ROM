@@ -124,7 +124,11 @@ def make_query(kind, *, n, rank, latent, dt, steps, output_every, budget,
         if kind == "head":
             distances = jnp.sum((head_candidates-projected[None])**2, axis=1)
             starts = codes[jnp.argsort(distances, stable=True)[:fit_starts]]
-            solutions, fit_info = jax.vmap(lambda z: fit_lm(z, (projected, params), fit_gtol))(starts)
+            # P1 evaluates each initial-fit start sequentially. Keep those
+            # independent scalar solves: batching changes reduction/linear-solve
+            # arithmetic enough to trigger a strict f64 stationarity failure.
+            solutions, fit_info = jax.lax.map(
+                lambda z: fit_lm(z, (projected, params), fit_gtol), starts)
             choice, raw, band = choose_stationary_fit(fit_info)
             initial = jnp.r_[solutions[choice], jnp.zeros(3)]
             coefficient_gap = jnp.linalg.norm(H.head_apply(params, solutions[choice])-H.head_apply(params, solutions[raw]))
@@ -132,6 +136,7 @@ def make_query(kind, *, n, rank, latent, dt, steps, output_every, budget,
         else:
             initial = jnp.r_[projected, jnp.zeros(3)]
             ic_info = jnp.array([1., 0., 0., 0., 0., 0., 0., 0., 0., 0.])
+            fit_info = jnp.zeros((0, 6), dtype=jnp.float64)
 
         def decode(w, center):
             field = (basis @ coeff(w, params)).reshape(3, n, n, n)
@@ -150,7 +155,8 @@ def make_query(kind, *, n, rank, latent, dt, steps, output_every, budget,
 
         _, (fields, infos) = jax.lax.scan(output_block, (initial, initial, center), None,
                                          length=steps//output_every)
-        return jnp.concatenate((decode(initial, center)[None], fields)), infos.reshape(steps, 6), ic_info
+        return (jnp.concatenate((decode(initial, center)[None], fields)),
+                infos.reshape(steps, 6), ic_info, fit_info)
     return query
 
 

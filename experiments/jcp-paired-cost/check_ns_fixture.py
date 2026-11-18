@@ -49,14 +49,15 @@ query_results = {}
 for kind in ("head", "span"):
     call = Q.make_query(kind, n=n, rank=rank, latent=latent, dt=.002, steps=5,
                        output_every=1, budget=40, fit_starts=2, roundoff_repair=True)
-    fields, stats, fit = jax.block_until_ready(call(u0, .01, *arguments))
+    fields, stats, fit, all_fits = jax.block_until_ready(call(u0, .01, *arguments))
     again = jax.block_until_ready(call(u0, .01, *arguments))[0]
     assert fields.shape == (6, 3, n, n, n) and fields.dtype == jnp.float64
     assert np.isfinite(fields).all() and np.array_equal(fields, again)
     assert stats.shape == (5, 6)
+    assert all_fits.shape == ((2, 6) if kind == "head" else (0, 6))
     query_results[kind] = {"field_shape": list(fields.shape), "repeat_identical": True,
                           "step_reasons": np.asarray(stats[:, 0]).astype(int).tolist(),
-                          "fit_reason": int(fit[0])}
+                          "fit_reason": int(fit[0]), "all_starts_shape": list(all_fits.shape)}
 geometry = Q.F.geometry(n)
 fom = Q.F.make_solver(.002, 5, 1)
 classical = Q.make_classical(scoring_mesh=n, solver_mesh=n, horizon=.01, steps=5, scheme="cnab2")

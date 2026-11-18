@@ -19,6 +19,7 @@ The exact invocation for every allocation is in `cluster/ledger.json` and its co
 ## Important limits
 
 - Global models implement the planned matched-data Tunable separable form. They are not a claim of faithfully reproducing an unchanged historical checkpoint or a complete tuned online solver.
+- The first common head implementation also anchors global heads at zero using the same linear-skip plus shifted-MLP formula as children. This is an architecture choice in this recipe, not an assertion that every native Tunable head uses that constraint; unrestricted-bias global heads were not reproduced. The global direct-bank control does not have this nonlinear-head restriction.
 - The first local Adam-code recipe had a substantial training-code optimization gap. Its early stop does not establish a feature-learning plateau. R1 explicitly refits codes during weight training; all original failures remain available.
 - Code optimization reports finite-start fits and stationarity, not certified global minima.
 - Cached-feature field/JVP timings exclude complete initialization, assembly, adaptation, dynamics and requested dense output. They cannot establish a PDE speedup.

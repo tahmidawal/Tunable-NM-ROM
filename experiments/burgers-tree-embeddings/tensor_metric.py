@@ -37,7 +37,9 @@ def make_geometry(side=6):
 @jax.jit
 def rhs(global_basis,reference,MX,MY):
     N=global_basis.shape[-1];root=.25*jnp.einsum('tij,gij->tg',reference[:,:N,:N],global_basis)
-    local=jnp.einsum('tij,pia,pjb->tpab',reference,MX,MY).reshape(len(reference),-1)
+    # The inherited reference uses N intervals and N-1 interior sine modes.
+    nref=reference.shape[-1]
+    local=jnp.einsum('tij,pia,pjb->tpab',reference,MX[:,:nref],MY[:,:nref]).reshape(len(reference),-1)
     return jnp.concatenate([root,local],axis=1)
 
 @jax.jit

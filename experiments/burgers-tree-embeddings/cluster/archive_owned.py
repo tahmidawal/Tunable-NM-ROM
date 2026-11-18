@@ -7,7 +7,7 @@ rows=json.loads((H/'cluster/ledger.json').read_text())
 def ssh(s):return sp.check_output(['ssh','tufts-login',s],text=True)
 q=ssh('squeue -u tawal01 -h -o "%i %j %T %Z"')
 assert ns not in q,'Finish all owned jobs before moving registered input caches'
-assert all(r.get('state')=='COMPLETED' for r in rows)
+assert all(r.get('state','').split()[0] in {'COMPLETED','FAILED','TIMEOUT','CANCELLED','OUT_OF_MEMORY','NODE_FAIL','PREEMPTED'} for r in rows)
 proof=[]
 for row in rows:
     name=row['name'];assert name.replace('-','').isalnum()
@@ -16,11 +16,12 @@ for row in rows:
     assert m['local_and_remote_verified'] and m['job']==row['id']
     loc=Path(m['local']);assert str(loc).startswith(str(H/'results')+'/')
     # The local raw copy and the designated archive must both pass before cleanup.
-    sp.run(['sha256sum','-c','OUTPUTS.sha256','--quiet'],cwd=loc,check=True)
+    checksum_file=m.get('checksum_file','OUTPUTS.sha256')
+    sp.run(['sha256sum','-c',checksum_file,'--quiet'],cwd=loc,check=True)
     if not row.get('archived_remote'):
-        ssh(f'cd {shlex.quote(old)} && sha256sum -c OUTPUTS.sha256 --quiet')
+        ssh(f'cd {shlex.quote(old)} && sha256sum -c {checksum_file} --quiet')
         ssh(f'mkdir -p {shlex.quote(ns+"/archive")} && test ! -e {shlex.quote(dest)} && mv {shlex.quote(old)} {shlex.quote(dest)}')
-    ssh(f'cd {shlex.quote(dest)} && sha256sum -c OUTPUTS.sha256 --quiet')
+    ssh(f'cd {shlex.quote(dest)} && sha256sum -c {checksum_file} --quiet')
     # Only code already in the committed source snapshot and disposable caches.
     remove=[dest+'/experiments',dest+'/cache',dest+'/tmp']
     assert all(x.startswith(ns+'/archive/'+name+'/') for x in remove)

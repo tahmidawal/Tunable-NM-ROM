@@ -154,6 +154,9 @@ def main():
         chunks += ["", "Adding unchanged rows cannot decrease the smallest singular value at an identical state. That algebraic property alone does not demonstrate improved physical prediction.", ""]
     chunks += ["### Reproducibility", "",
                f"The [builder]({Path(__file__).resolve()}) reads the [registered sources]({ASSETS/'sources.json'}), freezes the JSON evidence, and generates every numerical table and plot above. [Source hashes]({ASSETS/'source-manifest.json'}) and [derived values]({ASSETS/'measured-values.json'}) are saved separately. Full histories, configurations, numerical arrays, hardware logs and checksum manifests remain in the linked experiment lanes. No synthetic values enter these figures.", ""]
+    for e, d, p in loaded:
+        if e["kind"] == "environment_review":
+            chunks += [f"The [environment review]({p['frozen']}) documents retained host CPU-affinity messages in job {d['job_id']}. Explicit GPU and numerical witnesses support accuracy-only admission; diagnostic elapsed times are not used for a speed claim. The message matches the [upstream XLA report]({d['source']}).", ""]
     block = BEGIN + "\n" + "\n".join(chunks) + "\n" + END
     report = REPORT.read_text()
     if BEGIN in report:

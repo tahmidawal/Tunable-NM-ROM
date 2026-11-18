@@ -66,23 +66,43 @@ These are new measured development runs. A numerical failure remains visible eve
 | Retained run / job | Cases | Numerical qualification | Failed gates |
 |---|---:|---|---|
 | [head-p01](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p01.json) / 7354236 | 2 | Provisional: failed | all_stationary, ic_fit_passed, reference_passed |
+| [head-p02](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p02.json) / 7354339 | 2 | Pass | None |
 
-**Provisional comparison; numerical qualification failed — head-p01.** Errors below are maxima over each evolved trajectory, normalized by its original physical initial field. Both primary arms have identical reconstructed initial states. Median and worst are across the same cases.
+**Numerically qualified development comparison — head-p02.** Errors below are maxima over each evolved trajectory, normalized by its original physical initial field. Both primary arms have identical reconstructed initial states. Median and worst are across the same cases.
 
 | Scalar weak rows M | Time step | Head median / worst error (%) | Span median / worst error (%) | Cases with lower head error |
 |---:|---:|---:|---:|---:|
-| 292 | 0.02 | 0.100790 / 0.117651 | 0.905015 / 1.009514 | 2 / 2 |
-| 584 | 0.02 | 0.114230 / 0.137193 | 0.767289 / 1.063704 | 2 / 2 |
-| 584 | 0.01 | 0.088387 / 0.093580 | 0.611531 / 0.820240 | 2 / 2 |
+| 292 | 0.02 | 0.100137 / 0.116196 | 0.904549 / 1.008631 | 2 / 2 |
+| 584 | 0.02 | 0.112733 / 0.135521 | 0.766687 / 1.063164 | 2 / 2 |
+| 584 | 0.01 | 0.088656 / 0.093940 | 0.611201 / 0.820088 | 2 / 2 |
 
-![Measured matched head/span trajectories](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/head-p01-trajectories.png)
+![Measured matched head/span trajectories](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/head-p02-trajectories.png)
 
-The comparison is designed to isolate the head constraint, but the failed numerical gates currently prevent admitting that conclusion.
+The admitted comparison isolates the head constraint under the registered numerical settings.
 Its scope excludes a universal stability guarantee, fresh-test generalization, a global manifold distance, and a complete-query speedup.
+
+### Weak-test visibility
+
+Every panel uses the same-grid, same-time-step discrete Burgers reference. No continuum-error claim is made. Maximum field error includes the initial saved time. Spectral visibility and physical accuracy are separate diagnostics.
+
+| Retained run | Case | M | Maximum field error (%) | Numerical qualification | Independent shell residual |
+|---|---:|---:|---:|---|---:|
+| [weak-p02](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p02.json) | 0 | 256 | 1.904368 | Pass | 0.00243535 |
+| [weak-p02](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p02.json) | 0 | 512 | 1.462042 | Pass | 0.00196867 |
+| [weak-p02](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p02.json) | 0 | 1024 | 1.190747 | Pass | 0.00164771 |
+| [weak-p02](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p02.json) | 0 | 2048 | 1.014660 | Pass | 0.00139583 |
+| [weak-p02](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p02.json) | 1 | 256 | 0.215723 | Provisional: failed | 0.000162037 |
+| [weak-p02](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p02.json) | 1 | 512 | 0.215723 | Provisional: failed | 0.000116262 |
+| [weak-p02](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p02.json) | 1 | 1024 | 0.215723 | Provisional: failed | 9.31746e-05 |
+| [weak-p02](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p02.json) | 1 | 2048 | 0.215723 | Provisional: failed | 8.1317e-05 |
+
+Adding unchanged rows cannot decrease the smallest singular value at an identical state. That algebraic property alone does not demonstrate improved physical prediction.
 
 ### Reproducibility
 
 The [builder](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/build_2026_11_18_jcp_controlled_experiments.py) reads the [registered sources](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/sources.json), freezes the JSON evidence, and generates every numerical table and plot above. [Source hashes](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/source-manifest.json) and [derived values](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/measured-values.json) are saved separately. Full histories, configurations, numerical arrays, hardware logs and checksum manifests remain in the linked experiment lanes. No synthetic values enter these figures.
+
+The [environment review](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p02-environment.json) documents retained host CPU-affinity messages in job 7354339. Explicit GPU and numerical witnesses support accuracy-only admission; diagnostic elapsed times are not used for a speed claim. The message matches the [upstream XLA report](https://github.com/openxla/xla/issues/45484).
 
 <!-- GENERATED EXPERIMENT RESULTS END -->
 

@@ -1,0 +1,416 @@
+{
+  "protocol_version": 1,
+  "date": "2026-11-18",
+  "status": "PLANNED_AWAITING_USER_START_IN_NEW_SESSION",
+  "plan_file": "TREE-EMBEDDING-PLAN.md",
+  "launch_file": "START-TREE-EMBEDDING-SESSION.md",
+  "authority": "The user-issued new-session launch instruction starts this study. This JSON alone does not authorize execution or resume the old campaign.",
+  "scope": {
+    "primary": "2D scalar viscous Burgers, one isotropic pulse and smooth controls",
+    "old_campaign": "remains paused and read-only",
+    "not_in_scope": [
+      "3D/octree experiments",
+      "automatic merges",
+      "resuming the old campaign",
+      "substituting a different PDE family after a failure"
+    ]
+  },
+  "ownership": {
+    "claim_directory": "/home/tahmid/Dev/QuadtreeNMROM/execution/tree-embeddings-owner.lock",
+    "claim_creation": "exclusive; inspect existing claim before acting",
+    "worktree_template": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/YYYY-MM-DD-burgers-tree-embeddings",
+    "branch_template": "exp/YYYY-MM-DD-burgers-tree-embeddings",
+    "namespace_template": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-<date>-<unique-id>",
+    "fork_at_plan_creation": "93f399faad67f94ea2b56fe25f13003143e64694",
+    "codeonly_base_at_plan_creation": "5a64899fdcfbeb6cfe5b3371af1a8d8a3d2b568f",
+    "verify_current_fork_before_use": true
+  },
+  "pde": {
+    "equation": "u_t + u*(u_x+u_y) = nu*(u_xx+u_yy)",
+    "domain": [
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        1
+      ]
+    ],
+    "boundary": "homogeneous Dirichlet",
+    "viscosity": 0.005,
+    "end_time": 0.25,
+    "initial_envelope": "B=sin(pi*x)^2*sin(pi*y)^2",
+    "pulse_initial": "B*(0.15+A*exp(-((x-cx)^2+(y-cy)^2)/(2*sigma^2)))",
+    "smooth_initial": "a*B",
+    "ranges": {
+      "cx": [
+        0.25,
+        0.65
+      ],
+      "cy": [
+        0.25,
+        0.65
+      ],
+      "sigma_log_uniform": [
+        0.035,
+        0.075
+      ],
+      "A": [
+        0.8,
+        1.4
+      ],
+      "a_smooth": [
+        0.4,
+        0.8
+      ]
+    },
+    "visible_pulse_fixture": {
+      "cx": 0.35,
+      "cy": 0.35,
+      "sigma": 0.045,
+      "A": 1.2
+    }
+  },
+  "data": {
+    "generator": "numpy.random.default_rng(numpy.random.SeedSequence([cohort_seed, case_index]))",
+    "family_rule": "smooth iff case_index % 4 == 3, else pulse",
+    "pulse_draw_order": [
+      "cx",
+      "cy",
+      "log_sigma",
+      "A"
+    ],
+    "counts": {
+      "train": 64,
+      "dev": 16,
+      "final_test": 64
+    },
+    "seeds": {
+      "train": 2026111801,
+      "dev": 2026111802,
+      "final_test": 2026111803
+    },
+    "snapshot_times": [
+      0.0,
+      0.025,
+      0.05,
+      0.075,
+      0.1,
+      0.125,
+      0.15,
+      0.175,
+      0.2,
+      0.225,
+      0.25
+    ],
+    "score_times": [
+      0.05,
+      0.1,
+      0.15,
+      0.2,
+      0.25
+    ],
+    "conditional_counts": {
+      "train": 128,
+      "dev": 32
+    },
+    "final_test_policy": "reserve seed; generate solution fields only after full method freeze; first16 optional logistics block with no subsequent tuning; final panel64",
+    "alignment": {
+      "count_per_panel": 12,
+      "sigmas": [
+        0.035,
+        0.055
+      ],
+      "deltas": [
+        -0.01,
+        0,
+        0.01
+      ],
+      "A": 1.2,
+      "dev_centers": [
+        "(0.5+delta,0.35)",
+        "(0.5+delta,0.5-delta)"
+      ],
+      "final_centers": [
+        "(0.375+delta,0.58)",
+        "(0.625+delta,0.625-delta)"
+      ]
+    }
+  },
+  "contracts": {
+    "error_norm": "relative physical L2 divided by current-time reference norm",
+    "old_initial_norm_results_not_directly_comparable": true,
+    "projection_gate": 0.005,
+    "trajectory_error_plus_reference_allowance_gate": 0.01,
+    "reference_allowance_max": 0.001,
+    "scoring_change_max": 0.0002,
+    "time_and_integration_change_each_max": 0.001,
+    "pointwise_error": "companion metric, not an implicit 1% pointwise promise",
+    "input": "shared initial-field callable, viscosity, BC and output times; charge all initial sampling/fitting; no privileged pulse descriptors",
+    "primary_output": {
+      "count": 1,
+      "times": [
+        0.25
+      ],
+      "shape": [
+        4096,
+        4096
+      ],
+      "coordinates": "j/4095, j=0..4095",
+      "location": "device"
+    },
+    "secondary_output": {
+      "count": 5,
+      "times": [
+        0.05,
+        0.1,
+        0.15,
+        0.2,
+        0.25
+      ]
+    },
+    "scaling_output_sizes": [
+      512,
+      1024,
+      2048,
+      4096
+    ],
+    "host_transfer": "separate labelled timed contract",
+    "projection_gate_scope": "tree candidates; global controls remain in accuracy-cost curves and qualify on physical trajectory accuracy"
+  },
+  "references": {
+    "space_intervals": [
+      128,
+      256,
+      512
+    ],
+    "time_steps": [
+      0.000625,
+      0.0003125,
+      0.00015625
+    ],
+    "refine_separately": true,
+    "allow_further_refinement": true,
+    "allowance": "last spatial change + last temporal change + extension/scoring change; inspect preceding differences; empirical, not certified",
+    "independent_discretization_cross_check": true
+  },
+  "models": {
+    "global_bank": {
+      "feature_width": 128,
+      "hidden_widths": [
+        128,
+        128,
+        128
+      ],
+      "activation": "tanh",
+      "fourier_frequencies": [
+        1,
+        2,
+        4,
+        8
+      ],
+      "direct_prefixes": [
+        16,
+        32,
+        64,
+        128
+      ]
+    },
+    "global_heads": {
+      "latent_dimensions": [
+        16,
+        32,
+        64
+      ],
+      "conditional_dimension": 128,
+      "hidden_widths": [
+        64,
+        64
+      ],
+      "linear_skip": true
+    },
+    "tree_parent": {
+      "source": "same selected global nonlinear checkpoint for both tree variants",
+      "latent_dimension": 16,
+      "weights_frozen_for_first_local_comparison": true,
+      "codes_jointly_refitted": true
+    },
+    "local_bank": {
+      "feature_width": 16,
+      "hidden_widths": [
+        64,
+        64
+      ],
+      "inputs": [
+        "normalized_local_x",
+        "normalized_local_y",
+        "log2_patch_size"
+      ],
+      "activation": "tanh"
+    },
+    "local_direct_prefixes": [
+      4,
+      8,
+      16
+    ],
+    "local_head": {
+      "latent_dimension": 4,
+      "hidden_widths": [
+        32,
+        32
+      ],
+      "output_width": 16,
+      "formula": "L*z+f(z)-f(0)",
+      "nonzero_independent_jacobian_at_zero_required": true
+    },
+    "tree": {
+      "depth_max_initial": 3,
+      "depth_max_conditional": 4,
+      "window": "fixed C2 quintic tensor taper plus physical zero-boundary factor",
+      "halo_width_fraction": 0.25,
+      "retain_parents": true,
+      "renormalize_existing_windows": false,
+      "total_active_variable_caps": [
+        32,
+        64,
+        128
+      ],
+      "root_only_dimension": 16,
+      "uniform_same_checkpoint_control": true
+    }
+  },
+  "training": {
+    "trajectory_and_time_weighting": "equal",
+    "tree_weighting": "balanced uniform, random-connected, training-oracle trees; shallower truncations in half of minibatches",
+    "objective": "assembled physical field; refit every prefix/tree code; current-time norm",
+    "derivative_weight_initial": 0.0,
+    "derivative_weight_repairs": [
+      0.0001,
+      0.001
+    ],
+    "optimizer": "Adam",
+    "learning_rate_initial": 0.001,
+    "learning_rate_final": 1e-05,
+    "schedule": "cosine",
+    "update_caps": {
+      "global_stage": 20000,
+      "local_feature_initialization": 20000,
+      "head_and_assembled_stage": 20000
+    },
+    "code_refit_max_iterations_initial": 25,
+    "training_quadrature_start_per_axis": 64,
+    "check_every_updates": 1000,
+    "early_stop_checks": 5,
+    "early_stop_relative_improvement": 0.01,
+    "model_seeds": [
+      2026111851,
+      2026111852,
+      2026111853
+    ],
+    "first_round_recipe_cap": 12,
+    "failed_distinct_repairs_before_decision": 2,
+    "checkpoint_selection": "worst optimized development projection error, median as tie-breaker; common evaluation configurations",
+    "repair_options": {
+      "local_hidden_width": 128,
+      "local_feature_width": 32,
+      "local_latent_dimension": 8,
+      "halo_widths": [
+        0.125,
+        0.5
+      ],
+      "policy": "one diagnosed change per recipe; separately frozen head dimensions, no runtime nonlinear-code padding"
+    }
+  },
+  "pde_solver": {
+    "primary": "incumbent scaled tested weak residual; exact fine-grid upwind advection stencil; unchanged verified linear diffusion",
+    "internal_mesh_intervals": [
+      1024,
+      2048,
+      4096
+    ],
+    "internal_nodes_per_axis": "L+1; distinct from output grid",
+    "time_steps_initial": [
+      0.005,
+      0.0025,
+      0.00125
+    ],
+    "nonlinear_method": "damped Gauss-Newton/LM",
+    "iteration_cap_initial": 30,
+    "stationarity_tolerance_initial": 1e-08,
+    "normalized_update_tolerance_initial": 1e-10,
+    "verification_tightening_factor": 100,
+    "initial_tests_per_active_variable": 4,
+    "initial_quadrature_points_per_test": 4,
+    "topology_fixed_inside_solve": true,
+    "continuous_flux_alternative": "separate labelled later experiment with matching global controls and reference qualification",
+    "latent_trust_region": "must contain zero child codes and the previous feasible parent state; report activations"
+  },
+  "adaptation": {
+    "top_locations": 2,
+    "candidate_solve_cap_per_cycle": 4,
+    "accepted_cycle_cap_per_step": 2,
+    "initial_validation_decrease_fraction": 0.2,
+    "validation_metric": "common normalized tests/probes across candidates",
+    "new_child_codes": "zero",
+    "initial_coarsening": false,
+    "online_truth_access": false,
+    "learned_selector": "optional later recipe",
+    "fallback": "validated, labelled and fully timed",
+    "global_fallback": "qualified recomputation from the known initial condition; charge prior failures and full fallback; nonlinear heads are not assumed nested"
+  },
+  "baselines": {
+    "first": [
+      "global Tunable nonlinear",
+      "global learned direct bank",
+      "tree direct local coefficients",
+      "uniform and prescribed local allocations"
+    ],
+    "confirmation": [
+      "CROM",
+      "SNF-ROM",
+      "hyper-reduced shallow masked autoencoder NM-ROM"
+    ],
+    "conditional": [
+      "equation-driven CoLoRA"
+    ],
+    "classical_context": [
+      "POD ROM",
+      "tuned coarse-grid solver",
+      "second-order solver",
+      "spectral solver"
+    ]
+  },
+  "timing": {
+    "same_physical_gpu_and_allocation": true,
+    "same_returned_states_for_accuracy": true,
+    "repetitions_per_case": 5,
+    "finalist_blocks": 2,
+    "balanced_random_order_seed": 2026111805,
+    "include_rejected_trials": true,
+    "include_cold_start": true,
+    "include_requested_reconstruction": true,
+    "cache_universe_and_setup_recorded": true,
+    "paired_ratio": "tree/comparator",
+    "faster_gate": "all-case accuracy plus median ratio<1 and trajectory-bootstrap 95% upper endpoint<1",
+    "substantial_target_ratio": 0.5
+  },
+  "compute": {
+    "initial_reservation_gpu_hours": 8,
+    "cumulative_review_checkpoints_gpu_hours": [
+      8,
+      32,
+      80
+    ],
+    "additional_batches": "finite, prospectively documented and justified by evidence; not automatic spending targets",
+    "max_concurrent_owned_gpu_jobs": 2,
+    "max_hours_per_job": 4,
+    "local_compute": "sub-minute smoke tests under jaxrun",
+    "cluster_partition": "gpu",
+    "submission_host": "tufts-login",
+    "precision": "float64",
+    "matmul_precision": "highest",
+    "gpu_preflight_required": true
+  },
+  "implementation_status": "No new implementation, reference generation, model training or cluster jobs in the planning session."
+}

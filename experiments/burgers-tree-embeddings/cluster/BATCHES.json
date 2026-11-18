@@ -1,0 +1,14 @@
+{
+  "cumulative_ceiling_gpu_seconds": 28800,
+  "batches": [
+    {
+      "id": "B0",
+      "max_allocated_gpu_seconds": 28800,
+      "purpose": "Reference qualification and first matched-data global/direct/nonlinear decoder comparison",
+      "gate": "All development and alignment projection errors <=0.005; zero-child and Jacobian fixtures; qualified reference <=0.001",
+      "recipe_cap": 12,
+      "max_concurrent": 2,
+      "max_seconds_per_job": 14400
+    }
+  ]
+}

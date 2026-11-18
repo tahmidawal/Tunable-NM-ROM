@@ -1,0 +1,60 @@
+[
+  {
+    "source": "/home/tahmid/Dev/QuadtreeNMROM/TREE-EMBEDDING-PLAN.md",
+    "destination": "TREE-EMBEDDING-PLAN.md",
+    "sha256": "f5bb6b003a124dfc698ad25ee72cce885b13b6f0789a0cb44a99a559aed1b1f0"
+  },
+  {
+    "source": "/home/tahmid/Dev/QuadtreeNMROM/tree-embedding-protocol.json",
+    "destination": "tree-embedding-protocol.json",
+    "sha256": "80aee8a3e1371f2ddae2f353ca51470e5ce122f6b634fb5dac21eca3fa110df0"
+  },
+  {
+    "source": "/home/tahmid/Dev/QuadtreeNMROM/START-TREE-EMBEDDING-SESSION.md",
+    "destination": "START-TREE-EMBEDDING-SESSION.md",
+    "sha256": "089ba2c6b02d9e4f92c7d01fea0e65f15f5b128fe955d11d8295c65af074971d"
+  },
+  {
+    "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-17-burgers-quadtree/experiments/burgers-quadtree/continuous.py",
+    "source_commit": "b349bbb2dd7aa1a02250cbc36f3fe775754f20a5",
+    "destination": "vendor/continuous.py",
+    "sha256": "02fe29d221d761c8db1bdcf45b861ca50ddbb89ccf8a683d515edee6948041fd",
+    "modifications": "none; self-contained pscore imported; other files retained as adaptation provenance",
+    "license": "Repository code; no license header in source. No external redistribution claim."
+  },
+  {
+    "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-17-burgers-quadtree/experiments/burgers-quadtree/vendor/tree/experiments/jcp-references/pscore.py",
+    "source_commit": "b349bbb2dd7aa1a02250cbc36f3fe775754f20a5",
+    "destination": "vendor/pscore.py",
+    "sha256": "83d8a004c4914de456c02fef31a74050ebe90bfb74cc9e6ed2fa693730449548",
+    "modifications": "none; self-contained pscore imported; other files retained as adaptation provenance",
+    "license": "Repository code; no license header in source. No external redistribution claim."
+  },
+  {
+    "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-17-burgers-quadtree/experiments/burgers-quadtree/vendor/tree/experiments/jcp-references/refcore.py",
+    "source_commit": "b349bbb2dd7aa1a02250cbc36f3fe775754f20a5",
+    "destination": "vendor/refcore.py",
+    "sha256": "dc42b15cb86782b23202b74be68768acc89996107f65747c0345f7d700014fdc",
+    "modifications": "none; self-contained pscore imported; other files retained as adaptation provenance",
+    "license": "Repository code; no license header in source. No external redistribution claim."
+  },
+  {
+    "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-17-burgers-quadtree/experiments/burgers-quadtree/vendor/tree/experiments/mr-burgers2d/engines.py",
+    "source_commit": "b349bbb2dd7aa1a02250cbc36f3fe775754f20a5",
+    "destination": "vendor/engines.py",
+    "sha256": "820039e5840abaf92dc911f9de8c6a427f97cbd2617f1e7a5169e66c19fa62e4",
+    "modifications": "none; self-contained pscore imported; other files retained as adaptation provenance",
+    "license": "Repository code; no license header in source. No external redistribution claim."
+  },
+  {
+    "destination": "fd_reference.py",
+    "adapted_from": "vendor/refcore.py",
+    "modifications": [
+      "2D-only DST replaces transitive imports, arithmetic copied from engines.dst1",
+      "eleven snapshots at .025 spacing",
+      "4000-stage evidence buffer; no changes to CN/Rannacher/Newton/BiCGStab equations",
+      "unused cohort/lattice functions omitted"
+    ],
+    "sha256": "5cd400bf17cc5b49279eee5c5b2cd716fb969c4164fb4f6a1ea250593ae1935d"
+  }
+]

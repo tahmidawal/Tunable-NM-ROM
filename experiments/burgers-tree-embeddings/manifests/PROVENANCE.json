@@ -71,5 +71,15 @@
     ],
     "sha256": "f1132c5d4aea478ce544e9be09e0747d6a2bfd12f110ada216dea1801d4da1f4",
     "verification": "smoke/weak.json: vendor spatial bitwise agreement and dense tested identity"
+  },
+  {
+    "destination": "discrete_weak.py",
+    "adapted_from": "vendor/engines.py:dst1,dst2 and operators.py:spatial,tested",
+    "modifications": [
+      "Independent dense-grid fixed-tree diagnostic; FFT test projection, exact fine-upwind advection and discrete sine eigen-diffusion",
+      "Same algebra as incumbent scaled tested residual; fixture verifies equality against explicitly dense tests",
+      "No runtime imports from the paused campaign"
+    ],
+    "sha256": "4885d9c7d12ec237999853e98598a7a063ed71451fe658391eedefb64383d9cf"
   }
 ]

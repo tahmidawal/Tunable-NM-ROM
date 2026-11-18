@@ -17,6 +17,8 @@ def main():
     assert float(jnp.max(jnp.abs(z-ztrue)))<1e-6,(z,e,s)
     assert float(e)<1e-7 and float(s)<1e-8
     assert float(jnp.max(jnp.abs(H.head(params,jnp.zeros_like(z),g,h,scale))))==0
+    zd,ed,sd,nd=H.make_project(25,linear_solver='dense')(S,b,constant,norm2,jnp.zeros_like(ztrue),params,g,h,scale,mask)
+    assert float(jnp.max(jnp.abs(zd-z)))<1e-6 and float(sd)<1e-8
     print('PASS shared child physical LM / Hessian / zero transfer',float(e),float(s),flush=True)
 
 if __name__=='__main__':main()

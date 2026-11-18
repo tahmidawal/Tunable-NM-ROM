@@ -415,8 +415,8 @@
     "args": "--latent 8 --cache /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1cache/output",
     "gpu": "a100",
     "submitted_utc": "2026-11-18T22:20:54.643800+00:00",
-    "state": "RUNNING",
-    "elapsed_seconds": 282,
+    "state": "COMPLETED",
+    "elapsed_seconds": 679,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
   },
@@ -432,6 +432,21 @@
     "submitted_utc": "2026-11-18T22:21:17.684719+00:00",
     "state": "COMPLETED",
     "elapsed_seconds": 149,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b1directaudit",
+    "id": 7355057,
+    "reserved_minutes": 45,
+    "commit": "34b820e21b2b11504c83146d15dec37a9b883451",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1directaudit",
+    "driver": "audit_compressed_direct.py",
+    "args": "--rank 24 --cache /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1cache/output --dev /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/refsdev01/output,/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1refextend/output/dev",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-18T22:26:00.969703+00:00",
+    "state": "COMPLETED",
+    "elapsed_seconds": 330,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
   }

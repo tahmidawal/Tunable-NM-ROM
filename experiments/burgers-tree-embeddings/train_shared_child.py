@@ -33,6 +33,7 @@ def main():
     ap=argparse.ArgumentParser();ap.add_argument('--out',required=True);ap.add_argument('--cache',required=True)
     ap.add_argument('--latent',type=int,required=True);ap.add_argument('--pretrain',type=int,default=4000)
     ap.add_argument('--updates',type=int,default=12000);ap.add_argument('--seed',type=int,default=2026111851)
+    ap.add_argument('--linear-solver',choices=['cg','dense'],default='cg')
     a=ap.parse_args();out=Path(a.out);out.mkdir(parents=True,exist_ok=True);meta=preflight();path=Path(a.cache)
     assert str(path).startswith(os.environ['STUDY_NAMESPACE']+'/')
     tr,tl=load_cache(path,'train',out);dv,vl=load_cache(path,'dev',out)
@@ -52,7 +53,7 @@ def main():
         v,grad=jax.value_and_grad(loss)(p);up,state=opt.update(grad,state,p)
         return optax.apply_updates(p,up),state,v
     result=dict(meta=meta,status='shared_child_pretraining',latent=a.latent,root=128,nodes=52,local_features=36,
-        active_variables=128+52*a.latent,seed=a.seed,cache_sha256=digest(path/'result.json'),train_labels=tl,dev_labels=vl,
+        active_variables=128+52*a.latent,seed=a.seed,linear_solver=a.linear_solver,cache_sha256=digest(path/'result.json'),train_labels=tl,dev_labels=vl,
         training_allocations='prescribed initial-field swept tree; equal full-depth and shallower-truncation minibatches',
         limitations=['Analytical coordinate features; not a coordinate-MLP reproduction',
                      'Focused prescribed-tree training amendment; balanced uniform/random/oracle mixture not yet reproduced'],
@@ -63,8 +64,8 @@ def main():
             result['pretraining'].append(dict(update=it,loss=float(v)));print('child_pretrain',a.latent,it,float(v),flush=True)
             save(out/'result.json',result)
     del patches,geom,hs,ns
-    project25=jax.jit(jax.vmap(H.make_project(25),in_axes=(None,0,0,0,0,None,None,None,None,None)))
-    project75=jax.jit(jax.vmap(H.make_project(75),in_axes=(None,0,0,0,0,None,None,None,None,None)))
+    project25=jax.jit(jax.vmap(H.make_project(25,linear_solver=a.linear_solver),in_axes=(None,0,0,0,0,None,None,None,None,None)))
+    project75=jax.jit(jax.vmap(H.make_project(75,linear_solver=a.linear_solver),in_axes=(None,0,0,0,0,None,None,None,None,None)))
     def encoded(params,d,i,cfg):
         return H.encode(params['encoder'],d['teacher'][i,cfg],d['geometry'][i],d['h'][i],scale)
     def refit(params,d,i,cfg,start,which=project25):

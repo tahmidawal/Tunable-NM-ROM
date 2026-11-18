@@ -86,6 +86,12 @@ These pilots solve complete trajectories from the shared initial callable with t
 | dev003 | global_POD768 | 1024 | 0.0025 | 0.2944% | True | True |
 | align002 | tree_direct24 | 1024 | 0.0025 | 2.2570% | True | False |
 | align002 | global_POD768 | 1024 | 0.0025 | 2.0991% | True | False |
+| dev000 | tree_direct24 | 2048 | 0.0025 | 2.0921% | True | False |
+| dev000 | global_POD768 | 2048 | 0.0025 | 1.9700% | True | False |
+| dev003 | tree_direct24 | 2048 | 0.0025 | 0.2248% | True | True |
+| dev003 | global_POD768 | 2048 | 0.0025 | 0.2246% | True | True |
+| align002 | tree_direct24 | 2048 | 0.0025 | 1.9630% | True | False |
+| align002 | global_POD768 | 2048 | 0.0025 | 1.6391% | True | False |
 
 ![Fixed-tree physics diagnosis](b1-fixed-tree-physics.png)
 
@@ -97,7 +103,7 @@ Original recipes, unsuccessful repairs and the original decision remain in [the 
 
 ## Accounting and provenance
 
-Generated 2026-11-18T23:16:58.195719+00:00. Terminal allocations recorded in the current ledger total 7760 GPU-seconds (2.155556 GPU-hours); nonterminal or not-yet-reconciled names: b1child16, b1weakL2048. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
+Generated 2026-11-18T23:23:09.706776+00:00. Terminal allocations recorded in the current ledger total 8524 GPU-seconds (2.367778 GPU-hours); nonterminal or not-yet-reconciled names: b1child16. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
 
 ## Glossary
 

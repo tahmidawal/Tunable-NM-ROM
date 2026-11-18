@@ -42,7 +42,8 @@ def main():
                 assert row['max_head_distance_outside_affine_span']<1e-9
                 assert row['lower_bound_violation']<1e-9
                 assert abs(float(jnp.max(actual))-rec['worst_projection'])<1e-9
-                row['dev_labels']=rec['dev_labels']
+                row['dev_labels']=rec.get('dev_labels') or sr.get('dev_labels') or sr.get('labels')
+                row['legacy_labels_absent']=row['dev_labels'] is None
         result['models'].append(row);save(out/'result.json',result)
         print('head_span',row['latent'],rank,row['panels']['dev']['worst'],rec['worst_projection'],flush=True)
     result['status']='complete_frozen_global_output_span';save(out/'result.json',result)

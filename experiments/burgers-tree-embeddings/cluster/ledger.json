@@ -476,7 +476,7 @@
     "gpu": "a100",
     "submitted_utc": "2026-11-18T22:34:35.682135+00:00",
     "state": "RUNNING",
-    "elapsed_seconds": 2601,
+    "elapsed_seconds": 2909,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
   },
@@ -520,8 +520,23 @@
     "args": "--L 2048 --dt 0.0025 --compare-previous /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1weakpilot1/output --cache /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1cache/output --span /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1expanded/output --admission /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1directaudit/output --dev /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/refsdev01/output,/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1refextend/output/dev",
     "gpu": "a100",
     "submitted_utc": "2026-11-18T23:08:03.951413+00:00",
-    "state": "RUNNING",
-    "elapsed_seconds": 578,
+    "state": "COMPLETED",
+    "elapsed_seconds": 740,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b1headspan",
+    "id": 7356184,
+    "reserved_minutes": 15,
+    "commit": "cff4bb3d533a305e05ecdff0361b54a54187e5dd",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1headspan",
+    "driver": "audit_global_head_span.py",
+    "args": "--models /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1parent16/output,/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1global64/output,/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1global128/output --spans /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1attrib01/output,/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1expanded/output,/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1expanded/output",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-18T23:21:34.208829+00:00",
+    "state": "FAILED",
+    "elapsed_seconds": 24,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
   }

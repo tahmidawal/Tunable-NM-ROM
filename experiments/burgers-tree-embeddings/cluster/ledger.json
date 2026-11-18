@@ -566,7 +566,22 @@
     "gpu": "a100",
     "submitted_utc": "2026-11-18T23:25:08.115579+00:00",
     "state": "RUNNING",
-    "elapsed_seconds": 303,
+    "elapsed_seconds": 683,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b1child16refit",
+    "id": 7356267,
+    "reserved_minutes": 45,
+    "commit": "bf2a1ad2f1a31a2253786c6f894bba155a0e1ebf",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1child16refit",
+    "driver": "audit_child_projection.py",
+    "args": "--linear-solver cholesky --model /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1child16/output --cache /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1cache/output",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-18T23:30:53.036981+00:00",
+    "state": "COMPLETED",
+    "elapsed_seconds": 272,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
   }

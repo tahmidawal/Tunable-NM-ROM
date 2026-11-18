@@ -53,6 +53,15 @@
       "result": "PASS independent old/new dense CN stencil, original BE operator, eigen-diffusion, field, Jacobian and step",
       "benchmark": false,
       "source_sha256": "29d06e140ed3a703546bd54c02cdea30249d787620497e1c61eb6dbebee8b9f0"
+    },
+    {
+      "script": "test_discrete_weak.py",
+      "utc": "2026-11-18T23:36:04.433180+00:00",
+      "maximum_seconds": 55,
+      "launcher": "timeout 55s jaxrun",
+      "result": "PASS exact sparse five-point fine-spacing samples at Q=L and Q=L/2, dense-equivalent tested advection and CN step, selected-mode identity",
+      "benchmark": false,
+      "source_sha256": "edae2ee1554addacbc57a97113fb1cadfc93ceefdd28ed1d4a0d01a5444c11ca"
     }
   ]
 }

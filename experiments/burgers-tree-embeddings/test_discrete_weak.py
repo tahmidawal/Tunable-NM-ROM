@@ -1,6 +1,7 @@
 """Small exact-grid arithmetic/Jacobian fixture for the fixed-tree solver."""
 from common import *
 import discrete_weak as W,operators,geometry,tensor_metric as TM,local_polynomial as LP
+import weak_quadrature as QW
 
 def main():
     L=32;root=4;rank=4;M=80;cells=geometry.uniform(1)
@@ -38,6 +39,23 @@ def main():
     assert float(jnp.max(jnp.abs(cnres(c,rhs,cache,dt,nu,norm)-densecn)))<1e-12
     cnout,cnstatus=cnstep(c,cache,dt,nu,1e-8,1e-10)
     assert jnp.all(jnp.isfinite(cnout)) and float(cnstatus[1])<1e-7,cnstatus
+    for Q in (16,32):
+        qc,qs=QW.prepare(base,cells,T,U,L,Q);ca=dict(cache,quadrature=qc)
+        fields=QW.make_fields(qs,rank);values=fields(c,ca)
+        qidx=jnp.arange(1,Q)*(L//Q);ii,jj=jnp.meshgrid(qidx,qidx,indexing='ij');padded=jnp.pad(u,1)
+        expected=jnp.stack([padded[ii,jj],padded[ii+1,jj],padded[ii-1,jj],padded[ii,jj+1],padded[ii,jj-1]])
+        assert float(jnp.max(jnp.abs(values-expected)))<1e-12
+        qadv=QW.make_tested(fields,L,Q);exactadv=W.dst2(adv.reshape(L-1,L-1)[ii-1,jj-1])/Q
+        assert float(jnp.max(jnp.abs(qadv(c,ca)-exactadv[cache['indices'][0],cache['indices'][1]])))<1e-12
+        if Q==L:
+            qstep,_=W.make_solver(field,L,theta=.5,advection_tests=qadv)
+            qo,qs=qstep(c,ca,dt,nu,1e-8,1e-10)
+            assert float(jnp.linalg.norm(qo-cnout))<1e-8 and float(qs[1])<1e-7
+    LL=512;MM=5504;idx,lamfast=W.selected_modes(LL,MM)
+    kk=np.arange(1,LL);vv=4*LL**2*np.sin(np.pi*kk/(2*LL))**2;dense=vv[:,None]+vv[None,:]
+    selected=np.argsort(dense.ravel(),kind='stable')[:MM]
+    assert np.array_equal(idx,np.asarray(np.unravel_index(selected,dense.shape)))
+    assert np.array_equal(lamfast,dense.ravel()[selected])
     print('PASS exact dense weak-upwind / eigen-diffusion / field / Jacobian / step',np.asarray(status),flush=True)
 
 if __name__=='__main__':main()

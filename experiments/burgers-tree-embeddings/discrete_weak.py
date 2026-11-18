@@ -19,7 +19,14 @@ def dst2(x):return dst1(dst1(x).swapaxes(-1,-2)).swapaxes(-1,-2)
 
 def selected_modes(L,M):
     k=np.arange(1,L);v=4*L**2*np.sin(np.pi*k/(2*L))**2
-    lam=v[:,None]+v[None];ix=np.argsort(lam.ravel(),kind='stable')[:M]
+    assert 0<M<=(L-1)**2
+    side=min(L-1,max(2,int(np.ceil(np.sqrt(2*M)))))
+    while True:
+        lam=v[:side,None]+v[None,:side];ix=np.argsort(lam.ravel(),kind='stable')[:M]
+        # Every omitted pair has at least one index >=side. Strict inequality
+        # excludes ties; stable row-major ordering matches the full-grid sort.
+        if side==L-1 or (len(ix)==M and lam.ravel()[ix[-1]]<v[side]+v[0]):break
+        side=min(L-1,2*side)
     kx,ky=np.unravel_index(ix,lam.shape)
     return np.stack([kx,ky]),lam.ravel()[ix]
 
@@ -29,7 +36,7 @@ def raw_axis(x,center,h,side=6):
     for n in range(2,side):p.append(((2*n-1)*v*p[-1]-(n-1)*p[-2])/n)
     t=np.clip((np.abs((x-center)/h)-.5)/.25,0.,1.)
     window=1-(10*t**3-15*t**4+6*t**5)
-    return np.stack(p[:side],axis=-1)*(4*x*(1-x)*window)[:,None]
+    return np.stack(p[:side],axis=-1)*(4*x*(1-x)*window)[...,None]
 
 
 def prepare(basis,cells,transforms,rotation,L,M,physical_gram):
@@ -70,19 +77,21 @@ def make_field(slices,rank):
     return field
 
 
-def make_solver(field,L,iterations=30,cg_iterations=80,theta=1.):
+def make_solver(field,L,iterations=30,cg_iterations=80,theta=1.,advection_tests=None):
     assert theta in (1.,.5)
+    def tested_advection(c,cache):
+        if advection_tests is not None:return advection_tests(c,cache)
+        adv,_=operators.spatial(field(c,cache),L)
+        return dst2(adv.reshape(L-1,L-1))[cache['indices'][0],cache['indices'][1]]/L
     def residual(c,previous,cache,dt,nu,norm):
-        u=field(c,cache);adv,_=operators.spatial(u,L)
-        advtests=dst2(adv.reshape(L-1,L-1))[cache['indices'][0],cache['indices'][1]]/L
+        advtests=tested_advection(c,cache)
         denom=1+theta*dt*nu*cache['lam']
         return (cache['A']@c-previous/denom+theta*dt*advtests/denom)/norm
     @jax.jit
     def step(c0,cache,dt,nu,station_tolerance,update_tolerance):
         previous=cache['A']@c0;norm=jnp.sqrt(jnp.maximum(c0@cache['gram']@c0,1e-30))
         if theta!=1.:
-            old_adv,_=operators.spatial(field(c0,cache),L)
-            old_tested=dst2(old_adv.reshape(L-1,L-1))[cache['indices'][0],cache['indices'][1]]/L
+            old_tested=tested_advection(c0,cache)
             previous=previous*(1-(1-theta)*dt*nu*cache['lam'])-(1-theta)*dt*old_tested
         func=lambda c:residual(c,previous,cache,dt,nu,norm)
         H0=(cache['A'].T@cache['A'])/norm**2;diag=jnp.maximum(jnp.diag(H0),1e-12)

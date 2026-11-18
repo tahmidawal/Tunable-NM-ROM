@@ -3,7 +3,7 @@ import argparse
 from common import *
 from training_io import read_checkpoint,checkpoint
 from build_local_cache import cohort,expand_matrix
-import data,local_polynomial as LP,tensor_metric as TM,discrete_weak as W
+import data,local_polynomial as LP,tensor_metric as TM,discrete_weak as W,weak_quadrature as QW
 
 
 def visibility(cache,M):
@@ -21,6 +21,7 @@ def main():
     ap.add_argument('--compare-previous')
     ap.add_argument('--integrator',choices=['be','cn'],default='be')
     ap.add_argument('--allow-integrator-comparison',action='store_true')
+    ap.add_argument('--quadrature',type=int,default=0,help='0 means exact dense integration; otherwise structured fine-stencil integration')
     a=ap.parse_args();out=Path(a.out);out.mkdir(parents=True,exist_ok=True);meta=preflight()
     admission=json.loads((Path(a.admission)/'result.json').read_text());assert admission['representation_gate']
     cachepath=Path(a.cache);cache_rec=json.loads((cachepath/'result.json').read_text())
@@ -31,7 +32,9 @@ def main():
     result=dict(meta=meta,status='fixed_tree_pilot_running',L=a.L,dt=a.dt,labels=a.labels.split(','),cases=[],
         operator='incumbent scaled tested weak residual; exact fine-grid sign-upwind; discrete sine eigen-diffusion; '+('backward Euler' if a.integrator=='be' else 'Crank-Nicolson'),
         time_integrator=a.integrator,
-        integration='all fine-grid interior nodes; exact dense tested sum through orthonormal DST',
+        integration=('all fine-grid interior nodes; exact dense tested sum through orthonormal DST' if not a.quadrature else
+                     'uniform composite weak integration; sign-upwind stencil retains fine spacing 1/L'),
+        quadrature_intervals=a.quadrature or a.L,
         input_contract='shared initial-field callable only; no reference in initialization, tree selection or stepping',
         admission_sha256=digest(Path(a.admission)/'result.json'),global_basis_sha256=spanrec['basis_sha256'],
         local_rotation_sha256=cache_rec['local_POD_sha256'],final_test_opened=False,
@@ -62,19 +65,32 @@ def main():
             models[name]=dict(cache=ca,slices=slices,tests=chosen,visibility=audits,basis=basis)
         commonM=max(m['tests'] for m in models.values());setup=time.perf_counter()-query_start
         assert (a.L-1)**2>=4*commonM
-        rowout=dict(case=label,parameters=p,common_tests=commonM,dense_points=(a.L-1)**2,shared_allocation_setup_seconds=setup,methods={})
+        if a.quadrature:
+            assert a.L%a.quadrature==0 and (a.quadrature-1)**2>=4*commonM
+            for name,model in models.items():
+                qc,qs=QW.prepare(model['basis'],cells if name.startswith('tree') else [],tr if name.startswith('tree') else [],rotation,a.L,a.quadrature)
+                model['cache']=dict(model['cache'],quadrature=qc);model['quadrature_slices']=qs
+                assert int(jnp.max(model['cache']['indices'][:,:commonM]))<a.quadrature-1
+            setup=time.perf_counter()-query_start
+        rowout=dict(case=label,parameters=p,common_tests=commonM,fine_interior_nodes=(a.L-1)**2,
+            integration_points=((a.quadrature or a.L)-1)**2,dense_points=(a.L-1)**2 if not a.quadrature else None,
+            shared_allocation_setup_seconds=setup,methods={})
         # Reference files are opened only below, after both truth-free solves finish.
         for name,model in models.items():
             ca=model['cache'];ca=dict(ca,A=ca['A'][:commonM],indices=ca['indices'][:,:commonM],lam=ca['lam'][:commonM])
             field=W.make_field(model['slices'],24 if name.startswith('tree') else 0)
-            initial_fit=W.make_initial_fit(field);step,residual=W.make_solver(field,a.L,theta=1. if a.integrator=='be' else .5)
-            burn_gpu();start=time.perf_counter();axis=jnp.arange(1,a.L)/a.L;xy=jnp.stack(jnp.meshgrid(axis,axis,indexing='ij'),axis=-1)
+            advection=None;fitfield=field;fitN=a.L
+            if a.quadrature:
+                qfields=QW.make_fields(model['quadrature_slices'],24 if name.startswith('tree') else 0)
+                advection=QW.make_tested(qfields,a.L,a.quadrature);fitfield=lambda c,ca:qfields(c,ca)[0];fitN=a.quadrature
+            initial_fit=W.make_initial_fit(fitfield);step,residual=W.make_solver(field,a.L,theta=1. if a.integrator=='be' else .5,advection_tests=advection)
+            burn_gpu();start=time.perf_counter();axis=jnp.arange(1,fitN)/fitN;xy=jnp.stack(jnp.meshgrid(axis,axis,indexing='ij'),axis=-1)
             u0=initial(xy);c,e0,lin=initial_fit(u0,ca);jax.block_until_ready(c)
             cold=time.perf_counter()-start;states=[np.asarray(c)];statuses=[];valid=True
             for it in range(1,round(.25/a.dt)+1):
                 c,status=step(c,ca,a.dt,data.NU,1e-8,1e-10);jax.block_until_ready(c)
                 statuses.append(np.asarray(status))
-                if not bool(jnp.all(jnp.isfinite(c))) or float(jnp.sqrt(jnp.maximum(c@ca['gram']@c,0)))>10*float(jnp.linalg.norm(u0)/a.L):
+                if not bool(jnp.all(jnp.isfinite(c))) or float(jnp.sqrt(jnp.maximum(c@ca['gram']@c,0)))>10*float(jnp.linalg.norm(u0)/fitN):
                     valid=False;break
                 if it%round(.05/a.dt)==0:
                     states.append(np.asarray(c));print('weak_step',label,name,it,'station',float(status[1]),flush=True)

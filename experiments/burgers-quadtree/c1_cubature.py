@@ -17,10 +17,11 @@ for i in range(3):
   prob=np.linalg.norm(A,axis=0);prob=.9*prob/prob.sum()+.1/len(prob);cp=np.sort(rng.choice(len(G),4096,replace=False,p=prob))
   D=A[:,cp];scale=np.linalg.norm(A,axis=1)+1e-30;D=D/scale[:,None];target=b/scale;cn=np.linalg.norm(D,axis=0)+1e-30;D/=cn[None,:]
   full=H.T@values
+  np.savez_compressed(o/f'tile{i}{j}_basis.npz',basis=W,eigenvalues=eigs)
   for cap in (128,256):
    fitstart=time.perf_counter();selected,weights=E.nnls_capped(D,target,cap);multipliers=weights/cn[selected];pos=cp[selected];g=G[pos];h=H[pos]*jnp.asarray(multipliers)[:,None]
    approx=h.T@values[pos];delta=np.asarray(jnp.linalg.norm(full-approx,axis=0));relative=delta/np.maximum(np.asarray(jnp.linalg.norm(full,axis=0)),1e-12)
-   np.savez_compressed(o/f'tile{i}{j}_cap{cap}.npz',positions=pos,multipliers=multipliers,G=g,H=h,basis=W,eigenvalues=eigs,training_flux_absolute_error=delta,training_flux_relative_error=relative)
+   np.savez_compressed(o/f'tile{i}{j}_cap{cap}.npz',positions=pos,multipliers=multipliers,G=g,H=h,training_flux_absolute_error=delta,training_flux_relative_error=relative)
    fits.append(dict(tile=[i,j],cap=cap,support=len(pos),positive=bool(np.all(multipliers>=0)),sketch_relative_fit=float(np.linalg.norm(D[:,selected]@weights-target)/np.linalg.norm(target)),max_train_flux_error=float(delta.max()),max_train_flux_relative=float(relative.max()),fit_seconds=time.perf_counter()-fitstart,setup_elapsed=time.perf_counter()-t))
    cases=[r['case'] for r in tiles if r['rank']==256 and r['tile']==[i,j]]
    for case in cases:

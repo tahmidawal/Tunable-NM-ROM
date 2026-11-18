@@ -60,16 +60,24 @@
   "prospective_metric_guard": "Nonfinite physical error metrics, including finite-field norm overflow, produce explicit failed invocations. All such candidates remain excluded.",
   "no_new_setting": "M292/dt.01 is excluded; it was not admitted in P1P03B.",
   "native_reference_manifest": "THREE_HEAD_NATIVE_PARITY_MANIFEST.json",
-  "config_sha256": "e4fe9a257afd1dc722f8f058b1028dca4a8a5a243a26bddbbdccae4b89649a93",
-  "past_completed_gpu_seconds": 540,
-  "current_job_not_yet_accounted": 7355021,
+  "config_sha256": "d368f03b29ba3817c9f44090b344d427d3c41c4d68768e8bd2bdcb6f14e12cd9",
+  "past_completed_gpu_seconds": 1581,
+  "current_job_not_yet_accounted": null,
   "job_limit_minutes": 45,
   "budget_rule": "Before launch update actual accumulated GPU seconds and require previous_seconds+2700<=7200.",
-  "expected_duration": "Similar finite grid to P03 plus two extra targets and associated confirmation subjects; P03 actual duration will be used before scheduling.",
+  "expected_duration": "P03 completed in1041 allocated GPU seconds; two extra head targets and additional confirmation subjects should fit about20minutes, with45minute cap.",
   "limitations": [
     "No final or held-out cohort.",
     "No cross-job speed ratio; all targets and comparators retimed together.",
     "All three target results retained, including slower or less accurate outcomes.",
     "Existing-runtime activation timing does not measure process/CUDA startup."
-  ]
+  ],
+  "independent_review": "P1 owner reviewed64 native reference copies, all3 admitted head settings, span control, unchanged103 comparators and finite-metric guard; scoped clearance conditional on P03 audit, budget and parent release.",
+  "past_completed_gpu_hours": 0.43916666666666665,
+  "remaining_allocated_gpu_seconds": 5619,
+  "remaining_allocated_gpu_hours": 1.5608333333333333,
+  "maximum_cumulative_gpu_seconds_if_45minute_cap_reached": 4281,
+  "budget_gate_passed": true,
+  "P03_actual_gpu_seconds": 1041,
+  "no_further_candidate_grid_tuning": true
 }

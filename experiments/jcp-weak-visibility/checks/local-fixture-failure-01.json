@@ -1,0 +1,6 @@
+{
+  "status": "implementation fixture failed before research execution",
+  "cause": "JAX while_loop termination reason changed from int32 input to int64 output under f64 mode",
+  "repair": "explicit int32 cast on termination reason; no mathematical operator or acceptance threshold changed",
+  "research_results_affected": false
+}

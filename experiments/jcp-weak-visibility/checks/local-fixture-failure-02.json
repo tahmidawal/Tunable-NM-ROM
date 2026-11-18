@@ -1,0 +1,6 @@
+{
+  "status": "all numerical fixture checks passed; stdout formatting failed afterward",
+  "cause": "plain json.dumps did not accept a NumPy int64 sign-switch count",
+  "repair": "reuse the production recursive JSON normalization used to save the fixture file",
+  "research_results_affected": false
+}

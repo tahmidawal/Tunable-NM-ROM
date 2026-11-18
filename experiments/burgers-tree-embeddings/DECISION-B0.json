@@ -1,0 +1,36 @@
+{
+  "status": "SCOPED_NEGATIVE_STAGE1",
+  "advance_to_PDE": false,
+  "physical_speed_objective_met": false,
+  "projection_gate": 0.005,
+  "best_fine_projection": {
+    "recipe": "R1",
+    "method": "Direct local4",
+    "allocation": "prescribed",
+    "variables": 128,
+    "worst": 0.16529884576268583,
+    "random": 0.1273447893431736,
+    "alignment": 0.16529884576268583,
+    "median": 0.06044246961954559,
+    "p90": 0.10319052245008321,
+    "failing_snapshots": 308,
+    "failing_trajectories": 28,
+    "stationarity": 1.274441699029398e-09
+  },
+  "reference_allowance_max": 1.234544441761369e-06,
+  "independent_reference_difference_max": 0.0005718606838355229,
+  "allocated_gpu_seconds": 4031,
+  "allocated_gpu_hours": 1.1197222222222223,
+  "allocated_cpu_hours": 8.957777777777778,
+  "jobs": 15,
+  "final_test_solution_fields_opened": false,
+  "old_campaign": "paused",
+  "merged": false,
+  "recipe_scope": "R0 plus code-refit R1 and hidden-width128 R2; features16, child4, depth3, caps32/64/128",
+  "limitations": [
+    "finite-start nonlinear fits",
+    "global heads zero-anchored; not native unrestricted-bias reproductions",
+    "no PDE solve, deployable adaptation, or complete runtime benchmark",
+    "confirmation NM-ROM competitors not attempted after representation failure"
+  ]
+}

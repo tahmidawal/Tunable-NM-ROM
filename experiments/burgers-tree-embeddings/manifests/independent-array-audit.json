@@ -1,15 +1,99 @@
 {
   "status": "passed_independent_saved_array_audit",
-  "relative_l2": 0.1783317000062006,
-  "relative_linf": 0.2521268482775743,
-  "shape": [
-    4096,
-    4096
+  "dense_outputs": [
+    {
+      "job": "audit01",
+      "file": "actual4096.npz",
+      "case": "align000",
+      "time": 0.0,
+      "relative_l2": 0.1783317000062006,
+      "relative_linf": 0.2521268482775743,
+      "peak_index": [
+        1982,
+        1420
+      ],
+      "shape": [
+        4096,
+        4096
+      ],
+      "boundary_max": 0.0,
+      "dense_sha256": "304541392a79ffd1092a7fb5c34687eac9fd4a54465ccf6eb8d31e345a0feefe"
+    },
+    {
+      "job": "auditr1",
+      "file": "actual4096.npz",
+      "case": "align004",
+      "time": 0.0,
+      "relative_l2": 0.16573672409228185,
+      "relative_linf": 0.24085079688069916,
+      "peak_index": [
+        2024,
+        1569
+      ],
+      "shape": [
+        4096,
+        4096
+      ],
+      "boundary_max": 0.0,
+      "dense_sha256": "f21223215080be0c92c5dee042696f06e92eddf21138eae6313df24d5f11dc1f"
+    },
+    {
+      "job": "auditr1",
+      "file": "actual4096-final.npz",
+      "case": "align004",
+      "time": 0.25,
+      "relative_l2": 0.05204133390175758,
+      "relative_linf": 0.13985183272022905,
+      "peak_index": [
+        2664,
+        1864
+      ],
+      "shape": [
+        4096,
+        4096
+      ],
+      "boundary_max": 0.0,
+      "dense_sha256": "e6cdac101aa876e3e93fe191d786cf89536661e5ef1aa328bb7eda5f7e8075dd"
+    },
+    {
+      "job": "auditr2",
+      "file": "actual4096.npz",
+      "case": "align004",
+      "time": 0.0,
+      "relative_l2": 0.19567622263206563,
+      "relative_linf": 0.23557024512909663,
+      "peak_index": [
+        2159,
+        1449
+      ],
+      "shape": [
+        4096,
+        4096
+      ],
+      "boundary_max": 0.0,
+      "dense_sha256": "6d6ca7bcabf8b6e1a08d50bd0ffe92e337b46fd437214e465bd0b1107def1c75"
+    },
+    {
+      "job": "auditr2",
+      "file": "actual4096-final.npz",
+      "case": "align004",
+      "time": 0.25,
+      "relative_l2": 0.05378799513386811,
+      "relative_linf": 0.11687430491592844,
+      "peak_index": [
+        2666,
+        1837
+      ],
+      "shape": [
+        4096,
+        4096
+      ],
+      "boundary_max": 0.0,
+      "dense_sha256": "8bdd0ef96f083e228a997939aebf2f072dcae63dbbf95d5ee37d5cfe25a78015"
+    }
   ],
-  "boundary_max": 0.0,
-  "dense_sha256": "304541392a79ffd1092a7fb5c34687eac9fd4a54465ccf6eb8d31e345a0feefe",
-  "current_time_normalization_fixture": 0.020000000000000056,
-  "deliberately_wrong_initial_norm": 0.010000000000000028,
+  "current_time_normalization_fixture": 0.02,
+  "deliberately_wrong_initial_norm": 0.01,
   "reference_allowance_arithmetic_pass": true,
   "final_fields_opened": false
 }

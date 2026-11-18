@@ -4,53 +4,81 @@
     {
       "recipe": 1,
       "label": "global bank128",
-      "job": "global01"
+      "job": "global01",
+      "run_status": "complete_global_representation_only",
+      "full_result": "results/global01/output/result.json"
     },
     {
       "recipe": 2,
       "label": "global nonlinear16",
-      "job": "global01"
+      "job": "global01",
+      "run_status": "complete_global_representation_only",
+      "full_result": "results/global01/output/result.json"
     },
     {
       "recipe": 3,
       "label": "global nonlinear32",
-      "job": "global01"
+      "job": "global01",
+      "run_status": "complete_global_representation_only",
+      "full_result": "results/global01/output/result.json"
     },
     {
       "recipe": 4,
       "label": "global nonlinear64",
-      "job": "global01"
+      "job": "global01",
+      "run_status": "complete_global_representation_only",
+      "full_result": "results/global01/output/result.json"
     },
     {
       "recipe": 5,
       "label": "R0 local features16 width64/direct prefixes",
-      "job": "local01"
+      "job": "local01",
+      "run_status": "complete_direct_local_representation_only",
+      "full_result": "results/local01/output/result.json",
+      "selected_update": 2000
     },
     {
       "recipe": 6,
       "label": "R0 nonlinear child4 frozen features",
-      "job": "children01"
+      "job": "children01",
+      "run_status": "complete_nonlinear_child_representation_only",
+      "full_result": "results/children01/output/result.json",
+      "selected_update": 1000
     },
     {
       "recipe": 7,
       "label": "R1 explicit per-update code refits, same features/architecture",
-      "job": "localr1"
+      "job": "localr1",
+      "run_status": "complete_direct_local_representation_only",
+      "full_result": "results/localr1/output/result.json",
+      "selected_update": 3000
     },
     {
       "recipe": 8,
       "label": "R1 frozen-feature nonlinear child4 with explicit code refits",
-      "job": "childrenr1"
+      "job": "childrenr1",
+      "run_status": "complete_nonlinear_child_representation_only",
+      "full_result": "results/childrenr1/output/result.json",
+      "selected_update": 2000
     },
     {
       "recipe": 9,
       "label": "R2 shared local hidden width128, same16 features and explicit refits",
-      "job": "localr2"
+      "job": "localr2",
+      "run_status": "complete_direct_local_representation_only",
+      "full_result": "results/localr2/output/result.json",
+      "selected_update": 2000
     },
     {
       "recipe": 10,
       "label": "R2 frozen-feature nonlinear child4 with explicit refits",
-      "job": "childrenr2"
+      "job": "childrenr2",
+      "run_status": "complete_nonlinear_child_representation_only",
+      "full_result": "results/childrenr2/output/result.json",
+      "selected_update": 5000
     }
   ],
-  "finalists_seed_repeats": "conditional on development qualification; none qualified yet"
+  "finalists_seed_repeats": "not run: no development-qualified finalist after R0/R1/R2",
+  "round_closed": true,
+  "new_training_recipe_count": 10
 }

@@ -1,3 +1,23 @@
+## Active continuation C1 — 2026-11-18
+
+The A0 section below is historical checkpoint evidence, not campaign completion. C1 replaces the biased coarse upwind operator with separately qualified continuous weak dynamics and expands family-A training/development to128/32. No final tests have been opened.
+
+| Development diagnostic | Worst evolved relative error | Interpretation |
+|---|---:|---|
+| Global POD512 representation | 2.315% | Span deficit on narrow case |
+| Uniform mixed neural/polynomial representation | 0.300% | Original teacher checkpoint; assembled fine-tuning did not improve it |
+| Initial-field-selected four-patch representation,512coefficients | 0.408% | Frozen initial-only selector |
+| Same local bank, continuous PDE N128 | 0.526% | All32, stable quadrature/time refinements |
+| Same physical features rebuilt atN256 | 0.526% | Largest change fromN128:0.011%; all32 |
+| Uniform polynomial1152 continuous PDE | 0.750% | More coefficients than selected hybrid |
+| Nonlinear POD-AE encoder / optimized projection | 16.844% /16.840% | Separate diagnostics; optimized gradient stationarity below6e-10 |
+| Nonlinear POD-AE actual PDE, cases0/9, finer step | 2.965% /18.751% | Actual weak solves, not reconstruction claims |
+| Family-B matched uniform hybrid representation | 0.562% |8 cases; physical allocation/PDE study running |
+
+Reference audits pass preliminary independent FD/spectral convergence on additional A24 and B8. Dense4096 reference extension and paired complete costs are running in job7344380. Family-B initial-gradient allocation/PDE job7344382 is running. These results do not yet establish the complete-cost objective. Completed allocation before those jobs:3742 GPU-seconds (1.03944h), including A0. Source/parameter hashes, raw artifacts and checkpoint provenance are retained; selected local copies are checksum verified, while large derived basis arrays explicitly remain remote-only. No cross-allocation speed ratio is used.
+
+---
+
 # Burgers quadtree pilot: scoped negative result
 
 This completed development pilot does not establish an accurate, faster quadtree NM-ROM. It retains a verified reference pipeline, reproduced incumbents, trained classical/neural local representations, matched-data controls and actual dense-output PDE measurements. These are development results, not untouched-test confirmation.

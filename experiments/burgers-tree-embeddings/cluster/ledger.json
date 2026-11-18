@@ -338,6 +338,21 @@
     "driver": "repair_tensor_span.py",
     "args": "--dev /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/refsdev01/output --span /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1attrib01/output",
     "gpu": "a100",
-    "submitted_utc": "2026-11-18T22:02:59.186833+00:00"
+    "submitted_utc": "2026-11-18T22:02:59.186833+00:00",
+    "state": "COMPLETED",
+    "elapsed_seconds": 63,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b1crossref",
+    "id": 7354749,
+    "reserved_minutes": 30,
+    "commit": "6099ad7dd5416f6a12c462b857d0a0c5afa7c056",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1crossref",
+    "driver": "crosscheck.py",
+    "args": "--reference /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1refextend/output/dev",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-18T22:05:17.910848+00:00"
   }
 ]

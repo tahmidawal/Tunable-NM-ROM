@@ -7,3 +7,7 @@ Use tensor side count 6, 52 retained local nodes, depth 4, the initial-callable 
 Use the expanded training128/development32 data plus the same twelve alignment cases. Development is never used to learn the local rotation. Preserve original16 and added16 development panels separately in reports. Qualification of the extended references and dense scoring are required for claims. The local POD learns from all training trajectories and snapshots with current-time normalization. Save regularized full coefficients, geometry, transforms and Gram matrices, so nonlinear head fitting can optimize the assembled physical metric rather than arbitrary coefficient error.
 
 Reserve at most 120 GPU-minutes within B1. Neural child training is the next conditional recipe after this control; dimensions and schedule will be registered separately. No final-test access.
+
+## Resolved-metric parent choice before cache submission
+
+The physically resolved metric gives worst 0.228158% with root128 but 0.588005% with root16 on the original panel; actual4096 confirms the root128 witness. Therefore build the primary cache with root128 from the newly expanded common training span, passed explicitly to the driver. Keep root16 as a failed lower-capacity control. The scalar parent change is prospectively selected from this bracket, not a silent change in the variable count. Compression controls must count 128 root variables plus all local entries.

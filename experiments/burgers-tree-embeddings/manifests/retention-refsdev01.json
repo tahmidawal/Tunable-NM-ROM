@@ -1,0 +1,922 @@
+{
+  "name": "refsdev01",
+  "job": 7351563,
+  "source_commit": "833f84e3729e35af210acfffcb1ba8f6287cf4c1",
+  "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/refsdev01",
+  "local": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-burgers-tree-embeddings/experiments/burgers-tree-embeddings/results/refsdev01",
+  "checked_utc": "2026-11-18T20:20:40.409039+00:00",
+  "files": [
+    {
+      "file": "output/align000_N128_dt0.00015625.npz",
+      "sha256": "82d37464da737209f4835f04e781f4a5808c1d167961d049c8e4d0f1fcc55579",
+      "bytes": 1374902
+    },
+    {
+      "file": "output/align000_N256_dt0.00015625.npz",
+      "sha256": "3ffee76773770c4898fb4939c3a6abd854590f7cf5c24fbfab4eced581faae41",
+      "bytes": 5574964
+    },
+    {
+      "file": "output/align000_N512_dt0.00015625.npz",
+      "sha256": "77a9c9d7982f5a3dadc3ff5d35e71091c0127c28b4c34f313ba7d9ef99197df8",
+      "bytes": 22369875
+    },
+    {
+      "file": "output/align000_N512_dt0.00031250.npz",
+      "sha256": "46e0eeb16be34448ccf04cbb777dbf2fd7894abd7678fa828180b44db1b97dbd",
+      "bytes": 22351789
+    },
+    {
+      "file": "output/align000_N512_dt0.00062500.npz",
+      "sha256": "62d6335ce4bf0cd9a9285cd6fa3231bd62cdda379b50260f53a3ce915c3847c5",
+      "bytes": 22337805
+    },
+    {
+      "file": "output/align000_training.npz",
+      "sha256": "fbd4a5d777db616732c70c556c791244fa537762586fef4de9187e6e3dacd5b8",
+      "bytes": 301638
+    },
+    {
+      "file": "output/align001_N128_dt0.00015625.npz",
+      "sha256": "6f1a5ac4d0bf941d9358be1f18aeada9a2ef3e57db6ccaa95d17a5b05d09a585",
+      "bytes": 1368126
+    },
+    {
+      "file": "output/align001_N256_dt0.00015625.npz",
+      "sha256": "4cb828bd3f530846fdd879ccf6466161b7b2479ca29d67deeaeba20a0b1b217a",
+      "bytes": 5563220
+    },
+    {
+      "file": "output/align001_N512_dt0.00015625.npz",
+      "sha256": "882715edaa39d79ad02aa5bf0fc38ba67df9d63a9289a08a90caabd70e905d75",
+      "bytes": 22372367
+    },
+    {
+      "file": "output/align001_N512_dt0.00031250.npz",
+      "sha256": "db6d55ca99d8fd0ee9b288454f4ca76a14abc02b641adcf2e83e1024cccd0c28",
+      "bytes": 22357671
+    },
+    {
+      "file": "output/align001_N512_dt0.00062500.npz",
+      "sha256": "cc5fef21652609623bb00bb5f58adf2983bf24003b711eaf63eb3bcb11fa38b9",
+      "bytes": 22347446
+    },
+    {
+      "file": "output/align001_training.npz",
+      "sha256": "6d5e1f592518960e846fff5aac27a94db2a1f76d92de8b55a571210d9330d984",
+      "bytes": 291991
+    },
+    {
+      "file": "output/align002_N128_dt0.00015625.npz",
+      "sha256": "4f9eea2b10b2fedfbfe403462081c328a33c2e31dab1f1fb44528931ba51e2cd",
+      "bytes": 1375106
+    },
+    {
+      "file": "output/align002_N256_dt0.00015625.npz",
+      "sha256": "d89125edc73bf03113cec70b4450b5a8ee15527a97e15d0686a2f9f117e62d46",
+      "bytes": 5575537
+    },
+    {
+      "file": "output/align002_N512_dt0.00015625.npz",
+      "sha256": "478cbeda5890a0cf97febeb95ec046c58bd4d4686434f3da7b1ab4c8c78df0b0",
+      "bytes": 22372502
+    },
+    {
+      "file": "output/align002_N512_dt0.00031250.npz",
+      "sha256": "7984a54bb845b32eef67bef5119e9419840a65966fad0f9d1c94286e133fef72",
+      "bytes": 22354471
+    },
+    {
+      "file": "output/align002_N512_dt0.00062500.npz",
+      "sha256": "709303d14f3c7443b8f88033dc147b81fd44a05f0399863eec375aa8878cfd37",
+      "bytes": 22340626
+    },
+    {
+      "file": "output/align002_training.npz",
+      "sha256": "01dd98c42c4a046d1fa8145d0d5b3fe49f7cd07bec29a7f00cdce96f457f00a2",
+      "bytes": 301357
+    },
+    {
+      "file": "output/align003_N128_dt0.00015625.npz",
+      "sha256": "76c4afdb441a344fe608dd88b7d85eea589e5511f279871ba37f71fae01a3d07",
+      "bytes": 1228705
+    },
+    {
+      "file": "output/align003_N256_dt0.00015625.npz",
+      "sha256": "1f9aab4358e11f366d7856a29ab5b60f46ea5b0cffbcba03807e5c92d5766b77",
+      "bytes": 5474249
+    },
+    {
+      "file": "output/align003_N512_dt0.00015625.npz",
+      "sha256": "0462d488808c4bb9b5b9a1313d2fd10a72fa66b9c0dcd676ded8d4978c4dde42",
+      "bytes": 22326581
+    },
+    {
+      "file": "output/align003_N512_dt0.00031250.npz",
+      "sha256": "01aa30d76c7cba2b8dd0e4709b3ca3a098fce803065c78549ddabfa5e151a4fd",
+      "bytes": 22313105
+    },
+    {
+      "file": "output/align003_N512_dt0.00062500.npz",
+      "sha256": "b31365a20203c0953f62575a63c350b69ff8c08348fa4b873d6bad20df01cb98",
+      "bytes": 22303334
+    },
+    {
+      "file": "output/align003_training.npz",
+      "sha256": "b2358c257a1cc8427b1e9f532631f16a5ffe86bc7da20cbb7a4b2cb16e946611",
+      "bytes": 260650
+    },
+    {
+      "file": "output/align004_N128_dt0.00015625.npz",
+      "sha256": "f36fc16a8469c536d0e0bcf51df02ed572a55bd067a761d57483c5cc30390766",
+      "bytes": 1374885
+    },
+    {
+      "file": "output/align004_N256_dt0.00015625.npz",
+      "sha256": "7984af5b029b3dd037912f66277c871562f0d6152fee5e90b7542a548c42638e",
+      "bytes": 5574762
+    },
+    {
+      "file": "output/align004_N512_dt0.00015625.npz",
+      "sha256": "ed894dd8de884a8327b46a87bd4a09f3d42b21cdcc12a202ba9895d2466f8c22",
+      "bytes": 22371128
+    },
+    {
+      "file": "output/align004_N512_dt0.00031250.npz",
+      "sha256": "f2f788c3119e0e1621cbc43ab08f1745ec9ab523743edeb9b4ce97bdd3d54167",
+      "bytes": 22353691
+    },
+    {
+      "file": "output/align004_N512_dt0.00062500.npz",
+      "sha256": "3c9fc64b22573950f3a474b5cb6f73a5dd1ff500ce72f85d04bc0bede5f50b0a",
+      "bytes": 22339237
+    },
+    {
+      "file": "output/align004_training.npz",
+      "sha256": "cc656862b48bc171e074c886cc581b9a6dddcc65e0031185c2230959a2d791cb",
+      "bytes": 302940
+    },
+    {
+      "file": "output/align005_N128_dt0.00015625.npz",
+      "sha256": "26c6c5f06a2dfd49715d7f93a598d9d698d4c41c9ff0100cb1cbd7c62d4b9da1",
+      "bytes": 1368207
+    },
+    {
+      "file": "output/align005_N256_dt0.00015625.npz",
+      "sha256": "ab73f99c3e9cb7a7500a81e309238346e123fe5a7cb926adbb8ca3c9d6b954ef",
+      "bytes": 5563591
+    },
+    {
+      "file": "output/align005_N512_dt0.00015625.npz",
+      "sha256": "bf49e530408490fca1713e4bf4f2ab1066ea590404170d00286b7fbeb8dce63d",
+      "bytes": 22373983
+    },
+    {
+      "file": "output/align005_N512_dt0.00031250.npz",
+      "sha256": "1631ebdc01d4c641dfb6690d7c73065174a4328915587201fc4e8345c0c33269",
+      "bytes": 22359032
+    },
+    {
+      "file": "output/align005_N512_dt0.00062500.npz",
+      "sha256": "de85c2f400a17ef7d0ebfc0c55b8c7f3371e39f3c448ef7fb6a8cffc02f0e082",
+      "bytes": 22348688
+    },
+    {
+      "file": "output/align005_training.npz",
+      "sha256": "09a07ce6bffb8d7d2e147c1aa4d69c2eea7e9d78ab8a5ed1b82ae19b380b1a85",
+      "bytes": 292007
+    },
+    {
+      "file": "output/align006_N128_dt0.00015625.npz",
+      "sha256": "8384ae7680c2a0b3f96da9b86f4d2c5277507c9caadc746902302bd47027d338",
+      "bytes": 1373681
+    },
+    {
+      "file": "output/align006_N256_dt0.00015625.npz",
+      "sha256": "458a7b112a480f187d370b3a01ac0119c4cf242b5784b8100653ebe281ec0acc",
+      "bytes": 5569652
+    },
+    {
+      "file": "output/align006_N512_dt0.00015625.npz",
+      "sha256": "5452117c706e0b3b2acb3802e4c3aa3f8831f8e089b346a5c09f0109b5eb9538",
+      "bytes": 22327721
+    },
+    {
+      "file": "output/align006_N512_dt0.00031250.npz",
+      "sha256": "b34b377acc8d62bbfbf7a6b261a0a856f301dd4ae0bb1e2e441500136e562ab9",
+      "bytes": 22314066
+    },
+    {
+      "file": "output/align006_N512_dt0.00062500.npz",
+      "sha256": "90884421181a87ea50989030c72c1352bf28eb43266f28bd6fe8d437274eee70",
+      "bytes": 22304469
+    },
+    {
+      "file": "output/align006_training.npz",
+      "sha256": "26fab6de4420a6653fe0c1a2f9bfd26065a8b752bff603ac6b4f5e9def885804",
+      "bytes": 320391
+    },
+    {
+      "file": "output/align007_N128_dt0.00015625.npz",
+      "sha256": "fe5107737f7bbacc3c51dba01b6bb8189a8b321600a0d15f6bd1c2bae01879f0",
+      "bytes": 1365225
+    },
+    {
+      "file": "output/align007_N256_dt0.00015625.npz",
+      "sha256": "92c718b04733f0b62807a0c3c479935ce08d9d0b2fd9c4efb108db4c0b40051c",
+      "bytes": 5555838
+    },
+    {
+      "file": "output/align007_N512_dt0.00015625.npz",
+      "sha256": "5bf1e0fd3fb86f5af0c6139ddd52d695aeaada2d88bb7e134ac27cb2cec34305",
+      "bytes": 22355744
+    },
+    {
+      "file": "output/align007_N512_dt0.00031250.npz",
+      "sha256": "c98730f4e2139324cd7964da9694e4db703872fe08c3b25b7be2e44dc5004a59",
+      "bytes": 22349178
+    },
+    {
+      "file": "output/align007_N512_dt0.00062500.npz",
+      "sha256": "47f9a328114a4c8361fafcffd008f6a8d74b53b9510c56ff2d85330ea9713275",
+      "bytes": 22344979
+    },
+    {
+      "file": "output/align007_training.npz",
+      "sha256": "b8fad83bf0fc9918744ea25d4e604268dbb264a4bad2ace9cf57a0205d4c745c",
+      "bytes": 309836
+    },
+    {
+      "file": "output/align008_N128_dt0.00015625.npz",
+      "sha256": "320ae42681ab0e74724c30563b625d2ea5b704adb062b85a9ca30d29715c2e46",
+      "bytes": 1373704
+    },
+    {
+      "file": "output/align008_N256_dt0.00015625.npz",
+      "sha256": "a78b015795c2dee9fc947f003945f8ee7158b85d7ca1ecb6518a4bb64519d422",
+      "bytes": 5570318
+    },
+    {
+      "file": "output/align008_N512_dt0.00015625.npz",
+      "sha256": "d338ff177eb62e8e96ed922f2714028ce8141685517b10a60c9a3780d68363a8",
+      "bytes": 22330976
+    },
+    {
+      "file": "output/align008_N512_dt0.00031250.npz",
+      "sha256": "7efd1db929057388c16a26e17db2f3607ffdf66216c51a8212143e4dfa093582",
+      "bytes": 22316691
+    },
+    {
+      "file": "output/align008_N512_dt0.00062500.npz",
+      "sha256": "46a0d76f5dfb979cd603b03cc01ed4bc5d3426e2f7805cd3e0e0a96d3ed45c7d",
+      "bytes": 22306920
+    },
+    {
+      "file": "output/align008_training.npz",
+      "sha256": "db7cb6d6d45a626698594fedd2cf46912dacd33565f0451fa8c06cab5397eed8",
+      "bytes": 319260
+    },
+    {
+      "file": "output/align009_N128_dt0.00015625.npz",
+      "sha256": "71d289ba5dc3da191622828375603491208fbafec6f689e9fdb01afe33f522d0",
+      "bytes": 1221348
+    },
+    {
+      "file": "output/align009_N256_dt0.00015625.npz",
+      "sha256": "e8933ac6f91db10c8f7294a21af54a8239b50c82939edca90a698e241784687c",
+      "bytes": 5457549
+    },
+    {
+      "file": "output/align009_N512_dt0.00015625.npz",
+      "sha256": "46bd94c0f41a41b03e9949fbac08e494262172ec234a800cf9ee989beb57863e",
+      "bytes": 22306624
+    },
+    {
+      "file": "output/align009_N512_dt0.00031250.npz",
+      "sha256": "d849798b2dea2e3d140e8aad1eabdc78f3e4c44d5b5da321f82c3398ed6e6494",
+      "bytes": 22300777
+    },
+    {
+      "file": "output/align009_N512_dt0.00062500.npz",
+      "sha256": "8db3647d168dc77757824b275bfbd843fd14def14f2afe98b73d0b2c590a8845",
+      "bytes": 22297753
+    },
+    {
+      "file": "output/align009_training.npz",
+      "sha256": "9edfb5e8db3a42566e771e09b0ede03d5e151bfc66d97c4a2c0a4aa2457a0a3b",
+      "bytes": 262831
+    },
+    {
+      "file": "output/align010_N128_dt0.00015625.npz",
+      "sha256": "91fc3449a9015317fbd46aa2ea46e2e04ca2bc118a207838a43c6ba0379dc973",
+      "bytes": 1373779
+    },
+    {
+      "file": "output/align010_N256_dt0.00015625.npz",
+      "sha256": "46a4fdeb11220d7d85f5b927d3b1a8e0c5bed84685c73980a91a98537bfa7700",
+      "bytes": 5569519
+    },
+    {
+      "file": "output/align010_N512_dt0.00015625.npz",
+      "sha256": "07c0cfe50b2875e507d7a5266b081ec3006db3b9eb7ea6b758dae105a3208b38",
+      "bytes": 22330493
+    },
+    {
+      "file": "output/align010_N512_dt0.00031250.npz",
+      "sha256": "c0aa72752ab1f09d00e34154f75248ca3b17eefb0b60e3682271b67a68cec087",
+      "bytes": 22315376
+    },
+    {
+      "file": "output/align010_N512_dt0.00062500.npz",
+      "sha256": "1bdeb759c15508dfb0ef44109f63b9a574099fac2dd83b721a8d975957000b21",
+      "bytes": 22306320
+    },
+    {
+      "file": "output/align010_training.npz",
+      "sha256": "bdc63d9133a6abad1e08073412850d3c84df338377ccb9f975bb07ec7aab2f90",
+      "bytes": 321983
+    },
+    {
+      "file": "output/align011_N128_dt0.00015625.npz",
+      "sha256": "be351cb1041a0a9e182671aad1d2047a3473802b415c83ab919f3c937bd1f256",
+      "bytes": 1365160
+    },
+    {
+      "file": "output/align011_N256_dt0.00015625.npz",
+      "sha256": "89bc72f658ab8bb23404e8723174f11f46bf932f12e9e82949a8cb93066fdc33",
+      "bytes": 5556030
+    },
+    {
+      "file": "output/align011_N512_dt0.00015625.npz",
+      "sha256": "78168bfbfdbae8da387b180f6e93c7ef8e0b06da393fda8db6c1a93c1e04d9b9",
+      "bytes": 22357359
+    },
+    {
+      "file": "output/align011_N512_dt0.00031250.npz",
+      "sha256": "b447e70a2b89d9917ab3264df3af7b522fbf7150f493f357ad4c1dae3b97ed67",
+      "bytes": 22349542
+    },
+    {
+      "file": "output/align011_N512_dt0.00062500.npz",
+      "sha256": "c8746cc351d8a4e11e3735a35c8bf4d4f6b7d5ed53a5700512f5f8a1a32478d2",
+      "bytes": 22345927
+    },
+    {
+      "file": "output/align011_training.npz",
+      "sha256": "b5048830ba184728c49b1917a782145c3e84c9923e5cd17da860b09774e4480e",
+      "bytes": 309838
+    },
+    {
+      "file": "output/dev000_N128_dt0.00015625.npz",
+      "sha256": "144de821fd54e0055771d65c7b809638ef6b2544dabefbfb97c5d77e99ac1005",
+      "bytes": 1373023
+    },
+    {
+      "file": "output/dev000_N256_dt0.00015625.npz",
+      "sha256": "5e1861ac8e2d4d8d1dce8014387d2442f5519a3194123576f7a8cc1c1f770d26",
+      "bytes": 5570467
+    },
+    {
+      "file": "output/dev000_N512_dt0.00015625.npz",
+      "sha256": "f5ac0e5961b6be503d19208fc376317e38394aa85dc7783bfe30c545e4e06b5c",
+      "bytes": 22353759
+    },
+    {
+      "file": "output/dev000_N512_dt0.00031250.npz",
+      "sha256": "0fd199e0c5734ac1e5f6692979cd31613d7c74f6c4ebbe84cd9e2872190cee36",
+      "bytes": 22336835
+    },
+    {
+      "file": "output/dev000_N512_dt0.00062500.npz",
+      "sha256": "72d328326aa0c76ce5c9aa746f01124ab73740ab75b3f6e5f6f6e040bc58d218",
+      "bytes": 22325151
+    },
+    {
+      "file": "output/dev000_training.npz",
+      "sha256": "02d2036b30d0d1ebccf7383affeaf73d5fc3d3ba2cadb95f19b288fa584b840f",
+      "bytes": 297813
+    },
+    {
+      "file": "output/dev001_N128_dt0.00015625.npz",
+      "sha256": "278bfee3bd4c62f59de101ca46fcce6c468878015fa48482f4fa11ab8115dcac",
+      "bytes": 1375284
+    },
+    {
+      "file": "output/dev001_N256_dt0.00015625.npz",
+      "sha256": "571d0196a9b488ef3044c48aa6fe8c0c1a08f1914844075d578b01e8c29b3d3b",
+      "bytes": 5579427
+    },
+    {
+      "file": "output/dev001_N512_dt0.00015625.npz",
+      "sha256": "9b043ac03f3fd6ff3ca19eb8bfdabb9b4d96b0a999b81a520d9ede42eeba7230",
+      "bytes": 22340606
+    },
+    {
+      "file": "output/dev001_N512_dt0.00031250.npz",
+      "sha256": "f6082bd5ca6cf8db802b68eeb8f7484aae1f8486e3008af8b6bd67171779e755",
+      "bytes": 22316898
+    },
+    {
+      "file": "output/dev001_N512_dt0.00062500.npz",
+      "sha256": "5fdfc2e00d8113d2bf096ca43d58bef499d8b99ea0079dd9321e5a0d5b2a514b",
+      "bytes": 22300975
+    },
+    {
+      "file": "output/dev001_training.npz",
+      "sha256": "738d27c01abadbc77d0f1c17c98295eac32e68ba32fbf0a0537a4a8525f66ac4",
+      "bytes": 311336
+    },
+    {
+      "file": "output/dev002_N128_dt0.00015625.npz",
+      "sha256": "e3d1efe699a94dc2204a4223510329d88218b72f7f9395c16b83b69d5bf00f12",
+      "bytes": 1373995
+    },
+    {
+      "file": "output/dev002_N256_dt0.00015625.npz",
+      "sha256": "47bba91c80526aa0cbf8c9f242edcc28adc5c471ea69f279053ebed16759abd3",
+      "bytes": 5569016
+    },
+    {
+      "file": "output/dev002_N512_dt0.00015625.npz",
+      "sha256": "27352ebedf8b8213b37cc8a1c66c3f5fd6b003d0d31978dccb123dbb3a7b9d16",
+      "bytes": 22327737
+    },
+    {
+      "file": "output/dev002_N512_dt0.00031250.npz",
+      "sha256": "565ce7019de2e704dde91aa78ee6f7f2f0bd0a91112844400004e6cc2923b6fb",
+      "bytes": 22310399
+    },
+    {
+      "file": "output/dev002_N512_dt0.00062500.npz",
+      "sha256": "498dd2cee6d9b4f9aa4a28edc0810543084c5a2efcde4236620cfc0c68048868",
+      "bytes": 22299324
+    },
+    {
+      "file": "output/dev002_training.npz",
+      "sha256": "d2037a21d06cf81981d428a3cd899f39ada6e207e1f204784961c094557f65de",
+      "bytes": 320562
+    },
+    {
+      "file": "output/dev003_N128_dt0.00015625.npz",
+      "sha256": "c4343f98fae62b4c9721b094595445a51505454329a74fd0fc05be5fcb982977",
+      "bytes": 1343933
+    },
+    {
+      "file": "output/dev003_N256_dt0.00015625.npz",
+      "sha256": "6b600734c4d0261e9a3049f053b3ef2e773f980f7b62847b0342bd6601262763",
+      "bytes": 5515256
+    },
+    {
+      "file": "output/dev003_N512_dt0.00015625.npz",
+      "sha256": "4864ec8db4158abb94cec7e1965542179eaaa2493f5f590a87d7829cc3bc993a",
+      "bytes": 22257642
+    },
+    {
+      "file": "output/dev003_N512_dt0.00031250.npz",
+      "sha256": "acdeb18ff24ce0481ec83dec0d1c599b6a82335110b41cc71d550c463eeac1a5",
+      "bytes": 22229445
+    },
+    {
+      "file": "output/dev003_N512_dt0.00062500.npz",
+      "sha256": "9dd980ea338edfe2cfdb21015bc2224027104b66d5d9e7dcb4b43acfa6783b14",
+      "bytes": 22209909
+    },
+    {
+      "file": "output/dev003_training.npz",
+      "sha256": "dc1a30797f3194ee0f3f7bc52a968d9983f72ad562d6b335ac5949d1c83be040",
+      "bytes": 257756
+    },
+    {
+      "file": "output/dev004_N128_dt0.00015625.npz",
+      "sha256": "abb82df13b7c9abc591ebab6621f4d6885cfac8317a6d37077ee556af4e073bd",
+      "bytes": 1374301
+    },
+    {
+      "file": "output/dev004_N256_dt0.00015625.npz",
+      "sha256": "372f169dfe069ab227c12eba588af62c23d040a564718a51cbba967515da66ef",
+      "bytes": 5573015
+    },
+    {
+      "file": "output/dev004_N512_dt0.00015625.npz",
+      "sha256": "c8c29ad15c90a7726f7a588534fc8b1ce351bd14c9649ed2338c691f7f36eb69",
+      "bytes": 22334693
+    },
+    {
+      "file": "output/dev004_N512_dt0.00031250.npz",
+      "sha256": "ff5b207357229fd19904f6a034ae1b049082f7e303cfb899b6477fe278789579",
+      "bytes": 22316239
+    },
+    {
+      "file": "output/dev004_N512_dt0.00062500.npz",
+      "sha256": "61654227d433c966b41f25d29784a97c1d788ed15c0ca8f37baaba74b948831f",
+      "bytes": 22304043
+    },
+    {
+      "file": "output/dev004_training.npz",
+      "sha256": "23e8ef902c505d8944747f88a484367e54e307b6fbfd57dd5368c8f5cb33faa2",
+      "bytes": 320008
+    },
+    {
+      "file": "output/dev005_N128_dt0.00015625.npz",
+      "sha256": "3d42eac445818025477033d1c1f59f8323738249874c4bfbe0b91d8ecefc47f7",
+      "bytes": 1374341
+    },
+    {
+      "file": "output/dev005_N256_dt0.00015625.npz",
+      "sha256": "fd2eea412c7eefe42caddb4190b14efd35ba2f31e5cf4270357a01caf850e2bc",
+      "bytes": 5565565
+    },
+    {
+      "file": "output/dev005_N512_dt0.00015625.npz",
+      "sha256": "283db833bfc647773a10018ade19782e220ae1435ed10d8fa956ff5b39bbb012",
+      "bytes": 22307073
+    },
+    {
+      "file": "output/dev005_N512_dt0.00031250.npz",
+      "sha256": "0aa5851402bcfd1f4e9656a9cb8b66925f767529187c07488a4b1fa0d64eeb1f",
+      "bytes": 22294695
+    },
+    {
+      "file": "output/dev005_N512_dt0.00062500.npz",
+      "sha256": "209bd056a906e874e3d117e49311efc01399cb218608d387fee49701c0da8e72",
+      "bytes": 22286980
+    },
+    {
+      "file": "output/dev005_training.npz",
+      "sha256": "b38f199fb84273c19ac898b558960f5f9e99a9a2ae60132b3557306f80225fab",
+      "bytes": 331051
+    },
+    {
+      "file": "output/dev006_N128_dt0.00015625.npz",
+      "sha256": "fffa21c53b10ddbd8a8e3f5ec28a8144897f907c766d6d9f0d88e1049c2aede2",
+      "bytes": 1367420
+    },
+    {
+      "file": "output/dev006_N256_dt0.00015625.npz",
+      "sha256": "6594ef6b9ebf88266b1364293d1a45d1c3388b820d359115a507a272a702f438",
+      "bytes": 5555950
+    },
+    {
+      "file": "output/dev006_N512_dt0.00015625.npz",
+      "sha256": "f6ac8b3357118dacb6d13952ea17a1ea383361d202bfcddc71d47db6033bbbd7",
+      "bytes": 22360418
+    },
+    {
+      "file": "output/dev006_N512_dt0.00031250.npz",
+      "sha256": "6d669d74b54fd617ff66c1541bc43d7b6b93acab164ed05a7bddf117f5d94e01",
+      "bytes": 22353081
+    },
+    {
+      "file": "output/dev006_N512_dt0.00062500.npz",
+      "sha256": "59f5a9d66866cab8a4590fb4623a866fd3b634633d819d0d2d18352a94622f54",
+      "bytes": 22349174
+    },
+    {
+      "file": "output/dev006_training.npz",
+      "sha256": "c07a7f841c9d5f607f698a4386ca1582c0cbbe775028840d45cda24fca3cb4c5",
+      "bytes": 308558
+    },
+    {
+      "file": "output/dev007_N128_dt0.00015625.npz",
+      "sha256": "48aa8f530276e88f6e2e05a059bafb4bc0a7db875308153d93b65e7d7132286c",
+      "bytes": 1338251
+    },
+    {
+      "file": "output/dev007_N256_dt0.00015625.npz",
+      "sha256": "ba68fe2cbf7703f6e0f67a0f6aa98ea3e9885bcdc76798723c531296139c7455",
+      "bytes": 5514021
+    },
+    {
+      "file": "output/dev007_N512_dt0.00015625.npz",
+      "sha256": "3017fcf7041a778d90570c81066bf79e00a324e609f62160445720923fb004aa",
+      "bytes": 22208067
+    },
+    {
+      "file": "output/dev007_N512_dt0.00031250.npz",
+      "sha256": "16b79e080959bca6240410e72c2a6c5ccf69ffe5d76717a0b26590748fce8561",
+      "bytes": 22184604
+    },
+    {
+      "file": "output/dev007_N512_dt0.00062500.npz",
+      "sha256": "00e427db1ceb20e6ff5dce6a09e867cee0dab2cd66c7f65b136121a5f5d4dc31",
+      "bytes": 22170775
+    },
+    {
+      "file": "output/dev007_training.npz",
+      "sha256": "13ace38aaec3c741f3e869a8d93eceaeb1da0b0a333daea33c53e893e2d6c839",
+      "bytes": 257809
+    },
+    {
+      "file": "output/dev008_N128_dt0.00015625.npz",
+      "sha256": "afd3e79677ef7d8cbc95a37a21700298d3bb86e937f329d2f05b3dbbbcdf9a3f",
+      "bytes": 1373557
+    },
+    {
+      "file": "output/dev008_N256_dt0.00015625.npz",
+      "sha256": "b244e2e518ababbbd49255ddd0c1f98d27f8911ed1181a310e1ce083f8bbc668",
+      "bytes": 5571007
+    },
+    {
+      "file": "output/dev008_N512_dt0.00015625.npz",
+      "sha256": "bd4c54679806f6faab4b835ee97066533e1c78aee00ae12701689d717be2cc4a",
+      "bytes": 22350186
+    },
+    {
+      "file": "output/dev008_N512_dt0.00031250.npz",
+      "sha256": "8c1e8013281a1c3dfa2d4388c954f15c92c9179bc47d374792f211a821d94b18",
+      "bytes": 22332097
+    },
+    {
+      "file": "output/dev008_N512_dt0.00062500.npz",
+      "sha256": "b1e28c1c1c6a8966d94dea0b664cc110720a590dda07ffacb783ccb801423e29",
+      "bytes": 22320532
+    },
+    {
+      "file": "output/dev008_training.npz",
+      "sha256": "86e9d73b2f5d82c8f56f8fd3a4fe8903b20aa7113c9342a69249b930f7581cfe",
+      "bytes": 296773
+    },
+    {
+      "file": "output/dev009_N128_dt0.00015625.npz",
+      "sha256": "4ac3d9610ab0ec1ca41a923036832252ff2707bdc248c2afffc58d63894ee48c",
+      "bytes": 1366513
+    },
+    {
+      "file": "output/dev009_N256_dt0.00015625.npz",
+      "sha256": "ab77852098c07186244f8724a7a0b673ea9f28f238028bc65e5e4f88c17abbd0",
+      "bytes": 5549603
+    },
+    {
+      "file": "output/dev009_N512_dt0.00015625.npz",
+      "sha256": "9f6ca6854e59b0781641de77ab3057afa4ed7a840735d30b4b0b26c0ca2d5a86",
+      "bytes": 22374930
+    },
+    {
+      "file": "output/dev009_N512_dt0.00031250.npz",
+      "sha256": "f77333662644b9de8ba3db682ce647669f21b35ef57bff2dc2ed35e3960aef9d",
+      "bytes": 22370462
+    },
+    {
+      "file": "output/dev009_N512_dt0.00062500.npz",
+      "sha256": "efb9c61a6c5da754bb1f17800583a0ddbbd97cd82458b4a842517e75884714c0",
+      "bytes": 22368183
+    },
+    {
+      "file": "output/dev009_training.npz",
+      "sha256": "2d665f63a8d4323a9868576c8d817903ee71801e5bab9a5ca6621af2d9b21e22",
+      "bytes": 308389
+    },
+    {
+      "file": "output/dev010_N128_dt0.00015625.npz",
+      "sha256": "79c612862087d4d7afaa273f7d5b2ec909a62ae68ce0bf2aa65deff26406bc8b",
+      "bytes": 1374656
+    },
+    {
+      "file": "output/dev010_N256_dt0.00015625.npz",
+      "sha256": "d9db98e8be46724087381c815553a6c8eee44abaf48bc56c9dcb95bbc0e7b0ca",
+      "bytes": 5573445
+    },
+    {
+      "file": "output/dev010_N512_dt0.00015625.npz",
+      "sha256": "4cddc30682801f18a96fe74e0deb582bf1e1e4ac71088e7e4a92c69d9d0dccef",
+      "bytes": 22336671
+    },
+    {
+      "file": "output/dev010_N512_dt0.00031250.npz",
+      "sha256": "b38bf41d6e07d34f409dc076e5478d4592cc3b35aa988a28101c32c6ff15ea04",
+      "bytes": 22317686
+    },
+    {
+      "file": "output/dev010_N512_dt0.00062500.npz",
+      "sha256": "43b66176920319276998b92ef40a530e646e4a93def15892026d2b62ce2a79f3",
+      "bytes": 22304368
+    },
+    {
+      "file": "output/dev010_training.npz",
+      "sha256": "3447457121ccddb4ff4455ea3892d6ab9038b27a58e17c0f624dd7adee483a4e",
+      "bytes": 320740
+    },
+    {
+      "file": "output/dev011_N128_dt0.00015625.npz",
+      "sha256": "ff9ceaf3b329426f62fa9f18d11cfdf677e43f1af2fccf7e8ae78e8c35dd66a5",
+      "bytes": 1345059
+    },
+    {
+      "file": "output/dev011_N256_dt0.00015625.npz",
+      "sha256": "49bfb3914f68b4e6dc0ca766006e2fd24700fba381a8875a9c8053da4182d27c",
+      "bytes": 5516025
+    },
+    {
+      "file": "output/dev011_N512_dt0.00015625.npz",
+      "sha256": "d47f8b4c74175f9b8e81a77701c13706873a1f219fe6376398c7ea03028d78dc",
+      "bytes": 22272497
+    },
+    {
+      "file": "output/dev011_N512_dt0.00031250.npz",
+      "sha256": "af6dd21468b46b8dda3fe139c9a3963b5a4e42f132a8074dbc410fef5132f296",
+      "bytes": 22246092
+    },
+    {
+      "file": "output/dev011_N512_dt0.00062500.npz",
+      "sha256": "a50d6aabde4626b8f3308181b2b3a5818def47e400eaffbd1c46296635834b72",
+      "bytes": 22224705
+    },
+    {
+      "file": "output/dev011_training.npz",
+      "sha256": "edff353d69a6c201506c5902528d4ff819832adbace090015b94140d35b03c7f",
+      "bytes": 257740
+    },
+    {
+      "file": "output/dev012_N128_dt0.00015625.npz",
+      "sha256": "369aa642b171c50c7fcf3de520b709d8dc0c30bad706bd65a80b16016bc925cd",
+      "bytes": 1381070
+    },
+    {
+      "file": "output/dev012_N256_dt0.00015625.npz",
+      "sha256": "9fe1fda483cf79154a00ccebe135dddbd8e0afc962b610e34888328f7d46b4e3",
+      "bytes": 5577006
+    },
+    {
+      "file": "output/dev012_N512_dt0.00015625.npz",
+      "sha256": "510ab1464894a995df0f53e13a2f15dccc4c94675481f9a116b2d8c39dd68f07",
+      "bytes": 22364464
+    },
+    {
+      "file": "output/dev012_N512_dt0.00031250.npz",
+      "sha256": "94a7f294e95d07fb3aa0ccbaf609008c29ed32e453093a49632edf44f6c61734",
+      "bytes": 22353175
+    },
+    {
+      "file": "output/dev012_N512_dt0.00062500.npz",
+      "sha256": "a5d62b9e651ccd773ac0193d446fa6ff5e040920b3297e53bfc5897b93263049",
+      "bytes": 22340317
+    },
+    {
+      "file": "output/dev012_training.npz",
+      "sha256": "ad51413cffd93eafdab1b81de0cfdbaecb425c30c1042c8f2d88f1308695a4dc",
+      "bytes": 304278
+    },
+    {
+      "file": "output/dev013_N128_dt0.00015625.npz",
+      "sha256": "93a23c0db93ec37be86960cd79fa85296ab1cdda949c6a8a9ad9a3bc533d26ea",
+      "bytes": 1369098
+    },
+    {
+      "file": "output/dev013_N256_dt0.00015625.npz",
+      "sha256": "24fe86f56df451505e5ba855f459bd2aba1b428453fa873611804fc60f13ec0f",
+      "bytes": 5556099
+    },
+    {
+      "file": "output/dev013_N512_dt0.00015625.npz",
+      "sha256": "e2a17d245272b5504bb1e91ccd767e128b6e49ff3779329d2994f95be70c5e12",
+      "bytes": 22377393
+    },
+    {
+      "file": "output/dev013_N512_dt0.00031250.npz",
+      "sha256": "9c77b3a876ea1b354e1ac26ccb03f3a685ab13c093eb6c260aecac3c14ba1e0c",
+      "bytes": 22368596
+    },
+    {
+      "file": "output/dev013_N512_dt0.00062500.npz",
+      "sha256": "175efe267418f784277bb187699638fa82b5d543230cdf25a64c32fd2ed9a85b",
+      "bytes": 22361527
+    },
+    {
+      "file": "output/dev013_training.npz",
+      "sha256": "63c07d13a7e8e994c52ba99a3f9f7f41c6d7b1805a69331cd72717f1b387de4f",
+      "bytes": 298560
+    },
+    {
+      "file": "output/dev014_N128_dt0.00015625.npz",
+      "sha256": "33450503937e9b38a3eb5cbd797409101bc07e24c260656a6ede507a5b03a151",
+      "bytes": 1377663
+    },
+    {
+      "file": "output/dev014_N256_dt0.00015625.npz",
+      "sha256": "fe83834992db9c72a5dad717afe14873b51ac195adedda345fc0a0135504cbb2",
+      "bytes": 5571967
+    },
+    {
+      "file": "output/dev014_N512_dt0.00015625.npz",
+      "sha256": "4926a1c015cff7c66b439557979dd5d449993aeb45892e24c38fc3033796bbb0",
+      "bytes": 22293926
+    },
+    {
+      "file": "output/dev014_N512_dt0.00031250.npz",
+      "sha256": "d4e870f4ed9241d429e274033d87f9da4a706be5e95c3aaf2d1b494fee9099e2",
+      "bytes": 22269042
+    },
+    {
+      "file": "output/dev014_N512_dt0.00062500.npz",
+      "sha256": "eca651f3c7b249184f581c88fd363fba4663ece8b2d12639aaf1bec8b23e9beb",
+      "bytes": 22252085
+    },
+    {
+      "file": "output/dev014_training.npz",
+      "sha256": "b21bc578febe4e87c01e6bc1d090f33f5dd17d91828eb15691a9a02dbfbcf003",
+      "bytes": 326208
+    },
+    {
+      "file": "output/dev015_N128_dt0.00015625.npz",
+      "sha256": "da627bd1cf056140e83f6ba30b26bcb60247e33d69e6dfc91339e1f017e89faf",
+      "bytes": 1346516
+    },
+    {
+      "file": "output/dev015_N256_dt0.00015625.npz",
+      "sha256": "04ad0ab9bc4e42d218e4d93a8aea12188dbeed5e0044732fc59343d3d3bfc413",
+      "bytes": 5517946
+    },
+    {
+      "file": "output/dev015_N512_dt0.00015625.npz",
+      "sha256": "515cafc8f1009788b1fc6703b162d770b9a5349f73fceb05bf72308104f097e5",
+      "bytes": 22292909
+    },
+    {
+      "file": "output/dev015_N512_dt0.00031250.npz",
+      "sha256": "d6ae08a690ca79234b821ee232e30c231f522199cbb227057d44dc40c6423533",
+      "bytes": 22269147
+    },
+    {
+      "file": "output/dev015_N512_dt0.00062500.npz",
+      "sha256": "5fdc5d24d434c83affbf2c397c9f7112e9608f5797549ebdf5e564e216f77b1a",
+      "bytes": 22248659
+    },
+    {
+      "file": "output/dev015_training.npz",
+      "sha256": "ea7ae29870798ce656c05305f91f1f1d6018f84c3b363ee30e992f1271389b95",
+      "bytes": 257622
+    },
+    {
+      "file": "output/fixture000_N128_dt0.00015625.npz",
+      "sha256": "233be2bdf18960a1811bef53e5e78e3313145776b553037ca417740244e41797",
+      "bytes": 1251175
+    },
+    {
+      "file": "output/fixture000_N256_dt0.00015625.npz",
+      "sha256": "ee694c919094a46785390c4d842cca3c7e72daf4abfe34f6249868b38e43309a",
+      "bytes": 5509182
+    },
+    {
+      "file": "output/fixture000_N512_dt0.00015625.npz",
+      "sha256": "0f7e08236e167b56ca723b9a9fe29990c2390638e499b11990514cf1feba45e8",
+      "bytes": 22314071
+    },
+    {
+      "file": "output/fixture000_N512_dt0.00031250.npz",
+      "sha256": "d57d77a4206c4cbd59a253ce880e893b8f85b0e85374660324300442c95eed52",
+      "bytes": 22292258
+    },
+    {
+      "file": "output/fixture000_N512_dt0.00062500.npz",
+      "sha256": "6e81724cc5277b1c75e37971ea8ea8a0e10904136d450f54b3b32bc6fa9bcc70",
+      "bytes": 22277922
+    },
+    {
+      "file": "output/fixture000_training.npz",
+      "sha256": "aaaa918b9fc3a25f5469d3b1b8fcacb33e37fc759402ebd4bddea0c624403289",
+      "bytes": 262066
+    },
+    {
+      "file": "output/fixture001_N128_dt0.00015625.npz",
+      "sha256": "90b104fb0f145a4ca4ed171850b331bc338c1e2b606fc6cb47bbdfd391b80fc1",
+      "bytes": 1330556
+    },
+    {
+      "file": "output/fixture001_N256_dt0.00015625.npz",
+      "sha256": "853ac13f49bc0cda71cf2f81fcfa70f20527f95e21cc59499052e9770152df3b",
+      "bytes": 5514635
+    },
+    {
+      "file": "output/fixture001_N512_dt0.00015625.npz",
+      "sha256": "f1788d9ee62e74b4e869547988b9794c83590e5633901dd9569c2d70e25992cc",
+      "bytes": 22180863
+    },
+    {
+      "file": "output/fixture001_N512_dt0.00031250.npz",
+      "sha256": "da9011dee1d971a0d1e8c4f5db27fad3282454b333e247ac19a340325f4ef8e1",
+      "bytes": 22164210
+    },
+    {
+      "file": "output/fixture001_N512_dt0.00062500.npz",
+      "sha256": "2bdb65ef02ce694200d9e6daed9b3ba6545e21cdb09675dc59eb2cbc224017b5",
+      "bytes": 22156319
+    },
+    {
+      "file": "output/fixture001_training.npz",
+      "sha256": "df006190c110a1ce50119cb59745382349b562e9acd8ee553e708b7311be6ec6",
+      "bytes": 257856
+    },
+    {
+      "file": "output/parameters.npz",
+      "sha256": "9a657c9c80105c3d9cabb904cae377bc57efa0d68719afda5b62117f2cbdc262",
+      "bytes": 3488
+    },
+    {
+      "file": "output/result.json",
+      "sha256": "687f6d250f71b30066be0babd95ad6b1fae3848bed5ca8b3dce00efb54ab2829",
+      "bytes": 119098
+    }
+  ],
+  "local_and_remote_verified": true,
+  "remote_removed": false
+}

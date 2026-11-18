@@ -24,8 +24,8 @@
     "args": "--group train",
     "gpu": "a100",
     "submitted_utc": "2026-11-18T20:08:24.428118+00:00",
-    "state": "RUNNING",
-    "elapsed_seconds": 403,
+    "state": "COMPLETED",
+    "elapsed_seconds": 526,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
   },
@@ -53,6 +53,21 @@
     "driver": "train_global.py",
     "args": "--train /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/refstrain01/output --dev /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/refsdev01/output",
     "gpu": "a100",
-    "submitted_utc": "2026-11-18T20:15:18.305977+00:00"
+    "submitted_utc": "2026-11-18T20:15:18.305977+00:00",
+    "state": "RUNNING",
+    "elapsed_seconds": 122,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "local01",
+    "id": 7351946,
+    "reserved_minutes": 120,
+    "commit": "6958a304edc0a86f05c89696e41a7ff270248d37",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/local01",
+    "driver": "train_local.py",
+    "args": "--train /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/refstrain01/output --dev /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/refsdev01/output --global-model /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/global01/output",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-18T20:19:23.500734+00:00"
   }
 ]

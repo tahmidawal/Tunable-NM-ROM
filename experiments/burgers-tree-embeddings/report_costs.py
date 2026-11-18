@@ -24,9 +24,10 @@ for ax,key,label in zip(axes,['field_seconds','jvp_seconds'],['Field evaluation'
 fig.suptitle('Initial checkpoint: cached 4096-point component costs\nSame GPU/allocation, five repetitions; labels are active variables; not PDE solve time',fontsize=11)
 fig.savefig(out/'representation-component-cost.png',dpi=160);fig.savefig(out/'representation-component-cost.svg');plt.close(fig)
 v=np.load(H/'results/audit01/output/actual4096.npz');ref=v['reference'];pred=v['prediction']
-fig,axes=plt.subplots(1,3,figsize=(11,3.6),layout='constrained')
-for ax,z,title,signed in zip(axes,[ref,pred,pred-ref],['Reference','Actual4096 reconstruction','Signed error'],[False,False,True]):
-    d=z[::4,::4];lim=np.max(np.abs(z));im=ax.imshow(d.T,extent=[0,1,0,1],origin='lower',cmap='RdBu_r' if signed else 'viridis',vmin=-lim if signed else 0,vmax=lim if signed else ref.max())
+fig,axes=plt.subplots(1,4,figsize=(14,3.6),layout='constrained')
+for ax,z,title,signed in zip(axes,[ref,pred,pred-ref,np.abs(pred-ref)],['Reference','Actual4096 reconstruction','Signed error','Absolute error'],[False,False,True,False]):
+    d=z[::4,::4];lim=np.max(np.abs(z));vmax=lim if signed or title=='Absolute error' else ref.max()
+    im=ax.imshow(d.T,extent=[0,1,0,1],origin='lower',cmap='RdBu_r' if signed else 'viridis',vmin=-lim if signed else 0,vmax=vmax)
     ax.set(title=title,xlabel='x',ylabel='y');fig.colorbar(im,ax=ax,shrink=.8,label='u')
 fig.suptitle(f'{str(v["case"])} at t={float(v["time"]):.3f}; full4096 arrays retained, display sampled every4th node\nRelative L2={100*a["dense_witness"]["grids"]["4096"]["relative_l2"]:.4f}%; reference-assisted projection, no PDE solve',fontsize=10)
 fig.savefig(out/'actual4096-witness.png',dpi=160);plt.close(fig)

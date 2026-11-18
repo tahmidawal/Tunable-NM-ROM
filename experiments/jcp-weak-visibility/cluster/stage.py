@@ -16,8 +16,9 @@ target = lane/'runs'/attempt
 target.mkdir(exist_ok=False)
 code = target/'code'
 code.mkdir()
-for name in ['core.py','run.py','fixture.py','PROTOCOL.md','PROVENANCE.json','OWNER.json',
+for name in ['core.py','run.py','fixture.py','cohort_guard.py','PROTOCOL.md','PROVENANCE.json','OWNER.json',
              'configs/'+config_name,'vendor/engines.py','vendor/sep_common.py',
+             'vendor/legacy_engines.py','vendor/legacy_qcore.py',
              'inputs/frozen.pkl','inputs/rotation_R512.npz']:
     dest = code/name
     dest.parent.mkdir(parents=True, exist_ok=True)

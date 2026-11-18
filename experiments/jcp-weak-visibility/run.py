@@ -19,6 +19,7 @@ import jax.numpy as jnp
 import core as C
 from core import e
 import sep_common as sc
+import cohort_guard
 
 HERE = Path(__file__).resolve().parent
 
@@ -118,6 +119,9 @@ def main():
         assert cfg['seed_second_draw'] == 911702 and cfg['seed_second_count'] == 2
     else:
         assert cfg['case_ids'] == [0, 1], 'Initial protocol opens exactly dev6 indices 0 and 1.'
+    physical, cohort_record = cohort_guard.regenerate(cfg, e.params_draw)
+    save_json(out/'cohort-drawing.json', cohort_record)
+    assert cohort_record['guard_passed'], 'Canonical cohort identity failed; retained cohort-drawing.json records every descriptor.'
     n, width = cfg['mesh_intervals'], cfg['bank_width']
     dt, steps = cfg['dt'], int(round(cfg['horizon']/cfg['dt']))
     assert abs(steps*dt-cfg['horizon']) < 1e-12
@@ -163,16 +167,6 @@ def main():
     if repaired_reference:
         stable_fom = C.make_reference(n, dt, steps, True)
         original_instrumented_fom = C.make_reference(n, dt, steps, False)
-    physical = e.params_draw(cfg['seed_first_draw'], cfg['seed_first_count'])
-    if cfg.get('cohort_phase') == 'remaining-dev6':
-        physical = np.concatenate((physical, e.params_draw(cfg['seed_second_draw'], cfg['seed_second_count'])))
-        assert hashlib.sha256(np.ascontiguousarray(physical).tobytes()).hexdigest() == cfg['canonical_parameter_sha256']
-    save_json(out/'cohort-drawing.json', dict(phase=cfg.get('cohort_phase', 'initial-dev2'),
-        first_draw_seed=cfg['seed_first_draw'], first_draw_count=cfg['seed_first_count'],
-        second_draw_seed=cfg.get('seed_second_draw'), second_draw_count=cfg.get('seed_second_count'),
-        parameter_sha256=hashlib.sha256(np.ascontiguousarray(physical).tobytes()).hexdigest(),
-        selected_parameter_sha256=hashlib.sha256(np.ascontiguousarray(physical[cfg['case_ids']]).tobytes()).hexdigest(),
-        selected_case_ids=cfg['case_ids']))
     save_json(out/'cases.json', [{'cohort':'dev6', 'index':i, 'physical':physical[i]} for i in cfg['case_ids']])
     summary = dict(scope='same-grid same-step discrete target; preliminary development cases', cases={}, environmental_acceptance_pending=True)
     first = True

@@ -126,7 +126,7 @@ def main():
             ax.plot(times, 100*np.asarray(arm['error']), color=color, label=f'M={m}{suffix}')
         firstarm=case['arms'][str(ms[0])]
         ax.plot(times, 100*np.asarray(firstarm['projection_error']), 'k--', label='best span projection')
-        ax.set(title=f'Development case {case_id}', xlabel='Time', ylabel='Error vs same-grid target (%)')
+        ax.set(title=f'Development case {case_id}', xlabel='Time', ylabel='Error / initial-field norm (%)')
         ax.legend(fontsize=8)
     for case_index, (case_id, case) in enumerate(summary['cases'].items()):
         rec=case['fixed_state_spectra'][-1]
@@ -137,7 +137,7 @@ def main():
     shell_axis.set(xlabel='Smooth test rows M', ylabel='Maximum independent shell residual', title='Next 1024 rows; maximum over all evolved steps')
     sigma_axis.legend(fontsize=8)
     shell_axis.legend(fontsize=8)
-    fig.suptitle('MEASURED development pilot — discrete reference only; qualification shown per curve', fontsize=12)
+    fig.suptitle('MEASURED development study — same-grid/same-step reference; qualification shown per curve', fontsize=12)
     fig.tight_layout()
     fig.savefig(dest/'measured-visibility.png', dpi=180)
     fig.savefig(dest/'measured-visibility.svg')

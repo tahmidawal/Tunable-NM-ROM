@@ -1,0 +1,50 @@
+{
+  "version": "P2-A2-remaining-dev6-20261118",
+  "reference_arithmetic": "neighbor-difference",
+  "mesh_intervals": 256,
+  "bank_width": 128,
+  "solve_rows": [
+    256,
+    512,
+    1024,
+    2048
+  ],
+  "observer_rows": 1024,
+  "case_ids": [
+    2,
+    3,
+    4,
+    5
+  ],
+  "cohort": "dev6",
+  "seed_first_draw": 7090702,
+  "seed_first_count": 4,
+  "dt": 0.005,
+  "horizon": 0.25,
+  "solver_gtols": {
+    "prod": 1e-05,
+    "tight": 1e-07,
+    "tighter": 1e-08
+  },
+  "solver_max_iterations": 200,
+  "reference_tolerances": [
+    [
+      1e-12,
+      1e-10
+    ],
+    [
+      1e-14,
+      1e-12
+    ]
+  ],
+  "reference_max_disagreement": 1e-08,
+  "tangent_relative_eigenvalue_threshold": 1e-12,
+  "lane_budget_gpu_hours": 3,
+  "initial_job_limit_minutes": 45,
+  "timing_repetitions": 2,
+  "physical_reference_scope": "same-grid same-step discrete FOM only",
+  "cohort_phase": "remaining-dev6",
+  "seed_second_draw": 911702,
+  "seed_second_count": 2,
+  "canonical_parameter_sha256": "3610a428db73a58615a5a2dc7dae5045da0f4977f93fcd1f798c3a9723289e57"
+}

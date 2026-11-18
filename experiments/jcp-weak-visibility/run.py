@@ -38,7 +38,9 @@ def clean(value):
 
 
 def save_json(path, value):
-    path.write_text(json.dumps(clean(value), indent=2)+'\n')
+    temporary = path.with_suffix(path.suffix+'.tmp')
+    temporary.write_text(json.dumps(clean(value), indent=2, allow_nan=False)+'\n')
+    os.replace(temporary, path)
 
 
 def sha(path):

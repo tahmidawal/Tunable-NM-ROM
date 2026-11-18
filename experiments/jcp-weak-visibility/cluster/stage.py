@@ -20,6 +20,8 @@ for name in ['core.py','run.py','fixture.py','PROTOCOL.md','PROVENANCE.json','OW
     dest = code/name
     dest.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(lane/name, dest)
+for amendment in lane.glob('AMENDMENT-*.md'):
+    shutil.copy2(amendment, code/amendment.name)
 commit = subprocess.check_output(['git','-c','gc.auto=0','rev-parse','HEAD'], cwd=lane, text=True).strip()
 batch = f'''#!/usr/bin/env bash
 #SBATCH --job-name=ctol_jwv_{attempt}

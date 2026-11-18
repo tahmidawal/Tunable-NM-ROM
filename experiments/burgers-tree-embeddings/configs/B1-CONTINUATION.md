@@ -1,0 +1,15 @@
+# B1: user-authorized architecture and training continuation
+
+The user reopened this study on November 18 after B0 and explicitly authorized architectural, training and optimization changes. B0 remains a retained negative result for its recipes, not a stop instruction for this new batch. The old burgers-quadtree campaign remains paused and outside scope.
+
+Reserve six additional allocated GPU-hours, with cumulative ceiling 4031 + 21600 = 25631 GPU-seconds (below the original eight-hour cumulative review point). Keep two simultaneous owned jobs maximum, four hours per job, float64/highest, mandatory GPU preflight, the same physical problem, current-time normalization, actual 4096 output and unopened final tests. Reuse only the registered checksum-verified archived references in this study's namespace. Do not overwrite their artifacts. No merge.
+
+Questions to resolve, in order:
+
+1. Separate the weak nonlinear parent from the local span on identical trees: release only parent coefficients, release only local coefficients, and then both. Compare all development/alignment snapshots. Inspect latent scales and the nonlinear head's departure from its best affine map. Compute training-only POD controls through ranks 256/384/512 on 128-by-128 integration to identify the coordinate bank's approximation/coverage floor.
+2. Repair the nonlinear training geometry: center coefficients, normalize latent scales, use an encoder only for initialization, train with physical current-time relative loss, and independently refit development codes. Remove the unnecessary zero-output restriction from global heads. Preserve zero-output child heads. Use a sufficiently rich common frozen feature span supported by the diagnostic; distinguish a spectral-POD feature control from a learned coordinate bank.
+3. Test richer shared local features and greater spatial resolution independently. Bounded diagnostic ladder: tensor polynomial features 16/36/64, depth 3/4, active budgets 128/256/512/1024/2048 where needed. These are span controls, not replacements for the neural embedding study. Train compressed local heads only after a direct feature space is adequate. Small child dimensions 8/16 are permitted frozen recipes; count all retained ancestors and actual variables.
+
+B1 permits at most eight new trained recipes. Register each concrete architecture before its submission, with a fixed schedule and gate; do not make a Cartesian sweep. Use the parent/local attributions to choose subsequent recipes. Two failed repairs to a newly diagnosed bottleneck require a written review before any further batch. An accuracy gate pass permits the planned common weak-upwind fixed-tree PDE stage. It does not establish a runtime win. Keep all failures and the original B0 report/data.
+
+Required artifacts: attribution table and plots, improved checkpoint(s) or a clear remaining bottleneck, doubled-grid and actual-output audits for any promising candidate, updated resource and retention records, and canonical lab-log updates. This authorization does not relax the 0.5% representation gate or 1% physical trajectory target.

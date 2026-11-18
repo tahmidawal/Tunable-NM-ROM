@@ -1,5 +1,5 @@
 {
-  "cumulative_ceiling_gpu_seconds": 28800,
+  "cumulative_ceiling_gpu_seconds": 25631,
   "batches": [
     {
       "id": "B0",
@@ -9,6 +9,17 @@
       "recipe_cap": 12,
       "max_concurrent": 2,
       "max_seconds_per_job": 14400
+    },
+    {
+      "id": "B1",
+      "baseline_allocated_gpu_seconds": 4031,
+      "max_additional_gpu_seconds": 21600,
+      "cumulative_ceiling_gpu_seconds": 25631,
+      "purpose": "User-authorized attribution, normalized nonlinear training and richer shared local representation",
+      "recipe_cap": 8,
+      "max_concurrent": 2,
+      "max_seconds_per_job": 14400,
+      "configuration": "configs/B1-CONTINUATION.md"
     }
   ]
 }

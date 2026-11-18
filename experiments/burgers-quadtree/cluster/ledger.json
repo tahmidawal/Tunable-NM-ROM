@@ -203,8 +203,8 @@
     "commit": "2c5f8c7a6a55e1156873fc61cc54eba71ab14701",
     "remote": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/c1hybrid",
     "driver": "c1_hybrid",
-    "state": "RUNNING",
-    "elapsed_seconds": 429,
+    "state": "COMPLETED",
+    "elapsed_seconds": 524,
     "allocated_cpus": 8
   },
   {
@@ -224,6 +224,20 @@
     "reserved_minutes": 120,
     "commit": "3d886488bd01cec25591ecbc00e1280ca36a2a40",
     "remote": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/c1qualify",
-    "driver": "c1_qualify"
+    "driver": "c1_qualify",
+    "state": "RUNNING",
+    "elapsed_seconds": 176,
+    "allocated_cpus": 8
+  },
+  {
+    "name": "c1audit",
+    "id": 7344214,
+    "reserved_minutes": 30,
+    "commit": "207469e83e7ee91fac289dcf8844e2d36e5b1b30",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/c1audit",
+    "driver": "c1_audit",
+    "state": "COMPLETED",
+    "elapsed_seconds": 18,
+    "allocated_cpus": 8
   }
 ]

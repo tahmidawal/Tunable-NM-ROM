@@ -404,5 +404,16 @@
     "elapsed_seconds": 79,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b1child8",
+    "id": 7354941,
+    "reserved_minutes": 120,
+    "commit": "9e9e6971faa5e6187f8559c48a09e25dbd8217e3",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1child8",
+    "driver": "train_shared_child.py",
+    "args": "--latent 8 --cache /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1cache/output",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-18T22:20:54.643800+00:00"
   }
 ]

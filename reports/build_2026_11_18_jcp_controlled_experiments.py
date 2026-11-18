@@ -216,6 +216,10 @@ def cost_rows(data):
                          "comparator_median_ms": c.get("median_case_ms"),
                          "comparator_over_target": comp.get("comparator_over_target"),
                          "individual_case_ratios": ratios,
+                         "paired_ratio_median": float(np.median(ratios)) if ratios else None,
+                         "target_faster_case_count": sum(v > 1 for v in ratios),
+                         "target_timing_outlier_count": t["outlier_count_tukey"],
+                         "comparator_timing_outlier_count": c.get("outlier_count_tukey"),
                          "reason": comp.get("reason", "")})
     return rows
 
@@ -474,6 +478,13 @@ def main():
                                      "source": str((source.parent.parent/"provenance.json").relative_to(ROOT))})
             manifest.extend((sp, pp))
             chunks += ["", f"{e['id']} used **{provenance['gpu'].split(',')[0]}**, job **{provenance['job_id']}**. Ratios above one favor the target; no times are compared across jobs. A missing eligible POD comparator is an unresolved match in this candidate set, not a POD speed defeat.", ""]
+            chunks += ["The main table divides cohort median times. The following diagnostics pair case medians; outliers use the per-case Tukey rule on all retained confirmation repetitions, without deleting them.", "",
+                       "| Target / comparator | Median paired time ratio | Cases with faster target | Timing outliers: target / comparator |",
+                       "|---|---:|---:|---:|"]
+            for row in rows:
+                if row["qualified"]:
+                    chunks.append(f"| {row['target']} / {row['comparator']} | {row['paired_ratio_median']:.6f} | {row['target_faster_case_count']} / {row['case_count']} | {row['target_timing_outlier_count']} / {row['comparator_timing_outlier_count']} |")
+            chunks += [""]
         plot = cost_plot(e, d, selection, provenance)
         chunks += [f"![Measured complete-query accuracy and cost]({plot})", "",
                    "Cold measurements, where retained in the experiment lane, cover asset activation, compilation and the first query within an already initialized runtime. They retain the operating-system page cache and exclude runtime/context startup. They cannot be relabeled process-cold deployment costs.", ""]

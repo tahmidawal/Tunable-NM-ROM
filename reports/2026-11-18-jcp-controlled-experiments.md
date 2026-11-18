@@ -167,6 +167,16 @@ These are instrumented queries from the original host-resident physical input to
 
 cost-p01 used **NVIDIA L40S**, job **7354479**. Ratios above one favor the target; no times are compared across jobs. A missing eligible POD comparator is an unresolved match in this candidate set, not a POD speed defeat.
 
+The main table divides cohort median times. The following diagnostics pair case medians; outliers use the per-case Tukey rule on all retained confirmation repetitions, without deleting them.
+
+| Target / comparator | Median paired time ratio | Cases with faster target | Timing outliers: target / comparator |
+|---|---:|---:|---:|
+| learned_head / fom_m64_cnab2_s60 | 2.161538 | 2 / 2 | 0 / 0 |
+| learned_head / fom_m48_rk4_s15 | 1.102958 | 2 / 2 | 0 / 0 |
+| learned_span64 / pod_span32 | 0.709127 | 0 / 2 | 1 / 2 |
+| learned_span64 / fom_m64_cnab2_s40 | 1.358406 | 2 / 2 | 1 / 2 |
+| learned_span64 / fom_m28_rk4_s5 | 0.405582 | 0 / 2 | 1 / 1 |
+
 ![Measured complete-query accuracy and cost](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/cost-p01-complete-query.png)
 
 Cold measurements, where retained in the experiment lane, cover asset activation, compilation and the first query within an already initialized runtime. They retain the operating-system page cache and exclude runtime/context startup. They cannot be relabeled process-cold deployment costs.
@@ -196,3 +206,5 @@ The [environment review](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-
 **Case** means one initial field and its PDE parameters. **M** is the actual number of scalar weak residual equations. **Time step** is the interval between successive numerical updates. **Trajectory error** compares a predicted field with its reference at each saved time; the stated normalization specifies the field norm used as denominator. **Median / worst** denote the middle / largest casewise error, after first maximizing over the stated times. **Numerical qualification** requires the registered reference, operator, derivative and solver checks; an attractive error alone does not pass it. **Stationarity** is a small objective gradient and does not certify a global minimum. **Independent shell residual** measures equations outside every solved test space, using the same extra rows for every compared method. **Source hash** identifies the exact saved file bytes.
 
 **FOM** means the full discretized PDE solver. **Same-mesh / any-mesh classical** distinguish comparators restricted to the requested mesh from those allowed a different internal mesh while returning the same requested fields. **Initial projection** is a model's approximation of the supplied physical initial field. **Mass projection** is the closest field in a linear span under the spatially weighted field norm. **Singular value** measures the sensitivity of residual measurements to a particular perturbation; its smallest value identifies a least visible direction. **Physical rank** counts independent field changes after normalization. **Outside-head norm fraction** measures the part of a specified perturbation that cannot be expressed by the local head-plus-frame tangent. It is a fraction of a norm, not of cases or directions.
+
+**Median paired time ratio** first divides comparator time by target time for each case, then takes the median; it can differ from dividing two cohort medians. **Tukey timing outlier** means a repetition outside the lower or upper quartile by more than one and a half times the interquartile range. Outlier counts are descriptive; every repetition remains in the reported medians and raw records. **Frozen prefix** means the first ordered functions from an unchanged learned bank. **Projection floor** is the closest error available in that linear span for the specified reference field.

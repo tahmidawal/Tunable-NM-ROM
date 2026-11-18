@@ -1,0 +1,152 @@
+{
+  "qualification": {
+    "all_stationary": true,
+    "all_tight_tighter": true,
+    "all_action_checks": true,
+    "common_ic": true,
+    "ic_fit_passed": true,
+    "operator_passed": true,
+    "reference_passed": true,
+    "cases_completed": 2,
+    "passed": true
+  },
+  "groups": [
+    {
+      "case": 0,
+      "rows": 292,
+      "dt": 0.02,
+      "head_common": 0.0008407899246534544,
+      "span_common": 0.008004672662732547,
+      "span_native": 0.00800050598365797,
+      "span_over_head": 9.520419343787696
+    },
+    {
+      "case": 0,
+      "rows": 584,
+      "dt": 0.02,
+      "head_common": 0.0008994507099937529,
+      "span_common": 0.004702105332489898,
+      "span_native": 0.004741235419027578,
+      "span_over_head": 5.227752093855767
+    },
+    {
+      "case": 0,
+      "rows": 584,
+      "dt": 0.01,
+      "head_common": 0.0008337234677162151,
+      "span_common": 0.004023143239997519,
+      "span_native": 0.004090079335192671,
+      "span_over_head": 4.825512769861153
+    },
+    {
+      "case": 1,
+      "rows": 292,
+      "dt": 0.02,
+      "head_common": 0.0011619585369211484,
+      "span_common": 0.010086312986394041,
+      "span_native": 0.010150775558897627,
+      "span_over_head": 8.680441397779848
+    },
+    {
+      "case": 1,
+      "rows": 584,
+      "dt": 0.02,
+      "head_common": 0.0013552106322215131,
+      "span_common": 0.010631639248038026,
+      "span_native": 0.010615580577291096,
+      "span_over_head": 7.845008735365539
+    },
+    {
+      "case": 1,
+      "rows": 584,
+      "dt": 0.01,
+      "head_common": 0.0009394006434694712,
+      "span_common": 0.008200883406536942,
+      "span_native": 0.008173175005770994,
+      "span_over_head": 8.72991035672359
+    }
+  ],
+  "reference": [
+    {
+      "dt": 0.00025,
+      "dt_refined": 0.000125,
+      "scope": "same mesh and discrete spatial operator, not continuum error",
+      "normalization": "norm original physical u0",
+      "per_time_difference": [
+        0.0,
+        4.662632774417374e-07,
+        8.222499019303522e-07,
+        1.0802816594716482e-06,
+        1.2602969283810385e-06,
+        1.3787932857432743e-06,
+        1.4494901791311979e-06,
+        1.4837065424410444e-06,
+        1.4906472429170781e-06,
+        1.477671681729308e-06,
+        1.4505613380486706e-06,
+        1.4137805896270571e-06,
+        1.370719836643546e-06,
+        1.3239120941649052e-06,
+        1.2752185010990876e-06,
+        1.22598212286393e-06,
+        1.1771521489653245e-06,
+        1.1293820751698704e-06,
+        1.083105996550513e-06,
+        1.0385970670994516e-06,
+        9.960117760498017e-07
+      ],
+      "max_difference": 1.4906472429170781e-06,
+      "original_output_grid_parity": 0.0,
+      "bound": 8.337234677162152e-06,
+      "passed": true
+    },
+    {
+      "dt": 0.00025,
+      "dt_refined": 0.000125,
+      "scope": "same mesh and discrete spatial operator, not continuum error",
+      "normalization": "norm original physical u0",
+      "per_time_difference": [
+        0.0,
+        4.5747752105844654e-07,
+        8.702949700725831e-07,
+        1.2302098154809345e-06,
+        1.53902716534025e-06,
+        1.798904050611838e-06,
+        2.012516062243649e-06,
+        2.183081741204092e-06,
+        2.3142851255391934e-06,
+        2.4101356387064656e-06,
+        2.4748032422455507e-06,
+        2.5124597829708913e-06,
+        2.527145891900116e-06,
+        2.52267113705978e-06,
+        2.5025467880281965e-06,
+        2.469946321576234e-06,
+        2.4276876847622533e-06,
+        2.3782318600028713e-06,
+        2.323693319006425e-06,
+        2.2658589271540753e-06,
+        2.206212601516614e-06
+      ],
+      "max_difference": 2.527145891900116e-06,
+      "original_output_grid_parity": 0.0,
+      "bound": 9.394006428673813e-06,
+      "passed": true
+    }
+  ],
+  "containment": {
+    "count": 80,
+    "stationary": 80,
+    "lower_residual": 80,
+    "worse_error": 80
+  },
+  "fits": {
+    "count": 172,
+    "chosen_stationary": 166
+  },
+  "tight_rollout_steps": {
+    "count": 240,
+    "max_gradient": 9.959764475908177e-10,
+    "guarded_acceptances": 30
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "schema": "environment-review-v1",
+  "job_id": "7354339",
+  "source": "https://github.com/openxla/xla/issues/45484",
+  "source_explanation": "Upstream attributes this error to Slurm CPU affinity restrictions; GPU execution continues with OS thread scheduling.",
+  "stderr": [
+    "E1118 16:44:41.030427  966387 numa_hwloc.cc:121] Call to hwloc_set_cpubind() failed: Invalid argument [22]",
+    "E1118 16:44:48.306492  966441 numa_hwloc.cc:121] Call to hwloc_set_cpubind() failed: Invalid argument [22]",
+    "E1118 16:45:05.311647  966778 numa_hwloc.cc:121] Call to hwloc_set_cpubind() failed: Invalid argument [22]"
+  ],
+  "gpu_witness": {
+    "backend": "gpu",
+    "precision": "float64",
+    "matmul_precision": "highest",
+    "gpu": "NVIDIA A100 80GB PCIe, GPU-c692ba0c-a68c-8e5c-5811-dbbe618d443c, 81920 MiB"
+  },
+  "numerical_qualification": {
+    "all_stationary": true,
+    "all_tight_tighter": true,
+    "all_action_checks": true,
+    "common_ic": true,
+    "ic_fit_passed": true,
+    "operator_passed": true,
+    "reference_passed": true,
+    "cases_completed": 2,
+    "passed": true
+  },
+  "decision": "Numerical accuracy admitted after independent review. Host-affinity limitation documented; diagnostic elapsed times do not support speed claims."
+}

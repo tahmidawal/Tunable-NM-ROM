@@ -21940,3 +21940,14 @@ Read the current manuscript method sections and actual inherited separable-decod
 ### 2026-11-18 — User-requested Burgers discussion pause (Archimedes)
 
 At 2026-11-18T18:28:50.914623+00:00, the user explicitly stopped further campaign development to inspect the original Tunable NM-ROM manuscript/code and understand its architecture and solve procedure. Read-only queue and accounting checks found all 47 owned jobs completed and no queued/running jobs. Total allocation 14173 GPU-seconds; last job 7348159. The local exact-time CPU fixture had already exited; no local campaign experiment or submission remained running. No new experiment was launched. Existing intermediate-step/final-cost source work remains unsubmitted and is preserved as a checkpoint. Ownership guard and lane pause inventory record the suspension; no deletion or merge. Resume only on explicit user instruction.
+
+
+## 2026-11-18
+
+### Codex — literature-informed NM-ROM journal analysis blueprint
+
+Reviewed closely related JCP, Journal of Scientific Computing and CMAME papers using primary publication records and available full texts, then mapped their analyses to the current Tunable NM-ROM manuscript and qualified project closeouts. Saved the [analysis blueprint](reports/2026-11-18-nmrom-journal-analysis-blueprint.md) and source/access notes in `research_notes/NMROM journal analysis blueprint/`. The report specifies proposed figures, axes, controls, captions, current evidence gaps and a conditional weak-residual error analysis; these are recommendations, not new experimental results.
+
+The key distinctions are the nonlinear head's containment in the full bank span, frozen-weight tunability of ordered linear prefixes, test-space visibility, discrete versus continuous operator targets, and complete-query versus reduced-evolution costs. Existing negative POD/classical comparisons and reference-qualification limits remain in scope. The proposed residual bound requires explicit stability and residual-suboptimality assumptions; ordinary solver stationarity does not establish them. No new measurements or numerical retractions were made.
+
+No training, experimental code changes, cluster actions, submission, merge or campaign resumption occurred. The active tree-embedding study and the older paused campaign retain their separate ownership and status. Open work: choose the journal article's scope with the coauthors, assemble existing qualified evidence, and fill only the claim-specific gaps ranked in the report.

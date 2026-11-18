@@ -20,12 +20,22 @@ def panel(err,labels,prefix):
 
 old=read('auditr1');g0=read('global01');attr=read('b1attrib01');p16=read('b1parent16');resolved=read('b1resolved2')
 alias=read('b1spanaudit');span=read('b1expanded');cache=read('b1cache')
+fullglobal=read('b1globalfull');refit8=read('b1child8refit')
 labels=[r['case'] for r in cache['cases']['dev']]
 plt.rcParams.update({'font.size':10,'axes.spines.top':False,'axes.spines.right':False})
 
 fig,ax=plt.subplots(figsize=(8.3,4.8))
 xx=[int(k) for k in span['controls']];yy=[100*v['worst'] for v in span['controls'].values()]
 ax.loglog(xx,yy,'o-',color='#546d9c',label='Global POD: expanded training data')
+xx=[int(k) for k,v in fullglobal['POD'].items() if v['relative_training_singular_value']>1e-12]
+yy=[100*fullglobal['POD'][str(k)]['projection']['worst'] for k in xx]
+ax.loglog(xx,yy,'o-',color='#546d9c')
+xx=[1024]+[int(k) for k,v in fullglobal['POD'].items() if v['relative_training_singular_value']<=1e-12]
+yy=[100*fullglobal['POD'][str(k)]['projection']['worst'] for k in xx]
+ax.loglog(xx,yy,'o--',mfc='white',color='#546d9c',label='Global extension into numerical-null directions')
+ax.loglog([v['variables'] for v in fullglobal['complete_sine'].values()],
+          [100*v['projection']['worst'] for v in fullglobal['complete_sine'].values()],
+          '^:',color='#9a752c',label='Complete tensor sine space (data-independent)')
 xx=[v['active_variables'] for v in cache['direct_controls'].values()];yy=[100*v['projection']['worst'] for v in cache['direct_controls'].values()]
 ax.loglog(xx,yy,'o-',color='#00877c',label='Shared local POD + global parent')
 for k,v in cache['direct_controls'].items():ax.annotate(f'{k}/node',(v['active_variables'],100*v['projection']['worst']),xytext=(4,7),textcoords='offset points',fontsize=8)
@@ -40,7 +50,7 @@ for name in ['b1global64','b1global128','b1child8','b1child16']:
 ax.axhline(.5,color='#b5413c',ls='--',lw=1,label='Representation gate (every snapshot)')
 ax.set(xlabel='Total adjustable variables, including retained parents',ylabel='Worst current-time relative L2 error (%)',
        title='Expanded panel: shared local corrections versus global variables')
-ax.grid(alpha=.17,which='both');ax.legend(fontsize=8,loc='lower left');figure(fig,'b1-representation-capacity')
+ax.grid(alpha=.17,which='both');ax.legend(fontsize=8,loc='upper right',bbox_to_anchor=(1.02,1.02));figure(fig,'b1-representation-capacity')
 
 fig,axs=plt.subplots(2,3,figsize=(10,6),constrained_layout=True)
 for row,name,title in [(0,'auditr1','Original learned local model'),(1,'b1directaudit','Shared local POD24')]:
@@ -82,6 +92,24 @@ for n,r in trained:
 ledger=json.loads((H/'cluster/ledger.json').read_text());terminal={'COMPLETED','FAILED','TIMEOUT','CANCELLED','OUT_OF_MEMORY','NODE_FAIL','PREEMPTED'}
 directaudit=read('b1directaudit')
 allocation_rows='\n'.join(f"| {k} | {v['active_variables']} | {pct(v['projection']['worst'])} |" for k,v in directaudit['controls'].items())
+global_rows='\n'.join(f"| Global saved POD prefix {k} | {v['variables']} | {pct(v['projection']['worst'])} | {v['relative_training_singular_value']:.3g} |" for k,v in fullglobal['POD'].items())
+global_rows+='\n'+'\n'.join(f"| Complete sine {k} per axis | {v['variables']} | {pct(v['projection']['worst'])} | Not trained |" for k,v in fullglobal['complete_sine'].items())
+pde_runs=[]
+for run in ['b1weakpilot1','b1weakL2048','b1weakL4096','b1weakdt125','b1weakdt625']:
+    if (H/'results'/run/'output/result.json').exists():
+        r=read(run)
+        if r['status']=='complete_fixed_tree_diagnostic_pilot':pde_runs.append((run,r))
+pde_rows=[]
+fig,axs=plt.subplots(1,3,figsize=(12,3.7),constrained_layout=True,sharey=True)
+for run,r in pde_runs:
+    for i,c in enumerate(r['cases']):
+        for method,v in c['methods'].items():
+            pde_rows.append(f"| {c['case']} | {method} | {r['L']} | {r['dt']:g} | {pct(max(v['physical_error'][1:]))} | {v['all_steps_stationary']} | {v['physical_accuracy_pass']} |")
+            axs[i].plot(np.arange(6)*.05,np.array(v['physical_error'])*100,
+                '--' if method.startswith('global') else '-',label=f"{'Global' if method.startswith('global') else 'Tree'} L{r['L']}, dt{r['dt']:g}")
+            axs[i].set(title=c['case'],xlabel='Time');axs[i].axhline(1,color='gray',ls=':',lw=.7);axs[i].grid(alpha=.15)
+axs[0].set_ylabel('Current-time physical error (%)');axs[-1].legend(fontsize=7)
+figure(fig,'b1-fixed-tree-physics')
 charged=sum(r.get('elapsed_seconds',0) for r in ledger if r.get('state') in terminal)
 live=[r['name'] for r in ledger if r.get('state') not in terminal]
 stamp=datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -107,7 +135,13 @@ Training uses the registered prefix expansion to 128 trajectories. Development h
 |---|---:|---:|---:|---:|---:|
 {chr(10).join(lines)}
 
-The direct local entries use resolved physical Gram integration; actual-grid audits are separate. The strongest listed expanded global POD control has {len(np.load(H/'results/b1expanded/output/pod_basis.npz')['coefficients'])} coefficients and {pct(span['controls']['768']['worst'])} worst error. Spectral-feature nonlinear controls are architecture-inspired NM-ROMs, not faithful native coordinate-MLP Tunable reproductions. Larger spans and the planned independent NM-ROM competitors remain relevant.
+The direct local entries use resolved physical Gram integration; actual-grid audits are separate. Spectral-feature nonlinear controls are architecture-inspired NM-ROMs, not faithful native coordinate-MLP Tunable reproductions.
+
+The extended global control reaches {pct(fullglobal['POD']['1280']['projection']['worst'])} with {fullglobal['POD']['1280']['variables']} variables, better than the admitted direct tree at its larger variable count. Retain that result, with an essential qualification: its trailing training singular value is only {fullglobal['POD']['1280']['relative_training_singular_value']:.3g} of the largest. These are valid saved orthonormal spaces extended into numerically null training directions, not reliably learned variance directions. Their stability under retraining is unqualified. The complete data-independent sine space provides a separate control without this ambiguity. Neither variable counts nor projection errors establish PDE cost.
+
+| Global span control | Variables | Worst all | Relative trailing training singular value |
+|---|---:|---:|---:|
+{global_rows}
 
 ![Error against active variables](b1-representation-capacity.png)
 
@@ -131,7 +165,19 @@ The historical attribution JSON accidentally calls a selected update number `old
 
 ## Advancement and remaining work
 
-The richer direct local space passes the representation screen and warrants dense audits and a separately labelled fixed-tree physics study. Shared nonlinear children are now trained against the full assembled physical metric, with jointly refitted parent and child variables at multiple depths. A small fixture verifies the overlap-aware fitting algebra and exact zero-child transfer. Trained zero-child directions and fixed-code actual output require separate qualification.
+The direct local POD24 model passes representation and its independent dense audit, so fixed-tree physics has begun. Frozen-weight, longer dense fitting of child8 reduces its worst error to {pct(refit8['worst_projection'])}; maximum stationarity remains {refit8['max_stationarity']:.3g}. The small change weakens the explanation that its entire remaining error is a short code fit, but it is not a proof of a global minimum. Shared nonlinear children train against the assembled physical metric, with jointly refitted parent and child variables at multiple depths.
+
+## Fixed-tree PDE diagnosis
+
+These pilots solve complete trajectories from the shared initial callable with the frozen prescribed tree and global POD768 control. Both use the same exact fine-grid upwind weak operator, backward Euler, common test set and dense integration. Reference fields are opened for scoring only after both methods finish each case. The table reports all requested evolved times, not only the final output.
+
+| Case | Method | Spatial intervals | Time step | Worst evolved error | Every step stationary | Physical accuracy pass |
+|---|---|---:|---:|---:|---|---|
+{chr(10).join(pde_rows)}
+
+![Fixed-tree physics diagnosis](b1-fixed-tree-physics.png)
+
+Pulse errors remain above the physical gate in the initial pilot for both methods despite tightly converged weak solves. Spatial, temporal, test and integration refinements must distinguish numerical error from reduced dynamics. The initial pilot omitted explicit burn-in immediately before timing: those original wall times are retained as unqualified diagnostics and support no speed comparison. Follow-ups include burn-in. The small pilot is not all-development qualification, deployable adaptation, or a complete-runtime benchmark.
 
 The focused continuation changes the training allocation mixture for its nonlinear compression pilot; it is explicitly documented in B1-SHARED-CHILD.md. Same-checkpoint uniform/prescribed controls remain required before an allocation-policy claim. No truth-assisted online refinement is allowed. The verified fine-upwind weak operator remains the primary PDE formulation. Initialization, assembly, failed trials, solving, fallback and requested output must all enter later complete-query timing.
 
@@ -147,6 +193,9 @@ Generated {stamp}. Terminal allocations recorded in the current ledger total {ch
 - Parent: global field retained when local corrections are added.
 - Child variables: independently adjustable numbers controlling one local correction.
 - POD: a basis learned by singular-value decomposition of training fields or coefficients.
+- Numerical-null directions: basis directions with training variation at rounding scale; their orientation is not reliably determined by the data.
+- Complete sine space: every tensor-product sine mode up to the stated axis count, independent of training.
+- Stationarity: the fitted weak residual's gradient is small; this alone does not guarantee physical accuracy.
 - Gram metric: field inner products that retain overlapping-patch interactions.
 - Current-time relative L2: physical root-mean-square error divided by the reference norm at that same time.
 - Worst all: largest error across every snapshot and trajectory in all development panels.

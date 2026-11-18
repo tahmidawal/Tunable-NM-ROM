@@ -14,7 +14,7 @@ Attribution on the old fixed trees provisionally improves when parent and local 
 
 ## Expanded matched-data comparison
 
-Training uses the registered prefix expansion to 128 trajectories. Development has 32 random trajectories and the same 12 alignment cases; every one of the 11 snapshot times is scored in the current-time physical norm. Final-test solution fields remain unopened. Shared local POD uses training coefficients only, fixed windows and retained parents. Its allocations use the known initial field and a swept-speed bound, not evolved reference fields.
+Training uses the registered prefix expansion to 128 trajectories. Development has 32 random trajectories and the same 12 alignment cases; every one of the 11 snapshot times is scored in the current-time physical norm. Final-test solution fields remain unopened. Shared local POD uses training coefficients only, fixed windows and retained parents. Its allocations use the known initial field and a sampled speed estimate, not evolved reference fields or a certified propagation bound.
 
 | Representation | Total variables | Original random panel | Added random panel | Alignment panel | Worst all |
 |---|---:|---:|---:|---:|---:|
@@ -27,7 +27,24 @@ Training uses the registered prefix expansion to 128 trajectories. Development h
 | Global nonlinear 128 | 128 | 2.9436% | 6.2896% | 7.8825% | 7.8825% |
 | Child nonlinear 8 | 544 | 0.8083% | 0.5119% | 1.5059% | 1.5059% |
 
-The direct local entries use resolved physical Gram integration; actual-grid audits are separate. The strongest listed expanded global POD control has 768 coefficients and 1.6145% worst error. Spectral-feature nonlinear controls are architecture-inspired NM-ROMs, not faithful native coordinate-MLP Tunable reproductions. Larger spans and the planned independent NM-ROM competitors remain relevant.
+The direct local entries use resolved physical Gram integration; actual-grid audits are separate. Spectral-feature nonlinear controls are architecture-inspired NM-ROMs, not faithful native coordinate-MLP Tunable reproductions.
+
+The extended global control reaches 0.3227% with 1280 variables, better than the admitted direct tree at its larger variable count. Retain that result, with an essential qualification: its trailing training singular value is only 3.01e-18 of the largest. These are valid saved orthonormal spaces extended into numerically null training directions, not reliably learned variance directions. Their stability under retraining is unqualified. The complete data-independent sine space provides a separate control without this ambiguity. Neither variable counts nor projection errors establish PDE cost.
+
+| Global span control | Variables | Worst all | Relative trailing training singular value |
+|---|---:|---:|---:|
+| Global saved POD prefix 768 | 768 | 1.6145% | 4.79e-07 |
+| Global saved POD prefix 960 | 960 | 1.2726% | 2.6e-08 |
+| Global saved POD prefix 1024 | 1024 | 1.1579% | 6.67e-09 |
+| Global saved POD prefix 1280 | 1280 | 0.3227% | 3.01e-18 |
+| Global saved POD prefix 1376 | 1376 | 0.2958% | 9.25e-19 |
+| Global saved POD prefix 1408 | 1408 | 0.2882% | 2.07e-20 |
+| Complete sine 24 per axis | 576 | 4.1987% | Not trained |
+| Complete sine 32 per axis | 1024 | 1.9606% | Not trained |
+| Complete sine 36 per axis | 1296 | 1.3369% | Not trained |
+| Complete sine 40 per axis | 1600 | 0.9292% | Not trained |
+| Complete sine 48 per axis | 2304 | 0.4543% | Not trained |
+| Complete sine 64 per axis | 4096 | 0.1139% | Not trained |
 
 ![Error against active variables](b1-representation-capacity.png)
 
@@ -55,7 +72,24 @@ The historical attribution JSON accidentally calls a selected update number `old
 
 ## Advancement and remaining work
 
-The richer direct local space passes the representation screen and warrants dense audits and a separately labelled fixed-tree physics study. Shared nonlinear children are now trained against the full assembled physical metric, with jointly refitted parent and child variables at multiple depths. A small fixture verifies the overlap-aware fitting algebra and exact zero-child transfer. Trained zero-child directions and fixed-code actual output require separate qualification.
+The direct local POD24 model passes representation and its independent dense audit, so fixed-tree physics has begun. Frozen-weight, longer dense fitting of child8 reduces its worst error to 1.4861%; maximum stationarity remains 0.000136. The small change weakens the explanation that its entire remaining error is a short code fit, but it is not a proof of a global minimum. Shared nonlinear children train against the assembled physical metric, with jointly refitted parent and child variables at multiple depths.
+
+## Fixed-tree PDE diagnosis
+
+These pilots solve complete trajectories from the shared initial callable with the frozen prescribed tree and global POD768 control. Both use the same exact fine-grid upwind weak operator, backward Euler, common test set and dense integration. Reference fields are opened for scoring only after both methods finish each case. The table reports all requested evolved times, not only the final output.
+
+| Case | Method | Spatial intervals | Time step | Worst evolved error | Every step stationary | Physical accuracy pass |
+|---|---|---:|---:|---:|---|---|
+| dev000 | tree_direct24 | 1024 | 0.0025 | 2.5373% | True | False |
+| dev000 | global_POD768 | 1024 | 0.0025 | 2.4895% | True | False |
+| dev003 | tree_direct24 | 1024 | 0.0025 | 0.2945% | True | True |
+| dev003 | global_POD768 | 1024 | 0.0025 | 0.2944% | True | True |
+| align002 | tree_direct24 | 1024 | 0.0025 | 2.2570% | True | False |
+| align002 | global_POD768 | 1024 | 0.0025 | 2.0991% | True | False |
+
+![Fixed-tree physics diagnosis](b1-fixed-tree-physics.png)
+
+Pulse errors remain above the physical gate in the initial pilot for both methods despite tightly converged weak solves. Spatial, temporal, test and integration refinements must distinguish numerical error from reduced dynamics. The initial pilot omitted explicit burn-in immediately before timing: those original wall times are retained as unqualified diagnostics and support no speed comparison. Follow-ups include burn-in. The small pilot is not all-development qualification, deployable adaptation, or a complete-runtime benchmark.
 
 The focused continuation changes the training allocation mixture for its nonlinear compression pilot; it is explicitly documented in B1-SHARED-CHILD.md. Same-checkpoint uniform/prescribed controls remain required before an allocation-policy claim. No truth-assisted online refinement is allowed. The verified fine-upwind weak operator remains the primary PDE formulation. Initialization, assembly, failed trials, solving, fallback and requested output must all enter later complete-query timing.
 
@@ -63,7 +97,7 @@ Original recipes, unsuccessful repairs and the original decision remain in [the 
 
 ## Accounting and provenance
 
-Generated 2026-11-18T22:40:52.412985+00:00. Terminal allocations recorded in the current ledger total 7078 GPU-seconds (1.966111 GPU-hours); nonterminal or not-yet-reconciled names: b1child16. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
+Generated 2026-11-18T23:16:58.195719+00:00. Terminal allocations recorded in the current ledger total 7760 GPU-seconds (2.155556 GPU-hours); nonterminal or not-yet-reconciled names: b1child16, b1weakL2048. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
 
 ## Glossary
 
@@ -71,6 +105,9 @@ Generated 2026-11-18T22:40:52.412985+00:00. Terminal allocations recorded in the
 - Parent: global field retained when local corrections are added.
 - Child variables: independently adjustable numbers controlling one local correction.
 - POD: a basis learned by singular-value decomposition of training fields or coefficients.
+- Numerical-null directions: basis directions with training variation at rounding scale; their orientation is not reliably determined by the data.
+- Complete sine space: every tensor-product sine mode up to the stated axis count, independent of training.
+- Stationarity: the fitted weak residual's gradient is small; this alone does not guarantee physical accuracy.
 - Gram metric: field inner products that retain overlapping-patch interactions.
 - Current-time relative L2: physical root-mean-square error divided by the reference norm at that same time.
 - Worst all: largest error across every snapshot and trajectory in all development panels.

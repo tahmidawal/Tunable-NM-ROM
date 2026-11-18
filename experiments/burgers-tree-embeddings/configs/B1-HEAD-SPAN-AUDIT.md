@@ -1,0 +1,5 @@
+# Frozen global neural output-span audit
+
+The normalized spectral-feature heads have a linear skip and a width128 final hidden layer. Their outputs therefore lie inside an affine field space of dimension at most latent dimension plus128, even though the frozen feature bank is larger. Audit the selected16/64/128 models by replacing only their nonlinear code restriction with exact projection onto that affine space. This is a reference-assisted lower bound for each frozen model, not a new trained recipe, an online method or a faithful native Tunable reproduction.
+
+Use the existing training/development coefficients, missing-feature tails, physical current-time normalization and selected immutable checkpoint hashes. Record both train and development bounds, all snapshot errors and singular values. Verify that stored head predictions lie inside the relaxed span and that no relaxed error exceeds its head error. Reserve at most15 allocated GPU-minutes within B1 after an owned slot becomes free. Keep all original models and fitting limitations visible. Do not infer a universal nonlinear-manifold limit from a frozen-weight bound.

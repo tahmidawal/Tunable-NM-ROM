@@ -14,7 +14,11 @@ for name in a.names:
     row=next(r for r in ledger if r['name']==name);remote=row['remote']
     state=sp.check_output(['ssh','tufts-login',f'sacct -j {row["id"]} -X -n --format=State -P'],text=True).strip()
     assert state.split()[0] in {'COMPLETED','FAILED','TIMEOUT','CANCELLED','OUT_OF_MEMORY','NODE_FAIL','PREEMPTED'},state
-    checksum_file='OUTPUTS.sha256'
+    checksum_file='FULL-RETENTION.sha256'
+    if state=='COMPLETED':
+        # Preserve the job-created output manifest; add source, script and logs to retention.
+        cmd=f'cd {remote} && sha256sum -c OUTPUTS.sha256 --quiet && {{ cat OUTPUTS.sha256; find logs -type f -print0 | sort -z | xargs -0 -r sha256sum; sha256sum OUTPUTS.sha256 SOURCE.sha256 run.sbatch; }} > {checksum_file}'
+        sp.run(['ssh','tufts-login',cmd],check=True)
     if state!='COMPLETED':
         # Retain failed output and failure logs explicitly; no synthetic success result.
         checksum_file='FAILED-RETENTION.sha256'

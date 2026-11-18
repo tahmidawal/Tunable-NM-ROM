@@ -1,0 +1,64 @@
+{
+  "status": "Scientific full6 baseline accepted; remote cleanup remains operational closeout until owner verifies deletion.",
+  "scope": "Same-grid same-step discrete target, six already-exposed development cases; no continuum or speed claim.",
+  "case_ids": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "accepted_arms": 24,
+  "raw_file_hash_verification": [
+    {
+      "run": "p03",
+      "files_verified": 91,
+      "summary_sha256": "0551909b462ae3ca58224b93a579a091d5ad64a7ce431a36cf0975a60f077508",
+      "environment_sha256": "fd9a0d924c6ca06eb784641fa03d4434da6d0a59f54064af4ee8143d84336d04",
+      "remote_directory_deleted_at_review": true
+    },
+    {
+      "run": "p04b",
+      "files_verified": 160,
+      "summary_sha256": "e73d3d8f8dffc7e59dbdc64f9c15299ed33b46a5a62ba4fbfc1aec7e5aed2a84",
+      "environment_sha256": "8e2de6c4350850486d290a1e8f93b80a09267cd75c02483006ecc66b7e317d43",
+      "remote_directory_deleted_at_review": false
+    }
+  ],
+  "same_operator_model_and_physics": true,
+  "same_host_canonical_parameter_sha256": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+  "unchanged_failed_attempt_log_hashes": {
+    "p01": "da8dcd0d9dc7b78a7a88b1a4e74bb9f8899204b4d92b32309fd67be0175be417",
+    "p02": "1d1d968afa611828674fb582981481cf0ad8b4ecb7aba8a39ce9ab05a36bbb5f",
+    "p04": "8682a67bbd0734a4c70f640e14934f3de3e2727a6878f3f66869b3fcce02a231"
+  },
+  "old_p02_case1_remains_reference_ineligible": true,
+  "aggregate_recomputed": {
+    "256": {
+      "median": 0.0200644074999287,
+      "worst": 0.0429789304436911
+    },
+    "512": {
+      "median": 0.015305156086133097,
+      "worst": 0.0429789304436911
+    },
+    "1024": {
+      "median": 0.013685809632620182,
+      "worst": 0.0429789304436911
+    },
+    "2048": {
+      "median": 0.013227855417308542,
+      "worst": 0.0429789304436911
+    }
+  },
+  "independent_shell_decrease_pairs": 18,
+  "pointwise_error_increase_pairs": 6,
+  "maximum_pointwise_relative_error_increase": 0.00021035712868155455,
+  "limitations": [
+    "Worst primary error is unchanged at initial representation floor.",
+    "Added evolved/error-distance diagnostics are post-pilot secondary outcomes.",
+    "Nested-row minimum singular-value monotonicity alone is algebraic; no uniform stability proof.",
+    "Six pointwise error counterexamples are retained."
+  ]
+}

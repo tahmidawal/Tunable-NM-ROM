@@ -30,7 +30,8 @@ def main():
     batched=jax.jit(jax.vmap(projector,in_axes=(None,0,None,0,None)))
     trainbatch=jax.jit(jax.vmap(trainprojector,in_axes=(None,0,None,0,None)))
     eye=jnp.eye(C.shape[1]);ones=jnp.ones(C.shape[1]);rng=np.random.default_rng(a.seed)
-    result=dict(meta=meta,status='training_normalized_parent',latent=a.latent,seed=a.seed,feature_span=f'training-only spectral POD{C.shape[1]}',
+    result=dict(meta=meta,status='training_normalized_parent',latent=a.latent,seed=a.seed,
+                feature_span=(f'prescribed POD-plus-Fourier{C.shape[1]}' if a.stable_source else f'training-only spectral POD{C.shape[1]}'),
                 native_reproduction=False,global_zero_anchored=False,basis_sha256=record['basis_sha256'],
                 data_sha256=record['reduced_data_sha256'],train_trajectories=len(C)//11,dev_trajectories=len(V)//11,
                 train_labels=record.get('train_labels'),dev_labels=record.get('dev_labels'),

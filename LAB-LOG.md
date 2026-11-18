@@ -14,6 +14,10 @@ below it is append-only, oldest first.
 
 # Where things stand — 2026-11-18
 
+**Burgers campaign PAUSED at the user's explicit request (2026-11-18T18:28:50.914623+00:00).** The user wants to revisit the actual Tunable NM-ROM architecture and solution methods before further development. No new experiments, submissions or architectural changes until the user explicitly resumes; earlier broad authorization does not override this pause. All 47 owned cluster jobs are COMPLETED, no owned jobs are queued/running, and no local campaign experiment remains active. Allocated total: 14173 GPU-seconds (3.93694444 GPU-hours). Last completed job: 7348159 (c3befficiency). The interrupted fixture has exited; proposed intermediate-step/cost follow-ups were never submitted. Preserve all outputs and unfinished code. No deletion, cancellation or merge was needed. Exact pause inventory: `worktrees/2026-11-17-burgers-quadtree/experiments/burgers-quadtree/PAUSE-20261118.json`.
+
+### Pre-pause development state (superseded by the pause)
+
 **Burgers full campaign remains active.** The expanded continuous-weak model reaches actual4096 physical accuracy on all32 family-A development cases. Latest compressed384 candidate: worst0.5380% (0.5569% including uncertainty), 8.935ms versus eligible classical6.755ms. Paired median ratios1.353/1.342; no faster cases, so no speed success. C2 transferred/aligned frame recipes fail independent projection and are closed with checkpoints preserved. Family-B full tree/uniform output qualification and matched-data global neural banks are active; registered supplemental output/transfer contracts and same-input controls follow within the finite batch. Same owner/lane/namespace, no final-test opening or merge. [Generated continuation report](reports/2026-11-18-burgers-continuation.md).
 
 ## Earlier state — 2026-11-17
@@ -21920,3 +21924,19 @@ Continued in the same owned lane under explicit user architecture/compute author
 ### 2026-11-18 — Compressed family-A complete-query result (Archimedes)
 
 Job7346653 completed in932 allocated GPU-seconds. All32 actual4096 fields pass physical/reference and feature/time/integration checks. Worst error0.53797%, with uncertainty0.55693%; median query8.935ms versus6.755ms spectral48. Paired time ratios[1.3526527039900296, 1.3421918776664783]; bootstrap intervals and every raw repetition retained in c1compresscost. Full nine-branch cache setup6.653s separately charged. This improves the initial local cost but still fails useful/substantial speed gates. C2aligned weighted teacher/neural training completed as a projection negative; all checkpoints backed up. Matched-data global banks launched as7347185 (120minute finite reservation) while family-B7346814 continues. No final tests, new unrelated scope or merges.
+
+### 2026-11-18 — Family-B qualification and bounded efficiency continuation (Archimedes)
+
+Family-B same-input controls7347300 completed; tree and uniform actual4096 methods pass the original physical/reference/time/integration/finer-space gates. The conservative integration setting remains slower than the eligible classical control. Existing Gauss128 controls show that cheaper integration merits explicit tuning before declaring an architecture-level cost negative. Registered c3_b_efficiency.py (not yet submitted at this entry): finite quadrature/time grid for the same frozen trees, with an intermediate classical time step independently checked. Global compression’s initial small spaces fail span; its bounded capacity extension admits frozen global finalists now undergoing finer-space/complete-cost job7347830. Supplemental five-output/host-transfer job7347545 remains active. Final tests remain closed; at most two owned jobs, same finite cumulative allocation ledger and ownership.
+
+## 2026-11-18
+
+### Discussion reset: inspect Tunable NM-ROM before further quadtree design (coordinator Codex)
+
+User requested starting the discussion from scratch by inspecting Tunable NM-ROM architecture and solution methods first. Sent interrupt/pause instruction to execution owner Archimedes: no new submissions or architectural development, safely checkpoint/stop owned work and preserve outputs. Owner is responsible for recording exact job status; coordinator does not infer that every job is already stopped.
+
+Read the current manuscript method sections and actual inherited separable-decoder, mr-burgers2d and quadrature-study sources. Confirmed the two distinct online paths G h(z) and ordered-bank direct coefficients, fixed tested residual least squares, cached linear operators, sampled fine-grid stencil evaluation, and newer off-mesh gradient/flux quadrature paths. Corrected the discussion framing: a sparse quadrature lattice is not a coarse physics mesh; sampled stencil neighbors retain the chosen fine-mesh spacing. The pilot's coarse128 discretization failure is specific to that diagnostic and must not be generalized to Tunable NM-ROM's architecture. The earlier numerical figures remain historical pilot evidence, not current best campaign results. No new numerical jobs or implementation edits by coordinator. Further architecture choices await the user's discussion.
+
+### 2026-11-18 — User-requested Burgers discussion pause (Archimedes)
+
+At 2026-11-18T18:28:50.914623+00:00, the user explicitly stopped further campaign development to inspect the original Tunable NM-ROM manuscript/code and understand its architecture and solve procedure. Read-only queue and accounting checks found all 47 owned jobs completed and no queued/running jobs. Total allocation 14173 GPU-seconds; last job 7348159. The local exact-time CPU fixture had already exited; no local campaign experiment or submission remained running. No new experiment was launched. Existing intermediate-step/final-cost source work remains unsubmitted and is preserved as a checkpoint. Ownership guard and lane pause inventory record the suspension; no deletion or merge. Resume only on explicit user instruction.

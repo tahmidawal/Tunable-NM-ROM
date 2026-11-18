@@ -369,6 +369,21 @@
     "args": "--train /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/refstrain01/output,/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1refextend/output/train --dev /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/refsdev01/output,/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1refextend/output/dev --crosscheck /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1crossref/output",
     "gpu": "a100",
     "submitted_utc": "2026-11-18T22:13:03.644798+00:00",
-    "staging_recovery": "Staged directory had no Slurm job in queue or accounting; dependency already COMPLETED; removed expired scheduler dependency before first verified submission."
+    "staging_recovery": "Staged directory had no Slurm job in queue or accounting; dependency already COMPLETED; removed expired scheduler dependency before first verified submission.",
+    "state": "COMPLETED",
+    "elapsed_seconds": 64,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b1cache",
+    "id": 7354840,
+    "reserved_minutes": 120,
+    "commit": "726a5d1305537472741b77c6ef6d70af9fea552c",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1cache",
+    "driver": "build_local_cache.py",
+    "args": "--root 128 --span /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1expanded/output --train /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/refstrain01/output,/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1refextend/output/train --dev /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/refsdev01/output,/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1refextend/output/dev",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-18T22:14:58.385413+00:00"
   }
 ]

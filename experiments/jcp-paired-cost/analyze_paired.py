@@ -33,6 +33,7 @@ def main():
     provenance = json.loads((output / "provenance.json").read_text())
     rows = [json.loads(line) for line in (paired / "invocations.jsonl").read_text().splitlines()]
     cases = contract["case_ids"]
+    parity = json.loads((output / "implementation_parity.json").read_text())
     checks = {"all_ok_rows_same_call_metrics": all(
         row["status"] != "ok" or all(key in row for key in
             ("elapsed_ms", "relative_errors", "output_sha256", "solver_diagnostics")) for row in rows),
@@ -41,6 +42,15 @@ def main():
             and set(cases) <= set(range(16)) and provenance["config"]["eval_seed"] == 202609202,
         "within_same_allocation": bool(provenance.get("job_id") and provenance.get("gpu")),
         "all_recorded_costs_nonnegative": all(row.get("elapsed_ms", 0) >= 0 for row in rows),
+        "declared_gpu_f64_highest": provenance["backend"] == "gpu"
+            and provenance["x64"] and provenance["precision"] == "highest",
+        "all_native_targets_match_admitted_states": len(parity) == 2*len(cases)
+            and all(row["passed"] for row in parity)
+            and {(row["subject"], row["case"]) for row in parity}
+            == {(name, case) for name in contract["target_names"] for case in cases},
+        "all_selection_repetitions_retained": all(
+            sum(r["block"] == "selection" and r["subject"] == name and r["case_id"] == case for r in rows)
+            == contract["selection_repetitions"] for name in selection for case in cases),
     }
     recomputed = {}
     for name, summary in result["confirmation"].items():
@@ -61,6 +71,14 @@ def main():
                 np.median([r["median_ms"] for r in per_case]), summary["median_case_ms"], rtol=1e-14))
             checks[f"{name}_worst_accuracy_recomputed"] = bool(np.isclose(
                 max(r["worst_error"] for r in per_case), summary["worst_evolved_error"], rtol=1e-14))
+            checks[f"{name}_median_accuracy_recomputed"] = bool(np.isclose(
+                np.median([r["worst_error"] for r in per_case]),
+                summary["median_case_evolved_max_error"], rtol=1e-14))
+    if (run / "fixture.json").is_file():
+        fixture = json.loads((run / "fixture.json").read_text())
+        checks["same_allocation_gpu_fixture"] = bool(fixture["passed"]
+            and fixture["job_id"] == str(provenance["job_id"])
+            and fixture["source_sha256"]["ns_query.py"] == provenance["query_sha256"])
     accounting = list(csv.DictReader((run / "sacct.txt").read_text().splitlines(), delimiter="|"))
     allocation = next(r for r in accounting if r["JobID"] == str(provenance["job_id"]))
     gpu_seconds = int(allocation["ElapsedRaw"])

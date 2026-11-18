@@ -1,0 +1,69 @@
+{
+  "kind": "artifact_verification",
+  "new_experiments": false,
+  "source_count": 28,
+  "source_hashes_validated": true,
+  "ns_rollout_worst_recomputed_from_case_arrays": {
+    "coordnet_head_k8": {
+      "recomputed_worst": 0.002093484776220296,
+      "stored_worst": 0.002093484776220296
+    },
+    "coordnet_span16": {
+      "recomputed_worst": 0.0266702928279308,
+      "stored_worst": 0.0266702928279308
+    },
+    "coordnet_span32": {
+      "recomputed_worst": 0.01327519714702678,
+      "stored_worst": 0.01327519714702678
+    },
+    "coordnet_span48": {
+      "recomputed_worst": 0.027691955002948524,
+      "stored_worst": 0.027691955002948524
+    },
+    "coordnet_span64": {
+      "recomputed_worst": 0.013087370135167498,
+      "stored_worst": 0.013087370135167498
+    },
+    "coordnet_span8": {
+      "recomputed_worst": 0.06213308503457422,
+      "stored_worst": 0.06213308503457422
+    },
+    "pod_head_k8": {
+      "recomputed_worst": 0.002083565307170458,
+      "stored_worst": 0.002083565307170458
+    },
+    "pod_linear_R64": {
+      "recomputed_worst": 0.011232121630515412,
+      "stored_worst": 0.011232121630515412
+    }
+  },
+  "ns64_and_ns96_independent_audits_passed": true,
+  "ns_test_meshes": [
+    "32",
+    "64",
+    "96"
+  ],
+  "cost_ratio_recomputed_from_confirm_ms": true,
+  "qualified_cost_panels": [
+    "sealed2d512",
+    "sealed2d2048",
+    "sealed3d65",
+    "sealed3d129",
+    "sealed3d257"
+  ],
+  "excluded_cost_panels": {
+    "sealed2d256": [
+      "panel repetition-block drift"
+    ],
+    "sealed2d1024": [
+      "panel repetition-block drift"
+    ],
+    "sealed2d4096": [
+      "panel repetition-block drift"
+    ]
+  },
+  "hypothetical_curves_separate_and_uncalibrated": true,
+  "local_link_failures": [],
+  "report_word_count": 3932,
+  "visual_review": "Writer and parent inspected all three PNGs; parent requested and writer applied a zero-based linear bar axis. Labels readable, no clipped content, measured and hypothetical figures clearly separated."
+}

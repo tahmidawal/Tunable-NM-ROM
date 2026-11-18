@@ -1,0 +1,88 @@
+{
+  "kind": "measured",
+  "ns64": {
+    "widths": [
+      8,
+      16,
+      32,
+      48,
+      64
+    ],
+    "fit_percent": [
+      6.317535056326173,
+      2.2707425949515034,
+      0.6226706576737119,
+      0.2731976162289922,
+      0.17616667331934202
+    ],
+    "rollout_percent": [
+      6.213308503457422,
+      2.66702928279308,
+      1.327519714702678,
+      2.7691955002948525,
+      1.3087370135167498
+    ],
+    "four_quantities_percent": {
+      "full_bank_fit": 0.17616667331934202,
+      "head_best_found_fit": 0.1766397602421513,
+      "span_rollout": 1.3087370135167498,
+      "head_rollout": 0.2093484776220296
+    },
+    "case_count": 32,
+    "mesh": 64,
+    "head_k": 8
+  },
+  "qualified_cost_rows": [
+    {
+      "panel": "sealed2d512",
+      "gpu": "NVIDIA A100 80GB PCIe",
+      "fom": "PS_N48",
+      "rom_ms": 41.98279231786728,
+      "fom_ms": 6.414391100406647,
+      "rom_over_fom": 6.545093939657926
+    },
+    {
+      "panel": "sealed2d2048",
+      "gpu": "NVIDIA A100 80GB PCIe",
+      "fom": "PS_N48",
+      "rom_ms": 41.84324527159333,
+      "fom_ms": 6.412808783352375,
+      "rom_over_fom": 6.524948222410471
+    },
+    {
+      "panel": "sealed3d65",
+      "gpu": "NVIDIA A100 80GB PCIe",
+      "fom": "PS_N16",
+      "rom_ms": 39.51643733307719,
+      "fom_ms": 8.779339957982302,
+      "rom_over_fom": 4.501071552326469
+    },
+    {
+      "panel": "sealed3d129",
+      "gpu": "NVIDIA A100 80GB PCIe",
+      "fom": "PS_N20",
+      "rom_ms": 46.53368145227432,
+      "fom_ms": 8.766585495322943,
+      "rom_over_fom": 5.308073648183832
+    },
+    {
+      "panel": "sealed3d257",
+      "gpu": "NVIDIA H200",
+      "fom": "PS_N20",
+      "rom_ms": 42.18529397621751,
+      "fom_ms": 5.550401750952005,
+      "rom_over_fom": 7.60040369491846
+    }
+  ],
+  "excluded_cost_panels": {
+    "sealed2d256": [
+      "panel repetition-block drift"
+    ],
+    "sealed2d1024": [
+      "panel repetition-block drift"
+    ],
+    "sealed2d4096": [
+      "panel repetition-block drift"
+    ]
+  }
+}

@@ -1,0 +1,242 @@
+[
+  {
+    "analysis": "Reference qualification",
+    "status": "DONE, scoped",
+    "source_id": "reference",
+    "source_path": "worktrees/2026-10-06-jcp-references/experiments/jcp-references/store/STATUS.json",
+    "fields": "dimension_status; crosscheck; crosscheck_cases; store_version",
+    "completed_finding": "Independent reference checks and per-case uncertainty exist.",
+    "limitations": "Conditional numerical uncertainty, not a rigorous continuum bound.",
+    "next_action": "Keep each panel's admitted population; no generic rerun."
+  },
+  {
+    "analysis": "Hard-flow head/span comparison",
+    "status": "PARTIAL mechanism; comparison DONE",
+    "source_id": "hard_ns",
+    "source_path": "worktrees/2026-11-13-manuscript-rebuttal/manuscript_tools/evidence/fresh_s0b.json",
+    "fields": "meshes[128].arms[r128_head|r128_span].config/stats",
+    "completed_finding": "Held-out performance of selected head/span packages is saved.",
+    "limitations": "Tests and time steps differ; fixed iteration budgets do not establish converged solves. Different ranks use trained heads.",
+    "next_action": "P1: isolate the head with matched numerical controls."
+  },
+  {
+    "analysis": "Learned-bank fit versus dynamics",
+    "status": "DONE, diagnostic",
+    "source_id": "ns64",
+    "source_path": "worktrees/2026-11-03-ns3d-pod-match/experiments/ns3d-pod-match/runs/ctest64/output/mesh/summary.json",
+    "fields": "floors; rollouts; config; frozen_inputs_checked; timing",
+    "completed_finding": "Frozen-bank prefix fits, head fit and evolved trajectories are saved.",
+    "limitations": "Fits use the reference-centroid frame; head fit is finite-budget.",
+    "next_action": "Replot now; diagnose the evolution gap in P1."
+  },
+  {
+    "analysis": "NS held-out confirmation",
+    "status": "DONE, scoped",
+    "source_id": "ns_final",
+    "source_path": "worktrees/2026-11-03-ns3d-pod-match/experiments/ns3d-pod-match/reports/final_table.json",
+    "fields": "test; dev; test[mesh].flags/derived/comparators",
+    "completed_finding": "The latest digest and raw audited tests supersede the earlier partial export.",
+    "limitations": "Coarse mesh has normalization/derivative flags; larger development mesh is not a test.",
+    "next_action": "Use admitted meshes and retain flags; no repeat confirmation yet."
+  },
+  {
+    "analysis": "Latent-dimension study",
+    "status": "DONE; accuracy trend inconclusive",
+    "source_id": "heads",
+    "source_path": "worktrees/2026-10-18-jcp-heads/experiments/jcp-heads/runs/EXPORT.json",
+    "fields": "training_acceptance; configs_1024[arm].Q1/Q2/Q3/jacobian; h_acc_k; lh_per_seed",
+    "completed_finding": "Multiple trained heads, seeds and numerical-qualification results exist.",
+    "limitations": "Some configurations fail; pooled summaries need not be a deployable checkpoint.",
+    "next_action": "Inspect failures; no blanket latent sweep."
+  },
+  {
+    "analysis": "Frozen ordered-prefix tunability",
+    "status": "DONE, scoped",
+    "source_id": "dims",
+    "source_path": "worktrees/2026-10-18-jcp-dims/experiments/jcp-dims/runs/EXPORT.json",
+    "fields": "A3_2d; B6_2d; B6_3d",
+    "completed_finding": "Fixed-bank rollout and test-count policies were swept.",
+    "limitations": "Rollout improvement saturates/reverses; this is not guaranteed monotonicity.",
+    "next_action": "Replot existing curves. Add ordering/retraining controls only for those claims."
+  },
+  {
+    "analysis": "Ordering versus unordered/retrained widths",
+    "status": "NOT FOUND as unified qualified comparison",
+    "source_id": "dims",
+    "source_path": "worktrees/2026-10-18-jcp-dims/experiments/jcp-dims/runs/EXPORT.json",
+    "fields": "A3_2d; B6_2d; B6_3d",
+    "completed_finding": "Existing ordering argument and prefix ladders supply part of the evidence.",
+    "limitations": "No single frozen selection protocol combining all these controls was located.",
+    "next_action": "Conditional P4 addition if ordering superiority or cost-free reuse is claimed."
+  },
+  {
+    "analysis": "Weak-test-count sensitivity",
+    "status": "PARTIAL",
+    "source_id": "dims",
+    "source_path": "worktrees/2026-10-18-jcp-dims/experiments/jcp-dims/runs/EXPORT.json",
+    "fields": "A3_2d; B6_2d; B6_3d",
+    "completed_finding": "Test-count sweeps and raw transition statistics already exist.",
+    "limitations": "Registered verdicts are blocked by the unqualified square control.",
+    "next_action": "P2: qualify overdetermined spaces and diagnose failed controls."
+  },
+  {
+    "analysis": "Solver accuracy/stationarity/parity",
+    "status": "DONE for selected settings",
+    "source_id": "heads",
+    "source_path": "worktrees/2026-10-18-jcp-heads/experiments/jcp-heads/runs/EXPORT.json",
+    "fields": "training_acceptance; configs_1024[arm].Q1/Q2/Q3/jacobian; h_acc_k; lh_per_seed",
+    "completed_finding": "Production/tight/tighter, stationarity and Jacobian checks are saved.",
+    "limitations": "Local convergence checks do not certify global minimization.",
+    "next_action": "Reuse instrumentation in P1; verify selected method only."
+  },
+  {
+    "analysis": "Conditioning and residual visibility",
+    "status": "PARTIAL",
+    "source_id": "heads",
+    "source_path": "worktrees/2026-10-18-jcp-heads/experiments/jcp-heads/runs/EXPORT.json",
+    "fields": "training_acceptance; configs_1024[arm].Q1/Q2/Q3/jacobian; h_acc_k; lh_per_seed",
+    "completed_finding": "Step-Jacobian condition summaries and flags are recorded.",
+    "limitations": "No systematic physical-tangent-normalized visibility/error study was located.",
+    "next_action": "P2: tangent scaling, independent tests and physical error together."
+  },
+  {
+    "analysis": "Temporal convergence",
+    "status": "DONE for tested settings",
+    "source_id": "time",
+    "source_path": "worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/checks/analysis.json",
+    "fields": "B4[configuration].label/cases",
+    "completed_finding": "Qualified finite-range time-order labels and per-case checks exist.",
+    "limitations": "Not every head is covered; later step changes also alter residual weighting.",
+    "next_action": "Reuse; extend only if the selected final method differs."
+  },
+  {
+    "analysis": "Error-source interventions",
+    "status": "DONE, scoped",
+    "source_id": "budget",
+    "source_path": "worktrees/2026-10-18-jcp-budget/experiments/jcp-budget/checks/budget2d-b1024a-1024.json",
+    "fields": "members; gates; controls; coverage",
+    "completed_finding": "Ingredient changes, pair interactions, projection and dynamics diagnostics exist.",
+    "limitations": "Intervention norms are nonadditive; some changes are coupled.",
+    "next_action": "Do not invent stacked additive error shares; close specific residual ambiguity."
+  },
+  {
+    "analysis": "Derivative/operator mechanism",
+    "status": "PARTIAL physical attribution; diagnostic DONE",
+    "source_id": "mechanism",
+    "source_path": "worktrees/2026-10-06-jcp-mechanism/experiments/jcp-mechanism/report_numbers.json",
+    "fields": "labels3d; labels2d; a2.panels",
+    "completed_finding": "Mesh-node analytic derivatives reproduce the tested off-mesh change.",
+    "limitations": "Old physical references are preliminary; other dimensions show little separation.",
+    "next_action": "Use as mechanism evidence; refine the physical claim only if central."
+  },
+  {
+    "analysis": "Quadrature ladders and sealed rules",
+    "status": "DONE, mixed decisions",
+    "source_id": "rules",
+    "source_path": "worktrees/2026-11-15-jcp-sealed-closeout/experiments/jcp-sealed-closeout/results/four-rule-decisions.json",
+    "fields": "[rule][ST|S].decision/by_mesh",
+    "completed_finding": "Point-count ladders and frozen rule confirmation exist.",
+    "limitations": "Primary and secondary references produce different decisions.",
+    "next_action": "Replot and preserve both; no universal sufficiency claim."
+  },
+  {
+    "analysis": "Dense/sparse residual and Jacobian fidelity",
+    "status": "PARTIAL across final configurations",
+    "source_id": "refinement",
+    "source_path": "reports/2026-10-26-burgers3d-refinement/VALUES.json",
+    "fields": "physical_error_controls; time_refinement_diagnostic; fixed_mode_mesh; test_space_fixed_quadrature",
+    "completed_finding": "Operator, solver, quadrature and fixed-test controls exist.",
+    "limitations": "No unified reached-state residual/action audit for the final coupled method was located.",
+    "next_action": "Attach this diagnostic to P1/P2; do not rerun every rule."
+  },
+  {
+    "analysis": "Mesh, output and storage scaling",
+    "status": "DONE, scoped",
+    "source_id": "scaling",
+    "source_path": "worktrees/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/checks/analysis.json",
+    "fields": "h_acc_n; p1g; timing; kernels_2d; kernels_3d; memory",
+    "completed_finding": "Frozen/nominal tests, components, kernels and memory records exist.",
+    "limitations": "Reduced evolution, output, stored arrays and allocator peak differ.",
+    "next_action": "Replot separate contracts; extend only missing complete input/output work."
+  },
+  {
+    "analysis": "Quadrature versus exact tensors",
+    "status": "DONE, negative speed example",
+    "source_id": "tensor",
+    "source_path": "worktrees/2026-11-05-ns3d-offmesh-quadrature/experiments/ns3d-offmesh-quadrature/runs/q96/output/summary.json",
+    "fields": "timing.case/gate_passed/fast; tensor.head; ladder; mstar",
+    "completed_finding": "Sufficient quadrature can retain accuracy yet lose to tensor contraction.",
+    "limitations": "Timing uses one case; accuracy covers the development cohort.",
+    "next_action": "Retain the boundary of usefulness; no universal speed claim."
+  },
+  {
+    "analysis": "Matched classical/POD comparisons",
+    "status": "DONE, scoped",
+    "source_id": "cost",
+    "source_path": "worktrees/2026-11-15-jcp-sealed-closeout/experiments/jcp-sealed-closeout/results/sealed-matched-fom-timing.json",
+    "fields": "panels[name].qualified/subject_timings/confirm_rom_over_fom; scope; interpretation",
+    "completed_finding": "Qualified same-allocation lattice/FOM confirmation exists; POD controls are in campaigns.",
+    "limitations": "Prepared inputs; some timings fail drift. Full baseline catalog is not exhausted.",
+    "next_action": "P3 only for the selected complete-query claim."
+  },
+  {
+    "analysis": "Official CROM/CoLoRA test accuracy",
+    "status": "DONE",
+    "source_id": "colora",
+    "source_path": "worktrees/2026-11-12-official-baselines/experiments/official-baselines/results/test/test-colora.json",
+    "fields": "cohort_sha256; selection_sha256; results[*].selection/errors/test",
+    "completed_finding": "Released-code CROM and CoLoRA test records exist; old pending text is stale.",
+    "limitations": "CoLoRA-D gets parameters; CROM-I is an adapter; equation-driven CoLoRA absent.",
+    "next_action": "Update the paper; do not repeat expensive official tests first."
+  },
+  {
+    "analysis": "FNO/U-Net test accuracy",
+    "status": "DONE",
+    "source_id": "operators",
+    "source_path": "worktrees/2026-11-12-operator-scaling/experiments/operator-scaling/closeout/audit.json",
+    "fields": "checkpoint_count; test_cases; target_median_percent; families; per_checkpoint",
+    "completed_finding": "Frozen test selection and per-checkpoint audit exist.",
+    "limitations": "Training budgets differ; historical ROM was timed in another allocation.",
+    "next_action": "Use as scoped accuracy evidence; no cross-job speed ratio."
+  },
+  {
+    "analysis": "Training-seed/hardware robustness",
+    "status": "DONE for historical banks",
+    "source_id": "seeds2",
+    "source_path": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/checks/e2-verdicts-2d.json",
+    "fields": "seeds; rows; counts; spread",
+    "completed_finding": "Recipe repetition and hardware-conditional checks already exist.",
+    "limitations": "Not replication of every later bank; some selections remain inconclusive.",
+    "next_action": "Repeat only the final architecture if it materially differs."
+  },
+  {
+    "analysis": "Long-time and physical fidelity",
+    "status": "PARTIAL",
+    "source_id": "long",
+    "source_path": "worktrees/2026-10-18-jcp-budget/experiments/jcp-budget/checks/b7b8-1024.json",
+    "fields": "b7[configuration].rows; b8",
+    "completed_finding": "Energy/dissipation, error histories and longer-horizon runs exist.",
+    "limitations": "Longest reference and some horizon-specific quadratures are unqualified.",
+    "next_action": "Qualify the claimed horizon or restrict the claim."
+  },
+  {
+    "analysis": "Cylinder forces/divergence",
+    "status": "PARTIAL ranking; experiment DONE",
+    "source_id": "cylinder",
+    "source_path": "reports/2026-11-06-cylinder-unsteady/report-numbers.json",
+    "fields": "dev; heldout; qcheck.pass; timing_summary.scope",
+    "completed_finding": "Field, force, phase and divergence diagnostics are saved.",
+    "limitations": "Neural bank misses a target; formal quadrature check fails; algorithm differs.",
+    "next_action": "Resolve normalization only if cylinder remains central; retain original verdict."
+  },
+  {
+    "analysis": "Lifetime cost and weak-residual theory",
+    "status": "PARTIAL cost; theorem NOT FOUND",
+    "source_id": "amortization",
+    "source_path": "worktrees/2026-10-21-imp-multimesh/experiments/imp-multimesh/EXPORT.json",
+    "fields": "claim; labels; primary_ratio; breakeven; ours_offline_seconds; probe; sources",
+    "completed_finding": "Cost/break-even studies and algebraic ordering arguments exist.",
+    "limitations": "Some offline costs are projected; no developed solver stability theorem located.",
+    "next_action": "Measure final costs if claiming amortization; prove a conditional bound separately."
+  }
+]

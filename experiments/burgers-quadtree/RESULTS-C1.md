@@ -1,65 +1,114 @@
-# Burgers continuation C1: measured progress and remaining cost problem
+# Burgers continuation: physical accuracy and complete query cost
 
-The campaign remains active. These are development results, not final-test confirmation. A0's failed checkpoints remain closed and preserved. C1 fixed the identified operator bias, expanded familyA to train128/dev32, and implemented separate familyB train32/dev8 studies. New trial-space compression and input-conditioned local-frame studies are active; no merge or unseen-test access has occurred.
+Measured development evidence from the authorized continuation beyond A0. Completed numerical results are retained; active cells and unfinished qualifications are identified below. The required accuracy and speed objective has not been declared achieved.
 
-## Physical accuracy and actual output
+## Contract and scope
 
-The selected initial-field four-patch hybrid uses coarse256 plus32 polynomial and32 trained neural features per patch:512 online coordinates. Its continuous weak equations use projected diffusion and ETDRK4. It reaches **0.5271% worst error on all32 development trajectories at actual4096 output**, or **0.5460% including conditional reference uncertainty**. The metric is the largest error at t=.05,.10,.15,.20,.25, normalized by the reference initial-field norm. Initial representation errors are reported separately.
+Each physics query receives the same resident initial-field array and viscosity and returns one final field on exactly4096×4096 nodes. Errors are evaluated at all five prescribed evolved times against qualified independent references, normalized by the initial reference norm. The target is1% per trajectory including reference uncertainty. Projection diagnostics use known future fields only for assessment; PDE queries do not. Final unseen tests remain closed.
 
-Independent FD space/time ladders and spectral checks pass on the expanded panel, including scoring at actual4096 nodes. Rebuilding the physical local features atN256 instead ofN128 changes evolved fields by at most0.010913%; worst PDE error remains0.5255%. Quadrature and half-step changes are recorded separately. An independent NumPy audit reproduces the saved4096 final witness and rejects an intentionally incorrect final-field normalization.
+C1 replaces the biased coarse upwind operator with a separately qualified continuous sine weak Galerkin formulation and ETDRK4 time integration. FamilyA uses the registered TRAIN128/DEV32 prefixes; familyB initially uses its own TRAIN32/DEV8. This expands training coverage independently from the operator change. A0 checkpoints remain preserved and their selector branch remains closed.
 
-![Actual output witness](figures/c1-dev9-output.png)
+## Matched complete-output timing
 
-The figure shows the final state, not the worst-time error. For case9, final errors are0.07487% for the local hybrid and0.01549% for the displayed spectral64 control. Metrics use all16,777,216 output values; only the plot is sampled.
+All times below include input restriction, initialization, input-dependent selection, PDE advancement, final dense decoding and synchronization. Timing uses two randomized blocks of five repetitions per case. Reusable full-policy cache setup and cold calls are reported separately; offline training is not hidden inside a warm-time speed claim. Different panels are separate allocations, so compare paired methods within a panel.
 
-## Complete-query timing: accurate but slower
+### Initial family-A panel
 
-The same-allocation panel gives every method the same resident4096 initial array and viscosity, and returns an actual resident4096 final field. Local timing includes initial-array selection, restriction, coefficient initialization, PDE evolution and reconstruction. Every method uses a separately checked boundary-aligned bilinear output policy. Saving diagnostic files is outside this resident-output contract; allocation accounting includes that work.
+|Method|Worst physical error|With reference uncertainty|Median warm time (ms)|All accuracy controls pass|
+|---|---|---|---|---|
+|local_hybrid|0.5271%|0.5460%|20.627|True|
+|spectral16_dt005|3.3864%|3.4053%|13.077|False|
+|spectral32_dt01|0.1158%|0.1348%|8.197|True|
+|spectral32_dt005|0.1156%|0.1346%|14.963|True|
+|spectral64_dt005|0.0508%|0.0698%|14.858|True|
+|spectral64_dt00125|0.0510%|0.0699%|53.581|True|
 
-| Method | Worst physical error | Median complete warm query |
-|---|---:|---:|
-| Four-patch hybrid512, Gauss128, dt=.005 |0.5271%|20.63ms|
-| Spectral16, dt=.005 |3.3864% — fails|13.08ms|
-| Spectral32, dt=.01 |0.1158%|8.20ms|
-| Spectral32, dt=.005 |0.1156%|14.96ms|
-| Spectral64, dt=.005 |0.05084%|14.86ms|
-| Spectral64, dt=.00125 |0.05099%|53.58ms|
+local_hybrid / spectral32_dt01 median time ratios by block: 2.529, 2.524. Paired case-bootstrap95% intervals: [2.487, 2.549], [2.504, 2.546]. Useful-speed gate: **False**; substantial-speed gate: **False**.
 
-Two independent blocks each contain five randomized-order repetitions per case. Against the fastest eligible setting in this panel, the primary median **local/classical time ratios are2.529 and2.524**, with paired case-bootstrap95% intervals[2.487,2.549] and[2.504,2.546]. Zero of32 cases are faster in either block. This fails both useful and substantial speed criteria. Reusable local table preparation takes another7.61s; cold query timings and all raw repetitions are retained. The data/POD and original local-training/screen allocations took106s and138s respectively; these inclusive job totals are not isolated optimizer timings. Failed variants are also included in the campaign ledger. No amortized speed advantage is supported for this recipe.
+Reusable cache preparation: 7.606s. A warm method that is already slower has no positive break-even query count after adding nonnegative setup/training cost.
 
-Later classical mode/time tuning is a separate accuracy screen, not a cross-allocation speed comparison. N24/32/48 atdt=.0125 pass the physical, half-step and nonlinear-integration checks. Theirdt=.025 settings fail the half-step criterion despite some acceptable raw physical errors. A final paired comparison must include the fastest eligible updated control.
+![Independent complete-output cost panels](2026-11-18-burgers-continuation-assets/accuracy-cost.png)
 
-## What failed in attempts to reduce work
+The dashed line is the1% target. Crosses indicate a failed or incomplete numerical qualification, not eligible matched-accuracy speed competitors.
 
-Smaller quadrature for the frozen512-coordinate hybrid does not preserve its operator accuracy. Atdt=.0125, orders48/64/80/96 produce worst errors plus uncertainty46.37%/32.28%/12.72%/4.61%. Order128 passes at0.5494%. Only the full-coarse256 policy passes all registered accuracy/integration/time gates; reducing coarse rank under the three initial-width policies does not. Increasing the step to.0125 is admissible, but its~8ms prepared-coefficient solve is not a complete-query speed win.
+## Capacity, integration and conditional-frame studies
 
-The first TRAIN-only positive empirical rules, with128/256 points, give worst PDE errors61.35%/59.81%, zero qualifying cases, and large unsketched training-flux errors. They remain finite and are retained as numerical failures. `DECISION-C1-INTEGRATION.md` closes these two sampling-reduction hypotheses for the unchanged space. New constrained trial spaces are explicitly different architectural hypotheses.
+|Compressed coordinates|Quadrature order|Time step|Worst error + uncertainty|Quadrature change|Half-step change|
+|---|---|---|---|---|---|
+|384|128|0.0125|0.5559%|0.0019%|0.0398%|
 
-## Comparators and feature ablations
+Only passing compression settings are shown here; every failed setting remains in the evidence snapshot. Compression changes the trial space. Smaller quadrature for the unchanged bank and the first positive empirical quadrature rules failed; DECISION-C1-INTEGRATION.md closes those recipes. Increasing training alone is not treated as an operator repair.
 
-All local rows below use the same coarse256, same four selected patches and512 nominal coefficients. These are prepared-input continuous PDE diagnostics at refined quadrature/time settings; only the mixed-bank row has the full4096 timing qualification above.
+|Frame recipe|Global + local coordinates|Worst projection|Evolved finer-grid score change|
+|---|---|---|---|
+|diffusive_transferred|64 + 64|7.2153%|0.0088%|
+|initial_aligned|64 + 128|6.8914%|0.0044%|
+|initial_transferred|64 + 64|5.4090%|0.0058%|
 
-| Local feature family | Worst projection error | Worst PDE error |
-|---|---:|---:|
-|64 polynomial per patch|0.6998%|0.8794%|
-|64 trained neural per patch|0.6744%|0.9331%|
-|64 local-POD teacher columns per patch|0.4891%|0.7122%|
-|32 polynomial +32 trained neural per patch|0.4084%|0.5255%|
+The first conditional frame, geometry-only repair and newly aligned neural teacher all fail representation before rollout. The aligned teacher uses only training data. Its decreasing training objective does not establish development generalization. These checkpoints are preserved and this recipe is closed; no PDE or speed claim is inferred.
 
-The local-POD control uses the explicitly approximate bilinear33x33 canonical teacher table; it is not claimed optimal orC2. These comparisons separate feature-family benefit from spatial allocation and capacity. Further feature-resolution/output checks are required before admitting the other rows to a speed claim.
+## Neural and non-neural controls
 
-The unchanged historical decoder was first reproduced with its historical algorithm in A0. In a separately labelled continuous-operator comparison on current development data, its direct rotated banks at128/384/512 have worst PDE errors6.572%/2.195%/1.641%. Its latent16 nonlinear head has worst finite-start optimized projection5.672%; actual continuous weak solves on the two diagnostic cases0/9 remain inaccurate (about2.17%/6.02% at the finer step). No claim of matched-data retraining or historical-solver equivalence is made.
+These local ablations hold global rank, selected patches and nominal coefficient count fixed. They are prepared-input PDE diagnostics, not complete-query timing winners. The local-POD teacher uses bilinear interpolation and is not claimed to be an optimal smooth basis.
 
-The matched-data nonlinear POD-autoencoder separates encoder reconstruction, optimized latent projection and actual PDE evolution. Lift1024 truncation alone is0.4638%, but the first latent128 model's encoder/optimized worst errors are16.844%/16.840%; actual weak PDE diagnostics reach2.965%/18.751% on cases0/9. A wider TRAIN-whitened conditioning repair gives16.749%/16.717%, with19/32 cases below0.5% after latent optimization. Finite-start stationarity is reported; none of these is a claim of globally optimal manifold distance. This training recipe is closed as a negative comparator, not a proof that all nonlinear manifolds fail.
+|Local feature family|Worst projection|Worst PDE error|
+|---|---|---|
+|local_pod|0.4891%|0.7122%|
+|neural|0.6744%|0.9331%|
+|poly|0.6998%|0.8794%|
 
-## Family B and genuine quadtree policies
+|Comparator|Training provenance|Worst PDE error|Scope|
+|---|---|---|---|
+|Historical direct bank rank128|frozen historical training|6.5718%|all development cases|
+|Historical direct bank rank384|frozen historical training|2.1953%|all development cases|
+|Historical direct bank rank512|frozen historical training|1.6411%|all development cases|
+|POD rank128|matched training|18.6052%|all development cases; span-limited|
+|POD rank256|matched training|8.5678%|all development cases; span-limited|
+|POD rank384|matched training|4.8824%|all development cases; span-limited|
+|POD rank512|matched training|2.6164%|all development cases; span-limited|
 
-FamilyB has independent reference ladders, its own matched-data trained network and frozen initial-only allocation rules. Selecting8/12/all16 depth2 patches gives worst refined PDE errors0.8138%/0.6706%/0.6176%. These pass the1% physical screen, but are not complete-output speed results. The arbitrary top8 policy cannot assume precomputed caches only for the observed development subsets.
+The historical latent head has worst finite-start optimized projection 5.6723%. It was first reproduced with its inherited algorithm in A0; the C1 continuous-operator variant is explicitly a different online algorithm, not a reproduction or matched-data retraining.
 
-Complete quadtree leaf partitions provide a bounded alternative: split two of the four depth1 parents, retain the other two coarse leaves, and fit coarse128 plus32 polynomial/32 neural features per leaf (768 coordinates). The same initial-only rule gives worst PDE errors1.0383% in familyA and0.9527% in familyB; the uniform1152 control gives0.4220% and0.6176%. FamilyA fails; familyB has little margin and still needs doubled-feature and4096-output/cost qualification. These trees replace refined parents rather than retaining additive parent columns; no nested transfer or time-adaptive refinement claim is made.
+|Nonlinear manifold|POD truncation|Encoder error|Optimized projection|Max gradient residual|
+|---|---|---|---|---|
+|POD autoencoder|0.4638%|16.8440%|16.8396%|5.92e-10|
+|Whitened wider repair|0.4638%|16.7492%|16.7167%|1.26e-07|
 
-## Current work and reproducibility
+Finite-start latent optimization is not a proof of globally optimal manifold distance. Encoder reconstruction, optimized projection and actual PDE solves are distinct measurements.
 
-Projected-diffusion trial-space compression is being tested separately from quadrature reduction. C2 also prospectively tests a conditional local frame inferred only from the supplied initial field and viscosity, with64–128 total coordinates, original TRAIN-frozen features and independentN256 rescoring. This is an architectural departure under the user's explicit freedom, not a relabelled quadtree success. Geometry-dependent setup must be charged online.
+|Autoencoder PDE diagnostic case|Worst evolved error|
+|---|---|
+|0|2.9652%|
+|9|18.7507%|
 
-The finite cumulative allocation ceiling remains30081 GPU-seconds, with at most two owned jobs. Exact actual usage and active reservations are in `cluster/ledger.json` and `cluster/BATCHES.json`; the campaign has not exhausted this batch. Source/parameter hashes, raw fields, coefficients, failures and trained checkpoints remain in the owned namespace. Selective local copies are checksum-verified; large derived arrays and most dense output witnesses are explicitly remote-only in the retention manifests. Critical trained weights, normalization and learned quadrature weights have versioned backups. The final tests remain closed until a qualifying policy is frozen.
+The separately registered matched-data global coordinate-neural bank comparator is not yet complete. It is distinct from the completed nonlinear POD-autoencoder and historical frozen-bank comparisons.
+
+## Allocation, limitations and reproducibility
+
+Completed allocation: **2.41167 GPU-hours** across 38 terminal jobs. The registered finite cumulative ceiling is 8.35583 GPU-hours; it is an accounting limit for this batch, not a user-imposed total cap. Failed numerical recipes are included. Active/pending ledger entries: c1compresscost (7346653), c1bcomplete (7346814).
+
+All owned jobs use isolated paths, A10080GB preflight, float64 and highest matrix precision. At most two owned GPU jobs run concurrently. The branch is `exp/2026-11-17-burgers-quadtree`, backed up through `codeonly/exp/2026-11-17-burgers-quadtree`; no implementation merge occurred. Raw outputs, trained weights, checksums, source commits and failures are retained. Large derived arrays remain explicitly remote-only where indicated by retention manifests.
+
+No final-test, wider-seed, output-size scaling, five-dense-output or host-transfer superiority claim follows from these development panels. Those confirmation panels remain gated by a feasible accuracy/cost candidate. The bounded quadtree replaces refined parents and selects a fixed tree from initial data; it does not demonstrate online temporal refinement or state transfer. Failure of these finite recipes does not exclude other neural architectures, adaptive solvers or PDE regimes.
+
+Reproduce report tables with the implementation lane’s `reports/build_report.py --publish`; numerical drivers, prospective amendments and `cluster/ledger.json` identify the inputs and jobs. The evidence snapshot beside this report and its SHA manifest make the reported values auditable.
+
+## Glossary
+
+- **Projection:** best fitted coefficients for a known reference field; a representation diagnostic, not a forecast.
+- **PDE solve / rollout:** advance the prescribed initial field using the governing differential equation.
+- **ROM / NM-ROM:** reduced-order model / nonlinear-manifold reduced-order model.
+- **POD:** a linear basis fitted to training snapshots.
+- **Encoder:** network that maps a field to latent coordinates; optimized projection additionally adjusts those coordinates.
+- **Quadrature / integration order:** numerical sampling used to evaluate the weak PDE operator.
+- **Half-step / finer-grid change:** change after refining time or spatial evaluation; separate from reference error.
+- **Reference uncertainty:** conditional error estimate from independent convergent space/time ladders.
+- **Worst error:** maximum across the prescribed evolved times and cases, normalized by each initial reference norm.
+- **Warm query:** repeated solve after reusable compilation/cache preparation. Cold and setup costs remain separate.
+- **Time ratio:** ROM time divided by eligible classical time; below one is faster.
+- **Case bootstrap:** resampling whole trajectories to estimate uncertainty in the median paired ratio.
+- **Coordinates / rank:** number of active reduced coefficients.
+- **FamilyA / familyB:** the registered Gaussian and more localized boundary-compatible Burgers populations.
+- **Development / final test:** data used for architecture selection / untouched data reserved for frozen confirmation.
+- **Quadtree:** a square partition whose cells can be divided into four children.
+- **GPU-hour:** one allocated GPU for one hour, including setup and failed recipes.

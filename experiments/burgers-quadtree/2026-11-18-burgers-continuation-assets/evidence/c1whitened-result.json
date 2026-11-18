@@ -1,0 +1,72 @@
+{
+  "meta": {
+    "job": "7345741",
+    "commit": "803b17d7fd0d07523af28b55df074bfcf0dcc42d",
+    "device": "[CudaDevice(id=0)]",
+    "jax": "0.10.2",
+    "x64": true,
+    "precision": "highest"
+  },
+  "complete": true,
+  "training": [
+    {
+      "step": 5000,
+      "loss": 2.6217082330506107e-05,
+      "score": 0.00039955499379246
+    },
+    {
+      "step": 10000,
+      "loss": 1.5697008853519797e-05,
+      "score": 0.00036898141429243504
+    },
+    {
+      "step": 15000,
+      "loss": 4.834360385353285e-06,
+      "score": 0.0003564882847944413
+    },
+    {
+      "step": 20000,
+      "loss": 6.380825570730844e-06,
+      "score": 0.00035335418691248186
+    },
+    {
+      "step": 25000,
+      "loss": 3.853783915739652e-06,
+      "score": 0.0003520083976975499
+    },
+    {
+      "step": 30000,
+      "loss": 4.4567767519359006e-06,
+      "score": 0.000351607358756307
+    },
+    {
+      "step": 35000,
+      "loss": 4.2390928111738544e-06,
+      "score": 0.0003514504181902344
+    },
+    {
+      "step": 40000,
+      "loss": 5.458562399739548e-06,
+      "score": 0.0003514336789337039
+    },
+    {
+      "step": 45000,
+      "loss": 2.811360018760983e-06,
+      "score": 0.0003514122042489129
+    },
+    {
+      "step": 50000,
+      "loss": 4.800617142653502e-06,
+      "score": 0.0003514109721113746
+    }
+  ],
+  "training_seconds": 71.31096005998552,
+  "lift": 1024,
+  "latent": 128,
+  "encoder_worst": 0.1674917430923403,
+  "optimized_worst": 0.16716687206242786,
+  "truncation_worst": 0.004638206523900427,
+  "optimized_cases_below_half_percent": 19,
+  "max_stationarity": 1.2630805285778947e-07,
+  "contract": "TRAIN-whitened wider POD AE, two-start optimized projection; not PDE solve; normalization and stationarity saved"
+}

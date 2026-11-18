@@ -1,7 +1,7 @@
 """Physical Gram cache and train-only shared local POD, retaining all parent nodes."""
 import argparse
 from common import *
-import data,local_polynomial as LP
+import data,local_polynomial as LP,tensor_metric as TM
 from training_io import checkpoint,summary
 
 def cohort(directories):
@@ -34,21 +34,26 @@ def main():
         local_side=6,nodes=52,depth=4,policy='swept',cases={'train':[],'dev':[]},normalization='current-time reference L2',final_test_opened=False)
     base=np.load(Path(a.span)/'pod_basis.npz')['coefficients'][:a.root]
     np.savez_compressed(out/'global_basis.npz',coefficients=base)
-    x,w=data.grid(128,True);axis=np.unique(x[:,0]);x=jnp.asarray(x);w=jnp.asarray(w)
-    G0=data.synth_grid(jnp.asarray(base),axis).reshape(a.root,-1).T
+    x,w=data.grid(128,True);x=jnp.asarray(x);w=jnp.asarray(w)
+    metric=TM.make_geometry(6);rule=TM.rule();rule2=TM.rule(order=32)
+    result['integration']='64 aligned panels per axis, 24 Gauss nodes per panel; tensor Gram/reference moments'
     normalized_patches=[];train_coefs=[];devrows=[]
     for group,dirs in [('train',a.train),('dev',a.dev)]:
         for folder,r in cohort(dirs):
             path=folder/r['levels'][-1]['file'];assert digest(path)==r['levels'][-1]['sha256'];bb=np.load(path)['coefficients']
-            Y=data.synth_grid(jnp.asarray(bb),axis).reshape(11,-1);norm2=jnp.sum(Y*Y*w[None],axis=1)
-            cells=LP.tree(x,w,r['parameters'],52,4,'swept');B,tr=LP.local_blocks(x,w,cells,6);G=jnp.concatenate([G0,B],axis=1)
-            gram=(G*w[:,None]).T@G;rhs=(Y*w[None])@G
-            c=jnp.linalg.solve(gram+1e-10*jnp.eye(gram.shape[0]),rhs.T).T
-            pred=c@G.T;err=jnp.sqrt(jnp.sum((pred-Y)**2*w[None],axis=1)/norm2)
+            norm2=jnp.sum(jnp.asarray(bb)**2,axis=(1,2))*.25
+            cells=LP.tree(x,w,r['parameters'],52,4,'swept')
+            gram,tr,mx,my=metric(jnp.asarray(base),jnp.asarray(cells),*rule)
+            rhs=TM.rhs(jnp.asarray(base),jnp.asarray(bb),mx,my)
+            c,err=TM.fit(gram,rhs,norm2)
+            if not result['cases'][group]:
+                gram2,_,mx2,my2=metric(jnp.asarray(base),jnp.asarray(cells),*rule2)
+                rhs2=TM.rhs(jnp.asarray(base),jnp.asarray(bb),mx2,my2)
+                assert float(jnp.max(jnp.abs(gram2-gram)))<1e-10 and float(jnp.max(jnp.abs(rhs2-rhs)))<1e-10
             filename=r['case']+'.npz';np.savez_compressed(out/filename,gram=np.asarray(gram),rhs=np.asarray(rhs),norm2=np.asarray(norm2),
                 teacher=np.asarray(c),cells=np.asarray(cells),transforms=np.asarray(tr),parameters=np.asarray(r['parameters']))
             row=dict(case=r['case'],file=filename,sha256=digest(out/filename),reference_file=str(path),reference_sha256=digest(path),
-                     direct_error=np.asarray(err),variables=gram.shape[0])
+                     direct_error=np.asarray(err),variables=gram.shape[0],coefficient_norm_over_reference=np.asarray(jnp.linalg.norm(c,axis=1)/jnp.sqrt(norm2)))
             result['cases'][group].append(row);save(out/'result.json',result)
             if group=='train':
                 local=np.asarray(c[:,a.root:]).reshape(11,52,36)

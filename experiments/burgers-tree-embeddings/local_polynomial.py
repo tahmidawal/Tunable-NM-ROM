@@ -27,7 +27,7 @@ def callable_tree(x,w,initial,nodes,depth,policy):
     indicator=np.asarray(initial(x))**2
     if policy=='swept':
         speed=float(jnp.max(initial(x)))
-        # Initial callable and maximum-speed bound only; no evolved reference.
+        # Initial callable and sampled speed estimate only; no evolved reference.
         for t in np.linspace(0,.25,9):
             shifted=jnp.asarray(x)-speed*t
             inside=jnp.all((shifted>=0)&(shifted<=1),axis=-1)

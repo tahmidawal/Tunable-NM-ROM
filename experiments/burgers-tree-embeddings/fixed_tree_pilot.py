@@ -30,11 +30,11 @@ def main():
         integration='all fine-grid interior nodes; exact dense tested sum through orthonormal DST',
         input_contract='shared initial-field callable only; no reference in initialization, tree selection or stepping',
         admission_sha256=digest(Path(a.admission)/'result.json'),final_test_opened=False,
-        timing_claim='diagnostic query wall times include assembly/compilation; no paired performance inference')
+        timing_claim='diagnostic query wall times include assembly/compilation; no paired performance inference',timing_burn_in=True)
     save(out/'result.json',result)
     for label in result['labels']:
         folder,row=refmap[label];p=row['parameters'];initial=lambda xy:data.initial(xy,p)
-        query_start=time.perf_counter()
+        burn_gpu();query_start=time.perf_counter()
         x,w=data.grid(128,True);cells=LP.callable_tree(x,w,initial,52,4,'swept')
         Gfull,tr,_,_=metric(jnp.asarray(allbasis[:128]),jnp.asarray(cells),*rule)
         T=expand_matrix(jnp.asarray(rotation),52,128);Gtree=T.T@Gfull@T
@@ -54,7 +54,7 @@ def main():
             ca=model['cache'];ca=dict(ca,A=ca['A'][:commonM],indices=ca['indices'][:,:commonM],lam=ca['lam'][:commonM])
             field=W.make_field(model['slices'],24 if name.startswith('tree') else 0)
             initial_fit=W.make_initial_fit(field);step,residual=W.make_solver(field,a.L)
-            start=time.perf_counter();axis=jnp.arange(1,a.L)/a.L;xy=jnp.stack(jnp.meshgrid(axis,axis,indexing='ij'),axis=-1)
+            burn_gpu();start=time.perf_counter();axis=jnp.arange(1,a.L)/a.L;xy=jnp.stack(jnp.meshgrid(axis,axis,indexing='ij'),axis=-1)
             u0=initial(xy);c,e0,lin=initial_fit(u0,ca);jax.block_until_ready(c)
             cold=time.perf_counter()-start;states=[np.asarray(c)];statuses=[];valid=True
             for it in range(1,round(.25/a.dt)+1):
@@ -85,7 +85,7 @@ def main():
                 err2=jnp.sum(C*C,axis=1)-2*jnp.sum(C*br,axis=1)+norm2[:count]
             method['physical_error']=np.asarray(jnp.sqrt(jnp.maximum(err2,0)/norm2[:count]));method['full_trajectory_returned']=count==6
             if count==6:
-                t0=time.perf_counter();axis=np.linspace(0,1,4096)
+                burn_gpu();t0=time.perf_counter();axis=np.linspace(0,1,4096)
                 if name.startswith('tree'):pred=LP.field_grid(basis,full[-1],cells,tr,6,axis)[0]
                 else:pred=data.synth_grid(jnp.einsum('k,kij->ij',C[-1],basis),axis)
                 jax.block_until_ready(pred);method['requested4096_reconstruction_including_compilation_seconds']=time.perf_counter()-t0

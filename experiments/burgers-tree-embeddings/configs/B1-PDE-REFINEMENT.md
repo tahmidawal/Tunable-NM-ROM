@@ -1,0 +1,9 @@
+# First fixed-tree results: isolate spatial and temporal error
+
+The initial L1024/backward-Euler dt0.0025 pilot returns full trajectories and actual4096 fields for the prescribed direct24 tree and global POD768. Both have pulse errors above the physical gate while their weak solves converge tightly; the smooth case is substantially more accurate. This warrants the plan's numerical refinement ladder before attributing the error to the decoder.
+
+Keep the same three cases, frozen models, initial-callable allocation, full horizon, weak sign-upwind operator, test-visibility rule, dense integration and convergence criteria. First change only L1024 toL2048 at dt0.0025, reserving90 GPU-minutes. Then, if the spatial change supports convergence, register/execute L4096 at the same step. At fixed fine L, halve the time step separately. Each follow-up is finite and must fit the current accounting ceiling before submission. Compare returned physical states and every specified output error; do not use a single final-time improvement as an all-time pass. An above-tolerance spatial or temporal change blocks numerical qualification.
+
+The initial pilot omitted an explicit GPU burn-in immediately before its timers. Its recorded wall times are retained as unqualified execution diagnostics and support no performance comparison. Subsequent timed blocks perform an explicit hardware burn-in. All allocated time, including burn-in and failures, remains charged. No retrospective change to the original numbers or source. A proper paired, repeated complete-query benchmark remains a later stage.
+
+The swept allocation uses a sampled initial speed estimate, not a certified maximum-speed bound. This wording correction changes no coefficients, allocations or physical criterion. No evolved truth enters selection or stepping. All final-test fields remain unopened.

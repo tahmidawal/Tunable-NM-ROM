@@ -35,3 +35,13 @@ def preflight():
     assert jax.default_backend() == 'gpu'
     assert m['x64'] and m['precision'] == 'highest'
     return m
+
+def burn_gpu(seconds=2.):
+    """Hardware conditioning only; elapsed allocation is still charged to this job."""
+    multiply=jax.jit(lambda a:(a@a)/a.shape[0])
+    value=jnp.ones((1024,1024),dtype=jnp.float64)
+    value=multiply(value);jax.block_until_ready(value)
+    start=time.perf_counter();count=0
+    while time.perf_counter()-start<seconds:
+        value=multiply(value);jax.block_until_ready(value);count+=1
+    return dict(seconds=time.perf_counter()-start,iterations=count)

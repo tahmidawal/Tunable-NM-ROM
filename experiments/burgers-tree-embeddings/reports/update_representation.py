@@ -101,7 +101,7 @@ Attribution on the old fixed trees provisionally improves when parent and local 
 
 ## Expanded matched-data comparison
 
-Training uses the registered prefix expansion to 128 trajectories. Development has 32 random trajectories and the same 12 alignment cases; every one of the 11 snapshot times is scored in the current-time physical norm. Final-test solution fields remain unopened. Shared local POD uses training coefficients only, fixed windows and retained parents. Its allocations use the known initial field and a swept-speed bound, not evolved reference fields.
+Training uses the registered prefix expansion to 128 trajectories. Development has 32 random trajectories and the same 12 alignment cases; every one of the 11 snapshot times is scored in the current-time physical norm. Final-test solution fields remain unopened. Shared local POD uses training coefficients only, fixed windows and retained parents. Its allocations use the known initial field and a sampled speed estimate, not evolved reference fields or a certified propagation bound.
 
 | Representation | Total variables | Original random panel | Added random panel | Alignment panel | Worst all |
 |---|---:|---:|---:|---:|---:|

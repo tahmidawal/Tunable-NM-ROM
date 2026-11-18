@@ -1,6 +1,7 @@
 """Physical-metric linear fits and bounded damped nonlinear projection."""
 from common import *
 import decoder as dec
+_BATCHED={}
 
 @jax.jit
 def linear_fit(G,Y,w):
@@ -39,7 +40,9 @@ def make_project(coefficients,maxiter=25):
     return project
 
 def multi_fit(project,G,Y,w,starts):
-    fn=jax.jit(jax.vmap(project,in_axes=(None,0,None,0)))
+    if project not in _BATCHED:
+        _BATCHED[project]=jax.jit(jax.vmap(project,in_axes=(None,0,None,0)))
+    fn=_BATCHED[project]
     results=[fn(G,Y,w,z) for z in starts]
     errors=jnp.stack([r[1] for r in results]);which=jnp.argmin(errors,axis=0)
     codes=jnp.stack([r[0] for r in results])[which,jnp.arange(len(Y))]

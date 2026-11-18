@@ -290,7 +290,10 @@
     "reserved_minutes": 120,
     "commit": "eb5b99189d1ca1df6263fbac5d92227e74c901ae",
     "remote": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/c1cost",
-    "driver": "c1_cost"
+    "driver": "c1_cost",
+    "state": "RUNNING",
+    "elapsed_seconds": 849,
+    "allocated_cpus": 8
   },
   {
     "name": "c1brom",
@@ -298,6 +301,17 @@
     "reserved_minutes": 120,
     "commit": "eb5b99189d1ca1df6263fbac5d92227e74c901ae",
     "remote": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/c1brom",
-    "driver": "c1_b_rom"
+    "driver": "c1_b_rom",
+    "state": "COMPLETED",
+    "elapsed_seconds": 820,
+    "allocated_cpus": 8
+  },
+  {
+    "name": "c1fast",
+    "id": 7345163,
+    "reserved_minutes": 120,
+    "commit": "b9a44d5894ee382888a38a69be0fdef007cf88f0",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/c1fast",
+    "driver": "c1_fast"
   }
 ]

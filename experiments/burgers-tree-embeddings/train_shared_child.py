@@ -33,7 +33,7 @@ def main():
     ap=argparse.ArgumentParser();ap.add_argument('--out',required=True);ap.add_argument('--cache',required=True)
     ap.add_argument('--latent',type=int,required=True);ap.add_argument('--pretrain',type=int,default=4000)
     ap.add_argument('--updates',type=int,default=12000);ap.add_argument('--seed',type=int,default=2026111851)
-    ap.add_argument('--linear-solver',choices=['cg','dense'],default='cg')
+    ap.add_argument('--linear-solver',choices=['cg','dense','cholesky'],default='cg')
     a=ap.parse_args();out=Path(a.out);out.mkdir(parents=True,exist_ok=True);meta=preflight();path=Path(a.cache)
     assert str(path).startswith(os.environ['STUDY_NAMESPACE']+'/')
     tr,tl=load_cache(path,'train',out);dv,vl=load_cache(path,'dev',out)

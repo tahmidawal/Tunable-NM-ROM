@@ -35,6 +35,15 @@
       "result": "PASS cold initial-field fit added to dense weak-upwind/field/Jacobian/step checks",
       "benchmark": false,
       "source_sha256": "a8f4a646db85c0625f1ae02b083285108db6cd99b1d857cca2fbd2e5f5bd6b38"
+    },
+    {
+      "script": "test_shared_child.py",
+      "utc": "2026-11-18T23:19:49.244640+00:00",
+      "maximum_seconds": 55,
+      "launcher": "timeout 55s jaxrun",
+      "result": "PASS Cholesky and LU on identical SPD physical LM system and known optimum; zero transfer retained",
+      "benchmark": false,
+      "source_sha256": "49a84f84dfc5a6c75a9497313da09865965c3a5dc0d2c9838c0ff4f18f730405"
     }
   ]
 }

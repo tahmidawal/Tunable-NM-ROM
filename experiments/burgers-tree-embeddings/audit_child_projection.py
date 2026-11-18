@@ -7,14 +7,15 @@ import shared_child_head as H
 
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--out',required=True);ap.add_argument('--model',required=True)
-    ap.add_argument('--cache',required=True);a=ap.parse_args();out=Path(a.out);out.mkdir(parents=True,exist_ok=True);meta=preflight()
+    ap.add_argument('--cache',required=True);ap.add_argument('--linear-solver',choices=['dense','cholesky'],default='dense')
+    a=ap.parse_args();out=Path(a.out);out.mkdir(parents=True,exist_ok=True);meta=preflight()
     model=Path(a.model);rec=json.loads((model/'result.json').read_text());assert rec['status']=='complete_shared_child_representation'
     assert digest(model/'shared_child.pkl')==rec['model_sha256'];m=read_checkpoint(model/'shared_child.pkl')
     cache=Path(a.cache);assert digest(cache/'result.json')==m['cache_sha256'];d,labels=load_cache(cache,'dev',out)
-    p=m['params'];scale=jnp.asarray(m['scale']);project=jax.jit(jax.vmap(H.make_project(250,linear_solver='dense'),in_axes=(None,0,0,0,0,None,None,None,None,None)))
+    p=m['params'];scale=jnp.asarray(m['scale']);project=jax.jit(jax.vmap(H.make_project(250,linear_solver=a.linear_solver),in_axes=(None,0,0,0,0,None,None,None,None,None)))
     rows=[];errs=[];full=[];codes=[]
     result=dict(meta=meta,status='auditing_frozen_child_projection',model_sha256=rec['model_sha256'],latent=m['latent'],
-                active_variables=128+52*m['latent'],dev_labels=labels,linear_solver='dense',max_iterations_per_start=250,
+                active_variables=128+52*m['latent'],dev_labels=labels,linear_solver=a.linear_solver,max_iterations_per_start=250,
                 model_weights_changed=False,final_test_opened=False,cases=rows)
     for i,label in enumerate(labels):
         ze=H.encode(p['encoder'],d['teacher'][i,2],d['geometry'][i],d['h'][i],scale)

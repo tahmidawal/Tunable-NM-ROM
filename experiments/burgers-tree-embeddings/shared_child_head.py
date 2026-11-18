@@ -72,10 +72,12 @@ def make_project(maxiter=50,cgiter=60,linear_solver='cg'):
                 jv=jnp.einsum('prk,pk->pr',J,v).reshape(-1)
                 Sjv=(S@jv).reshape(P,R)/norm2
                 return jnp.einsum('prk,pr->pk',J,Sjv)+(damping*diag+1e-12)*v
-            if linear_solver=='dense':
+            if linear_solver in ('dense','cholesky'):
                 H=jnp.einsum('prk,prqs,qsl->pkql',J,S.reshape(P,R,P,R),J).reshape(z.size,z.size)/norm2
                 H=(H+H.T)*.5+jnp.diag((damping*diag+1e-12).reshape(-1))
-                delta=jnp.linalg.solve(H,-gradient.reshape(-1)).reshape(z.shape)
+                if linear_solver=='cholesky':
+                    delta=jax.scipy.linalg.cho_solve((jnp.linalg.cholesky(H),True),-gradient.reshape(-1)).reshape(z.shape)
+                else:delta=jnp.linalg.solve(H,-gradient.reshape(-1)).reshape(z.shape)
             else:
                 delta,_=jax.scipy.sparse.linalg.cg(action,-gradient,tol=1e-6,atol=1e-12,maxiter=cgiter,
                                                  M=lambda v:v/((1+damping)*diag+1e-12))

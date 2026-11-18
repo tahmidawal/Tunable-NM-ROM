@@ -4,11 +4,12 @@ from owned_inputs import verified
 import local_bank as B,continuous as C,argparse,optax,pickle
 from scipy.ndimage import map_coordinates
 ap=argparse.ArgumentParser();ap.add_argument('--out',required=True);a=ap.parse_args();o=Path(a.out);o.mkdir(parents=True,exist_ok=True)
-train=[];dev=[]
+train=[];dev=[];tails=[]
 for i in range(40):
  d=np.load(verified('c1familyb',f'case{i}.npz'));Y=np.asarray(d['coefficients'])[:,:127,:127].reshape(11,-1).T/(2*float(d['initial_norm']))
+ tail=np.asarray(d['coefficients']).copy();tail[:,:127,:127]=0;tails.append(np.linalg.norm(tail.reshape(11,-1),axis=1)/(2*float(d['initial_norm'])))
  (train if i<32 else dev).append(Y)
-U=jnp.asarray(np.concatenate(train,axis=1));D=jnp.asarray(np.concatenate(dev,axis=1));V,sv,_=jnp.linalg.svd(U,full_matrices=False);np.savez_compressed(o/'pod.npz',basis=V,singular_values=sv);coarse=V[:,:64]
+U=jnp.asarray(np.concatenate(train,axis=1));D=jnp.asarray(np.concatenate(dev,axis=1));V,sv,_=jnp.linalg.svd(U,full_matrices=False);np.savez_compressed(o/'pod.npz',basis=V,singular_values=sv);coarse=V[:,:64];save(o/'spectral-tail.json',dict(tails=tails))
 res=U-coarse@(coarse.T@U)
 # Teacher is TRAIN-only; local network is subsequently assessed in assembled physical norm.
 fields=np.asarray(jax.vmap(lambda b:P.synth_lattice(2*b.reshape(127,127),P.lattice_S(128,128),2),in_axes=1)(res))
@@ -53,6 +54,7 @@ for kind in ('poly','neural','hybrid'):
    blocks.append(coef)
   A=jnp.concatenate([V[:,:r]]+blocks,axis=1);u,s,vh=jnp.linalg.svd(A,full_matrices=False);keep=s>s[0]*1e-10;Q=u[:,keep]
   err=np.asarray(jnp.linalg.norm(D-Q@(Q.T@D),axis=0)).reshape(8,11)
+  err=np.sqrt(err**2+np.asarray(tails[32:])**2)
   row=dict(kind=kind,r=r,depth=depth,k=k,columns=A.shape[1],rank=int(keep.sum()),per_time=err,evolved=err[:,[2,4,6,8,10]].max(1),initial=err[:,0]);rows.append(row)
   np.savez_compressed(o/f'{kind}_r{r}_d{depth}_k{k}.npz',basis=Q,singular_values=s,physical_to_orthogonal=vh[keep].T/s[keep])
   save(o/'result.json',dict(meta=meta(),rows=rows,training=losses));print(kind,r,depth,k,max(row['evolved']),flush=True)

@@ -1,6 +1,7 @@
 """Generate pilot audit, fixed-case decisions and measured plots from retained arrays."""
 from pathlib import Path
 import argparse
+import hashlib
 import json
 import numpy as np
 
@@ -13,7 +14,7 @@ def main():
     outs, dest = args.output, args.destination
     dest.mkdir(parents=True, exist_ok=True)
     out = outs[0]
-    summary = dict(scope='same-grid same-step discrete target; exposed development cases', cases={})
+    summary = dict(scope='same-grid same-step discrete target; exposed development cases', cases={}, source_provenance=[])
     source_for_case, banks_by_source, gram_errors = {}, {}, {}
     env = json.loads((out/'environment.json').read_text())
     cfg = env['config']
@@ -21,10 +22,17 @@ def main():
     n = cfg['mesh_intervals']
     for source in outs:
         this_env = json.loads((source/'environment.json').read_text())
-        for key in ['mesh_intervals','bank_width','solve_rows','observer_rows','dt','horizon','reference_arithmetic']:
+        for key in ['mesh_intervals','bank_width','solve_rows','observer_rows','dt','horizon','reference_arithmetic',
+                    'solver_gtols','solver_max_iterations','reference_tolerances','reference_max_disagreement',
+                    'tangent_relative_eigenvalue_threshold','timing_repetitions']:
             assert this_env['config'].get(key) == cfg.get(key), key
         assert this_env['checkpoint_sha256'] == env['checkpoint_sha256'] and this_env['rotation_sha256'] == env['rotation_sha256']
         this_summary = json.loads((source/'summary.json').read_text())
+        summary['source_provenance'].append(dict(output=str(source.resolve()), job_id=this_env['job_id'],
+            commit=this_env['commit'], summary_sha256=hashlib.sha256((source/'summary.json').read_bytes()).hexdigest(),
+            environment_sha256=hashlib.sha256((source/'environment.json').read_bytes()).hexdigest(),
+            case_ids=this_env['config']['case_ids'], checkpoint_sha256=this_env['checkpoint_sha256'],
+            rotation_sha256=this_env['rotation_sha256']))
         assert set(this_summary['cases']) == set(map(str, this_env['config']['case_ids']))
         for case_id, case in this_summary['cases'].items():
             assert case_id not in summary['cases'], 'Do not pool duplicate pilot and repaired cases.'
@@ -36,6 +44,10 @@ def main():
         operators = np.load(source/'operators.npz')
         gram_errors[str(source)] = float(np.linalg.norm((G.T @ G)/n**2-operators['gram'])/np.linalg.norm(operators['gram']))
     gram_error = max(gram_errors.values())
+    summary['source_for_case'] = {k:str(v.resolve()) for k,v in source_for_case.items()}
+    summary['frozen_scientific_configuration'] = {k:cfg[k] for k in ['mesh_intervals','bank_width','solve_rows','observer_rows','dt','horizon',
+        'solver_gtols','solver_max_iterations','reference_tolerances','reference_max_disagreement','tangent_relative_eigenvalue_threshold']}
+    (dest/'combined-source.json').write_text(json.dumps(summary, indent=2)+'\n')
     audit = dict(scope=summary['scope'], source_outputs=list(map(str, outs)), gram_relative_error=gram_error,
                  per_source_gram_errors=gram_errors, cases={}, transitions=[])
     times = np.arange(round(cfg['horizon']/cfg['dt'])+1)*cfg['dt']
@@ -105,6 +117,18 @@ def main():
     audit['fixed_state_minimum_sigma_increment']=min(monotonic)
     audit['saved_array_audit_passed']=bool(gram_error < 1e-10 and all(c['max_metric_disagreement'] < 1e-10 and c['projection_metric_disagreement'] < 1e-10 for c in audit['cases'].values()) and min(monotonic) >= -1e-10)
     audit['environmental_acceptance']='must be read from separate collector audit; numerical file alone is insufficient'
+    audit['aggregate'] = {}
+    for m in ms:
+        rows = [r for r in table if r['M'] == m]
+        audit['aggregate'][str(m)] = dict(case_count=len(rows), qualified_count=sum(r['eligible'] for r in rows),
+            maximum_error_median=float(np.median([r['max_discrete_error'] for r in rows])),
+            maximum_error_worst=float(max(r['max_discrete_error'] for r in rows)),
+            initial_error_median=float(np.median([r['initial_error'] for r in rows])),
+            evolved_error_worst=float(max(r['evolved_error_max'] for r in rows)),
+            evolution_distance_worst=float(max(r['evolution_distance_max'] for r in rows)),
+            initial_time_is_maximum_count=sum(r['maximum_error_time'] == 0 for r in rows),
+            iterations_median=float(np.median([r['iterations'] for r in rows])),
+            rejected_proposals_total=int(sum(r['rejected'] for r in rows)))
     (dest/'analysis.json').write_text(json.dumps(audit, indent=2)+'\n')
     (dest/'table.json').write_text(json.dumps(table, indent=2)+'\n')
     import matplotlib

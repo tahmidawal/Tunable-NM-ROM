@@ -1,0 +1,13 @@
+{
+  "tests": [
+    {
+      "script": "test_shared_child.py",
+      "utc": "2026-11-18T22:20:19.886061+00:00",
+      "launcher": "source /etc/profile.d/jax-mem.sh; timeout 55s jaxrun /home/tahmid/Dev/.venv/bin/python test_shared_child.py",
+      "maximum_seconds": 55,
+      "result": "PASS Hessian/action equivalence, known linear physical optimum, exact zero-child transfer",
+      "stationarity": 5.531381792953425e-11,
+      "benchmark": false
+    }
+  ]
+}

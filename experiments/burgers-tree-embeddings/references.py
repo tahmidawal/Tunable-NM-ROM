@@ -34,13 +34,16 @@ def relative_difference(lo,hi):
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--out',required=True)
     ap.add_argument('--group',choices=['train','dev'],required=True)
+    ap.add_argument('--count',type=int);ap.add_argument('--start',type=int,default=0)
+    ap.add_argument('--random-only',action='store_true')
     ap.add_argument('--limit',type=int); a=ap.parse_args()
     out=Path(a.out);out.mkdir(parents=True,exist_ok=True)
-    params=data.parameters(a.group)
+    params=data.parameters(a.group,count=a.count)
     labels=[f'{a.group}{i:03d}' for i in range(len(params))]
-    if a.group=='dev':
+    if a.group=='dev' and not a.random_only:
         params=np.concatenate([params,data.alignment(),data.fixtures()])
         labels += [f'align{i:03d}' for i in range(12)]+['fixture000','fixture001']
+    params=params[a.start:];labels=labels[a.start:]
     if a.limit:params=params[:a.limit];labels=labels[:a.limit]
     np.savez(out/'parameters.npz',parameters=params,labels=labels,times=data.TIMES)
     result=dict(meta=preflight(),group=a.group,normalization='current-time reference L2',

@@ -18,6 +18,7 @@ nvidia-smi --query-gpu=name,uuid,memory.total --format=csv,noheader
 df -h /cluster/tufts/paralab
 "$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={b}',flush=True); sys.exit(0 if b=='gpu' else 42)"
 sha256sum -c INPUTS.sha256
+"$PY" experiments/jcp-head-mechanism/check_fixtures.py --out output/fixture_results.json
 set +e
 "$PY" experiments/jcp-head-mechanism/run_mechanism.py --config experiments/jcp-head-mechanism/configs/pilot.json --out output
 RUN_EXIT=$?

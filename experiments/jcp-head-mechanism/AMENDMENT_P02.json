@@ -1,0 +1,48 @@
+{
+  "schema": "mechanism-prospective-amendment-v1",
+  "baseline_job": "7354236",
+  "baseline_summary_sha256": "ad914d8f0fad977592f29e4b5c40c26ef57e07bc30eaa3cc22db2d894b3b5999",
+  "baseline_qualification": {
+    "all_stationary": false,
+    "all_tight_tighter": true,
+    "all_action_checks": true,
+    "common_ic": true,
+    "ic_fit_passed": false,
+    "operator_passed": true,
+    "reference_passed": false,
+    "cases_completed": 2,
+    "passed": false
+  },
+  "rationale": "Strict cost-only acceptance rejected final steps with cost changes near floating-point rounding; return-state gradients exceeded unchanged stationarity gates. Reference step difference exceeded unchanged error gates.",
+  "changes": {
+    "reference": [
+      0.00025,
+      0.000125
+    ],
+    "solver_roundoff_acceptance": {
+      "cost_relative_band_eps": 1024,
+      "only_when_gradient_below": 1e-05,
+      "trial_gradient_at_most_fraction": 0.5,
+      "step_norm_relative_max": 1e-06,
+      "all_changes_recorded": true,
+      "no_stationarity_gate_relaxation": true
+    },
+    "independent_shell": {
+      "first_row_zero_based": 584,
+      "last_exclusive": 1168,
+      "full_residual_vector_saved": true
+    }
+  },
+  "unchanged": [
+    "frozenbank",
+    "frozenhead",
+    "cohortindices",
+    "physicalIC",
+    "rows",
+    "timegrids",
+    "weakoperator",
+    "stationaritygates",
+    "trajectorygates"
+  ],
+  "no_results_for_new_settings_at_registration": true
+}

@@ -16,7 +16,7 @@
     202609221
   ],
   "horizon": 0.2,
-  "dt_truth": 0.001,
+  "dt_truth": 0.00025,
   "truth_scheme": "cnab2",
   "truth_output_dt": 0.01,
   "operator": "exact discrete quadratic tensor, independently checked on dense fields",
@@ -57,7 +57,15 @@
     "budget": 250,
     "initial_damping": 0.0001,
     "stationarity": "max_j abs(J_j^T r)/(||J_j||2 max(||r||2,1e-30))",
-    "stagnation": "rejected-trial or representable-step termination saved; never accepted as stationarity"
+    "stagnation": "rejected-trial or representable-step termination saved; never accepted as stationarity",
+    "roundoff_acceptance": {
+      "cost_relative_band_eps": 1024,
+      "only_when_gradient_below": 1e-05,
+      "trial_gradient_at_most_fraction": 0.5,
+      "step_norm_relative_max": 1e-06,
+      "all_changes_recorded": true,
+      "no_stationarity_gate_relaxation": true
+    }
   },
   "qualification": {
     "operator_relative": 1e-09,
@@ -105,8 +113,8 @@
   },
   "outputs": "summary.json, case_*/trajectory arrays, histories,source/config/hardware metadata; measured plots only",
   "reference_refinement": {
-    "dt": 0.001,
-    "tighter_dt": 0.0005,
+    "dt": 0.00025,
+    "tighter_dt": 0.000125,
     "scope": "same grid discrete FOM, not continuum",
     "check_original_output_grid": true
   },
@@ -116,5 +124,11 @@
     "gram_eigenvalue_relative_cutoff": 1e-12,
     "absolute_cutoff": 1e-30,
     "report_all_eigenvalues_and_retained_rank": true
+  },
+  "amendment": "p02_reference_and_roundoff_solver",
+  "independent_shell": {
+    "first_row_zero_based": 584,
+    "last_exclusive": 1168,
+    "full_residual_vector_saved": true
   }
 }

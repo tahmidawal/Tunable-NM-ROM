@@ -56,11 +56,19 @@ def solve(evaluate, x0, args, gtol, budget, record=True):
         rt,jt=evaluate(jnp.asarray(xt),*args)
         rt,jt=np.asarray(rt),np.asarray(jt)
         trial=float(.5*np.dot(rt,rt))
-        accept=bool(np.isfinite(trial) and trial<cost)
+        finite_trial=bool(np.isfinite(trial) and np.all(np.isfinite(rt)) and np.all(np.isfinite(jt)))
+        trial_gn=stationarity(rt,jt) if finite_trial else np.inf
+        roundoff_band=1024*np.finfo(np.float64).eps*max(cost,trial if np.isfinite(trial) else cost,1e-300)
+        roundoff_accept=bool(finite_trial and np.isfinite(trial_gn) and gn<=1e-5 and trial<=cost+roundoff_band
+                             and trial_gn<=.5*gn and np.linalg.norm(step)<=1e-6*(1+np.linalg.norm(x)))
+        strict_accept=bool(finite_trial and np.isfinite(trial_gn) and trial<cost)
+        accept=strict_accept or roundoff_accept
+        acceptance_reason='strict_decrease' if strict_accept else ('roundoff_gradient_improvement' if roundoff_accept else 'rejected')
         if record:
             history.append({'iteration':it,'cost':cost,'trial_cost':trial if np.isfinite(trial) else None,
                             'gradient':gn,'damping':damping,'step_norm':float(np.linalg.norm(step)),
-                            'accepted':accept})
+                            'accepted':accept,'acceptance_reason':acceptance_reason,
+                            'trial_gradient':trial_gn if np.isfinite(trial_gn) else None,'roundoff_band':roundoff_band})
         if accept:
             x,res,jac,cost=xt,rt,jt,trial;accepted+=1;damping=max(damping/3.,1e-14)
         else:
@@ -142,7 +150,7 @@ def physical_spectrum(jac,gram):
             'excluded':int((~keep).sum()),'raw_jacobian_singular_values':np.linalg.svd(jac,compute_uv=False),
             'physical_jacobian_singular_values':np.linalg.svd(normalized,compute_uv=False)}
 
-def rollout(kind,a0,z0,c0,p,ops,opswide,dt,n,k,steps,gtol,budget,basis,truth,geom,norm0,Z,Hcand,diagnose):
+def rollout(kind,a0,z0,c0,p,ops,opswide,dt,n,k,steps,gtol,budget,basis,truth,geom,norm0,Z,Hcand,diagnose,independent_start):
     r=len(a0); prepare,ev=make_eval(dt,n,r,k,kind)
     w=np.r_[z0 if kind=='head' else a0,np.zeros(3)];old=w.copy();center=c0.copy()
     states=[w.copy()];centers=[center.copy()];coeffs=[coefficients(w,p,k,kind)];records=[]
@@ -151,7 +159,7 @@ def rollout(kind,a0,z0,c0,p,ops,opswide,dt,n,k,steps,gtol,budget,basis,truth,geo
         new,rec=solve(ev,guess,(jnp.asarray(prev),ops,p),gtol,budget)
         old,w=w,new;center=(center+w[-3:])%1.;a=coefficients(w,p,k,kind)
         rw,jw=ev(jnp.asarray(w),jnp.asarray(prev),opswide,p)
-        rec['expanded_residual_norm']=float(jnp.linalg.norm(rw));rec['expanded_only_residual_norm']=float(jnp.linalg.norm(rw[ops[0].shape[0]:]));rec['step_index']=t
+        rec['expanded_residual_norm']=float(jnp.linalg.norm(rw));rec['expanded_only_residual_norm']=float(jnp.linalg.norm(rw[ops[0].shape[0]:]));rec['fixed_independent_shell_norm']=float(jnp.linalg.norm(rw[independent_start:]));rec['expanded_residual_vector']=np.asarray(rw);rec['step_index']=t
         if diagnose:
             rec['jacobian_action']=action_check(ev,w,(jnp.asarray(prev),ops,p),700+t)
             dc=np.asarray(H.head_jacobian(p,jnp.asarray(w[:k]))) if kind=='head' else np.eye(r)
@@ -251,7 +259,7 @@ def main():
                     log(f'case={ci} {tag}')
                     diag=gtol==min(cfg['solver']['gtols'])
                     started=time.time()
-                    ans=rollout(kind,aa,z0,center,p,selected,wide,dt,n,k,steps,gtol,cfg['solver']['budget'],basis,ref,geom,norm0,Z,Hcand,diag)
+                    ans=rollout(kind,aa,z0,center,p,selected,wide,dt,n,k,steps,gtol,cfg['solver']['budget'],basis,ref,geom,norm0,Z,Hcand,diag,max(x['rows'] for x in cfg['test_settings']))
                     elapsed=time.time()-started
                     errors=np.asarray([m['relative_error'] for m in ans['metrics']]);recs=ans['records']
                     item={'tag':tag,'arm':arm,'rows':rows,'actual_scalar_rows':int(selected[0].shape[0]),'unknowns':k+3 if kind=='head' else len(ahead)+3,

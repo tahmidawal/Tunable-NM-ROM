@@ -1,5 +1,5 @@
 """Small bounded GPU fixtures, not a scientific experiment."""
-import json
+import json, argparse
 from pathlib import Path
 import numpy as np
 import jax
@@ -15,6 +15,8 @@ def affine(x):
 x,info=M.solve(affine,np.zeros(2),(),1e-8,100)
 r,j=affine(jnp.asarray(x))
 assert info['reason']=='stationarity' and M.stationarity(np.asarray(r),np.asarray(j))<=1e-8
+xround,roundinfo=M.solve(affine,np.zeros(2),(),1e-14,100)
+assert roundinfo['reason']=='stationarity' and roundinfo['gradient']<=1e-14
 _,cap=M.solve(affine,np.zeros(2),(),1e-15,0)
 assert cap['reason']=='budget'
 assert M.stationarity(np.zeros(3),np.eye(3))==0
@@ -38,6 +40,7 @@ check=M.action_check(ev,np.r_[a,.001,.002,.003],(jnp.asarray(a*.9),ops,p),31)
 assert check['minimum']<1e-7
 pred=M.reconstruct(jnp.asarray(G),jnp.asarray(a),jnp.array([.1,.2,.3]))
 metrics=M.field_metrics(pred,pred,geom);assert float(metrics[0])==0
-report={'backend':jax.default_backend(),'dtype':str(z.dtype),'affine_solve':{k:v for k,v in info.items() if k!='history'},'cap_reason':cap['reason'],'head_jacobian_relative':head_gap,'physical_tangent_gram_relative':gram_gap,'tangent_retained_rank':spec['rank'],'tangent_excluded':spec['excluded'],'analytic_residual_action':check,'all_passed':True}
-M.dump(M.HERE/'fixture_results.json',report)
+report={'backend':jax.default_backend(),'dtype':str(z.dtype),'affine_solve':{k:v for k,v in info.items() if k!='history'},'cap_reason':cap['reason'],'head_jacobian_relative':head_gap,'physical_tangent_gram_relative':gram_gap,'tangent_retained_rank':spec['rank'],'tangent_excluded':spec['excluded'],'analytic_residual_action':check,'all_passed':True,'roundoff_tight_affine':roundinfo}
+ap=argparse.ArgumentParser();ap.add_argument('--out',type=Path,default=M.HERE/'fixture_results.json');args=ap.parse_args()
+M.dump(args.out,report)
 print(json.dumps(report),flush=True)

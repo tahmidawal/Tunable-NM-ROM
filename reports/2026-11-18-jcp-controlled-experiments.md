@@ -1,6 +1,6 @@
 # Controlled experiments for the JCP paper
 
-This is the development protocol for the experiments authorized on November 18, 2026. No new experimental result has yet been accepted; numerical tables will be generated from saved run records as the studies finish.
+This is the development protocol for the experiments authorized on November 18, 2026. New measured development runs and their qualification status are generated below from retained records; failed attempts remain visible.
 
 The central questions are whether the nonlinear head improves trajectories under matched numerical controls, whether richer weak tests detect errors missed by the minimized residual, and whether the selected method saves complete-query cost at matched accuracy. The earlier optimistic sketches remain hypotheses, not acceptance criteria or promised outcomes.
 
@@ -56,8 +56,40 @@ Scientific progress may justify a development amendment; it does not justify cha
 
 The existing tree-embedding and paused quadtree campaigns retain their separate ownership and state. This authorization starts new JCP analysis lanes. Each lane commits and backs up through its code-only mirror; experiment branches are not merged automatically. A merge decision will be requested when the lanes close.
 
+<!-- GENERATED EXPERIMENT RESULTS BEGIN -->
+## Measured development results
+
+These are new measured development runs. A numerical failure remains visible even when a physical-error comparison is favorable. The earlier optimistic schematics are separate hypothetical artifacts.
+
+### Matched head/span dynamics
+
+| Retained run / job | Cases | Numerical qualification | Failed gates |
+|---|---:|---|---|
+| [head-p01](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p01.json) / 7354236 | 2 | Provisional: failed | all_stationary, ic_fit_passed, reference_passed |
+
+**Provisional comparison; numerical qualification failed — head-p01.** Errors below are maxima over each evolved trajectory, normalized by its original physical initial field. Both primary arms have identical reconstructed initial states. Median and worst are across the same cases.
+
+| Scalar weak rows M | Time step | Head median / worst error (%) | Span median / worst error (%) | Cases with lower head error |
+|---:|---:|---:|---:|---:|
+| 292 | 0.02 | 0.100790 / 0.117651 | 0.905015 / 1.009514 | 2 / 2 |
+| 584 | 0.02 | 0.114230 / 0.137193 | 0.767289 / 1.063704 | 2 / 2 |
+| 584 | 0.01 | 0.088387 / 0.093580 | 0.611531 / 0.820240 | 2 / 2 |
+
+![Measured matched head/span trajectories](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/head-p01-trajectories.png)
+
+The comparison is designed to isolate the head constraint, but the failed numerical gates currently prevent admitting that conclusion.
+Its scope excludes a universal stability guarantee, fresh-test generalization, a global manifold distance, and a complete-query speedup.
+
+### Reproducibility
+
+The [builder](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/build_2026_11_18_jcp_controlled_experiments.py) reads the [registered sources](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/sources.json), freezes the JSON evidence, and generates every numerical table and plot above. [Source hashes](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/source-manifest.json) and [derived values](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/measured-values.json) are saved separately. Full histories, configurations, numerical arrays, hardware logs and checksum manifests remain in the linked experiment lanes. No synthetic values enter these figures.
+
+<!-- GENERATED EXPERIMENT RESULTS END -->
+
 ## Glossary
 
 **Head, bank and span:** the bank contains spatial functions; the head maps a small latent state to their coefficients; the span allows arbitrary coefficients. **Weak tests** measure smooth weighted averages of the PDE residual. **Residual visibility** describes how well those measurements detect changes in the physical state. **Tangent** means a field change reachable by a small coordinate change; mass normalization accounts for physical spatial volume. **Frame** is the coordinate shift used to follow moving structures.
 
 **Quadrature** approximates integrals with weighted sample points. **Jacobian** measures local sensitivity. **POD** is a linear basis derived from training snapshots. **Matched accuracy** requires comparable physical error under the same reference and eligibility rules. **Complete query** includes all work needed to turn the agreed input into the requested answer. **Allocated GPU-hours** count the reserved GPU time actually charged to a job, including setup. **Development amendment** is a recorded change tested on exposed development cases. **Confirmation** evaluates a frozen choice on previously untouched cases.
+
+**Case** means one initial field and its PDE parameters. **M** is the actual number of scalar weak residual equations. **Time step** is the interval between successive numerical updates. **Trajectory error** compares a predicted field with its reference at each saved time; the stated normalization specifies the field norm used as denominator. **Median / worst** denote the middle / largest casewise error, after first maximizing over the stated times. **Numerical qualification** requires the registered reference, operator, derivative and solver checks; an attractive error alone does not pass it. **Stationarity** is a small objective gradient and does not certify a global minimum. **Independent shell residual** measures equations outside every solved test space, using the same extra rows for every compared method. **Source hash** identifies the exact saved file bytes.

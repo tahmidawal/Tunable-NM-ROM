@@ -102,6 +102,24 @@ def main():
     cs=fcodes[ci]['trees'][ii];z=jnp.asarray(fcodes[ci]['codes'][ii][tt]);label=D['labels'][ii]
     rraw=json.loads((Path(a.dev)/'result.json').read_text());rr=next(r for r in rraw['cases'] if r['case']==label)
     b=jnp.asarray(np.load(Path(a.dev)/rr['levels'][-1]['file'])['coefficients'][tt]);dense={}
+    rawco=jnp.asarray(model['global_transform'])@dec.head(parent,z[:16])
+    lc=dec.head(child,z[16:].reshape(len(cs),k))
+    def pointfield(pt):
+        u=dec.global_features(model['global_params'],pt[None])[0]@rawco
+        for j,c in enumerate(cs):u=u+dec.local_features(pl,pt[None],c)[0]@lc[j]
+        return u
+    grad=jax.jit(jax.vmap(jax.grad(pointfield)))(E['xy'])
+    axis=jnp.unique(E['xy'][:,0],size=128);freq=jnp.pi*jnp.arange(1,b.shape[0]+1)
+    S=jnp.sin(axis[:,None]*freq[None]);DS=jnp.cos(axis[:,None]*freq[None])*freq[None]
+    reference_gradient=jnp.stack([(DS@b@S.T).ravel(),(S@b@DS.T).ravel()],axis=-1)
+    delta=jnp.sum((grad-reference_gradient)**2,axis=1)
+    result['derivative_witness']=dict(case=label,time=data.TIMES[tt],
+            relative_gradient_l2=float(jnp.sqrt(jnp.sum(E['w']*delta)/jnp.sum(E['w']*jnp.sum(reference_gradient**2,axis=1)))),
+            gradient_error_over_current_field_l2=float(jnp.sqrt(jnp.sum(E['w']*delta))/E['norm'][ii*11+tt]))
+    pt=jnp.array([.317,.193]);ad=jax.grad(pointfield)(pt);eps=1e-6
+    finite=jnp.stack([(pointfield(pt+jnp.eye(2)[j]*eps)-pointfield(pt-jnp.eye(2)[j]*eps))/(2*eps) for j in range(2)])
+    np.testing.assert_allclose(ad,finite,rtol=1e-4,atol=1e-7)
+    result['trained_derivative_fixture']=dict(AD=ad,finite_difference=finite,passed=True)
     for n in (2048,4096):
         pred,sec=timer(lambda:dense_field(model,pl,child,z,cs,n));ref=data.synth_grid(b,jnp.linspace(0.,1.,n))
         err=float(jnp.linalg.norm(pred-ref)/jnp.linalg.norm(ref));peak=float(jnp.max(jnp.abs(pred-ref))/jnp.max(jnp.abs(ref)))

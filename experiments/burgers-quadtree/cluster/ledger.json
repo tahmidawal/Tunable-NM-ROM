@@ -313,8 +313,8 @@
     "commit": "b9a44d5894ee382888a38a69be0fdef007cf88f0",
     "remote": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/c1fast",
     "driver": "c1_fast",
-    "state": "RUNNING",
-    "elapsed_seconds": 580,
+    "state": "COMPLETED",
+    "elapsed_seconds": 679,
     "allocated_cpus": 8
   },
   {
@@ -323,6 +323,58 @@
     "reserved_minutes": 120,
     "commit": "2440f4f3a4c030716dc6b269876892c7d1ee288f",
     "remote": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/c1cubature",
-    "driver": "c1_cubature"
+    "driver": "c1_cubature",
+    "state": "COMPLETED",
+    "elapsed_seconds": 150,
+    "allocated_cpus": 8
+  },
+  {
+    "name": "c1trees",
+    "id": 7345629,
+    "reserved_minutes": 120,
+    "commit": "a1cebf5fa0154102d124856aa072a360831d295d",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/c1trees",
+    "driver": "c1_trees",
+    "state": "COMPLETED",
+    "elapsed_seconds": 235,
+    "allocated_cpus": 8
+  },
+  {
+    "name": "c1classical",
+    "id": 7345631,
+    "reserved_minutes": 60,
+    "commit": "803b17d7fd0d07523af28b55df074bfcf0dcc42d",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/c1classical",
+    "driver": "c1_classical_tune",
+    "state": "COMPLETED",
+    "elapsed_seconds": 72,
+    "allocated_cpus": 8
+  },
+  {
+    "name": "c1whitened",
+    "id": 7345741,
+    "reserved_minutes": 120,
+    "commit": "803b17d7fd0d07523af28b55df074bfcf0dcc42d",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/c1whitened",
+    "driver": "c1_whitened",
+    "state": "COMPLETED",
+    "elapsed_seconds": 114,
+    "allocated_cpus": 8
+  },
+  {
+    "name": "c1incumbent",
+    "id": 7345866,
+    "reserved_minutes": 120,
+    "commit": "803b17d7fd0d07523af28b55df074bfcf0dcc42d",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/c1incumbent",
+    "driver": "c1_incumbent"
+  },
+  {
+    "name": "c1ablation",
+    "id": 7345881,
+    "reserved_minutes": 120,
+    "commit": "803b17d7fd0d07523af28b55df074bfcf0dcc42d",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/c1ablation",
+    "driver": "c1_local_ablation"
   }
 ]

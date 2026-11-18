@@ -155,6 +155,10 @@ def main():
     diagnostic = jax.jit(lambda c, old, nu, d: C.value_jac(c, old, nu, d, n, dt))
     metric_fn = jax.jit(lambda f, r: C.field_metrics(f, r, n))
     fom, _ = e.make_fom(n, dt, horizon=cfg['horizon'], output_spacing=dt, max_newton=20)
+    repaired_reference = cfg.get('reference_arithmetic', 'original') == 'neighbor-difference'
+    if repaired_reference:
+        stable_fom = C.make_reference(n, dt, steps, True)
+        original_instrumented_fom = C.make_reference(n, dt, steps, False)
     physical = e.params_draw(cfg['seed_first_draw'], cfg['seed_first_count'])
     save_json(out/'cases.json', [{'cohort':'dev6', 'index':i, 'physical':physical[i]} for i in cfg['case_ids']])
     summary = dict(scope='same-grid same-step discrete target; preliminary development cases', cases={}, environmental_acceptance_pending=True)
@@ -168,15 +172,41 @@ def main():
         references = []
         refstats = []
         for level, (ntol, ltol) in enumerate(cfg['reference_tolerances']):
-            value, iterations, residual = jax.block_until_ready(fom(u0, nu, ntol, ltol))
-            reference = value[:, 1:-1, 1:-1].reshape(steps+1, -1)
+            if repaired_reference:
+                reference, iterations, residual, traces = jax.block_until_ready(stable_fom(u0, nu, ntol, ltol))
+                old, old_it, old_res, old_trace = jax.block_until_ready(original_instrumented_fom(u0, nu, ntol, ltol))
+                npz(case_dir/f'original-reference-{level}.npz', fields=old, iterations=old_it, residual=old_res, newton_history=old_trace)
+                npz(case_dir/f'reference-newton-history-{level}.npz', residual_history=traces)
+                original_residual = jax.jit(jax.vmap(lambda u, prev: e.residual(u, prev, nu, dt, n)))(reference[1:], reference[:-1])
+                original_relative = jnp.linalg.norm(original_residual, axis=1)/jnp.linalg.norm(reference[:-1], axis=1)
+                stable_residual = jax.jit(jax.vmap(lambda u, prev: C.reference_residual(u, prev, nu, dt, n, True)))(reference[1:], reference[:-1])
+                difference = jnp.linalg.norm(original_residual-stable_residual, axis=1)/jnp.linalg.norm(reference[:-1], axis=1)
+                old_difference = jnp.linalg.norm(reference-old, axis=1).max()/jnp.linalg.norm(reference[0])
+                actions = []
+                for time_index in (1, steps):
+                    u, prev = reference[time_index], reference[time_index-1]
+                    for seed in (1701, 1702, 1703):
+                        v = jnp.asarray(np.random.default_rng(seed).normal(size=u.shape))
+                        v = v/jnp.linalg.norm(v)
+                        jo = jax.jvp(lambda q: e.residual(q, prev, nu, dt, n), (u,), (v,))[1]
+                        js = jax.jvp(lambda q: C.reference_residual(q, prev, nu, dt, n, True), (u,), (v,))[1]
+                        actions.append(dict(time_index=time_index, seed=seed, relative_difference=float(jnp.linalg.norm(js-jo)/jnp.linalg.norm(jo))))
+                parity_record = dict(original_residual_max=original_relative.max(), primal_difference_max=difference.max(),
+                    old_new_trajectory_difference=old_difference, jacobian_actions=actions,
+                    passed=bool(original_relative.max() <= 1e-10 and difference.max() <= 1e-12 and old_difference <= 1e-8 and max(a['relative_difference'] for a in actions) <= 1e-12))
+                npz(case_dir/f'reference-arithmetic-{level}.npz', original_relative_residual=original_relative, primal_difference=difference)
+                save_json(case_dir/f'reference-arithmetic-{level}.json', parity_record)
+            else:
+                value, iterations, residual = jax.block_until_ready(fom(u0, nu, ntol, ltol))
+                reference = value[:, 1:-1, 1:-1].reshape(steps+1, -1)
+                parity_record = dict(passed=True, applicable=False)
             references.append(reference)
             npz(case_dir/f'reference-{level}.npz', fields=reference, iterations=iterations, residual=residual, physical=physical[case_id])
             refstats.append(dict(max_residual=np.max(residual), maximum_iterations=np.max(iterations),
-                                 finite=bool(np.all(np.isfinite(reference))), tolerances=[ntol, ltol]))
+                                 finite=bool(np.all(np.isfinite(reference))), tolerances=[ntol, ltol], arithmetic_parity=parity_record))
         norm0 = float(jnp.linalg.norm(references[0][0]))
         reference_delta = float(jnp.max(jnp.linalg.norm(references[0]-references[1], axis=1))/norm0)
-        ref_eligible = all(v['finite'] and v['max_residual'] <= 1e-10 and v['maximum_iterations'] < 20 for v in refstats) and reference_delta <= cfg['reference_max_disagreement']
+        ref_eligible = all(v['finite'] and v['max_residual'] <= 1e-10 and v['maximum_iterations'] < 20 and v['arithmetic_parity']['passed'] for v in refstats) and reference_delta <= cfg['reference_max_disagreement']
         reference = references[1]
         Ghost = np.asarray(G)
         # Exact mass projection in this fixed linear span; same coefficients initialize all M.

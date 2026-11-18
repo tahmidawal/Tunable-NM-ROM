@@ -141,3 +141,42 @@ def field_metrics(fields, reference, n):
     lap_error = jnp.linalg.norm(la-lr, axis=1)/jnp.maximum(jnp.linalg.norm(lr, axis=1), 1e-300)
     energy = .5*jnp.sum(fields**2, axis=1)/n**2
     return jnp.stack((error, gradient_error, adv_error, lap_error, energy), axis=1)
+
+
+def reference_residual(u, previous, nu, dt, n, stable_diffusion):
+    """Same original upwind and five-point diffusion; optional cancellation repair."""
+    if not stable_diffusion:
+        return e.residual(u, previous, nu, dt, n)
+    adv, _ = e.spatial(u, n)
+    p = jnp.pad(u.reshape(n-1, n-1), 1)
+    c = p[1:-1, 1:-1]
+    lap = n**2*((p[:-2, 1:-1]-c)+(p[2:, 1:-1]-c)+(p[1:-1, :-2]-c)+(p[1:-1, 2:]-c))
+    return u-previous+dt*(adv-nu*lap.reshape(-1))
+
+
+def make_reference(n, dt, steps, stable_diffusion):
+    """Instrumented original Newton/BiCGSTAB reference, unchanged stopping rules."""
+    def step(previous, nu, ntol, ltol):
+        scale = jnp.maximum(jnp.linalg.norm(previous), 1e-300)
+        residual = lambda u: reference_residual(u, previous, nu, dt, n, stable_diffusion)
+        rn = jnp.linalg.norm(residual(previous))
+        trace = jnp.full((21,), jnp.nan).at[0].set(rn/scale)
+        def body(state):
+            u, it, rn, trace = state
+            r = residual(u)
+            def jv(v):
+                return jax.jvp(residual, (u,), (v,))[1]
+            delta, _ = jax.scipy.sparse.linalg.bicgstab(jv, -r, tol=ltol, maxiter=200,
+                M=lambda v: e.helmholtz(v, nu, dt, n))
+            candidate = u+delta
+            rn2 = jnp.linalg.norm(residual(candidate))
+            return candidate, it+1, rn2, trace.at[it+1].set(rn2/scale)
+        u, it, rn, trace = jax.lax.while_loop(
+            lambda s: (s[2] > ntol*scale)&(s[1] < 20)&jnp.isfinite(s[2]), body,
+            (previous, jnp.int32(0), rn, trace))
+        return u, (u, it, rn/scale, trace)
+    def query(initial, nu, ntol, ltol):
+        u0 = initial[1:-1, 1:-1].reshape(-1)
+        _, (fields, iterations, residuals, traces) = jax.lax.scan(lambda u, _: step(u, nu, ntol, ltol), u0, None, length=steps)
+        return jnp.concatenate((u0[None], fields)), iterations, residuals, traces
+    return jax.jit(query)

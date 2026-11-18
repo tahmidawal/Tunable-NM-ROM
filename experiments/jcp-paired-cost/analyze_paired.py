@@ -47,6 +47,18 @@ def main():
     provenance = json.loads((output / "provenance.json").read_text())
     rows = [json.loads(line) for line in (paired / "invocations.jsonl").read_text().splitlines()]
     cases = contract["case_ids"]
+    subject_info = {entry["name"]: entry for entry in contract["subjects"]}
+    def display_name(name):
+        entry = subject_info[name]
+        meta = entry["metadata"]
+        if entry["family"] == "classical":
+            return f'N{entry["mesh"]}\n{meta["scheme"].upper()}\n{meta["steps"]} steps'
+        is_pod = entry["family"] == "pod"
+        if meta["kind"] == "span":
+            return f'POD\nSpan R{meta["rank"]}' if is_pod else f'Span\nR{meta["rank"]}'
+        settings = meta["settings"]
+        heading = f'POD\nHead M{settings["rows"]}' if is_pod else f'Head\nM{settings["rows"]}'
+        return f'{heading}\n$\\Delta t={settings["dt"]:g}$'
     parity = json.loads((output / "implementation_parity.json").read_text())
     frozen = json.loads((paired / "frozen_comparators.json").read_text())["comparators"]
     invalid_metrics = [r for r in rows if r["status"] == "ok" and not finite_metrics(r)]
@@ -155,7 +167,7 @@ def main():
     write_json(output / "analysis.json", analysis)
     colors = {"target": "#d35c24", "pod": "#6c5aa5", "classical": "#238a8d"}
     plt.rcParams.update({"font.size": 10, "axes.spines.top": False, "axes.spines.right": False})
-    fig, axes = plt.subplots(2, 2, figsize=(13, 9), constrained_layout=True)
+    fig, axes = plt.subplots(2, 2, figsize=(16, 9), constrained_layout=True)
     ax = axes[0, 0]
     for family in ("classical", "pod", "target"):
         selected = [(name, entry) for name, entry in selection.items()
@@ -165,8 +177,12 @@ def main():
             ax.scatter(entry["median_case_ms"], 100*entry["worst_evolved_error"],
                        color=colors[family], marker=marker, s=100 if family == "target" else 38, alpha=.8)
             if family == "target":
-                ax.annotate(name.replace("learned_", ""), (entry["median_case_ms"], 100*entry["worst_evolved_error"]),
-                            xytext=(5, 6), textcoords="offset points")
+                target_index = contract["target_names"].index(name)
+                offsets = [(-45, 25), (35, 48), (55, -4), (12, 14)]
+                offset = offsets[target_index % len(offsets)] if len(contract["target_names"]) > 2 else (15, 12)
+                ax.annotate(display_name(name), (entry["median_case_ms"], 100*entry["worst_evolved_error"]),
+                            xytext=offset, textcoords="offset points", fontsize=8,
+                            arrowprops={"arrowstyle":"-", "lw":.7, "color":"#777777"})
         ax.scatter([], [], color=colors[family], marker="*" if family == "target" else "o", label=family)
     ax.set(xscale="log", yscale="log", xlabel="Complete-query median (ms)", ylabel="Worst evolved relative error (%)",
            title="Development candidate accuracy–cost observations")
@@ -176,7 +192,7 @@ def main():
     ax.text(.02, .02, f"{above} candidates above 100% error; {failed} failed candidates\nAll retained in raw selection table; outside plotted range.",
             transform=ax.transAxes, fontsize=8, va="bottom")
     names = list(result["confirmation"])
-    labels = [name.replace("learned_", "").replace("fom_", "") for name in names]
+    labels = [display_name(name) for name in names]
     ax = axes[0, 1]
     for index, name in enumerate(names):
         entry = result["confirmation"][name]
@@ -186,10 +202,10 @@ def main():
             if cc:
                 xx.append(case)
                 yy.append(100*cc["evolved_max_error"])
-        ax.plot(xx, yy, "o-", label=labels[index])
+        ax.plot(xx, yy, "o-", label=labels[index].replace("\n", " "))
     ax.set(yscale="log", xticks=cases, xlabel="Fixed development case", ylabel="Evolved maximum relative error (%)",
            title="Confirmation accuracy: each returned timed output")
-    ax.legend(frameon=False, fontsize=7)
+    ax.legend(frameon=False, fontsize=7, loc="upper left", bbox_to_anchor=(1.01, 1.0))
     ax = axes[1, 0]
     for index, name in enumerate(names):
         values = [r["elapsed_ms"] for r in rows if r["block"] == "confirmation"
@@ -199,10 +215,10 @@ def main():
                        patch_artist=True, boxprops={"facecolor": colors[result["confirmation"][name]["family"]], "alpha": .55})
     ax.set(yscale="log", xticks=np.arange(len(names)), xticklabels=labels,
            ylabel="Complete query (ms)", title="All confirmation repetitions; speed gates kept separately")
-    ax.tick_params(axis="x", rotation=30)
+    ax.tick_params(axis="x", rotation=0, labelsize=8)
     ax = axes[1, 1]
     successful = [r for r in cold if r["status"] == "ok"]
-    cold_labels = [r["subject"].replace("learned_", "").replace("fom_", "") for r in successful]
+    cold_labels = [display_name(r["subject"]) for r in successful]
     for i, row in enumerate(successful):
         warm = result["confirmation"][row["subject"]]["cases"][str(row["case_id"])]["median_ms"]
         ax.plot([i, i], [warm, row["elapsed_ms"]], color="#aaaaaa", lw=1)
@@ -211,7 +227,7 @@ def main():
                    label="activation + compile + query" if i == 0 else None)
     ax.set(yscale="log", xticks=np.arange(len(successful)), xticklabels=cold_labels,
            ylabel="Elapsed time (ms)", title="Existing-runtime activation, one call per method")
-    ax.tick_params(axis="x", rotation=30)
+    ax.tick_params(axis="x", rotation=0, labelsize=8)
     ax.legend(frameon=False, fontsize=8)
     fig.suptitle(f"NS64 paired-cost study — {len(cases)} existing development cases", fontsize=16)
     figures = output / "figures"
@@ -228,7 +244,7 @@ def main():
                       label=group.replace("_", " ") + ("" if comparison["qualified"] else " (gate failed)"))
         axis.axhline(1, color="#555555", lw=1, ls="--")
         axis.set(xticks=cases, xlabel="Fixed development case", ylabel="Comparator time / target time",
-                 title=target.replace("learned_", "") + ": above one favors target")
+                 title=display_name(target).replace("\n", " ") + ": above one favors target")
         axis.legend(frameon=False, fontsize=8)
     for axis in list(panels.flat)[len(ratios):]:
         axis.set_visible(False)

@@ -135,6 +135,16 @@ def main():
                 projection_orthogonality=projection_orthogonality, projection_error=projection_error.tolist(), arms={})
             for m in cfg['solve_rows']:
                 arm = case['arms'][str(m)]
+                repetition_checks = []
+                for level, gtol in cfg['solver_gtols'].items():
+                    repetitions = cfg['timing_repetitions'] if level == 'tight' else 1
+                    for rep in range(repetitions):
+                        returned = np.load(folder/f'm{m}-{level}-rep{rep}.npz')
+                        stats = returned['stats']
+                        repetition_checks.append(dict(level=level, repetition=rep,
+                            finite=bool(np.isfinite(returned['coeff']).all()),
+                            stationary=bool(np.all(stats[:, 1] == 1) and np.all(stats[:, 2] <= gtol)),
+                            saved_timing_matches=bool(float(returned['elapsed_seconds']) == arm['levels'][level]['timing_repetitions'][rep])))
                 z = np.load(folder/f'm{m}-tighter-rep0.npz')
                 field = z['coeff'] @ G.T
                 metric = compare_metrics(field, ref, n)
@@ -154,7 +164,8 @@ def main():
                 unscaled_shell = np.linalg.norm(residual['unscaled'][:, 8192:9216], axis=1)
                 array_pass = bool(projection_metric_gap <= 1e-10 and projection_orthogonality <= 1e-9
                     and field_metric_gap <= 1e-10 and evolution_metric_gap <= 1e-10 and metric_gap <= 1e-9
-                    and pythagorean <= 1e-10 and stationary and tolerance_gap <= threshold)
+                    and pythagorean <= 1e-10 and stationary and tolerance_gap <= threshold
+                    and all(r['finite'] and r['saved_timing_matches'] and (r['stationary'] or r['level'] == 'prod') for r in repetition_checks))
                 eligible = bool(arm['numerically_eligible'] and reference_pass and array_pass and shared_bank_gap <= 1e-10
                     and audit['sources'][str(width)]['environment_passed'] and audit['sources'][str(width)]['numerical_basis_passed'])
                 details = dict(error=error.tolist(), projection_error=projection_error.tolist(), evolution_distance=evolution_distance.tolist(),
@@ -162,7 +173,7 @@ def main():
                     energy=metric[:, 4].tolist(), independent_scaled_shell=shell.tolist(), independent_unscaled_shell=unscaled_shell.tolist(),
                     max_metric_difference=metric_gap, field_metric_difference=field_metric_gap, evolution_metric_difference=evolution_metric_gap,
                     pythagorean_max_absolute=pythagorean, tight_tighter_difference=tolerance_gap, tight_tighter_threshold=float(threshold),
-                    saved_array_passed=array_pass, numerically_eligible=eligible)
+                    repetition_checks=repetition_checks, saved_array_passed=array_pass, numerically_eligible=eligible)
                 rec['arms'][str(m)] = details
                 table.append(dict(R=width, M=m, case=case_id, max_discrete_error=float(error.max()),
                     initial_error=float(error[0]), evolved_error_max=float(error[1:].max()), final_error=float(error[-1]),
@@ -223,7 +234,8 @@ def main():
                     new = np.asarray(audit['cases'][f'R{width}-case{case_id}']['arms'][str(m)]['error'])
                     difference = new-old
                     pointwise.append(dict(case=case_id, previous_R=previous_width, previous_M=previous_m, R=width, M=m,
-                        increased_time_count=int(np.sum(difference > 1e-10)), maximum_increase=float(difference.max()),
+                        increased_time_count=int(np.sum(difference > 1e-10)), maximum_increase=float(max(0., difference.max())),
+                        maximum_signed_error_change=float(difference.max()),
                         time_of_maximum_increase=float(times[int(np.argmax(difference))])))
     audit['all_saved_array_checks_passed'] = all(a['saved_array_passed'] for c in audit['cases'].values() for a in c['arms'].values())
     audit['all_arms_numerically_eligible'] = all(r['eligible'] for r in table)
@@ -262,7 +274,7 @@ def plot(audit, times, dest):
     for ax, metric, title in zip(axes, ['maximum_error_median','maximum_error_worst'], ['Median of six case maxima', 'Worst of six case maxima']):
         values = [100*audit['aggregates'][key][metric] for key in keys]
         ax.bar(np.arange(len(keys)), values, color=[colors[int(key.split('-')[0][1:])] for key in keys])
-        ax.set_xticks(np.arange(len(keys)), [key.replace('-', '\n') for key in keys])
+        ax.set_xticks(np.arange(len(keys)), [key.replace('-', '\n')+'\n'+str(audit['aggregates'][key]['qualified_count'])+'/6 qualified' for key in keys])
         ax.set(title=title, ylabel='Error / initial-field norm (%)')
         ax.spines[['top', 'right']].set_visible(False)
     fig.suptitle('MEASURED same-grid / same-step accuracy — maximum includes initialization and all evolved times')

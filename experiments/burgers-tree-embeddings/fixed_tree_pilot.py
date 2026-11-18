@@ -18,6 +18,7 @@ def main():
     ap.add_argument('--span',required=True);ap.add_argument('--dev',required=True);ap.add_argument('--admission',required=True)
     ap.add_argument('--L',type=int,default=1024);ap.add_argument('--dt',type=float,default=.0025)
     ap.add_argument('--labels',default='dev000,dev003,align002');ap.add_argument('--test-factor',type=int,default=4)
+    ap.add_argument('--compare-previous')
     a=ap.parse_args();out=Path(a.out);out.mkdir(parents=True,exist_ok=True);meta=preflight()
     admission=json.loads((Path(a.admission)/'result.json').read_text());assert admission['representation_gate']
     cachepath=Path(a.cache);cache_rec=json.loads((cachepath/'result.json').read_text())
@@ -29,8 +30,14 @@ def main():
         operator='incumbent scaled tested weak residual; exact fine-grid sign-upwind; discrete sine eigen-diffusion; backward Euler',
         integration='all fine-grid interior nodes; exact dense tested sum through orthonormal DST',
         input_contract='shared initial-field callable only; no reference in initialization, tree selection or stepping',
-        admission_sha256=digest(Path(a.admission)/'result.json'),final_test_opened=False,
+        admission_sha256=digest(Path(a.admission)/'result.json'),global_basis_sha256=spanrec['basis_sha256'],
+        local_rotation_sha256=cache_rec['local_POD_sha256'],final_test_opened=False,
         timing_claim='diagnostic query wall times include assembly/compilation; no paired performance inference',timing_burn_in=True)
+    if a.compare_previous:
+        previous_path=Path(a.compare_previous);assert str(previous_path).startswith(os.environ['STUDY_NAMESPACE']+'/')
+        previous_result=json.loads((previous_path/'result.json').read_text())
+        assert previous_result['status']=='complete_fixed_tree_diagnostic_pilot' and previous_result['operator']==result['operator']
+        result['previous_result_sha256']=digest(previous_path/'result.json')
     save(out/'result.json',result)
     for label in result['labels']:
         folder,row=refmap[label];p=row['parameters'];initial=lambda xy:data.initial(xy,p)
@@ -80,10 +87,26 @@ def main():
             if name.startswith('tree'):
                 _,_,mx,my=metric(basis,jnp.asarray(cells),*rule);br=TM.rhs(basis,b[:count],mx,my);full=C@T.T
                 err2=jnp.einsum('ti,ij,tj->t',full,Gfull,full)-2*jnp.sum(full*br,axis=1)+norm2[:count]
+                Gram=Gtree;rhs=br@T
+                optimum=jnp.linalg.solve(Gram+1e-10*jnp.eye(Gram.shape[0]),rhs.T).T
             else:
                 N=basis.shape[-1];br=.25*jnp.einsum('tij,kij->tk',b[:count,:N,:N],basis)
                 err2=jnp.sum(C*C,axis=1)-2*jnp.sum(C*br,axis=1)+norm2[:count]
+                Gram=jnp.eye(len(basis));rhs=br;optimum=br
             method['physical_error']=np.asarray(jnp.sqrt(jnp.maximum(err2,0)/norm2[:count]));method['full_trajectory_returned']=count==6
+            proj2=jnp.einsum('ti,ij,tj->t',optimum,Gram,optimum)-2*jnp.sum(optimum*rhs,axis=1)+norm2[:count]
+            delta=C-optimum;dyn2=jnp.einsum('ti,ij,tj->t',delta,Gram,delta)
+            method['projection_error']=np.asarray(jnp.sqrt(jnp.maximum(proj2,0)/norm2[:count]))
+            method['distance_from_best_projection']=np.asarray(jnp.sqrt(jnp.maximum(dyn2,0)/norm2[:count]))
+            method['squared_error_decomposition_defect']=float(jnp.max(jnp.abs(err2-proj2-dyn2)/norm2[:count]))
+            if a.compare_previous:
+                oldrow=next(v for v in previous_result['cases'] if v['case']==label);assert np.array_equal(oldrow['parameters'],p)
+                oldfile=previous_path/f'{label}_{name}_states.pkl';oldstate=read_checkpoint(oldfile)
+                oldC=jnp.asarray(oldstate['coefficients']);assert oldC.shape==C.shape
+                if name.startswith('tree'):assert np.array_equal(oldstate['cells'],cells) and np.allclose(oldstate['transforms'],np.asarray(tr),rtol=0,atol=1e-12)
+                change=C-oldC
+                method['previous_state_relative_change']=np.asarray(jnp.sqrt(jnp.maximum(jnp.einsum('ti,ij,tj->t',change,Gram,change),0)/norm2[:count]))
+                method['previous_state_file_sha256']=digest(oldfile)
             if count==6:
                 burn_gpu();t0=time.perf_counter();axis=np.linspace(0,1,4096)
                 if name.startswith('tree'):pred=LP.field_grid(basis,full[-1],cells,tr,6,axis)[0]

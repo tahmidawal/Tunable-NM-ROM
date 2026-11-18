@@ -1,0 +1,22 @@
+{
+  "version": "P2-initial-20261118",
+  "mesh_intervals": 256,
+  "bank_width": 128,
+  "solve_rows": [256, 512, 1024, 2048],
+  "observer_rows": 1024,
+  "case_ids": [0, 1],
+  "cohort": "dev6",
+  "seed_first_draw": 7090702,
+  "seed_first_count": 4,
+  "dt": 0.005,
+  "horizon": 0.25,
+  "solver_gtols": {"prod": 0.00001, "tight": 0.0000001, "tighter": 0.00000001},
+  "solver_max_iterations": 200,
+  "reference_tolerances": [[0.000000000001, 0.0000000001], [0.00000000000001, 0.000000000001]],
+  "reference_max_disagreement": 0.00000001,
+  "tangent_relative_eigenvalue_threshold": 0.000000000001,
+  "lane_budget_gpu_hours": 3,
+  "initial_job_limit_minutes": 45,
+  "timing_repetitions": 2,
+  "physical_reference_scope": "same-grid same-step discrete FOM only"
+}

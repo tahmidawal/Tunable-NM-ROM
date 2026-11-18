@@ -1,0 +1,72 @@
+{
+  "config": {
+    "version": "P2-initial-20261118",
+    "mesh_intervals": 256,
+    "bank_width": 128,
+    "solve_rows": [
+      256,
+      512,
+      1024,
+      2048
+    ],
+    "observer_rows": 1024,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cohort": "dev6",
+    "seed_first_draw": 7090702,
+    "seed_first_count": 4,
+    "dt": 0.005,
+    "horizon": 0.25,
+    "solver_gtols": {
+      "prod": 1e-05,
+      "tight": 1e-07,
+      "tighter": 1e-08
+    },
+    "solver_max_iterations": 200,
+    "reference_tolerances": [
+      [
+        1e-12,
+        1e-10
+      ],
+      [
+        1e-14,
+        1e-12
+      ]
+    ],
+    "reference_max_disagreement": 1e-08,
+    "tangent_relative_eigenvalue_threshold": 1e-12,
+    "lane_budget_gpu_hours": 3,
+    "initial_job_limit_minutes": 45,
+    "timing_repetitions": 2,
+    "physical_reference_scope": "same-grid same-step discrete FOM only"
+  },
+  "checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+  "rotation_sha256": "51149166b53dad386c93fa0682079aec96b61276801d9a6d4f622453d6426772",
+  "source_sha256": {
+    "core.py": "08af18b33b2ffeb81a8e39df9495c2cd3009756df9e3a16e87e6dc7341b6382b",
+    "run.py": "01a6117ac3790c6adb71e209153d4c18af19f613c026442f34d6990f84bc0607",
+    "vendor/engines.py": "820039e5840abaf92dc911f9de8c6a427f97cbd2617f1e7a5169e66c19fa62e4",
+    "vendor/sep_common.py": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4"
+  },
+  "job_id": "7354325",
+  "commit": "c30c9b8e902a35a65ba0309e524a1bd57be47d1c",
+  "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition, GPU-376998a3-da34-3172-30ca-1c4a2cb06d0d",
+  "backend": "gpu",
+  "x64": true,
+  "matmul_precision": "highest",
+  "tangent_ranks": {
+    "1e-10": 128,
+    "1e-12": 128,
+    "1e-14": 128
+  },
+  "scaled_tangent_rank": 128,
+  "grid_nodes": 65025,
+  "actual_unknowns": 128,
+  "free_frame_variables": 0,
+  "mass_per_node": 1.52587890625e-05,
+  "wall_start": 1795038168.8909686,
+  "buffer_residual_rows": 3072,
+  "no_production_timing_claim": true
+}

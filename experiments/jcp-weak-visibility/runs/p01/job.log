@@ -1,0 +1,28 @@
+jax_backend=gpu
+NVIDIA RTX PRO 6000 Blackwell Server Edition, GPU-376998a3-da34-3172-30ca-1c4a2cb06d0d, 97887 MiB
+jax_backend=gpu x64=True precision=highest
+case=0 start
+case=0 M=256 level=prod error=0.0190438 stationarity=2.95e-06 eligible=True
+case=0 M=256 level=tight error=0.0190437 stationarity=1.51e-09 eligible=True
+case=0 M=256 level=tighter error=0.0190437 stationarity=1.51e-09 eligible=True
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/jcp-weak-visibility-20261118-488b0837/p01/code/run.py", line 275, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/jcp-weak-visibility-20261118-488b0837/p01/code/run.py", line 266, in main
+    save_json(out/'summary.json', summary)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/jcp-weak-visibility-20261118-488b0837/p01/code/run.py", line 41, in save_json
+    path.write_text(json.dumps(clean(value), indent=2)+'\n')
+                    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/apps/spack/9/x86_64/apps/linux-broadwell/python-3.13.2-7ww5fk2fsx6reaigszsyxuwtuckjz7j5/lib/python3.13/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ~~~~~~^^^^^
+  File "/cluster/tufts/apps/spack/9/x86_64/apps/linux-broadwell/python-3.13.2-7ww5fk2fsx6reaigszsyxuwtuckjz7j5/lib/python3.13/json/encoder.py", line 200, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+  File "/cluster/tufts/apps/spack/9/x86_64/apps/linux-broadwell/python-3.13.2-7ww5fk2fsx6reaigszsyxuwtuckjz7j5/lib/python3.13/json/encoder.py", line 261, in iterencode
+    return _iterencode(o, 0)
+  File "/cluster/tufts/apps/spack/9/x86_64/apps/linux-broadwell/python-3.13.2-7ww5fk2fsx6reaigszsyxuwtuckjz7j5/lib/python3.13/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+                    f'is not JSON serializable')
+TypeError: Object of type ArrayImpl is not JSON serializable

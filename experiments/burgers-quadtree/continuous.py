@@ -53,7 +53,9 @@ def flux_tables(W,N,q):
  G=2*tensor(S,S);grad=2*(tensor(D,S)+tensor(S,D));weights=jnp.asarray(np.outer(w,w).ravel())
  return G,.5*weights[:,None]*grad
 
-def flux_trajectory(dt=.005):
+def flux_trajectory(dt=.005,interval=.025):
+ steps=round(interval/dt);blocks=round(.25/interval)
+ assert steps>0 and abs(steps*dt-interval)<1e-12 and abs(blocks*interval-.25)<1e-12, "time step must divide saved output intervals exactly"
  @jax.jit
  def run(a0,nu,G,H,eigs):
   co=P.etdrk4_coefs(-nu*eigs,dt,32)
@@ -63,7 +65,7 @@ def flux_trajectory(dt=.005):
    c=co['E2']*a+co['Q']*(2*nb-nv);nc=nonlin(c)
    return co['E']*v+co['f1']*nv+2*co['f2']*(na+nb)+co['f3']*nc
   def block(v,_):
-   v=jax.lax.fori_loop(0,round(.025/dt),lambda i,x:step(x),v);return v,v
-  _,v=jax.lax.scan(block,a0,None,length=10)
+   v=jax.lax.fori_loop(0,steps,lambda i,x:step(x),v);return v,v
+  _,v=jax.lax.scan(block,a0,None,length=blocks)
   return jnp.concatenate([a0[None],v])
  return run

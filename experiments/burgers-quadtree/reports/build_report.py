@@ -32,7 +32,7 @@ for ax,(label,panel) in zip(axes.ravel(),panels):
   ax.scatter(1000*x['median_seconds'],100*x['worst_error_plus_uncertainty'],marker='o' if x['qualified'] else 'x',s=45,label=f"{labelkey}: {x['name']}");ax.annotate(labelkey,(1000*x['median_seconds'],100*x['worst_error_plus_uncertainty']),fontsize=7,xytext=(3,4),textcoords='offset points')
  ax.axhline(1,color='black',ls='--',lw=.8);ax.set(xlabel='Complete warm query (ms)',ylabel='Worst error + uncertainty (%)',title=label);ax.set_xscale('log');ax.set_yscale('log');ax.grid(alpha=.2);ax.legend(loc='upper center',bbox_to_anchor=(.5,-.18),fontsize=6,ncol=2,frameon=False)
 fig.tight_layout();fig.savefig(assets/'accuracy-cost.png',dpi=160);plt.close(fig);lines+=['','![Independent complete-output cost panels](2026-11-18-burgers-continuation-assets/accuracy-cost.png)','','The dashed line is the1% target. Crosses indicate a failed or incomplete numerical qualification, not eligible matched-accuracy speed competitors.']
-for job in ('c1compresscost','c1bcomplete'):
+for job in ('c1compresscost','c1bcomplete','c3cost'):
  if (H/f'evidence/{job}-witness-audit.json').exists():
   w=read(job+'-witness-audit.json');shutil.copy2(H/f'figures/{job}-witness.png',assets/f'{job}-witness.png');lines+=['',f"![{job} full-grid audited witness](2026-11-18-burgers-continuation-assets/{job}-witness.png)",'',f"Independent NumPy audit uses every4096×4096 value; plotting alone is subsampled. The deliberately incorrect final-field normalization is rejected: {w['negative_control_pass']}."]
 if (H/'evidence/c1outputcontracts-assessment.json').exists():

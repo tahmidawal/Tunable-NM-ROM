@@ -1,1 +1,22 @@
-{"cumulative_ceiling_gpu_seconds":30081,"batches":[{"name":"A0","status":"closed checkpoint branch","actual_gpu_seconds":1281},{"name":"C1","registered":"2026-11-18","maximum_additional_gpu_seconds":28800,"cells":{"c1operator":60,"c1data":120},"remaining_reserved_minutes":300,"purpose":"Qualify continuous weak dynamics independently from broader representation coverage; continue toward full objective."}]}
+{
+  "cumulative_ceiling_gpu_seconds": 30081,
+  "batches": [
+    {
+      "name": "A0",
+      "status": "closed checkpoint branch",
+      "actual_gpu_seconds": 1281
+    },
+    {
+      "name": "C1",
+      "registered": "2026-11-18",
+      "maximum_additional_gpu_seconds": 28800,
+      "cells": {
+        "c1operator": 60,
+        "c1data": 120
+      },
+      "purpose": "Qualify continuous weak dynamics independently from broader representation coverage; continue toward full objective.",
+      "initial_unassigned_reservation_minutes": 300,
+      "accounting": "cluster/ledger.json is authoritative for all C1/C2/C3 cells; terminal allocated seconds plus active time-limit reservations enforce cumulative ceiling before each submission"
+    }
+  ]
+}

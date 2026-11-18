@@ -1,0 +1,302 @@
+{
+  "status": "USER_REQUESTED_DISCUSSION_PAUSE",
+  "recorded_utc": "2026-11-18T18:28:50.914623+00:00",
+  "owner": "Archimedes",
+  "ownership_token": "burgers-development-worker-20261117",
+  "instruction": "Pause all campaign experiments, submissions and architectural changes until the user explicitly resumes. Foundation inspection/discussion belongs to the requesting session.",
+  "queue_empty": true,
+  "all_owned_jobs_completed": true,
+  "completed_job_count": 47,
+  "allocated_gpu_seconds": 14173,
+  "allocated_gpu_hours": 3.9369444444444444,
+  "last_job_id": 7348159,
+  "unsubmitted_work": [
+    "c3_b_time.py",
+    "c3_b_cost.py"
+  ],
+  "local_fixture": "Exited before pause handling; CPU algebra fixture completed, prior local CUDA initialization failed; no running local campaign experiment found.",
+  "jobs": [
+    {
+      "id": 7310994,
+      "name": "reference01",
+      "state": "COMPLETED",
+      "elapsed_seconds": 98
+    },
+    {
+      "id": 7311048,
+      "name": "baseline01",
+      "state": "COMPLETED",
+      "elapsed_seconds": 111
+    },
+    {
+      "id": 7311403,
+      "name": "representation01",
+      "state": "COMPLETED",
+      "elapsed_seconds": 53
+    },
+    {
+      "id": 7311495,
+      "name": "dense01",
+      "state": "COMPLETED",
+      "elapsed_seconds": 54
+    },
+    {
+      "id": 7311500,
+      "name": "repair01",
+      "state": "COMPLETED",
+      "elapsed_seconds": 441
+    },
+    {
+      "id": 7311588,
+      "name": "spectral01",
+      "state": "COMPLETED",
+      "elapsed_seconds": 84
+    },
+    {
+      "id": 7311631,
+      "name": "ae01",
+      "state": "COMPLETED",
+      "elapsed_seconds": 107
+    },
+    {
+      "id": 7311712,
+      "name": "dynamics01",
+      "state": "COMPLETED",
+      "elapsed_seconds": 219
+    },
+    {
+      "id": 7311887,
+      "name": "output01",
+      "state": "COMPLETED",
+      "elapsed_seconds": 73
+    },
+    {
+      "id": 7311959,
+      "name": "diagnosis01",
+      "state": "COMPLETED",
+      "elapsed_seconds": 41
+    },
+    {
+      "id": 7343781,
+      "name": "c1operator",
+      "state": "COMPLETED",
+      "elapsed_seconds": 103
+    },
+    {
+      "id": 7343809,
+      "name": "c1data",
+      "state": "COMPLETED",
+      "elapsed_seconds": 106
+    },
+    {
+      "id": 7343868,
+      "name": "c1rom",
+      "state": "COMPLETED",
+      "elapsed_seconds": 207
+    },
+    {
+      "id": 7343869,
+      "name": "c1familyb",
+      "state": "COMPLETED",
+      "elapsed_seconds": 143
+    },
+    {
+      "id": 7343929,
+      "name": "c1local",
+      "state": "COMPLETED",
+      "elapsed_seconds": 138
+    },
+    {
+      "id": 7344020,
+      "name": "c1ref32",
+      "state": "COMPLETED",
+      "elapsed_seconds": 124
+    },
+    {
+      "id": 7344063,
+      "name": "c1localrom",
+      "state": "COMPLETED",
+      "elapsed_seconds": 94
+    },
+    {
+      "id": 7344128,
+      "name": "c1hybrid",
+      "state": "COMPLETED",
+      "elapsed_seconds": 524
+    },
+    {
+      "id": 7344193,
+      "name": "c1tiles",
+      "state": "COMPLETED",
+      "elapsed_seconds": 78
+    },
+    {
+      "id": 7344203,
+      "name": "c1qualify",
+      "state": "COMPLETED",
+      "elapsed_seconds": 339
+    },
+    {
+      "id": 7344214,
+      "name": "c1audit",
+      "state": "COMPLETED",
+      "elapsed_seconds": 18
+    },
+    {
+      "id": 7344228,
+      "name": "c1manifold",
+      "state": "COMPLETED",
+      "elapsed_seconds": 85
+    },
+    {
+      "id": 7344272,
+      "name": "c1bbank",
+      "state": "COMPLETED",
+      "elapsed_seconds": 117
+    },
+    {
+      "id": 7344304,
+      "name": "c1resolved",
+      "state": "COMPLETED",
+      "elapsed_seconds": 245
+    },
+    {
+      "id": 7344337,
+      "name": "c1manifoldpde",
+      "state": "COMPLETED",
+      "elapsed_seconds": 140
+    },
+    {
+      "id": 7344380,
+      "name": "c1cost",
+      "state": "COMPLETED",
+      "elapsed_seconds": 1393
+    },
+    {
+      "id": 7344382,
+      "name": "c1brom",
+      "state": "COMPLETED",
+      "elapsed_seconds": 820
+    },
+    {
+      "id": 7345163,
+      "name": "c1fast",
+      "state": "COMPLETED",
+      "elapsed_seconds": 679
+    },
+    {
+      "id": 7345474,
+      "name": "c1cubature",
+      "state": "COMPLETED",
+      "elapsed_seconds": 150
+    },
+    {
+      "id": 7345629,
+      "name": "c1trees",
+      "state": "COMPLETED",
+      "elapsed_seconds": 235
+    },
+    {
+      "id": 7345631,
+      "name": "c1classical",
+      "state": "COMPLETED",
+      "elapsed_seconds": 72
+    },
+    {
+      "id": 7345741,
+      "name": "c1whitened",
+      "state": "COMPLETED",
+      "elapsed_seconds": 114
+    },
+    {
+      "id": 7345866,
+      "name": "c1incumbent",
+      "state": "COMPLETED",
+      "elapsed_seconds": 178
+    },
+    {
+      "id": 7345881,
+      "name": "c1ablation",
+      "state": "COMPLETED",
+      "elapsed_seconds": 115
+    },
+    {
+      "id": 7346097,
+      "name": "c1compress",
+      "state": "COMPLETED",
+      "elapsed_seconds": 525
+    },
+    {
+      "id": 7346124,
+      "name": "c1treepde",
+      "state": "COMPLETED",
+      "elapsed_seconds": 302
+    },
+    {
+      "id": 7346265,
+      "name": "c2frame",
+      "state": "COMPLETED",
+      "elapsed_seconds": 70
+    },
+    {
+      "id": 7346632,
+      "name": "c2trainframe",
+      "state": "COMPLETED",
+      "elapsed_seconds": 287
+    },
+    {
+      "id": 7346653,
+      "name": "c1compresscost",
+      "state": "COMPLETED",
+      "elapsed_seconds": 932
+    },
+    {
+      "id": 7346814,
+      "name": "c1bcomplete",
+      "state": "COMPLETED",
+      "elapsed_seconds": 938
+    },
+    {
+      "id": 7347185,
+      "name": "c1globalneural",
+      "state": "COMPLETED",
+      "elapsed_seconds": 356
+    },
+    {
+      "id": 7347300,
+      "name": "c1bcontrols",
+      "state": "COMPLETED",
+      "elapsed_seconds": 515
+    },
+    {
+      "id": 7347331,
+      "name": "c3globalcompress",
+      "state": "COMPLETED",
+      "elapsed_seconds": 467
+    },
+    {
+      "id": 7347545,
+      "name": "c1outputcontracts",
+      "state": "COMPLETED",
+      "elapsed_seconds": 1081
+    },
+    {
+      "id": 7347652,
+      "name": "c3globalcapacity",
+      "state": "COMPLETED",
+      "elapsed_seconds": 213
+    },
+    {
+      "id": 7347830,
+      "name": "c3cost",
+      "state": "COMPLETED",
+      "elapsed_seconds": 623
+    },
+    {
+      "id": 7348159,
+      "name": "c3befficiency",
+      "state": "COMPLETED",
+      "elapsed_seconds": 366
+    }
+  ]
+}

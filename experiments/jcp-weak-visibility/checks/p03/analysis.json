@@ -1,6 +1,12 @@
 {
-  "scope": "same-grid same-step discrete target; preliminary development cases",
+  "scope": "same-grid same-step discrete target; exposed development cases",
+  "source_outputs": [
+    "runs/p03/output"
+  ],
   "gram_relative_error": 7.063866159830849e-16,
+  "per_source_gram_errors": {
+    "runs/p03/output": 7.063866159830849e-16
+  },
   "cases": {
     "0": {
       "reference_disagreement": 1.5511604695879383e-12,
@@ -1891,5 +1897,55 @@
   ],
   "fixed_state_minimum_sigma_increment": 0.1522067548385927,
   "saved_array_audit_passed": true,
-  "environmental_acceptance": "must be read from separate collector audit; numerical file alone is insufficient"
+  "environmental_acceptance": "must be read from separate collector audit; numerical file alone is insufficient",
+  "aggregate": {
+    "256": {
+      "case_count": 2,
+      "qualified_count": 2,
+      "maximum_error_median": 0.010600456834202415,
+      "maximum_error_worst": 0.019043684112587406,
+      "initial_error_median": 0.005956862245210887,
+      "evolved_error_worst": 0.019043684112587406,
+      "evolution_distance_worst": 0.016979272096240585,
+      "initial_time_is_maximum_count": 1,
+      "iterations_median": 150.0,
+      "rejected_proposals_total": 0
+    },
+    "512": {
+      "case_count": 2,
+      "qualified_count": 2,
+      "maximum_error_median": 0.008388825290829686,
+      "maximum_error_worst": 0.014620421025841946,
+      "initial_error_median": 0.005956862245210887,
+      "evolved_error_worst": 0.014620421025841946,
+      "evolution_distance_worst": 0.011806374858992138,
+      "initial_time_is_maximum_count": 1,
+      "iterations_median": 150.0,
+      "rejected_proposals_total": 0
+    },
+    "1024": {
+      "case_count": 2,
+      "qualified_count": 2,
+      "maximum_error_median": 0.00703235096249093,
+      "maximum_error_worst": 0.011907472369164437,
+      "initial_error_median": 0.005956862245210887,
+      "evolved_error_worst": 0.011907472369164437,
+      "evolution_distance_worst": 0.008211070244528117,
+      "initial_time_is_maximum_count": 1,
+      "iterations_median": 150.0,
+      "rejected_proposals_total": 0
+    },
+    "2048": {
+      "case_count": 2,
+      "qualified_count": 2,
+      "maximum_error_median": 0.006151915022113557,
+      "maximum_error_worst": 0.01014660048840969,
+      "initial_error_median": 0.005956862245210887,
+      "evolved_error_worst": 0.01014660048840969,
+      "evolution_distance_worst": 0.005346707193175661,
+      "initial_time_is_maximum_count": 1,
+      "iterations_median": 150.0,
+      "rejected_proposals_total": 0
+    }
+  }
 }

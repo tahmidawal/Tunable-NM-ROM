@@ -1,0 +1,123 @@
+{
+  "config": {
+    "version": "P2-A2a-portable-cohort-guard-20261118",
+    "reference_arithmetic": "neighbor-difference",
+    "mesh_intervals": 256,
+    "bank_width": 128,
+    "solve_rows": [
+      256,
+      512,
+      1024,
+      2048
+    ],
+    "observer_rows": 1024,
+    "case_ids": [
+      2,
+      3,
+      4,
+      5
+    ],
+    "cohort": "dev6",
+    "seed_first_draw": 7090702,
+    "seed_first_count": 4,
+    "dt": 0.005,
+    "horizon": 0.25,
+    "solver_gtols": {
+      "prod": 1e-05,
+      "tight": 1e-07,
+      "tighter": 1e-08
+    },
+    "solver_max_iterations": 200,
+    "reference_tolerances": [
+      [
+        1e-12,
+        1e-10
+      ],
+      [
+        1e-14,
+        1e-12
+      ]
+    ],
+    "reference_max_disagreement": 1e-08,
+    "tangent_relative_eigenvalue_threshold": 1e-12,
+    "lane_budget_gpu_hours": 3,
+    "initial_job_limit_minutes": 45,
+    "timing_repetitions": 2,
+    "physical_reference_scope": "same-grid same-step discrete FOM only",
+    "cohort_phase": "remaining-dev6",
+    "seed_second_draw": 911702,
+    "seed_second_count": 2,
+    "local_parameter_reference": [
+      [
+        0.28252396549391534,
+        0.6366084820193556,
+        0.1868965964536891,
+        1.0820386491896183,
+        0.03172924415397142
+      ],
+      [
+        0.6969516647251746,
+        0.3451044576480736,
+        0.10606757516929861,
+        1.883079655612731,
+        0.09507673822337352
+      ],
+      [
+        0.45131714866409367,
+        0.5960642645978614,
+        0.09280172370327633,
+        1.5231312745422343,
+        0.014089575881689515
+      ],
+      [
+        0.15227706255373677,
+        0.28851457124797375,
+        0.13591160848175055,
+        1.2767181974115185,
+        0.017628207277743224
+      ],
+      [
+        0.8130532184264921,
+        0.8113791413070836,
+        0.08364773158362382,
+        1.0772552621887435,
+        0.025703631918398633
+      ],
+      [
+        0.4606729763621312,
+        0.16598352069267147,
+        0.07016574189598321,
+        1.1994479966226255,
+        0.04655240960473743
+      ]
+    ],
+    "local_parameter_sha256": "3610a428db73a58615a5a2dc7dae5045da0f4977f93fcd1f798c3a9723289e57"
+  },
+  "checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+  "rotation_sha256": "51149166b53dad386c93fa0682079aec96b61276801d9a6d4f622453d6426772",
+  "source_sha256": {
+    "core.py": "e4904a1736f6c3893fb19f01c3320e761d951e937f69414153ab79ce78e1215b",
+    "run.py": "ee61ce3e9240aad3c1f20516733e251c341b8242001442498c7af99538cd2230",
+    "vendor/engines.py": "820039e5840abaf92dc911f9de8c6a427f97cbd2617f1e7a5169e66c19fa62e4",
+    "vendor/sep_common.py": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4"
+  },
+  "job_id": "7354803",
+  "commit": "4761a0bf47f285fb36b286f54abb0c2f683075ca",
+  "gpu": "NVIDIA A100 80GB PCIe, GPU-c52a7f04-fc38-6157-cf19-5c7ff0945752",
+  "backend": "gpu",
+  "x64": true,
+  "matmul_precision": "highest",
+  "tangent_ranks": {
+    "1e-10": 128,
+    "1e-12": 128,
+    "1e-14": 128
+  },
+  "scaled_tangent_rank": 128,
+  "grid_nodes": 65025,
+  "actual_unknowns": 128,
+  "free_frame_variables": 0,
+  "mass_per_node": 1.52587890625e-05,
+  "wall_start": 1795039865.3813224,
+  "buffer_residual_rows": 3072,
+  "no_production_timing_claim": true
+}

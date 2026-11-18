@@ -1,0 +1,75 @@
+{
+  "schema": "prospective-cost-amendment-v1",
+  "status": "PREPARED; launch held for P03 audit, remaining-budget update and parent clearance",
+  "motivation": "Test complete-query cost of all three head numerical settings already admitted by independent mechanism study. This is an exposed-development sensitivity study, with all target outcomes retained.",
+  "registered_before_three_head_timing_results": true,
+  "target_settings": [
+    {
+      "name": "learned_head_m292_dt0.02",
+      "kind": "head",
+      "rows": 292,
+      "dt": 0.02
+    },
+    {
+      "name": "learned_head_m584_dt0.02",
+      "kind": "head",
+      "rows": 584,
+      "dt": 0.02
+    },
+    {
+      "name": "learned_head",
+      "kind": "head",
+      "rows": 584,
+      "dt": 0.01
+    },
+    {
+      "name": "learned_span64",
+      "kind": "span",
+      "rows": 584,
+      "dt": 0.01
+    }
+  ],
+  "comparators": {
+    "classical_count": 90,
+    "pod_head_count": 9,
+    "pod_span_count": 4,
+    "unchanged_from_P03": true
+  },
+  "total_subjects": 107,
+  "cohort_seed": 202609202,
+  "case_ids": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "numerical_contract": "Same native four-start sequential compiled fit and scalar LM, strict stationarity, same truth/refinement and field-parity gates, same six full host outputs. All64 target/reference pairs checked before comparator construction.",
+  "measurement_contract": "Every target has independent frozen eligible selections and new confirmation repetitions in the same allocation. Primary accuracy is median and worst of maximum errors at five evolved requested times; initial error retained separately. All107 subjects use same host physical input.",
+  "prospective_metric_guard": "Nonfinite physical error metrics, including finite-field norm overflow, produce explicit failed invocations. All such candidates remain excluded.",
+  "no_new_setting": "M292/dt.01 is excluded; it was not admitted in P1P03B.",
+  "native_reference_manifest": "THREE_HEAD_NATIVE_PARITY_MANIFEST.json",
+  "config_sha256": "e4fe9a257afd1dc722f8f058b1028dca4a8a5a243a26bddbbdccae4b89649a93",
+  "past_completed_gpu_seconds": 540,
+  "current_job_not_yet_accounted": 7355021,
+  "job_limit_minutes": 45,
+  "budget_rule": "Before launch update actual accumulated GPU seconds and require previous_seconds+2700<=7200.",
+  "expected_duration": "Similar finite grid to P03 plus two extra targets and associated confirmation subjects; P03 actual duration will be used before scheduling.",
+  "limitations": [
+    "No final or held-out cohort.",
+    "No cross-job speed ratio; all targets and comparators retimed together.",
+    "All three target results retained, including slower or less accurate outcomes.",
+    "Existing-runtime activation timing does not measure process/CUDA startup."
+  ]
+}

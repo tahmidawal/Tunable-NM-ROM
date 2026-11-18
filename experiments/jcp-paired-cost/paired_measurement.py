@@ -81,7 +81,12 @@ def output_metrics(output, case: Case):
     denom = float(np.linalg.norm(case.truth[0].ravel()))
     if not (math.isfinite(denom) and denom > 0):
         raise ValueError("invalid original truth initial norm")
-    errors = np.linalg.norm((a - case.truth).reshape(a.shape[0], -1), axis=1) / denom
+    # A finite but catastrophically unstable field can overflow the squared
+    # norm. Such an invocation has no valid physical metric and must fail.
+    with np.errstate(over="raise", invalid="raise", divide="raise"):
+        errors = np.linalg.norm((a - case.truth).reshape(a.shape[0], -1), axis=1) / denom
+    if not np.isfinite(errors).all():
+        raise ValueError("nonfinite physical error metric")
     return {
         "relative_errors": errors.tolist(),
         "initial_error": float(errors[0]),

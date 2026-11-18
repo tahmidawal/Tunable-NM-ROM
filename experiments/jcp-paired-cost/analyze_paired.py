@@ -19,6 +19,20 @@ import matplotlib.pyplot as plt
 from paired_measurement import write_json
 
 
+def finite_metrics(row):
+    return (row.get("status") == "ok"
+            and row.get("evolved_max_error") is not None
+            and np.isfinite(row["evolved_max_error"])
+            and np.isfinite(np.asarray(row.get("relative_errors", [None]), dtype=float)).all())
+
+
+def finite_selection(entry):
+    return (entry["complete"] and entry["worst_evolved_error"] is not None
+            and np.isfinite(entry["worst_evolved_error"])
+            and entry["median_case_evolved_max_error"] is not None
+            and np.isfinite(entry["median_case_evolved_max_error"]))
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--run", type=Path, required=True)
@@ -34,6 +48,13 @@ def main():
     rows = [json.loads(line) for line in (paired / "invocations.jsonl").read_text().splitlines()]
     cases = contract["case_ids"]
     parity = json.loads((output / "implementation_parity.json").read_text())
+    frozen = json.loads((paired / "frozen_comparators.json").read_text())["comparators"]
+    invalid_metrics = [r for r in rows if r["status"] == "ok" and not finite_metrics(r)]
+    affected_names = {r["subject"] for r in invalid_metrics}
+    eligible_names = {name for groups in frozen.values() for choice in groups.values()
+                      for name in choice["eligible"]}
+    chosen_names = {choice["selected"] for groups in frozen.values()
+                    for choice in groups.values() if choice["selected"] is not None}
     checks = {"all_ok_rows_same_call_metrics": all(
         row["status"] != "ok" or all(key in row for key in
             ("elapsed_ms", "relative_errors", "output_sha256", "solver_diagnostics")) for row in rows),
@@ -44,13 +65,18 @@ def main():
         "all_recorded_costs_nonnegative": all(row.get("elapsed_ms", 0) >= 0 for row in rows),
         "declared_gpu_f64_highest": provenance["backend"] == "gpu"
             and provenance["x64"] and provenance["precision"] == "highest",
-        "all_native_targets_match_admitted_states": len(parity) == 2*len(cases)
+        "all_native_targets_match_admitted_states": len(parity) == len(contract["target_names"])*len(cases)
             and all(row["passed"] for row in parity)
             and {(row["subject"], row["case"]) for row in parity}
             == {(name, case) for name in contract["target_names"] for case in cases},
         "all_selection_repetitions_retained": all(
             sum(r["block"] == "selection" and r["subject"] == name and r["case_id"] == case for r in rows)
             == contract["selection_repetitions"] for name in selection for case in cases),
+        "undefined_metric_candidates_never_eligible": not bool(affected_names & eligible_names),
+        "undefined_metric_candidates_never_selected": not bool(affected_names & chosen_names),
+        "undefined_metric_candidates_never_confirmed": not bool(affected_names & set(result["confirmation"])),
+        "all_confirmation_metrics_finite": all(r["status"] != "ok" or finite_metrics(r)
+            for r in rows if r["block"] == "confirmation"),
     }
     recomputed = {}
     for name, summary in result["confirmation"].items():
@@ -59,7 +85,7 @@ def main():
             rr = [r for r in rows if r["block"] == "confirmation" and r["subject"] == name and r["case_id"] == case]
             if len(rr) != contract["confirmation_repetitions"]:
                 raise AssertionError("confirmation repetitions missing")
-            successful = [r for r in rr if r["status"] == "ok"]
+            successful = [r for r in rr if finite_metrics(r)]
             if successful:
                 per_case.append({"case": case,
                     "median_ms": float(np.median([r["elapsed_ms"] for r in successful])),
@@ -100,7 +126,13 @@ def main():
         "checks": checks, "raw_audit_passed": all(checks.values()),
         "retained_cpu_affinity_messages": affinity, "excluded_runtime_messages": excluded,
         "comparisons": result["comparisons"], "confirmation_from_invocations": recomputed,
-        "failure_count_all_blocks": sum(r["status"] != "ok" for r in rows),
+        "failure_count_all_blocks": sum(not finite_metrics(r) for r in rows),
+        "as_recorded_failure_count_all_blocks": sum(r["status"] != "ok" for r in rows),
+        "undefined_metric_candidate_ids": sorted(affected_names),
+        "undefined_metric_invocations": [{k:r[k] for k in
+            ("block", "repetition", "order", "subject", "case_id", "elapsed_ms", "output_sha256")}
+            for r in invalid_metrics],
+        "undefined_metric_handling": "Raw records are unchanged. Legacy ok/null-metric invocations are classified as failures only in this audit; frozen eligibility/selection/confirmation must contain none of their candidates.",
         "timed_invocation_count": len(rows),
         "raw_sha256": hashlib.sha256((paired / "invocations.jsonl").read_bytes()).hexdigest()}
     ratios = {}
@@ -127,7 +159,7 @@ def main():
     ax = axes[0, 0]
     for family in ("classical", "pod", "target"):
         selected = [(name, entry) for name, entry in selection.items()
-                    if entry["family"] == family and entry["complete"] and entry["worst_evolved_error"] <= 1]
+                    if entry["family"] == family and finite_selection(entry) and entry["worst_evolved_error"] <= 1]
         for name, entry in selected:
             marker = "*" if family == "target" else ("s" if family == "pod" else ("o" if entry["mesh"] == 64 else "."))
             ax.scatter(entry["median_case_ms"], 100*entry["worst_evolved_error"],
@@ -139,8 +171,8 @@ def main():
     ax.set(xscale="log", yscale="log", xlabel="Complete-query median (ms)", ylabel="Worst evolved relative error (%)",
            title="Development candidate accuracy–cost observations")
     ax.legend(frameon=False)
-    above = sum(e["complete"] and e["worst_evolved_error"] > 1 for e in selection.values())
-    failed = sum(not e["complete"] for e in selection.values())
+    above = sum(finite_selection(e) and e["worst_evolved_error"] > 1 for e in selection.values())
+    failed = sum(not finite_selection(e) for e in selection.values())
     ax.text(.02, .02, f"{above} candidates above 100% error; {failed} failed candidates\nAll retained in raw selection table; outside plotted range.",
             transform=ax.transAxes, fontsize=8, va="bottom")
     names = list(result["confirmation"])
@@ -181,13 +213,15 @@ def main():
            ylabel="Elapsed time (ms)", title="Existing-runtime activation, one call per method")
     ax.tick_params(axis="x", rotation=30)
     ax.legend(frameon=False, fontsize=8)
-    fig.suptitle("NS64 paired-cost pilot — measured development results", fontsize=16)
+    fig.suptitle(f"NS64 paired-cost study — {len(cases)} existing development cases", fontsize=16)
     figures = output / "figures"
     figures.mkdir(exist_ok=True)
     fig.savefig(figures / "paired-cost-pilot.png", dpi=170)
     fig.savefig(figures / "paired-cost-pilot.svg")
-    figure2, panels = plt.subplots(1, len(ratios), figsize=(12, 4), constrained_layout=True, squeeze=False)
-    for axis, (target, groups) in zip(panels[0], ratios.items()):
+    ratio_rows = (len(ratios)+1)//2
+    figure2, panels = plt.subplots(ratio_rows, min(len(ratios), 2), figsize=(12, 4*ratio_rows),
+                                  constrained_layout=True, squeeze=False)
+    for axis, (target, groups) in zip(panels.flat, ratios.items()):
         for group, comparison in groups.items():
             rr = comparison["cases"]
             axis.plot([r["case"] for r in rr], [r["comparator_over_target"] for r in rr], "o-",
@@ -196,6 +230,8 @@ def main():
         axis.set(xticks=cases, xlabel="Fixed development case", ylabel="Comparator time / target time",
                  title=target.replace("learned_", "") + ": above one favors target")
         axis.legend(frameon=False, fontsize=8)
+    for axis in list(panels.flat)[len(ratios):]:
+        axis.set_visible(False)
     figure2.suptitle("Same-allocation confirmation: individual case ratios")
     figure2.savefig(figures / "paired-case-ratios.png", dpi=170)
     figure2.savefig(figures / "paired-case-ratios.svg")

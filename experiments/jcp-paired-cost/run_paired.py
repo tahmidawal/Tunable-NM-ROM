@@ -162,7 +162,8 @@ def native_subject(name, family, kind, rank, cfg, asset_path, override=None):
         "actual_online_unknowns_including_frame": (8 if kind == "head" else rank)+3,
         "solver": "compiled adaptive diagonally scaled LM; returned-state stationarity",
         "settings": settings, "assets_manifest_sha256": sha(asset_path / "MANIFEST.json"),
-        "initialization": "native from same original physical input field; four sequential compiled starts; recomputed each call",
+        "initialization": ("native from same original physical input field; four sequential compiled starts; recomputed each call"
+                           if kind == "head" else "native direct bank projection of the same physical input; recomputed each call"),
     }, cold)
 
 
@@ -272,8 +273,12 @@ def main():
         reference.append({"case": index, "parameter": parameter.tolist(), "truth_sha256": hashlib.sha256(truth.tobytes()).hexdigest(),
                           "dt_refinement_max": delta, "initial_projection_gap": initial_projection_gap})
     write_json(args.out / "references.json", reference)
-    subjects = [native_subject("learned_head", "target", "head", 64, cfg, learned_assets),
-                native_subject("learned_span64", "target", "span", 64, cfg, learned_assets)]
+    target_specs = cfg.get("targets", [
+        {"name": "learned_head", "kind": "head", "rows": cfg["rom"]["rows"], "dt": cfg["rom"]["dt"]},
+        {"name": "learned_span64", "kind": "span", "rows": cfg["rom"]["rows"], "dt": cfg["rom"]["dt"]}])
+    subjects = [native_subject(spec["name"], "target", spec["kind"], 64, cfg, learned_assets,
+                               {"rows": spec["rows"], "dt": spec["dt"]}) for spec in target_specs]
+    target_names = [spec["name"] for spec in target_specs]
     # Every implementation is evaluated before timing. The target field output
     # must match P1's admitted native head/span coefficients and centers.
     parity, warmups = [], []
@@ -287,7 +292,7 @@ def main():
                                 "first_invocation_seconds": time.perf_counter()-started,
                                 "numerical_valid": value.numerical_valid,
                                 "solver_diagnostics": value.diagnostics})
-                if subject.name in ("learned_head", "learned_span64"):
+                if subject.name in target_names:
                     entry = cfg["approved_reference_states"][subject.name][str(case.case_id)]
                     state_path = HERE / entry["file"]
                     if sha(state_path) != entry["sha256"]:
@@ -340,12 +345,12 @@ def main():
     subjects.extend(comparators)
     write_json(args.out / "implementation_parity.json", parity)
     write_json(args.out / "first_invocations.json", warmups)
-    result = run_suite(subjects, cases, target_names=["learned_head", "learned_span64"],
+    result = run_suite(subjects, cases, target_names=target_names,
         scoring_mesh=cfg["n"], out=args.out / "paired", burn=burn,
         selection_repetitions=cfg["selection_repetitions"],
         confirmation_repetitions=cfg["confirmation_repetitions"],
         seed=cfg["timing_order_seed"], drift_gate_ratio=cfg["drift_gate_ratio"], metadata=provenance)
-    selected = set(("learned_head", "learned_span64"))
+    selected = set(target_names)
     frozen = json.loads((args.out / "paired/frozen_comparators.json").read_text())["comparators"]
     for groups in frozen.values():
         selected.update(x["selected"] for x in groups.values() if x["selected"] is not None)

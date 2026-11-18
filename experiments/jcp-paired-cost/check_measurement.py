@@ -19,6 +19,9 @@ def main():
     assert row["status"] == "ok" and row["evolved_max_error"] == 0
     bad = P.Subject("bad", "pod", 2, lambda u, nu: np.full_like(truth, np.nan))
     assert P.measure_one(bad, case)["status"] == "failed"
+    enormous = P.Subject("finite_field_overflow", "classical", 2,
+        lambda u, nu: np.full_like(truth, 1e200))
+    assert P.measure_one(enormous, case)["status"] == "failed"
     f32 = P.Subject("f32", "pod", 2, lambda u, nu: truth.astype(np.float32))
     assert P.measure_one(f32, case)["status"] == "failed"
     finite_failure = P.Subject("finite_failure", "pod", 2,
@@ -62,6 +65,7 @@ def main():
         assert not case.initial.flags.writeable
     print(json.dumps({"synthetic_fixture": True, "all_passed": True,
                       "checks": ["same-call accuracy", "f64/nonfinite failure preservation",
+                                 "finite-field metric overflow fails closed",
                                  "dual median and worst gate", "same/any mesh distinction",
                                  "selection freeze", "all repetition retention",
                                  "native-input immutable reset", "cold missing explicit"]}))

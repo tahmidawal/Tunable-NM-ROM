@@ -15,12 +15,14 @@ def main():
     fp=Path(a.fits);fr=json.loads((fp/'result.json').read_text());assert fr['model_sha256']==mr['model_sha256']
     assert digest(fp/'refined_fits.pkl')==fr['fit_sha256'];oldfits=read_checkpoint(fp/'refined_fits.pkl')
     cp=Path(a.cache);cr=json.loads((cp/'result.json').read_text());assert digest(cp/'result.json')==model['cache_sha256']
+    basis_sha=next(line.split('  ',1)[0] for line in (cp.parent/'OUTPUTS.sha256').read_text().splitlines() if line.endswith('  output/global_basis.npz'))
+    assert digest(cp/'global_basis.npz')==basis_sha
     basis=jnp.asarray(np.load(cp/'global_basis.npz')['coefficients']);assert len(basis)==128
     refs={r['case']:(p,r) for p,r in cohort(a.dev)};x,w=data.grid(128,True);metric=TM.make_geometry(6);rule=TM.rule()
     params=model['params'];scale=jnp.asarray(model['scale']);k=model['latent'];P=a.nodes;assert P==64 and k==16
     projector=jax.jit(jax.vmap(H.make_project(250,linear_solver='cholesky'),in_axes=(None,0,0,0,0,None,None,None,None,None)))
     result=dict(meta=meta,status='frozen_child_growth_running',nodes=P,latent=k,active_variables=128+P*k,
-        head_weights_changed=False,model_sha256=mr['model_sha256'],old_fits_sha256=fr['fit_sha256'],
+        head_weights_changed=False,model_sha256=mr['model_sha256'],old_fits_sha256=fr['fit_sha256'],basis_sha256=basis_sha,
         allocation='initial-callable swept policy; larger retained tree; no evolved reference input',
         reference_assisted_projection=True,PDE_solve=False,final_test_opened=False,cases=[])
     saved=[];allerrors=[];maxtransfer=0.

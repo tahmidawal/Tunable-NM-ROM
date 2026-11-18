@@ -8,7 +8,8 @@ def main():
     ap=argparse.ArgumentParser();ap.add_argument('--out',required=True);ap.add_argument('--train',required=True)
     ap.add_argument('--dev',required=True);ap.add_argument('--global-model',required=True)
     ap.add_argument('--updates',type=int,default=20000);ap.add_argument('--seed',type=int,default=2026111851)
-    ap.add_argument('--width',type=int,default=64);a=ap.parse_args()
+    ap.add_argument('--width',type=int,default=64)
+    ap.add_argument('--refit-each-update',action='store_true');a=ap.parse_args()
     out=Path(a.out);out.mkdir(parents=True,exist_ok=True)
     T=load_reference(a.train,'train');D=load_reference(a.dev,'dev');globaldir=Path(a.global_model)
     assert str(globaldir).startswith(os.environ['STUDY_NAMESPACE']+'/')
@@ -16,7 +17,7 @@ def main():
     zt=jnp.asarray(rootfit['train_codes']);zd=jnp.asarray(rootfit['dev_codes']);parent=model['heads']['16']
     x,w,Y=T['xy'],T['w'],T['Y'];G=LS.global_matrix(model,x);rootpred=dec.head(parent,zt)@G.T
     key=jax.random.PRNGKey(a.seed);pl=dec.init_local(key,a.width);rng=np.random.default_rng(a.seed)
-    result=dict(meta=preflight(),seed=a.seed,width=a.width,global_model_sha256=digest(globaldir/'global_model.pkl'),
+    result=dict(meta=preflight(),seed=a.seed,width=a.width,refit_each_update=a.refit_each_update,global_model_sha256=digest(globaldir/'global_model.pkl'),
                 status='local_residual_initialization',checkpoints=[],recipes=['shared_local_direct'],
                 training_mixture='equal prefixes4/8/16; equal 8 configurations, half shallow; equal snapshots/trajectories')
     # A short smooth polynomial teacher warm start, followed by actual missing-field loss.
@@ -47,9 +48,19 @@ def main():
     result['status']='assembled_training';save(out/'result.json',result)
     opt=optax.adam(optax.cosine_decay_schedule(1e-3,a.updates-500,alpha=.01));os_=opt.init(params)
     def make_step(r):
+        P=cells[r].shape[2]
+        project=fit.make_project(lambda z:dec.coefficients(parent,None,z,P,r),25)
+        batchproject=jax.vmap(project,in_axes=(0,0,None,0))
         @jax.jit
         def step(params,os_,idx,pts,q,Y,norm,x,w,G,treecells,treemasks):
             pc=treecells[idx//11,q];mask=treemasks[idx//11,q]
+            if a.refit_each_update:
+                BB=jax.vmap(lambda cs:jax.vmap(lambda c:dec.local_features(params['local'],x[pts],c)[:,:r])(cs))(pc)
+                BB=(BB*mask[:,:,None,None]).transpose(0,2,1,3).reshape(len(idx),len(pts),P*r)
+                GG=jnp.concatenate([jnp.broadcast_to(G[pts],(len(idx),len(pts),128)),BB],axis=-1)
+                zz,_,_,_=batchproject(GG,Y[idx[:,None],pts[None]],w[pts],params[f'codes{r}'][q,idx])
+                params=dict(params)
+                params[f'codes{r}']=params[f'codes{r}'].at[q,idx].set(jax.lax.stop_gradient(zz))
             def loss(p):
                 code=p[f'codes{r}'][q,idx];root=dec.head(parent,code[:,:16])@G[pts].T
                 def single(cells):

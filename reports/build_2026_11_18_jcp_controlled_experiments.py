@@ -107,6 +107,94 @@ def weak_rows(data):
     return result
 
 
+def head_probes(entry, data, manifest):
+    """Freeze and plot the independent one-step, same-previous-state probes."""
+    records = []
+    source_root = (ROOT / entry["source"]).parent
+    for case in data["cases"]:
+        for setting in data["config"]["test_settings"]:
+            name = f"reset_m{setting['rows']}_dt{setting['dt']:g}.json"
+            source = source_root / f"case_{case['index']:03d}" / name
+            aux = {"id": f"{entry['id']}-case{case['index']:03d}-{name[:-5]}",
+                   "kind": "head_probe", "source": str(source.relative_to(ROOT))}
+            probes, provenance = freeze(aux)
+            manifest.append(provenance)
+            for p in probes:
+                row = {"case": case["index"], **setting, "step": p["step"],
+                                "stationary": p["span_result"]["reason"] == "stationarity",
+                                "residual_ratio": p["span_result"]["residual_norm"]/p["head_seed_residual_norm"],
+                                "physical_error_ratio": p["span_physical_error"]/p["head_physical_error"]}
+                geo = p.get("shared_state_geometry")
+                if geo:
+                    row.update(least_visible_outside_head_norm_fraction=geo["least_visible_span_outside_head_fraction"][0],
+                               actual_departure_outside_head_norm_fraction=geo["actual_step_linearized_outside_head_fraction"],
+                               physical_head_rank=geo["head_rank"], physical_span_rank=geo["span_rank"])
+                records.append(row)
+    fig, ax = plt.subplots(figsize=(7.6, 4.5))
+    colors = ["#446880", "#777385", "#157c75"]
+    for setting, color in zip(data["config"]["test_settings"], colors):
+        ss = [p for p in records if p["rows"] == setting["rows"] and p["dt"] == setting["dt"]]
+        valid = [p for p in ss if p["stationary"]]
+        invalid = [p for p in ss if not p["stationary"]]
+        ax.scatter([p["residual_ratio"] for p in valid], [p["physical_error_ratio"] for p in valid],
+                   s=24, alpha=.7, color=color, label=f"M={setting['rows']}, Δt={setting['dt']:g}")
+        if invalid:
+            ax.scatter([p["residual_ratio"] for p in invalid], [p["physical_error_ratio"] for p in invalid],
+                       s=35, marker="x", color=color, label="Unconverged probe")
+    ax.axvline(1, color=".5", ls="--", lw=1)
+    ax.axhline(1, color=".5", ls="--", lw=1)
+    ax.set(xlabel="Span / head minimized weak-residual norm",
+           ylabel="Span / head physical error", xlim=(0, 1.08), ylim=(0, None))
+    ax.grid(alpha=.15)
+    ax.legend(fontsize=8, loc="upper right")
+    status = "numerical gates passed" if data["qualification"].get("passed") else "PROVISIONAL"
+    ax.set_title(f"Same previous field: lower residual can give greater physical error\n{entry['id']} • {status}", fontsize=11)
+    fig.text(.5, .015, "Each dot is one restarted time-step solve; steps within a case are correlated.\nBelow 1 horizontally: lower residual. Above 1 vertically: greater physical error.", ha="center", fontsize=9)
+    fig.tight_layout(rect=[0, .09, 1, 1])
+    for suffix in ("png", "svg"):
+        fig.savefig(ASSETS / f"{entry['id']}-residual-versus-error.{suffix}", dpi=170)
+    plt.close(fig)
+    return records, ASSETS / f"{entry['id']}-residual-versus-error.png"
+
+
+def weak_plot(entry, data):
+    case_rows = {c: sorted((v for v in weak_rows(data) if v["case"] == c), key=lambda v: v["M"])
+                 for c in data["cases"]}
+    fig, axes = plt.subplots(1, 3, figsize=(12.5, 3.8))
+    matrices = [[], [], []]
+    for case, rows in case_rows.items():
+        ms = [v["M"] for v in rows]
+        errors = [v["max_error_percent"] for v in rows]
+        independent = [v["independent_shell_residual"]/rows[0]["independent_shell_residual"] for v in rows]
+        fixed = data["cases"][case]["fixed_state_spectra"][-1]
+        visibility = [fixed["spectra"][str(m)]["physical_min"] for m in ms]
+        for ax, values, array in zip(axes, (errors, independent, visibility), matrices):
+            array.append(values)
+            ax.plot(ms, values, color=".7", lw=.8, alpha=.75)
+    for ax, values in zip(axes, matrices):
+        values = np.asarray(values)
+        ax.plot(ms, np.median(values, axis=0), color="#157c75", marker="o", label="Case median")
+        ax.fill_between(ms, values.min(0), values.max(0), color="#157c75", alpha=.1, label="Case range")
+        ax.set_xscale("log", base=2)
+        ax.set_xticks(ms, labels=[str(m) for m in ms])
+        ax.set_xlabel("Scalar weak-test rows M")
+        ax.grid(alpha=.18)
+    axes[0].set(title="Physical prediction", ylabel="Maximum saved-time error (% initial norm)")
+    axes[1].set(title="Unminimized equations", ylabel="Independent residual / smallest-M residual")
+    axes[2].set(title="Visibility at a common projected state", ylabel="Smallest mass-normalized singular value")
+    axes[0].set_ylim(bottom=0)
+    axes[0].legend(fontsize=8)
+    qualified = all(v["numerically_eligible"] for v in weak_rows(data))
+    status = "all numerical gates passed" if qualified else "PROVISIONAL: some numerical gates failed"
+    fig.suptitle(f"Measured Burgers weak-test enrichment • {len(case_rows)} cases • {status}", fontsize=11)
+    fig.text(.5, .015, f"{entry['id']}: same-grid/same-step discrete reference. Error includes initial time. Shading is case range.\nSingular-value monotonicity for nested unchanged rows is algebraic; physical improvement must be measured separately.", ha="center", fontsize=9)
+    fig.tight_layout(rect=[0, .11, 1, .94])
+    for suffix in ("png", "svg"):
+        fig.savefig(ASSETS / f"{entry['id']}-test-enrichment.{suffix}", dpi=170)
+    plt.close(fig)
+    return ASSETS / f"{entry['id']}-test-enrichment.png"
+
+
 def main():
     entries = json.loads((ASSETS / "sources.json").read_text())
     loaded = []
@@ -140,6 +228,18 @@ def main():
         chunks += ["", f"![Measured matched head/span trajectories]({plot})", "",
                    ("The admitted comparison isolates the head constraint under the registered numerical settings." if d["qualification"].get("passed") else "The comparison is designed to isolate the head constraint, but the failed numerical gates currently prevent admitting that conclusion."),
                    "Its scope excludes a universal stability guarantee, fresh-test generalization, a global manifold distance, and a complete-query speedup.", ""]
+        probes, probe_plot = head_probes(e, d, manifest)
+        values[e["id"]+"-probes"] = probes
+        good = [p for p in probes if p["stationary"]]
+        paradox = sum(p["residual_ratio"] <= 1 and p["physical_error_ratio"] > 1 for p in good)
+        chunks += [f"In the same-previous-state control, **{paradox} of {len(good)} stationary probes** reduce the minimized weak residual while increasing physical error; {len(probes)-len(good)} additional probes do not meet stationarity. Each span solve starts from the head's next coefficients and uses the identical previous field and objective. These are correlated step diagnostics across {len(d['cases'])} cases, not independent statistical samples.", "",
+                   f"![Same-previous-state residual and physical-error comparison]({probe_plot})", ""]
+        geometric = [v for v in probes if "least_visible_outside_head_norm_fraction" in v]
+        if geometric:
+            outside = np.median([v["least_visible_outside_head_norm_fraction"] for v in geometric])
+            departure = np.median([v["actual_departure_outside_head_norm_fraction"] for v in geometric])
+            ranks = sorted(set((v["physical_head_rank"], v["physical_span_rank"]) for v in geometric))
+            chunks += [f"At the same reached head states, the median physical-norm fraction of the least visible span direction outside the head-plus-frame tangent is **{outside:.6f}**. The corresponding median fraction of the actual span departure, evaluated with the local linearized field map, is **{departure:.6f}**. Retained physical (head, span) ranks are {ranks}. These are norm fractions of sampled local directions, not fractions of cases or directions, energy fractions, global manifold distances, or uniform stability constants. The run's qualification status above applies to this diagnostic too.", ""]
     weaks = [(e, d, p) for e, d, p in loaded if e["kind"] == "weak"]
     if weaks:
         chunks += ["### Weak-test visibility", "",
@@ -151,6 +251,9 @@ def main():
             values[e["id"]] = rows
             for v in rows:
                 chunks.append(f"| [{e['id']}]({p['frozen']}) | {v['case']} | {v['M']} | {v['max_error_percent']:.6f} | {'Pass' if v['numerically_eligible'] else 'Provisional: failed'} | {v['independent_shell_residual']:.6g} |")
+        e, d, p = weaks[-1]
+        plot = weak_plot(e, d)
+        chunks += ["", f"![Measured weak-test enrichment]({plot})", ""]
         chunks += ["", "Adding unchanged rows cannot decrease the smallest singular value at an identical state. That algebraic property alone does not demonstrate improved physical prediction.", ""]
     chunks += ["### Reproducibility", "",
                f"The [builder]({Path(__file__).resolve()}) reads the [registered sources]({ASSETS/'sources.json'}), freezes the JSON evidence, and generates every numerical table and plot above. [Source hashes]({ASSETS/'source-manifest.json'}) and [derived values]({ASSETS/'measured-values.json'}) are saved separately. Full histories, configurations, numerical arrays, hardware logs and checksum manifests remain in the linked experiment lanes. No synthetic values enter these figures.", ""]

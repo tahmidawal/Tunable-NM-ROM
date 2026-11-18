@@ -67,19 +67,26 @@ These are new measured development runs. A numerical failure remains visible eve
 |---|---:|---|---|
 | [head-p01](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p01.json) / 7354236 | 2 | Provisional: failed | all_stationary, ic_fit_passed, reference_passed |
 | [head-p02](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p02.json) / 7354339 | 2 | Pass | None |
+| [head-p03](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03.json) / 7354386 | 16 | Provisional: failed | ic_fit_passed |
 
-**Numerically qualified development comparison — head-p02.** Errors below are maxima over each evolved trajectory, normalized by its original physical initial field. Both primary arms have identical reconstructed initial states. Median and worst are across the same cases.
+**Provisional comparison; numerical qualification failed — head-p03.** Errors below are maxima over each evolved trajectory, normalized by its original physical initial field. Both primary arms have identical reconstructed initial states. Median and worst are across the same cases.
 
 | Scalar weak rows M | Time step | Head median / worst error (%) | Span median / worst error (%) | Cases with lower head error |
 |---:|---:|---:|---:|---:|
-| 292 | 0.02 | 0.100137 / 0.116196 | 0.904549 / 1.008631 | 2 / 2 |
-| 584 | 0.02 | 0.112733 / 0.135521 | 0.766687 / 1.063164 | 2 / 2 |
-| 584 | 0.01 | 0.088656 / 0.093940 | 0.611201 / 0.820088 | 2 / 2 |
+| 292 | 0.02 | 0.113993 / 0.195600 | 0.794107 / 1.294029 | 16 / 16 |
+| 584 | 0.02 | 0.124681 / 0.200474 | 0.649119 / 1.340350 | 16 / 16 |
+| 584 | 0.01 | 0.096675 / 0.185633 | 0.669708 / 1.270691 | 16 / 16 |
 
-![Measured matched head/span trajectories](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/head-p02-trajectories.png)
+![Measured matched head/span trajectories](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/head-p03-trajectories.png)
 
-The admitted comparison isolates the head constraint under the registered numerical settings.
+The comparison is designed to isolate the head constraint, but the failed numerical gates currently prevent admitting that conclusion.
 Its scope excludes a universal stability guarantee, fresh-test generalization, a global manifold distance, and a complete-query speedup.
+
+In the same-previous-state control, **640 of 640 stationary probes** reduce the minimized weak residual while increasing physical error; 0 additional probes do not meet stationarity. Each span solve starts from the head's next coefficients and uses the identical previous field and objective. These are correlated step diagnostics across 16 cases, not independent statistical samples.
+
+![Same-previous-state residual and physical-error comparison](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/head-p03-residual-versus-error.png)
+
+At the same reached head states, the median physical-norm fraction of the least visible span direction outside the head-plus-frame tangent is **0.999718**. The corresponding median fraction of the actual span departure, evaluated with the local linearized field map, is **0.995103**. Retained physical (head, span) ranks are [(11, 67)]. These are norm fractions of sampled local directions, not fractions of cases or directions, energy fractions, global manifold distances, or uniform stability constants. The run's qualification status above applies to this diagnostic too.
 
 ### Weak-test visibility
 
@@ -95,6 +102,17 @@ Every panel uses the same-grid, same-time-step discrete Burgers reference. No co
 | [weak-p02](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p02.json) | 1 | 512 | 0.215723 | Provisional: failed | 0.000116262 |
 | [weak-p02](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p02.json) | 1 | 1024 | 0.215723 | Provisional: failed | 9.31746e-05 |
 | [weak-p02](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p02.json) | 1 | 2048 | 0.215723 | Provisional: failed | 8.1317e-05 |
+| [weak-p03](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p03.json) | 0 | 256 | 1.904368 | Pass | 0.00243535 |
+| [weak-p03](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p03.json) | 0 | 512 | 1.462042 | Pass | 0.00196867 |
+| [weak-p03](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p03.json) | 0 | 1024 | 1.190747 | Pass | 0.00164771 |
+| [weak-p03](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p03.json) | 0 | 2048 | 1.014660 | Pass | 0.00139583 |
+| [weak-p03](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p03.json) | 1 | 256 | 0.215723 | Pass | 0.000162037 |
+| [weak-p03](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p03.json) | 1 | 512 | 0.215723 | Pass | 0.000116262 |
+| [weak-p03](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p03.json) | 1 | 1024 | 0.215723 | Pass | 9.31746e-05 |
+| [weak-p03](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p03.json) | 1 | 2048 | 0.215723 | Pass | 8.1317e-05 |
+
+![Measured weak-test enrichment](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/weak-p03-test-enrichment.png)
+
 
 Adding unchanged rows cannot decrease the smallest singular value at an identical state. That algebraic property alone does not demonstrate improved physical prediction.
 

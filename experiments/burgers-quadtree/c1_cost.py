@@ -34,11 +34,21 @@ for i,ph in enumerate(dev[:32]):
     E.burn(.4);outputs[name],sec=timer(lambda:queries[name](u,ph[4]));times[name][block].append(sec)
     np.savez_compressed(o/f'{name}_case{i}_block{block}_rep{rep}.npz',coefficients=outputs[name][0],final_norm=float(jnp.linalg.norm(outputs[name][1])))
  refjob='reference01' if i<8 else 'c1ref32';fd=np.load(verified(refjob,f'dev{i}_fd512_dt0.000625.npz'))['out'].reshape(6,511,511);bc=jax.vmap(lambda u:P.analysis(u,512))(jnp.asarray(fd[1:]));errors={name:[] for name in queries};extension={name:[] for name in queries}
+ space_coeff=[];time_coeff=[]
+ for L in (128,256):
+  fda=np.load(verified(refjob,f'dev{i}_fd{L}_dt0.000625.npz'))['out'].reshape(6,L-1,L-1);space_coeff.append(jax.vmap(lambda u:P.analysis(u,L))(jnp.asarray(fda[1:])))
+ for h in (.0025,.00125):
+  fda=np.load(verified(refjob,f'dev{i}_fd512_dt{h}.npz'))['out'].reshape(6,511,511);time_coeff.append(jax.vmap(lambda u:P.analysis(u,512))(jnp.asarray(fda[1:])))
+ psref=np.load(verified('c1data',f'check{128+i}.npz'))['coefficients'];reference_checks=[]
  for t in range(5):
   ref=PJ.synth_mesh(bc[t],4095)
+  sp=[PJ.synth_mesh(c[t],4095) for c in space_coeff];tm=[PJ.synth_mesh(c[t],4095) for c in time_coeff];ds=[float(jnp.linalg.norm(sp[0]-sp[1]))/norm,float(jnp.linalg.norm(sp[1]-ref))/norm];dts=[float(jnp.linalg.norm(tm[0]-tm[1]))/norm,float(jnp.linalg.norm(tm[1]-ref))/norm]
+  mid_delta=float(jnp.linalg.norm(PJ.synth_mesh(space_coeff[1][t],2047)-PJ.synth_mesh(bc[t],2047)))/float(jnp.linalg.norm(jnp.asarray(E.initial(2047,ph))))
+  cross=float(jnp.linalg.norm(PJ.synth_mesh(jnp.asarray(psref[2*(t+1)]),4095)-ref))/norm
+  reference_checks.append(dict(space_deltas=ds,time_deltas=dts,cross_difference=cross,score_grid_change=abs(mid_delta-ds[-1])))
   for name,(coeff,field) in outputs.items():
    c=coeff[2*(t+1)] if name=='local_hybrid' else coeff[t+1];dense=extend(c);exact=PJ.synth_mesh(c,4095)
    errors[name].append(float(jnp.linalg.norm(dense-ref))/norm);extension[name].append(float(jnp.linalg.norm(dense-exact))/norm)
  np.savez_compressed(o/f'final4096_case{i}.npz',reference=ref,local_hybrid=outputs['local_hybrid'][1],spectral=outputs['spectral64_dt005'][1])
- rows.append(dict(case=i,cold_query_seconds=cold,times=times,errors=errors,extension_errors=extension,output_shape=[4096,4096]));save(o/'result.json',dict(meta=meta(),setup_seconds=setup_seconds,rows=rows));print(i,{k:max(v) for k,v in errors.items()},{k:float(np.median(v)) for k,v in times.items()},flush=True)
+ rows.append(dict(case=i,cold_query_seconds=cold,times=times,errors=errors,extension_errors=extension,reference_checks=reference_checks,output_shape=[4096,4096]));save(o/'result.json',dict(meta=meta(),setup_seconds=setup_seconds,rows=rows));print(i,{k:max(v) for k,v in errors.items()},{k:float(np.median(v)) for k,v in times.items()},flush=True)
 save(o/'result.json',dict(meta=meta(),setup_seconds=setup_seconds,rows=rows,complete=True,contract='resident common4096 input to resident4096 final output; cache setup separate, initialization selection restriction PDE and reconstruction all timed; development only'))

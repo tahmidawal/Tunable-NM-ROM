@@ -22,3 +22,7 @@ The assigned owner completed a scoped-negative train32/dev8 pilot. Ten owned job
 Results: `/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-17-burgers-quadtree-pilot.md`. Code, registered amendments, trained checkpoints, numerical audits and raw-retention manifests live in the implementation lane above; code-only GitHub backup is `codeonly/exp/2026-11-17-burgers-quadtree`. Completed raw job directories are moved, after local and remote checksum verification, into the owned namespace's `archive/` directory. Existing unrelated archives are untouched.
 
 The user explicitly expanded architectural freedom during execution; this is recorded in AMENDMENTS.md and the canonical lab log. The tested neural recipes did not pass representation/physical accuracy gates. Adaptive selection for these checkpoints is stopped under the two-repair rule; broader architectures and family B are untested, not disproved.
+
+## Active continuation — 2026-11-18
+
+The same authorized owner resumes the full campaign under CONTINUATION-20261118.md in the existing implementation lane. A0's checkpoint closure does not close the overall objective. New jobs use unique names in the same owned namespace; old archive contents remain untouched. No merge or test opening. C1 reserves at most eight additional GPU-hours with two concurrent jobs maximum.

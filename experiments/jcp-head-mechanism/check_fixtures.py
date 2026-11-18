@@ -26,6 +26,8 @@ tie[1]['cost']=1.+4096*np.finfo(float).eps
 assert M.select_fit_candidate(tie)[0]==0
 tie[0]['reason']='stationarity';tie[1]['cost']=1.+np.finfo(float).eps
 assert M.select_fit_candidate(tie)[0]==0
+archived=json.loads((M.HERE/'reproducibility/p03_ic_selection_fixture.json').read_text())
+assert M.select_fit_candidate(archived['candidates'])[0]==archived['expected_selected_index']
 ck=np.load(M.HERE/'assets/head_k8_n64.npz')
 p={key:jnp.asarray(ck['p_'+key]) for key in ('W1','b1','W2','b2','W3','b3','Ws')}
 z=jnp.asarray(ck['Z'][0])

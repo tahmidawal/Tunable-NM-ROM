@@ -353,6 +353,22 @@
     "driver": "crosscheck.py",
     "args": "--reference /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1refextend/output/dev",
     "gpu": "a100",
-    "submitted_utc": "2026-11-18T22:05:17.910848+00:00"
+    "submitted_utc": "2026-11-18T22:05:17.910848+00:00",
+    "state": "COMPLETED",
+    "elapsed_seconds": 28,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b1expanded",
+    "id": 7354816,
+    "reserved_minutes": 45,
+    "commit": "d82e6bb1737736f533215c49c919a5cc51de0908",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1expanded",
+    "driver": "build_extended_span.py",
+    "args": "--train /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/refstrain01/output,/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1refextend/output/train --dev /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/refsdev01/output,/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1refextend/output/dev --crosscheck /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1crossref/output",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-18T22:13:03.644798+00:00",
+    "staging_recovery": "Staged directory had no Slurm job in queue or accounting; dependency already COMPLETED; removed expired scheduler dependency before first verified submission."
   }
 ]

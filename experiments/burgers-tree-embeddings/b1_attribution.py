@@ -60,7 +60,7 @@ def main():
     affine=jnp.concatenate([jnp.ones((len(z),1)),z],axis=1);beta=jnp.linalg.lstsq(affine,c,rcond=1e-12)[0]
     result['old_parent_nonlinearity']=dict(latent_std=np.asarray(jnp.std(z,axis=0)),latent_abs_max=float(jnp.max(jnp.abs(z))),
         relative_departure_from_best_affine=float(jnp.linalg.norm(c-affine@beta)/jnp.linalg.norm(c)),
-        old_dev_worst=read_checkpoint(Path(a.global_model)/'global_head16_selected.pkl')['selected_update'])
+        old_parent_selected_update=read_checkpoint(Path(a.global_model)/'global_head16_selected.pkl')['selected_update'])
     DD=finer_dataset(a.dev,load_reference(a.dev,'dev'),128);x,w,Y=DD['xy'],DD['w'],DD['Y']
     model=read_checkpoint(Path(a.local_model)/'local_model.pkl');pl=model['local'];G0=LS.global_matrix(old,x)
     fits=read_checkpoint(Path(a.audit)/'direct_fine_fits.pkl');pres=next(r for r in fits if r['allocation']=='prescribed')

@@ -113,6 +113,21 @@
     "driver": "train_local.py",
     "args": "--refit-each-update --train /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/refstrain01/output --dev /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/refsdev01/output --global-model /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/global01/output",
     "gpu": "a100",
-    "submitted_utc": "2026-11-18T20:32:09.187955+00:00"
+    "submitted_utc": "2026-11-18T20:32:09.187955+00:00",
+    "state": "RUNNING",
+    "elapsed_seconds": 88,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "audit01",
+    "id": 7353022,
+    "reserved_minutes": 60,
+    "commit": "861ae653ab7b7c94c6f2e2b256c3f3031cd54ca3",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/audit01",
+    "driver": "evaluate.py",
+    "args": "--dev /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/refsdev01/output --global-model /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/global01/output --tree-model /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/children01/output",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-18T20:33:45.494953+00:00"
   }
 ]

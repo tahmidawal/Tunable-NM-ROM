@@ -36,6 +36,7 @@ Training uses the registered prefix expansion to 128 trajectories. Development h
 | Global nonlinear 64 | 64 | 7.1775% | 10.3528% | 16.7303% | 16.7303% |
 | Global nonlinear 128 | 128 | 2.9436% | 6.2896% | 7.8825% | 7.8825% |
 | Child nonlinear 8 | 544 | 0.8083% | 0.5119% | 1.5059% | 1.5059% |
+| Child nonlinear 16 | 960 | 0.4634% | 0.2687% | 0.6520% | 0.6520% |
 
 The direct local entries use resolved physical Gram integration; actual-grid audits are separate. Spectral-feature nonlinear controls are architecture-inspired NM-ROMs, not faithful native coordinate-MLP Tunable reproductions.
 
@@ -113,7 +114,7 @@ Original recipes, unsuccessful repairs and the original decision remain in [the 
 
 ## Accounting and provenance
 
-Generated 2026-11-18T23:27:24.582170+00:00. Terminal allocations recorded in the current ledger total 8559 GPU-seconds (2.377500 GPU-hours); nonterminal or not-yet-reconciled names: b1child16, b1weakL4096. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
+Generated 2026-11-18T23:30:18.024010+00:00. Terminal allocations recorded in the current ledger total 11748 GPU-seconds (3.263333 GPU-hours); nonterminal or not-yet-reconciled names: b1weakL4096. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
 
 ## Glossary
 

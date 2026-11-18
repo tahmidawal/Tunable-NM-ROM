@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
 
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('run',type=Path);a=ap.parse_args();s=json.loads((a.run/'summary.json').read_text())
@@ -31,7 +32,7 @@ def main():
         axes[0].scatter(selected[:,3],selected[:,4],s=13,alpha=.45,color=color,label=f"{setting['rows']} rows, dt={setting['dt']:g}",edgecolors='none')
     axes[0].axvline(1,color='#555555',ls='--',lw=1);axes[0].axhline(1,color='#555555',ls='--',lw=1)
     axes[0].set(xlabel='Span / head weak residual norm',ylabel='Span / head physical error',title='Same previous state: what lowering the objective does')
-    axes[0].set_xscale('log');axes[0].set_yscale('log');axes[0].legend(fontsize=8);axes[0].grid(alpha=.15)
+    axes[0].set_xscale('log');axes[0].set_yscale('log');axes[0].yaxis.set_major_locator(mticker.LogLocator(base=2));axes[0].yaxis.set_major_formatter(mticker.StrMethodFormatter('{x:g}'));axes[0].legend(fontsize=8);axes[0].grid(alpha=.15)
     if len(gdata):
         rng=np.random.default_rng(109)
         for i,label in enumerate(['Least-visible span direction','Actual span departure']):

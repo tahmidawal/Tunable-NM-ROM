@@ -10,7 +10,7 @@ ROOT="$(git -c gc.auto=0 rev-parse --show-toplevel)"; cd "$ROOT"
 [[ -z "$(ssh tufts-login "squeue -j $ID -h")" ]] || { echo 'Job still active';exit 2; }
 mkdir -p "$LANE/runs/$JOB"
 rsync -az --exclude='cache/' --exclude='tmp/' --exclude='__pycache__/' "tufts-login:$DEST/" "$LANE/runs/$JOB/"
-(cd "$LANE/runs/$JOB" && sha256sum -c INPUTS.sha256 && sha256sum -c OUTPUTS.sha256)
+(cd "$LANE/runs/$JOB" && sha256sum --quiet -c INPUTS.sha256 && sha256sum --quiet -c OUTPUTS.sha256)
 ssh tufts-login "sacct -j $ID --units=G --format=JobID,JobName,State,ElapsedRaw,AllocTRES,NodeList,ExitCode -P" > "$LANE/runs/$JOB/sacct.txt"
 # The caller inspects logs before passing --remove-verified-duplicate.
 if [[ "${3:-}" == --remove-verified-duplicate ]]; then

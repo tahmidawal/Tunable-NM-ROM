@@ -80,7 +80,7 @@
   "primary_criteria": {
     "head_benefit": "paired common-IC head max-over-time physical error lower than span under numerically qualified common settings; report all cases, median, worst, outliers; do not require favorable outcome for acceptance",
     "mechanism": "residual reduction and physical drift tracked separately; span distance to head image is multistart best-found in reached frame, not certified/global",
-    "invariance": "compare qualification and effect under rows292->584 and dt0.02->0.01"
+    "invariance": "Compare matched head/span benefit as solved rows1168\u21922336 at fixed dt0.01, with common independent observer2336:4672; retain disappearance or reversal."
   },
   "stopping_gates": [
     "any backend/precision/source/checksum failure invalidates run",
@@ -92,7 +92,7 @@
   "diagnostics": [
     "per-time errors,energy,divergence,physical centroid,shape-aligned error",
     "coefficients,head codes,frame increments and accumulated centers",
-    "minimized and independent1168-row residuals",
+    "minimized and independent4672-row residuals and fixed2336:4672 shell",
     "solver accepted/rejected histories,stationarity and termination",
     "physical trial tangent normalized spectra including3frame variables",
     "multistart fixed-frame distance from span to head",

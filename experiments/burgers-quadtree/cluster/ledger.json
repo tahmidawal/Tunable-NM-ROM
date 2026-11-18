@@ -291,8 +291,8 @@
     "commit": "eb5b99189d1ca1df6263fbac5d92227e74c901ae",
     "remote": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/c1cost",
     "driver": "c1_cost",
-    "state": "RUNNING",
-    "elapsed_seconds": 849,
+    "state": "COMPLETED",
+    "elapsed_seconds": 1393,
     "allocated_cpus": 8
   },
   {
@@ -312,6 +312,17 @@
     "reserved_minutes": 120,
     "commit": "b9a44d5894ee382888a38a69be0fdef007cf88f0",
     "remote": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/c1fast",
-    "driver": "c1_fast"
+    "driver": "c1_fast",
+    "state": "RUNNING",
+    "elapsed_seconds": 580,
+    "allocated_cpus": 8
+  },
+  {
+    "name": "c1cubature",
+    "id": 7345474,
+    "reserved_minutes": 120,
+    "commit": "2440f4f3a4c030716dc6b269876892c7d1ee288f",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/c1cubature",
+    "driver": "c1_cubature"
   }
 ]

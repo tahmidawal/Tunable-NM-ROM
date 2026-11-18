@@ -258,8 +258,8 @@
     "commit": "41ad8ba73409589e1cd597c45b5f75f11ac5bd34",
     "remote": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/c1bbank",
     "driver": "c1_b_bank",
-    "state": "RUNNING",
-    "elapsed_seconds": 51,
+    "state": "COMPLETED",
+    "elapsed_seconds": 117,
     "allocated_cpus": 8
   },
   {
@@ -268,6 +268,17 @@
     "reserved_minutes": 120,
     "commit": "3034a099a68ae78af78c5af40caee33023614e90",
     "remote": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/c1resolved",
-    "driver": "c1_resolved"
+    "driver": "c1_resolved",
+    "state": "RUNNING",
+    "elapsed_seconds": 103,
+    "allocated_cpus": 8
+  },
+  {
+    "name": "c1manifoldpde",
+    "id": 7344337,
+    "reserved_minutes": 120,
+    "commit": "138ed48f34f24cbdd32cfc3a8a3bb4685b5957d8",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/c1manifoldpde",
+    "driver": "c1_manifold_pde"
   }
 ]

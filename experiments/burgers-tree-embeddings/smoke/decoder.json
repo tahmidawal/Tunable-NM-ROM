@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "job": null,
+    "commit": null,
+    "devices": [
+      "cuda:0"
+    ],
+    "jax": "0.10.1",
+    "x64": true,
+    "precision": "highest"
+  },
+  "zero_child_field": 0.0,
+  "child_zero_singular_values": [
+    0.02364670475012161,
+    0.006881882932444901,
+    0.0037547506793333125,
+    0.00013217317208648755
+  ],
+  "derivatives_ad": [
+    0.10764536726887912,
+    0.1958126290950884
+  ],
+  "derivatives_fd": [
+    0.10764536726402818,
+    0.19581262909913744
+  ],
+  "boundary_pass": true,
+  "direct_fit_qr_pass": true,
+  "status": "passed_initialization_fixture; trained checkpoints require repeated audits"
+}

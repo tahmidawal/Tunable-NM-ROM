@@ -10,8 +10,19 @@
     "gpu": "a100",
     "submitted_utc": "2026-11-18T20:07:21.220657+00:00",
     "state": "RUNNING",
-    "elapsed_seconds": 33,
+    "elapsed_seconds": 56,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "refstrain01",
+    "id": 7351616,
+    "reserved_minutes": 180,
+    "commit": "4543993a9602dd0bb9a80d1f216e39d5e2a01952",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/refstrain01",
+    "driver": "references.py",
+    "args": "--group train",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-18T20:08:24.428118+00:00"
   }
 ]

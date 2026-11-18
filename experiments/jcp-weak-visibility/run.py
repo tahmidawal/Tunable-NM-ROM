@@ -114,8 +114,8 @@ def main():
     assert os.environ['JAX_DEFAULT_MATMUL_PRECISION'] == 'highest'
     print('jax_backend=gpu x64=True precision=highest', flush=True)
     assert cfg['cohort'] == 'dev6' and cfg['seed_first_draw'] == 7090702 and cfg['seed_first_count'] == 4
-    if cfg.get('cohort_phase', 'initial-dev2') == 'remaining-dev6':
-        assert cfg['case_ids'] == [2, 3, 4, 5]
+    if cfg.get('cohort_phase', 'initial-dev2') in ('remaining-dev6', 'all-dev6-width'):
+        assert cfg['case_ids'] == ([2, 3, 4, 5] if cfg['cohort_phase'] == 'remaining-dev6' else list(range(6)))
         assert cfg['seed_second_draw'] == 911702 and cfg['seed_second_count'] == 2
     else:
         assert cfg['case_ids'] == [0, 1], 'Initial protocol opens exactly dev6 indices 0 and 1.'
@@ -123,11 +123,19 @@ def main():
     save_json(out/'cohort-drawing.json', cohort_record)
     assert cohort_record['guard_passed'], 'Canonical cohort identity failed; retained cohort-drawing.json records every descriptor.'
     n, width = cfg['mesh_intervals'], cfg['bank_width']
+    if cfg.get('width_followup'):
+        admission_path = HERE/'inputs/width-admission.json'
+        admission = json.loads(admission_path.read_text())
+        assert admission['W0_raw_audit_passed'] and admission['R128_reproduction_passed']
+        assert admission['admitted_widths']
+        assert width == 128 or width in admission['admitted_widths']
     dt, steps = cfg['dt'], int(round(cfg['horizon']/cfg['dt']))
     assert abs(steps*dt-cfg['horizon']) < 1e-12
     ms = cfg['solve_rows']
     max_m = max(ms)
-    modes, lam = C.mode_order(n, max_m+cfg['observer_rows'])
+    observer_start = int(cfg.get('observer_start', max_m))
+    assert observer_start >= max_m
+    modes, lam = C.mode_order(n, observer_start+cfg['observer_rows'])
     ckpt, rotation = HERE/'inputs/frozen.pkl', HERE/'inputs/rotation_R512.npz'
     checkpoint = pickle.load(open(ckpt, 'rb'))
     params = jax.tree_util.tree_map(jnp.asarray, checkpoint['params'])
@@ -158,6 +166,9 @@ def main():
                        tangent_ranks=ranks, scaled_tangent_rank=int(sk.sum()), grid_nodes=(n-1)**2,
                        actual_unknowns=width, free_frame_variables=0, mass_per_node=1/n**2,
                        wall_start=time.time(), buffer_residual_rows=len(modes), no_production_timing_claim=True)
+    environment['observer_start_row_zero_based'] = observer_start
+    if cfg.get('width_followup'):
+        environment['width_admission_sha256'] = sha(admission_path)
     save_json(out/'environment.json', environment)
     solver = C.make_solver(n, dt, steps, cfg['solver_max_iterations'])
     diagnostic = jax.jit(lambda c, old, nu, d: C.value_jac(c, old, nu, d, n, dt))
@@ -217,13 +228,25 @@ def main():
         reference = references[1]
         Ghost = np.asarray(G)
         # Exact mass projection in this fixed linear span; same coefficients initialize all M.
-        project_coeff = jnp.linalg.solve(jnp.asarray(gram), (G.T @ reference.T)/n**2).T
+        if cfg.get('initialization') == 'mass-qr':
+            Qmass, Rmass = jax.block_until_ready(jnp.linalg.qr(G/n, mode='reduced'))
+            rhs = Qmass.T @ (reference.T/n)
+            project_coeff = jax.scipy.linalg.solve_triangular(Rmass, rhs, lower=False).T
+            qr_projection = (Qmass @ rhs).T*n
+            initialization_control = dict(algorithm='mass-qr',
+                qr_orthogonality=float(jnp.linalg.norm(Qmass.T @ Qmass-jnp.eye(width))/jnp.sqrt(float(width))),
+                field_parity=float(jnp.linalg.norm(project_coeff @ G.T-qr_projection, axis=1).max()/norm0))
+            initialization_control['passed'] = initialization_control['qr_orthogonality'] <= 1e-10 and initialization_control['field_parity'] <= 1e-10
+            npz(case_dir/'initialization-qr.npz', Rmass=Rmass)
+        else:
+            project_coeff = jnp.linalg.solve(jnp.asarray(gram), (G.T @ reference.T)/n**2).T
+            initialization_control = dict(algorithm='mass-gram', passed=True)
         projected = project_coeff @ G.T
         c0 = project_coeff[0]
         projection_error = jnp.linalg.norm(projected-reference, axis=1)/norm0
         npz(case_dir/'projection.npz', coeff=project_coeff, error=projection_error)
         case_summary = dict(reference_eligible=bool(ref_eligible), reference_disagreement=reference_delta,
-                            reference_controls=refstats, arms={}, fixed_state_spectra=[])
+                            reference_controls=refstats, initialization_control=initialization_control, arms={}, fixed_state_spectra=[])
         # All test-space sensitivities at identical reference-projected states.
         for ti in (1, 10, 25, 50):
             if ti > steps:
@@ -282,8 +305,8 @@ def main():
             residuals = np.asarray(residuals)
             unscaled = residuals*(1+dt*nu*lam)[None, :]
             npz(case_dir/f'm{m}-residuals.npz', scaled=residuals, unscaled=unscaled)
-            arm['independent_scaled_shell_max'] = np.linalg.norm(residuals[:, max_m:], axis=1).max()
-            arm['independent_unscaled_shell_max'] = np.linalg.norm(unscaled[:, max_m:], axis=1).max()
+            arm['independent_scaled_shell_max'] = np.linalg.norm(residuals[:, observer_start:], axis=1).max()
+            arm['independent_unscaled_shell_max'] = np.linalg.norm(unscaled[:, observer_start:], axis=1).max()
             for ti in (1, 10, 25, 50):
                 if ti > steps:
                     continue
@@ -299,7 +322,7 @@ def main():
                 arm['parity'].append(dict(time_index=ti, **action_check(np.asarray(coeff[ti]), np.asarray(coeff[ti-1]), nu, data, n, dt, transform)))
             parity = all(p['passed'] for p in arm['parity'])
             invariance = all(s['same_rank'] and s['rescaling_invariance_relative'] <= 1e-8 for s in arm['reached_spectra'])
-            arm['numerically_eligible'] = bool(ref_eligible and arm['solver_pair_eligible'] and parity and invariance)
+            arm['numerically_eligible'] = bool(ref_eligible and initialization_control['passed'] and arm['solver_pair_eligible'] and parity and invariance)
             case_summary['arms'][str(m)] = arm
             summary['cases'][str(case_id)] = case_summary
             save_json(out/'summary.json', summary)

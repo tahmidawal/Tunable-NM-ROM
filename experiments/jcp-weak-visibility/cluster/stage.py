@@ -30,6 +30,8 @@ for name in ['core.py','run.py','screen_prefix.py','fixture.py','cohort_guard.py
     shutil.copy2(lane/name, dest)
 for amendment in lane.glob('AMENDMENT-*.md'):
     shutil.copy2(amendment, code/amendment.name)
+if config.get('width_followup'):
+    shutil.copy2(lane/'inputs/width-admission.json', code/'inputs/width-admission.json')
 commit = subprocess.check_output(['git','-c','gc.auto=0','rev-parse','HEAD'], cwd=lane, text=True).strip()
 batch = f'''#!/usr/bin/env bash
 #SBATCH --job-name=ctol_jwv_{attempt}

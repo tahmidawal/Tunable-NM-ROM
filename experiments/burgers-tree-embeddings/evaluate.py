@@ -113,6 +113,17 @@ def main():
                       parameters=D['parameters'][ii],case=label,time=data.TIMES[tt],cells=cs,codes=np.asarray(z))
     result['dense_witness']=dict(case=label,time=data.TIMES[tt],allocation=chosen['allocation'],grids=dense,
          scoring_change=abs(dense['4096']['relative_l2']-dense['2048']['relative_l2']),PDE_solve=False)
+    # Also exercise the requested final-time output shape, keeping its projection
+    # status explicit: no online method was allowed to read this reference.
+    zfinal=jnp.asarray(fcodes[ci]['codes'][ii][-1])
+    bfinal=jnp.asarray(np.load(Path(a.dev)/rr['levels'][-1]['file'])['coefficients'][-1])
+    pred,sec=timer(lambda:dense_field(model,pl,child,zfinal,cs,4096))
+    ref=data.synth_grid(bfinal,jnp.linspace(0.,1.,4096))
+    finalerr=float(jnp.linalg.norm(pred-ref)/jnp.linalg.norm(ref))
+    np.savez_compressed(out/'actual4096-final.npz',prediction=np.asarray(pred),reference=np.asarray(ref),
+                       parameters=D['parameters'][ii],case=label,time=.25,cells=cs,codes=np.asarray(zfinal))
+    result['final_time_output_witness']=dict(case=label,time=.25,shape=[4096,4096],relative_l2=finalerr,
+           field_evaluation_including_compilation_seconds=sec,reference_assisted_projection=True,PDE_solve=False)
     result['status']='complete_representation_audit';save(out/'result.json',result)
     print('representation_gate',result['representation_gate'],'dense',dense['4096']['relative_l2'],flush=True)
 if __name__=='__main__':main()

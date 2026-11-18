@@ -60,7 +60,9 @@ def main():
         saved.append(dict(case=label,cells=cells,transforms=np.asarray(tr),codes=np.asarray(z),coefficients=np.asarray(full)))
         allerrors.append(np.asarray(e));result['cases'].append(dict(case=label,error=np.asarray(e),stationarity=np.asarray(s),
             zero_child_transfer=transfer,old_gram_defect=gramdef,accepted=np.asarray(accepted)))
-        if i==0:result['zero_jacobian']=H.zero_audit(params['head'],scale,g,h,S)
+        zero=H.zero_audit(params['head'],scale,g,h,S)
+        result['cases'][-1]['zero_jacobian']=zero
+        if i==0:result['zero_jacobian']=zero
         save(out/'result.json',result);print('child_growth',label,float(e.max()),float(s.max()),flush=True)
     result['projection']=summary(np.stack(allerrors));result['max_zero_child_transfer']=maxtransfer
     result['fit_sha256']=checkpoint(out/'growth_fits.pkl',saved)
@@ -81,7 +83,8 @@ def main():
             dense.append(ee)
         result['dense2048']=summary(np.asarray(dense));result['max_scoring_change']=float(np.max(np.abs(np.asarray(dense)-np.asarray(allerrors))))
     result['representation_gate']=bool(dense) and max(np.max(dense),result['actual4096_witness']['error'])<=.005 and result['max_scoring_change']<=.0002
-    result['representation_gate']=result['representation_gate'] and result['zero_jacobian']['independent_directions']==P*k and result['zero_jacobian']['zero_child_max']<1e-13
+    result['independent_zero_child_directions_all_cases']=all(v['zero_jacobian']['independent_directions']==P*k and v['zero_jacobian']['zero_child_max']<1e-13 for v in result['cases'])
+    result['representation_gate']=result['representation_gate'] and result['independent_zero_child_directions_all_cases']
     result['status']='complete_frozen_child_growth';save(out/'result.json',result)
 
 

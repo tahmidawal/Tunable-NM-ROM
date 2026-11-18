@@ -1,0 +1,33 @@
+{
+  "reviewer": "head_mechanism_run",
+  "decision": "Final frozen W1 analysis/plots and all registered arm-pair comparisons independently verified.",
+  "snapshot_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-weak-visibility/experiments/jcp-weak-visibility/checks/width-results/SNAPSHOT.json",
+  "snapshot_sha256": "4b06d7819c6f240d25311ff42b59472021081c628553d8d989f2e967d22e29da",
+  "artifact_count": 8,
+  "independent_reviews_linked": [
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/reviews/p2-W1-baseline-independent-review.json",
+      "sha256": "8eeaff5d0e6977b76d7a425461c267b77593deebfd49e07606d71f4baa77fdaa"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/reviews/p2-R256-independent-result-review.json",
+      "sha256": "1df55fa28ae077ee82b18d8ebe3718b05b85227471f22a00e4e198a320e2c27d"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/reviews/p2-R512-independent-result-review.json",
+      "sha256": "9825389db52a9656ace72bed5578e2b244e1e6c6413fd96926c91c61eceec77c"
+    }
+  ],
+  "all_registered_case_pair_comparisons_verified": 60,
+  "case_pair_regressions_retained": 14,
+  "scope": "six exposed development cases; same-grid same-step discrete Burgers target; initial-field error denominator; no continuum, held-out, uniform-stability or cross-job speed claim",
+  "remote_cleanup": "Owner closeout confirms all owned job duplicates removed; independent SSH read-only check confirms namespace is absent.",
+  "owner_closeout": {
+    "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-weak-visibility/experiments/jcp-weak-visibility/checks/CLOSEOUT.json",
+    "sha256": "ee4776d004ad0824ff483fb2aab19e4fb8415087a09e3340f8e34d6a9157615a",
+    "allocated_gpu_seconds": 1418,
+    "verified_remote_commit": "d8b9fbde05de632548ce585357b121f39bd3715f",
+    "scientific_and_source_files_backed_up": 962,
+    "local_generated_bytecode_count": 20
+  }
+}

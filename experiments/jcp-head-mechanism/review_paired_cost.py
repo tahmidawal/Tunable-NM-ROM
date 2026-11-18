@@ -1,10 +1,12 @@
 """Independent retained-JSON audit of paired cost, selection and overflow exclusion."""
 import argparse
+from collections import Counter
 import csv
 import hashlib
 import json
 import math
 from pathlib import Path
+import subprocess
 import numpy as np
 
 HERE = Path(__file__).resolve().parent
@@ -50,6 +52,23 @@ assert cases == list(range(16)) and len(subjects) == (105 if args.tag == "p03" e
 assert len(targets) == (2 if args.tag == "p03" else 4)
 assert provenance["backend"] == "gpu" and provenance["x64"] and provenance["precision"] == "highest"
 assert provenance["config"]["eval_seed"] == 202609202
+assert contract["metadata"] == provenance
+assert (JOB/"COMMIT.txt").read_text().strip() == provenance["source_commit"]
+staged = JOB/"code/experiments/jcp-paired-cost"
+source_checks = {}
+for name, key in (("run_paired.py", "driver_sha256"), ("ns_query.py", "query_sha256"),
+                  ("paired_measurement.py", "measurement_sha256")):
+    digest = sha(staged/name)
+    assert digest == provenance[key]
+    committed = subprocess.check_output(["git", "-c", "gc.auto=0", "-C", str(COST.parents[1]),
+        "show", f"{provenance['source_commit']}:experiments/jcp-paired-cost/{name}"])
+    assert hashlib.sha256(committed).hexdigest() == digest
+    source_checks[name] = digest
+for name, entry in provenance["source_manifest"]["files"].items():
+    assert sha(staged/name) == entry["sha256"]
+for values in provenance["config"]["approved_reference_states"].values():
+    for entry in values.values():
+        assert sha(staged/entry["file"]) == entry["sha256"]
 assert frozen["selection_sha256"] == sha(PAIR/"selection.json")
 fixture = load(JOB/"fixture.json")
 assert fixture["passed"] and fixture["job_id"] == str(provenance["job_id"])
@@ -66,12 +85,23 @@ for p in parity:
     assert p["reference_refinement_difference"] <= p["reference_refinement_bound"]
 invalid = [r for r in rows if r["status"] == "ok" and not finite(r)]
 affected = {r["subject"] for r in invalid}
+failed = [r for r in rows if r["status"] != "ok"]
+failed_subjects = {r["subject"] for r in failed}
+overflow = [r for r in failed if "overflow" in r.get("reason", "").lower()]
+if args.tag == "p04":
+    assert not invalid
 for row in rows:
     assert math.isfinite(row["elapsed_ms"]) and row["elapsed_ms"] >= 0
     if finite(row):
         assert row["output_dtype"] == "float64" and row["output_shape"] == [6,3,64,64,64]
         assert row["evolved_max_error"] == max(row["relative_errors"][1:])
         assert row["initial_error"] == row["relative_errors"][0] and row["final_error"] == row["relative_errors"][-1]
+        d = row.get("solver_diagnostics", {})
+        if "step_reasons" in d:
+            assert d["initial_fit_reason"] == 1
+            assert d["initial_fit_gradient"] <= provenance["config"]["rom"]["fit_gtol"]
+            assert all(x == 1 for x in d["step_reasons"])
+            assert max(d["step_gradients"]) <= provenance["config"]["rom"]["gtol"]
 
 
 def summarize(block, names, ids, repetitions):
@@ -116,9 +146,11 @@ for t in targets:
         choice = frozen["comparators"][t][group]
         assert sorted(names) == choice["eligible"] and expected == choice["selected"], (t,group)
         assert not (set(names) & affected)
+        assert not (set(names) & failed_subjects)
         if expected is not None:
             confirmed_names.add(expected)
 assert not (confirmed_names & affected)
+assert not (confirmed_names & failed_subjects)
 assert set(result["confirmation"]) == confirmed_names
 assert {r["subject"] for r in rows if r["block"] == "confirmation"} == confirmed_names
 confirmation = summarize("confirmation", confirmed_names, cases, contract["confirmation_repetitions"])
@@ -152,8 +184,9 @@ for t in targets:
         comparisons[t][group] = {"comparator":n,"qualified":qualified,"accuracy_eligible":accuracy,
             "within_confirmation_drift":within,"sentinel_drift":sentinel,"selection_confirmation_drift":selection_gap,
             "ratio_of_median_costs_diagnostic":ratio,"median_casewise_ratio_diagnostic":float(np.median(paired)),
+            "casewise_ratio_range":[min(paired),max(paired)],
             "target_faster_case_count":sum(x>1 for x in paired),"case_count":len(cases),
-            "speed_claim_allowed":qualified}
+            "comparison_gates_passed":qualified}
 
 accounting = list(csv.DictReader((JOB/"sacct.txt").read_text().splitlines(),delimiter="|"))
 allocation = next(r for r in accounting if r["JobID"] == str(provenance["job_id"]))
@@ -161,15 +194,33 @@ assert allocation["State"] == "COMPLETED" and allocation["ExitCode"] == "0:0"
 log = (JOB/"job.log").read_text()
 assert "jax_backend=gpu" in log
 assert not any(s in log.lower() for s in ("out of memory","resource_exhausted","captured constant","large constant","no space left"))
-record = {"reviewer":"head_mechanism_run","decision":"Raw selection/confirmation audit accepted; only comparisons passing every recorded accuracy/drift gate permit speed claims.",
+record = {"reviewer":"head_mechanism_run","decision":"Raw selection/confirmation audit accepted. Qualification permits reporting the measured comparisons; it is not a statistical test of speed superiority.",
     "job_id":provenance["job_id"],"gpu":provenance["gpu"],"allocated_gpu_seconds":int(allocation["ElapsedRaw"]),
     "verified_file_count":len(verified),"rehashed_files":verified,"raw_invocation_sha256":sha(PAIR/"invocations.jsonl"),
     "invocation_count":len(rows),"target_parity_checks":len(parity),
+    "source_commit":provenance["source_commit"], "staged_source_matches_git_history":source_checks,
+    "all_accepted_ROM_invocation_stationarity_checked":True,
+    "invocation_status_counts":dict(Counter(r["status"] for r in rows)),
+    "failure_reason_counts":dict(Counter(r.get("reason", "unspecified") for r in failed)),
+    "failed_candidate_ids":sorted(failed_subjects),
+    "failed_candidates_never_eligible_selected_or_confirmed":True,
+    "guarded_overflow_invocation_count":len(overflow),
+    "guarded_overflow_invocations":[{k:r[k] for k in ("block","repetition","order","subject","case_id","reason")} for r in overflow],
     "undefined_metric_candidate_ids":sorted(affected),"undefined_metric_invocation_count":len(invalid),
     "undefined_metric_invocations":[{k:r[k] for k in ("block","repetition","order","subject","case_id","output_sha256")} for r in invalid],
     "undefined_metric_candidates_never_eligible_selected_or_confirmed":True,
     "comparisons":comparisons,"confirmation_recomputed":confirmation,
-    "scope":"Same allocation and original exposed cases. Legacy ok/null-metric records remain unmodified and are excluded by independent replay; no batching-only causal attribution across different GPUs."}
+    "scope":("Final three admitted head settings plus unchanged span control and 103 comparator configurations, "
+        "all on the same allocation and original 16 exposed development cases. Native initialization and six host "
+        "output fields are included; accuracy uses the five requested evolved outputs. All measured negatives "
+        "and the near-POD tie are retained. No global-optimality, held-out, cross-job timing or broad speed claim."
+        if args.tag == "p04" else "Same allocation and original exposed cases. Legacy ok/null-metric records "
+        "remain unmodified and are excluded by independent replay; no batching-only causal attribution across different GPUs.")}
+if args.tag == "p04":
+    record["near_POD_tie_interpretation"] = {
+        "target":"learned_head_m292_dt0.02", "comparator":"pod_head_m292_dt0.02",
+        "evidence":comparisons["learned_head_m292_dt0.02"]["pod"],
+        "interpretation":"The ratio near one and mixed case rankings do not establish robust speed superiority. All three heads lose to the eligible coarse spectral comparator on all 16 cases."}
 destination = HERE/"reviews"/f"p3-{args.tag}-independent-result-review.json"
 destination.write_text(json.dumps(record,indent=2)+"\n")
 print(json.dumps({k:v for k,v in record.items() if k not in ("rehashed_files","undefined_metric_invocations","confirmation_recomputed")},indent=2))

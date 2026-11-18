@@ -22,6 +22,7 @@ echo "source_commit=$SOURCE_COMMIT job=$SLURM_JOB_ID host=$(hostname)"
 nvidia-smi --query-gpu=name,uuid,memory.total --format=csv,noheader
 df -h /cluster/tufts/paralab
 "$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={b}',flush=True); sys.exit(0 if b=='gpu' else 42)"
+"$PY" -u experiments/jcp-paired-cost/check_measurement.py
 JCP_FIXTURE_OUTPUT="$TASK_ROOT/fixture.json" "$PY" -u experiments/jcp-paired-cost/check_ns_fixture.py
 set +e
 "$PY" -u experiments/jcp-paired-cost/run_paired.py --config "$CONFIG" --out "$TASK_ROOT/output"

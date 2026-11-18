@@ -1,6 +1,6 @@
 {
   "schema": "prospective-cost-amendment-v1",
-  "status": "PREPARED; launch held for P03 audit, remaining-budget update and parent clearance",
+  "status": "RELEASED after independently accepted P03 result, verified accounting and explicit parent authorization",
   "motivation": "Test complete-query cost of all three head numerical settings already admitted by independent mechanism study. This is an exposed-development sensitivity study, with all target outcomes retained.",
   "registered_before_three_head_timing_results": true,
   "target_settings": [
@@ -60,7 +60,7 @@
   "prospective_metric_guard": "Nonfinite physical error metrics, including finite-field norm overflow, produce explicit failed invocations. All such candidates remain excluded.",
   "no_new_setting": "M292/dt.01 is excluded; it was not admitted in P1P03B.",
   "native_reference_manifest": "THREE_HEAD_NATIVE_PARITY_MANIFEST.json",
-  "config_sha256": "d368f03b29ba3817c9f44090b344d427d3c41c4d68768e8bd2bdcb6f14e12cd9",
+  "config_sha256": "5e367e4e4d1eeb917619a83c3fbc116ebe6c59fff9e2b5191be978ae1788dc05",
   "past_completed_gpu_seconds": 1581,
   "current_job_not_yet_accounted": null,
   "job_limit_minutes": 45,
@@ -79,5 +79,8 @@
   "maximum_cumulative_gpu_seconds_if_45minute_cap_reached": 4281,
   "budget_gate_passed": true,
   "P03_actual_gpu_seconds": 1041,
-  "no_further_candidate_grid_tuning": true
+  "no_further_candidate_grid_tuning": true,
+  "released_utc": "2026-11-18T22:45:47.170607+00:00",
+  "parent_release": "2026-11-18 parent explicitly released final finite cost sensitivity after independent P03 audit: three admitted heads M292/dt0.02, M584/dt0.02 and M584/dt0.01, plus span control and unchanged103 comparators, original16 exposed cases, strict gates,45minute cap within2GPUh. No further target/grid tuning after this run.",
+  "P03_independent_review": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/reviews/p3-p03-independent-result-review.json"
 }

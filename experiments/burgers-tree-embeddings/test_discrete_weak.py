@@ -24,6 +24,9 @@ def main():
     jv=jax.jvp(lambda z:residual(z,prior,cache,dt,nu,norm),(c,),(direction,))[1]
     fd=(residual(c+eps*direction,prior,cache,dt,nu,norm)-residual(c-eps*direction,prior,cache,dt,nu,norm))/(2*eps)
     assert float(jnp.linalg.norm(jv-fd)/jnp.linalg.norm(fd))<1e-7
+    ci,ei,li=W.make_initial_fit(field)(u,cache)
+    assert float(ei)<1e-7 and float(li)<1e-7,(ei,li)
+    assert float(jnp.linalg.norm(field(ci,cache)-u)/jnp.linalg.norm(u))<1e-7
     out,status=step(c,cache,dt,nu,1e-8,1e-10)
     assert jnp.all(jnp.isfinite(out)) and float(status[1])<1e-7,status
     print('PASS exact dense weak-upwind / eigen-diffusion / field / Jacobian / step',np.asarray(status),flush=True)

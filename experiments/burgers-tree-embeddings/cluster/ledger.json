@@ -459,6 +459,25 @@
     "driver": "audit_child_projection.py",
     "args": "--model /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1child8/output --cache /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1cache/output",
     "gpu": "a100",
-    "submitted_utc": "2026-11-18T22:34:15.027518+00:00"
+    "submitted_utc": "2026-11-18T22:34:15.027518+00:00",
+    "state": "COMPLETED",
+    "elapsed_seconds": 304,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b1child16",
+    "id": 7355264,
+    "reserved_minutes": 120,
+    "commit": "2ead6c8d02e189a63bafc25c939e8f3c35af7791",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1child16",
+    "driver": "train_shared_child.py",
+    "args": "--latent 16 --linear-solver dense --cache /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1cache/output",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-18T22:34:35.682135+00:00",
+    "state": "RUNNING",
+    "elapsed_seconds": 371,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
   }
 ]

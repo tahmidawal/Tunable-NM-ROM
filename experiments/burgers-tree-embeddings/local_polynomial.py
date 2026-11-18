@@ -21,14 +21,17 @@ def local_blocks(x,w,cells,side):
     return jnp.concatenate(blocks,axis=1),jnp.stack(transforms)
 
 def tree(x,w,p,nodes,depth,policy):
-    indicator=np.asarray(data.initial(x,p))**2
+    return callable_tree(x,w,lambda xy:data.initial(xy,p),nodes,depth,policy)
+
+def callable_tree(x,w,initial,nodes,depth,policy):
+    indicator=np.asarray(initial(x))**2
     if policy=='swept':
-        speed=float(jnp.max(data.initial(x,p)))
+        speed=float(jnp.max(initial(x)))
         # Initial callable and maximum-speed bound only; no evolved reference.
         for t in np.linspace(0,.25,9):
             shifted=jnp.asarray(x)-speed*t
             inside=jnp.all((shifted>=0)&(shifted<=1),axis=-1)
-            indicator=np.maximum(indicator,np.asarray(jnp.where(inside,data.initial(shifted,p),0.))**2)
+            indicator=np.maximum(indicator,np.asarray(jnp.where(inside,initial(shifted),0.))**2)
     return geo.allocated(x,indicator,w,16+nodes*4,4,depth)
 
 @jax.jit

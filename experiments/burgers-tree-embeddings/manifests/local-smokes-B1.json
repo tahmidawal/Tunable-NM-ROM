@@ -26,6 +26,15 @@
       "result": "PASS dense and matrix-free physical LM, Hessian, zero transfer; stationarity 8.417479612081311e-13",
       "benchmark": false,
       "source_sha256": "af92229801c68e13fce18acb58f6a4843895942cb152bf64eb2fe6b2f2dd2966"
+    },
+    {
+      "script": "test_discrete_weak.py",
+      "utc": "2026-11-18T22:40:45.768857+00:00",
+      "maximum_seconds": 55,
+      "launcher": "timeout 55s jaxrun",
+      "result": "PASS cold initial-field fit added to dense weak-upwind/field/Jacobian/step checks",
+      "benchmark": false,
+      "source_sha256": "a8f4a646db85c0625f1ae02b083285108db6cd99b1d857cca2fbd2e5f5bd6b38"
     }
   ]
 }

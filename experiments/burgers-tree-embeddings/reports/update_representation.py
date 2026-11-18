@@ -43,7 +43,7 @@ ax.set(xlabel='Total adjustable variables, including retained parents',ylabel='W
 ax.grid(alpha=.17,which='both');ax.legend(fontsize=8,loc='lower left');figure(fig,'b1-representation-capacity')
 
 fig,axs=plt.subplots(2,3,figsize=(10,6),constrained_layout=True)
-for row,name,title in [(0,'auditr1','Original learned local model'),(1,'b1resolved2','Resolved richer local span')]:
+for row,name,title in [(0,'auditr1','Original learned local model'),(1,'b1directaudit','Shared local POD24')]:
     f=H/'results'/name/'output/actual4096.npz';sources[str(f.relative_to(H))]=hashlib.sha256(f.read_bytes()).hexdigest()
     d=np.load(f);ref=d['reference'];pred=d['prediction'];error=pred-ref
     e=float(np.linalg.norm(error)/np.linalg.norm(ref));peak=max(abs(error.min()),abs(error.max()))
@@ -80,6 +80,8 @@ for n,r in trained:
     chosen=next(c for c in r['checkpoints'] if c['update']==r['selected_update']);e=chosen['projection']['per_snapshot']
     lines.append(f"| {'Global' if 'global' in n else 'Child'} nonlinear {r['latent']} | {r.get('active_variables',r['latent'])} | {pct(panel(e,r['dev_labels'],'original'))} | {pct(panel(e,r['dev_labels'],'new'))} | {pct(panel(e,r['dev_labels'],'alignment'))} | {pct(r['worst_projection'])} |")
 ledger=json.loads((H/'cluster/ledger.json').read_text());terminal={'COMPLETED','FAILED','TIMEOUT','CANCELLED','OUT_OF_MEMORY','NODE_FAIL','PREEMPTED'}
+directaudit=read('b1directaudit')
+allocation_rows='\n'.join(f"| {k} | {v['active_variables']} | {pct(v['projection']['worst'])} |" for k,v in directaudit['controls'].items())
 charged=sum(r.get('elapsed_seconds',0) for r in ledger if r.get('state') in terminal)
 live=[r['name'] for r in ledger if r.get('state') not in terminal]
 stamp=datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -112,6 +114,14 @@ The direct local entries use resolved physical Gram integration; actual-grid aud
 ![Actual-grid witnesses](b1-actual-field-witnesses.png)
 
 The image display is subsampled for readability from saved actual-grid arrays. Errors use the complete arrays. The two rows are different worst cases and are not a matched-case attribution test.
+
+Independent fixed-code scoring confirms local POD24 on every snapshot at the denser grid: worst {pct(directaudit['dense_scoring']['2048']['worst'])}, with largest change from the resolved physical metric {directaudit['max_metric_2048_change']:.3g}. The actual-output witness is {pct(directaudit['dense_witness']['relative_l2'])}. All {directaudit['zero_child_jacobian']['independent_directions']} of {directaudit['zero_child_jacobian']['child_variables']} child directions remain numerically independent after removing the parent; their squared singular-value ratio is {directaudit['zero_child_jacobian']['smallest_to_largest']:.3g}.
+
+The following allocation controls use exactly the same local checkpoint and coefficient dimension per node. Uniform and prescribed entries at each matched node count isolate an allocation/depth-distribution effect. The random allocation is a diagnostic control, not the deployed policy.
+
+| Allocation and retained nodes | Total variables | Worst projection |
+|---|---:|---:|
+{allocation_rows}
 
 ## Retraction and numerical controls
 

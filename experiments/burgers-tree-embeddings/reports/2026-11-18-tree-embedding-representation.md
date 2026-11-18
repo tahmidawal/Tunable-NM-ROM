@@ -25,6 +25,7 @@ Training uses the registered prefix expansion to 128 trajectories. Development h
 | Direct local 36 | 2000 | 0.2150% | 0.1327% | 0.2156% | 0.2156% |
 | Global nonlinear 64 | 64 | 7.1775% | 10.3528% | 16.7303% | 16.7303% |
 | Global nonlinear 128 | 128 | 2.9436% | 6.2896% | 7.8825% | 7.8825% |
+| Child nonlinear 8 | 544 | 0.8083% | 0.5119% | 1.5059% | 1.5059% |
 
 The direct local entries use resolved physical Gram integration; actual-grid audits are separate. The strongest listed expanded global POD control has 768 coefficients and 1.6145% worst error. Spectral-feature nonlinear controls are architecture-inspired NM-ROMs, not faithful native coordinate-MLP Tunable reproductions. Larger spans and the planned independent NM-ROM competitors remain relevant.
 
@@ -33,6 +34,18 @@ The direct local entries use resolved physical Gram integration; actual-grid aud
 ![Actual-grid witnesses](b1-actual-field-witnesses.png)
 
 The image display is subsampled for readability from saved actual-grid arrays. Errors use the complete arrays. The two rows are different worst cases and are not a matched-case attribution test.
+
+Independent fixed-code scoring confirms local POD24 on every snapshot at the denser grid: worst 0.4229%, with largest change from the resolved physical metric 1.3e-09. The actual-output witness is 0.4229%. All 1248 of 1248 child directions remain numerically independent after removing the parent; their squared singular-value ratio is 1.38e-07.
+
+The following allocation controls use exactly the same local checkpoint and coefficient dimension per node. Uniform and prescribed entries at each matched node count isolate an allocation/depth-distribution effect. The random allocation is a diagnostic control, not the deployed policy.
+
+| Allocation and retained nodes | Total variables | Worst projection |
+|---|---:|---:|
+| uniform20 | 608 | 2.2911% |
+| prescribed20 | 608 | 1.9276% |
+| uniform84 | 2144 | 0.9271% |
+| prescribed84 | 2144 | 0.2763% |
+| random52 | 1376 | 2.3032% |
 
 ## Retraction and numerical controls
 
@@ -50,7 +63,7 @@ Original recipes, unsuccessful repairs and the original decision remain in [the 
 
 ## Accounting and provenance
 
-Generated 2026-11-18T22:25:43.479274+00:00. Terminal allocations recorded in the current ledger total 5765 GPU-seconds (1.601389 GPU-hours); nonterminal or not-yet-reconciled names: b1child8. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
+Generated 2026-11-18T22:40:52.412985+00:00. Terminal allocations recorded in the current ledger total 7078 GPU-seconds (1.966111 GPU-hours); nonterminal or not-yet-reconciled names: b1child16. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
 
 ## Glossary
 

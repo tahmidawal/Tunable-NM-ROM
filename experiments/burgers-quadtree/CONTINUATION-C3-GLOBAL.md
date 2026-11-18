@@ -1,0 +1,9 @@
+# C3 globally supported operator compression — prospective registration
+
+The matched-data global coordinate-neural bank supplies a new hypothesis after the accurate local384 model remains slower in complete-output costs. Preliminary completed family-A portions of the global comparator pass projection and actual weak dynamics; final hashes/terminal status are required before consuming that checkpoint.
+
+Freeze those newly trained global features and the matched exact POD1024 control. Restrict online coordinates to the lowest64/128/192/256 eigenmodes of their physically projected diffusion operator. This is a new trial-space constraint, not merely relabelling the full decoder. Test Gauss32/48/64/96 against192 integration, dt0.0125 against0.00625, every development trajectory. Save projection independently from PDE errors and retain all failures.
+
+Rationale: local512/384 spaces required dense integration despite coefficient reduction. A globally smooth learned span may permit fewer integration points after a physical low-mode constraint. That possibility is not established by the earlier local-space failure. The exact matched POD control separates neural training from operator-space selection. No claim of local allocation benefit follows from a global-only success.
+
+Maximum120minute reservation inside the current cumulative finite batch, no more than two owned simultaneous jobs. A passing setting must still qualify unchanged physical features at finer resolution and actual4096 output, and win paired complete-query costs against updated classical and NM-ROM controls. No descriptor advantage, future-assisted selection, relaxed1% target, unseen test access or uncharged setup. The user-authorized objective remains physical accuracy and substantially lower complete cost; this comparator/alternative does not silently replace the spatial-refinement question.

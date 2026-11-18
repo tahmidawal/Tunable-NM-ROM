@@ -1,0 +1,7 @@
+# Resolved direct compression audit before PDE advancement
+
+The shared local POD prefix24 is the smallest registered direct prefix passing the resolved-metric screen on the expanded cohort. Freeze its training-only checkpoint. Compare uniform trees with20 and84 retained nodes against prescribed trees with the exact same respective node counts; add a connected-random52-node control. Use the same root128, local rotation, windows, physical metric and coefficient-fitting rule for all. Count every root and local coefficient; these are offline reference-assisted allocation controls, not adaptive PDE solves.
+
+Independently score the saved prescribed52-node coefficients at2048 points per axis for every development/alignment snapshot, without refitting. Produce an actual4096-by4096 worst witness and signed/absolute error companions, with current-time normalization and the registered0.02-percentage-point scoring-change bound. Record physical child-Jacobian eigenvalues after removing global-parent directions and their numerical rank; do not label very small redundant directions as well-conditioned. Preserve all saved fits. If qualified, this direct control may enter fixed-tree fine-upwind weak PDE diagnostics; it establishes no nonlinear compression or runtime win.
+
+Reserve at most45 allocated GPU-minutes within B1. No new trained recipe, no final-test fields, and no changes to the accuracy criteria.

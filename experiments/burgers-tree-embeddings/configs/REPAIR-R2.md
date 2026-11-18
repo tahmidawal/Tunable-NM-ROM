@@ -1,0 +1,7 @@
+# R2 — widen the shared local coordinate network
+
+Registered after localr1 completed its bounded schedule. Its refitted-code recipe still fails the0.5% representation gate. The initial optimistic neural and polynomial spans also failed despite releasing far more coefficients than the eligible budget. This supports a capacity/feature-shape limitation in addition to the observed training-code problem.
+
+The second repair changes only the local hidden width,64 to128. Keep16 local outputs, child dimension4, maximum depth3, fixed0.25 halos, active caps32/64/128, the same frozen global parent, reference data and seed. Retain R1's explicit25-iteration code refit before every assembled weight update. The nonlinear child head is trained afterwards on the newly frozen features with the same explicit refitting. Direct controls use precisely those same feature weights.
+
+Each weight-training stage remains capped at20,000 updates, with the registered1,000-update checks and five-check early stop. Reserve at most120 allocated GPU-minutes for the feature stage and120 for its child head, within the existing B0 eight-hour ceiling. Gate remains0.5% at every development/alignment snapshot. If both registered repairs leave the gate failed, stop this bounded recipe family and deliver the evidence. No final fields, PDE-speed claim, stronger claims about untested feature32/depth4/latent8 alternatives, or further unregistered architecture search.

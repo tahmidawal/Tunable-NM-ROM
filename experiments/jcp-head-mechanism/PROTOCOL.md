@@ -1,6 +1,6 @@
 # Matched head/span trajectory mechanism
 
-Prospective development experiment. No new numerical results exist yet. The frozen learned NS3D bank and nonlinear head are reused without training. The machine-readable design and gates are in `configs/pilot.json`.
+Prospective development experiment registered before execution. Retained outcomes and qualification records are under `runs/`. The frozen learned NS3D bank and nonlinear head are reused without training. The machine-readable design and gates are in `configs/pilot.json`.
 
 ## Falsifiable question
 

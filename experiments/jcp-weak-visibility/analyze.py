@@ -1,0 +1,122 @@
+"""Generate pilot audit, fixed-case decisions and measured plots from retained arrays."""
+from pathlib import Path
+import argparse
+import json
+import numpy as np
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('output', type=Path)
+    parser.add_argument('--destination', type=Path, required=True)
+    args = parser.parse_args()
+    out, dest = args.output, args.destination
+    dest.mkdir(parents=True, exist_ok=True)
+    summary = json.loads((out/'summary.json').read_text())
+    env = json.loads((out/'environment.json').read_text())
+    cfg = env['config']
+    ms = cfg['solve_rows']
+    banks = sorted(out.glob('bank-columns-*.npz'))
+    G = np.concatenate([np.load(p)['bank'] for p in banks], axis=1)
+    n = cfg['mesh_intervals']
+    operators = np.load(out/'operators.npz')
+    gram_error = np.linalg.norm((G.T @ G)/n**2-operators['gram'])/np.linalg.norm(operators['gram'])
+    audit = dict(scope=summary['scope'], gram_relative_error=float(gram_error), cases={}, transitions=[])
+    times = np.arange(round(cfg['horizon']/cfg['dt'])+1)*cfg['dt']
+    table = []
+    for case_id, case in summary['cases'].items():
+        folder = out/f'case-{int(case_id):02d}'
+        ref0 = np.load(folder/'reference-0.npz')['fields']
+        ref = np.load(folder/'reference-1.npz')['fields']
+        norm0 = np.linalg.norm(ref0[0])
+        refdiff = np.linalg.norm(ref-ref0, axis=1).max()/norm0
+        proj = np.load(folder/'projection.npz')
+        projected = proj['coeff'] @ G.T
+        projection_error = np.linalg.norm(projected-ref, axis=1)/norm0
+        evidence = dict(reference_disagreement=float(refdiff), max_metric_disagreement=0.,
+                        projection_metric_disagreement=float(np.max(np.abs(projection_error-proj['error']))), arms={})
+        for m in ms:
+            arm = case['arms'][str(m)]
+            z = np.load(folder/f'm{m}-tighter-rep0.npz')
+            field = z['coeff'] @ G.T
+            error = np.linalg.norm(field-ref, axis=1)/norm0
+            evolution_distance = np.linalg.norm(field-projected, axis=1)/norm0
+            metric_delta = float(np.max(np.abs(error-z['metrics'][:, 0])))
+            gap_delta = float(np.max(np.abs(evolution_distance-z['evolution_distance'])))
+            identity = error**2-projection_error**2-evolution_distance**2
+            tight_coeff = np.load(folder/f'm{m}-tight-rep0.npz')['coeff']
+            tolerance_delta = np.linalg.norm((tight_coeff-z['coeff']) @ G.T, axis=1).max()/norm0
+            rr = np.load(folder/f'm{m}-residuals.npz')
+            shell = np.linalg.norm(rr['scaled'][:, max(ms):], axis=1)
+            per = dict(error=error.tolist(), evolution_distance=evolution_distance.tolist(),
+                       projection_error=projection_error.tolist(), independent_shell=shell.tolist(),
+                       error_max=float(error.max()), evolution_distance_max=float(evolution_distance.max()),
+                       metric_disagreement=metric_delta, evolution_metric_disagreement=gap_delta,
+                       pythagorean_max_absolute=float(np.max(np.abs(identity))),
+                       tight_tighter_difference=float(tolerance_delta), independent_scaled_shell_max=float(shell.max()),
+                       numerically_eligible=arm['numerically_eligible'])
+            evidence['arms'][str(m)] = per
+            evidence['max_metric_disagreement'] = max(evidence['max_metric_disagreement'], metric_delta, gap_delta)
+            table.append(dict(case=int(case_id), M=m, max_discrete_error=per['error_max'], evolution_distance_max=per['evolution_distance_max'],
+                              projection_error_max=float(projection_error.max()), shell_max=float(shell.max()),
+                              tight_tighter=float(tolerance_delta), iterations=arm['levels']['tighter']['total_iterations'],
+                              rejected=arm['levels']['tighter']['rejected_steps'], eligible=arm['numerically_eligible'],
+                              physical_sigma_min_final=arm['reached_spectra'][-1]['spectra'][str(m)]['physical_min']))
+        audit['cases'][case_id] = evidence
+    for small, large in zip(ms[:-1], ms[1:]):
+        pair = []
+        for case_id, case in audit['cases'].items():
+            a, b = case['arms'][str(small)], case['arms'][str(large)]
+            uncertainty = a['tight_tighter_difference']+b['tight_tighter_difference']
+            pair.append(dict(case=int(case_id), eligible=a['numerically_eligible'] and b['numerically_eligible'],
+                error_ratio=b['error_max']/a['error_max'], shell_ratio=b['independent_scaled_shell_max']/a['independent_scaled_shell_max'],
+                resolved_error_improvement=a['error_max']-b['error_max'] > uncertainty,
+                error_decrease=a['error_max']-b['error_max'], solver_uncertainty=uncertainty))
+        all_eligible=all(v['eligible'] for v in pair)
+        useful=all_eligible and all(v['error_ratio'] <= 1.02 for v in pair) and any(v['resolved_error_improvement'] and v['shell_ratio'] < 1 for v in pair)
+        audit['transitions'].append(dict(smaller=small, larger=large, all_cases_eligible=all_eligible,
+                                        predeclared_useful_region=useful, cases=pair))
+    # Fixed-state row enrichment must obey the algebraic singular-value monotonicity.
+    monotonic=[]
+    for case in summary['cases'].values():
+        for rec in case['fixed_state_spectra']:
+            values = [rec['spectra'][str(m)]['physical_min'] for m in ms]
+            monotonic.append(float(min(np.diff(values))))
+    audit['fixed_state_minimum_sigma_increment']=min(monotonic)
+    audit['saved_array_audit_passed']=bool(gram_error < 1e-10 and all(c['max_metric_disagreement'] < 1e-10 and c['projection_metric_disagreement'] < 1e-10 for c in audit['cases'].values()) and min(monotonic) >= -1e-10)
+    audit['environmental_acceptance']='must be read from separate collector audit; numerical file alone is insufficient'
+    (dest/'analysis.json').write_text(json.dumps(audit, indent=2)+'\n')
+    (dest/'table.json').write_text(json.dumps(table, indent=2)+'\n')
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    plt.rcParams.update({'font.size':10, 'axes.spines.top':False, 'axes.spines.right':False})
+    fig, axs = plt.subplots(2, 2, figsize=(11, 7.5))
+    colors = plt.cm.viridis(np.linspace(.08, .88, len(ms)))
+    for case_index, (case_id, case) in enumerate(audit['cases'].items()):
+        ax = axs[0, case_index]
+        for color, m in zip(colors, ms):
+            arm = case['arms'][str(m)]
+            suffix = '' if arm['numerically_eligible'] else ' (unqualified)'
+            ax.plot(times, 100*np.asarray(arm['error']), color=color, label=f'M={m}{suffix}')
+        firstarm=case['arms'][str(ms[0])]
+        ax.plot(times, 100*np.asarray(firstarm['projection_error']), 'k--', label='best span projection')
+        ax.set(title=f'Development case {case_id}', xlabel='Time', ylabel='Error vs same-grid target (%)')
+        ax.legend(fontsize=8)
+    for case_index, (case_id, case) in enumerate(summary['cases'].items()):
+        rec=case['fixed_state_spectra'][-1]
+        axs[1, 0].semilogy(ms, [rec['spectra'][str(m)]['physical_min'] for m in ms], marker='o', label=f'case {case_id}, same state')
+        axs[1, 1].semilogy(ms, [audit['cases'][case_id]['arms'][str(m)]['independent_scaled_shell_max'] for m in ms], marker='o', label=f'case {case_id}')
+    axs[1, 0].set(xlabel='Smooth test rows M', ylabel='Smallest physical tangent singular value', title='Fixed projected-reference state at final time')
+    axs[1, 1].set(xlabel='Smooth test rows M', ylabel='Maximum independent shell residual', title='Next 1024 rows outside every solve objective')
+    axs[1, 0].legend(fontsize=8)
+    axs[1, 1].legend(fontsize=8)
+    fig.suptitle('MEASURED development pilot — discrete reference only; qualification shown per curve', fontsize=12)
+    fig.tight_layout()
+    fig.savefig(dest/'measured-visibility.png', dpi=180)
+    fig.savefig(dest/'measured-visibility.svg')
+    print(json.dumps({'saved_array_audit_passed':audit['saved_array_audit_passed'], 'transitions':audit['transitions']}))
+
+
+if __name__ == '__main__':
+    main()

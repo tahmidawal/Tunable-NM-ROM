@@ -27,6 +27,7 @@ coeff, stats, history = jax.block_until_ready(solver(jnp.asarray(c), .03, data, 
 assert np.all(np.asarray(stats)[:, 1] == 1), np.asarray(stats)
 assert np.all(np.isfinite(coeff))
 result = dict(passed=True, backend=jax.default_backend(), x64=jax.config.jax_enable_x64,
-              ad_relative_error=ad_error, parity=check, solver_stats=np.asarray(stats).tolist(), seconds=time.perf_counter()-start)
+              ad_relative_error=ad_error, parity=check, solver_stats=np.asarray(stats).tolist(),
+              jax_scalar_serialization_witness=jnp.float64(1), seconds=time.perf_counter()-start)
 save_json(__import__('pathlib').Path('checks/local-fixture.json'), result)
 print(json.dumps(clean(result)), flush=True)

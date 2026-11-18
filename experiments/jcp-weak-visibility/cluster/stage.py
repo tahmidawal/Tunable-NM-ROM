@@ -45,6 +45,8 @@ PY=/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python
 cd "$SLURM_SUBMIT_DIR/code"
 $PY -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={{b}}'); sys.exit(0 if b=='gpu' else 42)"
 nvidia-smi --query-gpu=name,uuid,memory.total --format=csv,noheader
+mkdir -p checks
+$PY -u fixture.py
 $PY -u run.py --config configs/pilot.json --output ../output
 '''
 (target/'run.sbatch').write_text(batch)

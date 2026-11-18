@@ -1,0 +1,10 @@
+{
+  "job_id": 7354325,
+  "allocated_gpu_seconds": 86,
+  "status": "failed persistence; incomplete experiment; not accepted scientific evidence",
+  "cause": "summary serializer handled NumPy arrays but not JAX ArrayImpl scalar outputs from reference diagnostics",
+  "repair": "explicitly normalize JAX arrays through np.asarray before JSON conversion; include JAX scalar in pre-run fixture",
+  "mathematical_changes": false,
+  "threshold_changes": false,
+  "retry_protocol": "identical pilot configuration and fixed first two dev6 indices, fresh p02 directory"
+}

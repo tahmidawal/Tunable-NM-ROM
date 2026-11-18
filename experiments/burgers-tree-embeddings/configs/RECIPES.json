@@ -1,0 +1,41 @@
+{
+  "first_round_recipe_limit": 12,
+  "recipes": [
+    {
+      "recipe": 1,
+      "label": "global bank128",
+      "job": "global01"
+    },
+    {
+      "recipe": 2,
+      "label": "global nonlinear16",
+      "job": "global01"
+    },
+    {
+      "recipe": 3,
+      "label": "global nonlinear32",
+      "job": "global01"
+    },
+    {
+      "recipe": 4,
+      "label": "global nonlinear64",
+      "job": "global01"
+    },
+    {
+      "recipe": 5,
+      "label": "R0 local features16 width64/direct prefixes",
+      "job": "local01"
+    },
+    {
+      "recipe": 6,
+      "label": "R0 nonlinear child4 frozen features",
+      "job": "children01"
+    },
+    {
+      "recipe": 7,
+      "label": "R1 explicit per-update code refits, same features/architecture",
+      "job": "localr1"
+    }
+  ],
+  "finalists_seed_repeats": "conditional on development qualification; none qualified yet"
+}

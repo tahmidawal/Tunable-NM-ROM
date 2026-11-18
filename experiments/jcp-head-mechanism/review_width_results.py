@@ -2,6 +2,7 @@
 import argparse
 import hashlib
 import json
+import itertools
 from pathlib import Path
 import numpy as np
 
@@ -96,6 +97,7 @@ assert all(r==RANK for values in ranks.values() for r in values.values())
 assert all(r==RANK for r in [*env["tangent_ranks"].values(),*env["initialization_qr_ranks"].values()])
 records,repetition_records,pointwise=[],[],[]
 baseline_maxima=[]
+baseline_curves={}
 for c in range(6):
     folder=OUT/f"case-{c:02d}";base_folder=BASE/f"case-{c:02d}"
     cs=summary["cases"][str(c)]
@@ -121,6 +123,7 @@ for c in range(6):
     base_z=np.load(base_folder/"m2048-tighter-rep0.npz")
     base_error=np.linalg.norm(base_z["coeff"]@Gbase.T-base_ref,axis=1)/np.linalg.norm(base_ref[0])
     baseline_maxima.append(float(base_error.max()))
+    baseline_curves[c]=base_error
     errors={}
     for m in cfg["solve_rows"]:
         arm=cs["arms"][str(m)]
@@ -180,15 +183,35 @@ for m in cfg["solve_rows"]:
     aggregates[str(m)]={"case_count":len(rows),"maximum_error_worst":worst,"maximum_error_median":float(np.median([r["max_error"] for r in rows])),
         "worst_error_ratio_to_R128":worst/max(baseline_maxima),"maximum_case_error_ratio":max(ratios),
         "all_case_maxima_improve":all(r<1 for r in ratios),"primary_improvement_passed":worst<=.8*max(baseline_maxima) and max(ratios)<=1.02}
+curves={(128,2048):baseline_curves}
+for m in cfg["solve_rows"]:
+    curves[(RANK,m)]={r["case"]:np.asarray(r["errors"]) for r in records if r["rows"]==m}
+previous_review=None
+if RANK==512:
+    previous_review=HERE/"reviews/p2-R256-independent-result-review.json"
+    admitted256=load(previous_review)
+    assert admitted256["all_numerical_checks_passed"]
+    for m in (2048,4096):
+        curves[(256,m)]={r["case"]:np.asarray(r["errors"]) for r in admitted256["records"] if r["rows"]==m}
+all_pairs=[]
+for previous,current in itertools.combinations(sorted(curves),2):
+    category="common-M width" if previous[1]==current[1] else ("within-width tests" if previous[0]==current[0] else "joint width and test changes")
+    for c in range(6):
+        difference=curves[current][c]-curves[previous][c]
+        all_pairs.append({"case":c,"previous_width":previous[0],"previous_rows":previous[1],"width":current[0],"rows":current[1],
+            "comparison_kind":category,"increased_time_count":int(np.sum(difference>1e-10)),
+            "maximum_increase":float(max(0,difference.max())),"time_of_maximum_increase":float(np.argmax(difference)*cfg["dt"])})
 review={"reviewer":"head_mechanism_run","decision":"Numerical results accepted; prospective primary improvement is reported separately for every setting.",
     "width":RANK,"job_id":env["job_id"],"source_commit":env["commit"],"verified_file_count":len(verified),
     "rehashed_files":verified,"collection":{k:v for k,v in collection.items() if k!="files"},
     "summary_sha256":sha(OUT/"summary.json"),"rank_checks":ranks,"R128_prefix_relative_gap":prefix_gap,
     "nested_prefix_relative_gaps":prefix_gaps,"cohort_parameter_sha256":cohort["parameter_sha256"],
     "gram_reconstruction_gap":gram_gap,"QR_factor_gap":factor_gap,"arm_count":len(records),"saved_repetition_count":len(repetition_records),
-    "all_numerical_checks_passed":True,"aggregates":aggregates,"pointwise_comparisons":pointwise,
-    "pointwise_regressions":[p for p in pointwise if p["increased_time_count"]>0],"records":records,"repetition_records":repetition_records,
+    "all_numerical_checks_passed":True,"aggregates":aggregates,"baseline_and_within_width_pointwise_comparisons":pointwise,
+    "all_registered_arm_pair_comparisons":all_pairs,"all_registered_arm_pair_regressions":[p for p in all_pairs if p["increased_time_count"]>0],
+    "previous_R256_review_sha256":sha(previous_review) if previous_review else None,
+    "baseline_and_within_width_pointwise_regressions":[p for p in pointwise if p["increased_time_count"]>0],"records":records,"repetition_records":repetition_records,
     "scope":"All six exposed cases and all saved times/repetitions; same-grid same-step discrete target. No monotonic pointwise-error, continuum or cross-job timing claim."}
 path=HERE/"reviews"/f"p2-R{RANK}-independent-result-review.json"
 path.write_text(json.dumps(review,indent=2)+"\n")
-print(json.dumps({k:v for k,v in review.items() if k not in ("rehashed_files","records","repetition_records","pointwise_comparisons","collection")},indent=2))
+print(json.dumps({k:v for k,v in review.items() if k not in ("rehashed_files","records","repetition_records","baseline_and_within_width_pointwise_comparisons","all_registered_arm_pair_comparisons","collection")},indent=2))

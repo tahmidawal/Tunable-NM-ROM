@@ -119,7 +119,7 @@ def main():
                             xytext=(5, 6), textcoords="offset points")
         ax.scatter([], [], color=colors[family], marker="*" if family == "target" else "o", label=family)
     ax.set(xscale="log", yscale="log", xlabel="Complete-query median (ms)", ylabel="Worst evolved relative error (%)",
-           title="Development selection: finite candidate frontier")
+           title="Development candidate accuracy–cost observations")
     ax.legend(frameon=False)
     above = sum(e["complete"] and e["worst_evolved_error"] > 1 for e in selection.values())
     failed = sum(not e["complete"] for e in selection.values())
@@ -155,8 +155,10 @@ def main():
     cold_labels = [r["subject"].replace("learned_", "").replace("fom_", "") for r in successful]
     for i, row in enumerate(successful):
         warm = result["confirmation"][row["subject"]]["cases"][str(row["case_id"])]["median_ms"]
-        ax.bar(i-.18, warm, width=.36, color="#238a8d", label="warm" if i == 0 else None)
-        ax.bar(i+.18, row["elapsed_ms"], width=.36, color="#bd8d53", label="activation + compile + query" if i == 0 else None)
+        ax.plot([i, i], [warm, row["elapsed_ms"]], color="#aaaaaa", lw=1)
+        ax.scatter(i, warm, color="#238a8d", label="warm" if i == 0 else None)
+        ax.scatter(i, row["elapsed_ms"], color="#bd8d53", marker="s",
+                   label="activation + compile + query" if i == 0 else None)
     ax.set(yscale="log", xticks=np.arange(len(successful)), xticklabels=cold_labels,
            ylabel="Elapsed time (ms)", title="Existing-runtime activation, one call per method")
     ax.tick_params(axis="x", rotation=30)

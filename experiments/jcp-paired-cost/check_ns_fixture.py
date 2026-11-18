@@ -1,5 +1,7 @@
 """Sub-minute synthetic GPU fixture, not a scientific accuracy experiment."""
 import json
+import hashlib
+import os
 import time
 from pathlib import Path
 
@@ -24,6 +26,11 @@ assert np.linalg.norm(np.asarray(solution)-np.linalg.lstsq(
     np.array([[1., 0.], [0., 2.], [1., 1.]]), np.array([2., -1., .2]), rcond=None)[0]) < 1e-12
 _, cap = jax.jit(Q.make_lm(affine, 0, True))(jnp.zeros(2), (), 1e-14)
 assert int(cap[0]) == 4
+tie = jnp.array([[2., 1e-8, 1e-4, 4., 3., 0.],
+                 [1., 1e-12, 1e-4*(1+128*np.finfo(np.float64).eps), 4., 4., 0.]])
+assert int(Q.choose_stationary_fit(tie)[0]) == 1
+assert int(Q.choose_stationary_fit(tie.at[1, 2].set(1e-4+1e-9))[0]) == 0
+assert int(Q.choose_stationary_fit(tie.at[0, 0].set(1))[0]) == 0
 
 n, rank, latent = 8, 4, 2
 G, _, _ = Q.SR.R.test_modes(n, rank)
@@ -60,7 +67,11 @@ assert gap < 1e-13
 report = {"synthetic_fixture": True, "passed": True, "backend": jax.default_backend(),
           "precision": str(jax.config.jax_default_matmul_precision), "dtype": str(fields.dtype),
           "lm": np.asarray(info).tolist(), "cap_reason": int(cap[0]),
+          "stationary_tie_selector_inside_outside_already_stationary": True,
           "queries": query_results, "operator_checks": operator_checks,
           "classical_same_mesh_wrapper_parity": gap, "seconds": time.perf_counter()-start}
-write_json(Path(__file__).parent / "checks/ns_fixture.json", report)
+report["job_id"] = os.environ.get("SLURM_JOB_ID")
+report["source_sha256"] = {name: hashlib.sha256((Path(__file__).parent/name).read_bytes()).hexdigest()
+                            for name in ("ns_query.py", "check_ns_fixture.py")}
+write_json(Path(os.environ.get("JCP_FIXTURE_OUTPUT", Path(__file__).parent / "checks/ns_fixture.json")), report)
 print(json.dumps(report), flush=True)

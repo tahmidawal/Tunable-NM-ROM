@@ -29,6 +29,15 @@ def stationarity(residual, jacobian):
     return jnp.max(jnp.abs(jacobian.T @ residual) / denominator)
 
 
+def choose_stationary_fit(fit_info):
+    raw = jnp.argmin(fit_info[:, 2])
+    band = 1024*jnp.finfo(jnp.float64).eps*jnp.maximum(fit_info[raw, 2], 1e-300)
+    eligible = (fit_info[:, 0] == 1) & (fit_info[:, 2] <= fit_info[raw, 2]+band)
+    stationary_choice = jnp.argmin(jnp.where(eligible, fit_info[:, 2], jnp.inf))
+    choice = jnp.where((fit_info[raw, 0] != 1) & jnp.any(eligible), stationary_choice, raw)
+    return choice, raw, band
+
+
 def make_lm(evaluate, budget, roundoff_repair):
     """Return solution and [reason,gradient,cost,iterations,accepted,roundoff].
 
@@ -116,11 +125,7 @@ def make_query(kind, *, n, rank, latent, dt, steps, output_every, budget,
             distances = jnp.sum((head_candidates-projected[None])**2, axis=1)
             starts = codes[jnp.argsort(distances, stable=True)[:fit_starts]]
             solutions, fit_info = jax.vmap(lambda z: fit_lm(z, (projected, params), fit_gtol))(starts)
-            raw = jnp.argmin(fit_info[:, 2])
-            band = 1024*jnp.finfo(jnp.float64).eps*jnp.maximum(fit_info[raw, 2], 1e-300)
-            eligible = (fit_info[:, 0] == 1) & (fit_info[:, 2] <= fit_info[raw, 2]+band)
-            stationary_choice = jnp.argmin(jnp.where(eligible, fit_info[:, 2], jnp.inf))
-            choice = jnp.where((fit_info[raw, 0] != 1) & jnp.any(eligible), stationary_choice, raw)
+            choice, raw, band = choose_stationary_fit(fit_info)
             initial = jnp.r_[solutions[choice], jnp.zeros(3)]
             coefficient_gap = jnp.linalg.norm(H.head_apply(params, solutions[choice])-H.head_apply(params, solutions[raw]))
             ic_info = jnp.r_[fit_info[choice], raw, choice, band, coefficient_gap]

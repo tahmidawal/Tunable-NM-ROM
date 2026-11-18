@@ -122,6 +122,8 @@ def native_subject(name, family, kind, rank, cfg, asset_path, override=None):
         steps=steps, output_every=steps//5, budget=settings["budget"],
         fit_starts=settings["fit_starts"], roundoff_repair=settings["roundoff_repair"])
     assets = activate_assets(asset_path, rank, kind, settings["rows"])
+    if assets[1].shape != (settings["rows"], rank) or assets[2].shape != (settings["rows"], rank, rank):
+        raise RuntimeError("deployed operator row/rank slice differs from registered numerical configuration")
 
     def use(u0, viscosity, active):
         output, stats, initial = compiled(jnp.asarray(u0), jnp.asarray(viscosity), *active,
@@ -154,6 +156,8 @@ def native_subject(name, family, kind, rank, cfg, asset_path, override=None):
 
     return Subject(name, family, cfg["n"], query, {
         "kind": kind, "rank": rank, "latent": 8 if kind == "head" else None,
+        "actual_scalar_weak_rows": int(assets[1].shape[0]),
+        "actual_online_unknowns_including_frame": (8 if kind == "head" else rank)+3,
         "solver": "compiled adaptive diagonally scaled LM; returned-state stationarity",
         "settings": settings, "assets_manifest_sha256": sha(asset_path / "MANIFEST.json"),
         "initialization": "native from same original physical input field; recomputed each call",

@@ -1,0 +1,15 @@
+{
+  "schema": "implementation-fixture-attempt-v1",
+  "date": "2026-11-18",
+  "attempt": "local selector-refinement fixture",
+  "status": "failed at CUDA backend initialization before fixture mathematics",
+  "error": "CUDA_ERROR_OUT_OF_MEMORY: out of memory; unable to initialize backend cuda",
+  "exit_code": 1,
+  "other_jaxrun_processes_seen_in_preflight": false,
+  "valid_numerical_result": false,
+  "cpu_fallback_used": false,
+  "packages_or_gpu_settings_changed": false,
+  "processes_killed": false,
+  "local_lease_released": true,
+  "next_action": "Execute the same small fixture first inside the next allocated cluster job; admit only a real GPU pass. Earlier ns_fixture.json belongs to the initial implementation, not this failed attempt."
+}

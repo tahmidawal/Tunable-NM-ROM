@@ -31,6 +31,7 @@ set -euo pipefail
 cd "$1"
 ITEMS=(code COMMIT.txt INPUTS.sha256 job.sbatch job.log)
 if [[ -d output ]]; then ITEMS+=(output); fi
+if [[ -f fixture.json ]]; then ITEMS+=(fixture.json); fi
 find "${ITEMS[@]}" -type f -print0 | sort -z | xargs -0 -r sha256sum > COMPLETE.sha256
 tar -czf result.tar.gz "${ITEMS[@]}" COMPLETE.sha256
 sha256sum result.tar.gz > RESULT_ARCHIVE.sha256

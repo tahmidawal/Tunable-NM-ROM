@@ -1,0 +1,41 @@
+{
+  "schema": "mechanism-prospective-amendment-v1",
+  "amendment": "P03",
+  "admitted_pilot_summary_sha256": "9b31968695efaff4fe36b6c6ac6c6e623a29239020e21f29e35af5a0d18558a2",
+  "changes": {
+    "exposed_case_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "shared_state_geometry": "At reached head states evaluate head/span physically normalized Jacobians, rank cutoffs, lowest span directions outside head+frame tangent, and common-previous-state span departure. This is a local diagnostic, not uniform stability.",
+    "reproducibility": "Compare repeated pilot coefficients, frames and directly reconstructed physical fields against checksum-pinned p02 outputs.",
+    "environment": "Same JAX; preserve and document any known nonfatal NUMA-affinity messages without timing claims."
+  },
+  "frozen": [
+    "bank",
+    "head",
+    "PDEfamily",
+    "eval_seed",
+    "testrows",
+    "ROMtimegrids",
+    "referencesteps",
+    "objective",
+    "solver",
+    "allpreviousqualificationthresholds"
+  ],
+  "no_extension_results_at_registration": true
+}

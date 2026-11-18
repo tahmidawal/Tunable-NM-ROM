@@ -295,6 +295,8 @@ def build_report(data, measured):
 
     template = r'''# Audit the evidence before new experiments
 
+**Status: pre-campaign audit.** The [controlled-experiment report](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments.md) records the subsequent measured head-mechanism, weak-test and complete-query studies. Its results supersede the unrun-task labels below within those studies' stated scopes.
+
 This November 18, 2026 audit finds that **most broad analysis categories have already been run**. The priority is to isolate the head's contribution, explain weak-test failures, and complete the timing contract for the selected claim; the optimistic figures below are explicitly hypothetical, while measured figures and tables are generated from frozen saved JSONs.
 
 “Done” means the experiment exists within its documented scope, including negative findings. “Partial” means an important qualification, control or interpretation remains unresolved. “Not found” is limited to the named manuscript, campaign exports and source index; it is not a claim that no historical file exists elsewhere. This audit rechecks saved summaries and selected arrays, not every solver run. The separate tree-embedding extension is outside the original-paper recommendation, and the older tree campaign remains paused.

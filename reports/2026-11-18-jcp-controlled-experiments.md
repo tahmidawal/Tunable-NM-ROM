@@ -9,8 +9,8 @@ These measurements support a constrained-dynamics explanation for the head and i
 
 - **Head mechanism (qualified):** at the last registered setting, M=584 and $\Delta t=0.01$, median maximum evolved error is 0.0967% for the head versus 0.6697% for the span. The median paired span/head error ratio is 7.06; 16/16 cases favor the head.
 - **Weak-test enrichment:** increasing M from 256 to 2048 reduces median maximum saved-time error from 2.0064% to 1.3228%. Worst error remains 4.2979%, set by the initial projection. This is the original frozen-width baseline.
-- **Head complete-query cost, latest 2-case panel:** selected accuracy-eligible any-mesh classical time / head time is 1.103. Above one favors the ROM. This is a finite development comparison, with both methods measured in the same allocation.
-- **Span complete-query cost, latest 2-case panel:** selected accuracy-eligible any-mesh classical time / span time is 0.405. Above one favors the ROM. This is a finite development comparison, with both methods measured in the same allocation.
+- **Head complete-query cost, latest 16-case panel:** selected accuracy-eligible any-mesh classical time / head time is 0.714. Above one favors the ROM. This is a finite development comparison, with both methods measured in the same allocation.
+- **Span complete-query cost, latest 16-case panel:** selected accuracy-eligible any-mesh classical time / span time is 0.437. Above one favors the ROM. This is a finite development comparison, with both methods measured in the same allocation.
 
 The figures below contain measured values. All cohorts here are exposed development data; untouched confirmation and broader JCP claims remain separate work.
 <!-- GENERATED EXPERIMENT SUMMARY END -->
@@ -156,6 +156,8 @@ This prospectively bounded follow-up targets the initial projection floor diagno
 
 These are instrumented queries from the original host-resident physical input to six complete host-resident fields, including native initial fitting, transfers, evolution and recovery. Primary accuracy is the maximum error over the five evolved requested fields; initial error is retained separately. This differs from both the denser mechanism-history grid and the Burgers metric that includes initialization. Candidate selection and independent timing repetitions use exposed development cases within each allocation. Eligibility requires both the median and worst casewise evolved error no greater than the target; it does not require every individual case to match. A finite candidate search does not certify the fastest possible comparator.
 
+**cost-p01**
+
 | Run / target | Cases | Comparator | Target time (ms) | Comparator time (ms) | Comparator / target | Qualification |
 |---|---:|---|---:|---:|---:|---|
 | [cost-p01](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p01.json) / learned_head | 2 | pod | 31.5855 | — | — | no eligible selection comparator |
@@ -177,9 +179,35 @@ The main table divides cohort median times. The following diagnostics pair case 
 | learned_span64 / fom_m64_cnab2_s40 | 1.358406 | 2 / 2 | 1 / 2 |
 | learned_span64 / fom_m28_rk4_s5 | 0.405582 | 0 / 2 | 1 / 1 |
 
-![Measured complete-query accuracy and cost](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/cost-p01-complete-query.png)
+**cost-p03**
+
+| Run / target | Cases | Comparator | Target time (ms) | Comparator time (ms) | Comparator / target | Qualification |
+|---|---:|---|---:|---:|---:|---|
+| [cost-p03](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p03.json) / learned_head | 16 | pod_head_m292_dt0.01 | 33.4974 | 32.1862 | 0.960858 | Pass: same-allocation accuracy and timing |
+| [cost-p03](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p03.json) / learned_head | 16 | fom_m64_cnab2_s50 | 33.4974 | 59.4616 | 1.775113 | Pass: same-allocation accuracy and timing |
+| [cost-p03](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p03.json) / learned_head | 16 | fom_m40_rk4_s10 | 33.4974 | 23.9027 | 0.713570 | Pass: same-allocation accuracy and timing |
+| [cost-p03](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p03.json) / learned_span64 | 16 | pod_span32 | 37.1220 | 26.4462 | 0.712414 | Pass: same-allocation accuracy and timing |
+| [cost-p03](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p03.json) / learned_span64 | 16 | fom_m64_cnab2_s40 | 37.1220 | 50.2342 | 1.353217 | Pass: same-allocation accuracy and timing |
+| [cost-p03](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p03.json) / learned_span64 | 16 | fom_m32_cnab2_s20 | 37.1220 | 16.2370 | 0.437397 | Pass: same-allocation accuracy and timing |
+
+cost-p03 used **NVIDIA L40S**, job **7355021**. Ratios above one favor the target; no times are compared across jobs. A missing eligible POD comparator is an unresolved match in this candidate set, not a POD speed defeat.
+
+The main table divides cohort median times. The following diagnostics pair case medians; outliers use the per-case Tukey rule on all retained confirmation repetitions, without deleting them.
+
+| Target / comparator | Median paired time ratio | Cases with faster target | Timing outliers: target / comparator |
+|---|---:|---:|---:|
+| learned_head / pod_head_m292_dt0.01 | 0.960995 | 0 / 16 | 11 / 6 |
+| learned_head / fom_m64_cnab2_s50 | 1.776485 | 16 / 16 | 11 / 8 |
+| learned_head / fom_m40_rk4_s10 | 0.713438 | 0 / 16 | 11 / 9 |
+| learned_span64 / pod_span32 | 0.716496 | 0 / 16 | 7 / 6 |
+| learned_span64 / fom_m64_cnab2_s40 | 1.353591 | 16 / 16 | 7 / 5 |
+| learned_span64 / fom_m32_cnab2_s20 | 0.437530 | 0 / 16 | 7 / 4 |
+
+![Measured complete-query accuracy and cost](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/cost-p03-complete-query.png)
 
 Cold measurements, where retained in the experiment lane, cover asset activation, compilation and the first query within an already initialized runtime. They retain the operating-system page cache and exclude runtime/context startup. They cannot be relabeled process-cold deployment costs.
+
+[cost-p03-audit raw audit](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p03-audit.json): 51 effective failed invocations among 6019 retained records, all outside accepted comparisons. The audit separately identifies 12 legacy rows with undefined error metrics. Such rows and their candidates never enter an eligible, selected or confirmed set; the raw records remain unchanged. Subsequent scoring explicitly fails nonfinite metrics.
 
 Retained cost attempts that stopped before accepted timing:
 

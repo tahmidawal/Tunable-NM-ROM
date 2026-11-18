@@ -460,12 +460,13 @@ def main():
     costs = [(e, d, p) for e, d, p in loaded if e["kind"] == "cost"]
     if costs:
         chunks += ["### Complete-query cost", "",
-                   "These are instrumented queries from the original host-resident physical input to six complete host-resident fields, including native initial fitting, transfers, evolution and recovery. Primary accuracy is the maximum error over the five evolved requested fields; initial error is retained separately. This differs from both the denser mechanism-history grid and the Burgers metric that includes initialization. Candidate selection and independent timing repetitions use exposed development cases within each allocation. Eligibility requires both the median and worst casewise evolved error no greater than the target; it does not require every individual case to match. A finite candidate search does not certify the fastest possible comparator.", "",
-                   "| Run / target | Cases | Comparator | Target time (ms) | Comparator time (ms) | Comparator / target | Qualification |",
-                   "|---|---:|---|---:|---:|---:|---|"]
+                   "These are instrumented queries from the original host-resident physical input to six complete host-resident fields, including native initial fitting, transfers, evolution and recovery. Primary accuracy is the maximum error over the five evolved requested fields; initial error is retained separately. This differs from both the denser mechanism-history grid and the Burgers metric that includes initialization. Candidate selection and independent timing repetitions use exposed development cases within each allocation. Eligibility requires both the median and worst casewise evolved error no greater than the target; it does not require every individual case to match. A finite candidate search does not certify the fastest possible comparator.", ""]
         for e, d, p in costs:
             rows = cost_rows(d)
             values[e["id"]] = rows
+            chunks += [f"**{e['id']}**", "",
+                       "| Run / target | Cases | Comparator | Target time (ms) | Comparator time (ms) | Comparator / target | Qualification |",
+                       "|---|---:|---|---:|---:|---:|---|"]
             for row in rows:
                 ct = f"{row['comparator_median_ms']:.4f}" if row["comparator_median_ms"] is not None else "—"
                 ratio = f"{row['comparator_over_target']:.6f}" if row["qualified"] else "—"
@@ -488,6 +489,10 @@ def main():
         plot = cost_plot(e, d, selection, provenance)
         chunks += [f"![Measured complete-query accuracy and cost]({plot})", "",
                    "Cold measurements, where retained in the experiment lane, cover asset activation, compilation and the first query within an already initialized runtime. They retain the operating-system page cache and exclude runtime/context startup. They cannot be relabeled process-cold deployment costs.", ""]
+    for e, d, p in loaded:
+        if e["kind"] == "cost_audit":
+            assert d["raw_audit_passed"] and all(d["checks"].values())
+            chunks += [f"[{e['id']} raw audit]({p['frozen']}): {d['failure_count_all_blocks']} effective failed invocations among {d['timed_invocation_count']} retained records, all outside accepted comparisons. The audit separately identifies {len(d['undefined_metric_invocations'])} legacy rows with undefined error metrics. Such rows and their candidates never enter an eligible, selected or confirmed set; the raw records remain unchanged. Subsequent scoring explicitly fails nonfinite metrics.", ""]
     cost_failures = [(e, d, p) for e, d, p in loaded if e["kind"] == "cost_failure"]
     if cost_failures:
         chunks += ["Retained cost attempts that stopped before accepted timing:", "",

@@ -20,6 +20,12 @@ assert roundinfo['reason']=='stationarity' and roundinfo['gradient']<=1e-14
 _,cap=M.solve(affine,np.zeros(2),(),1e-15,0)
 assert cap['reason']=='budget'
 assert M.stationarity(np.zeros(3),np.eye(3))==0
+tie=[{'cost':1.,'reason':'stagnation'},{'cost':1.+128*np.finfo(float).eps,'reason':'stationarity'}]
+assert M.select_fit_candidate(tie)[0]==1
+tie[1]['cost']=1.+4096*np.finfo(float).eps
+assert M.select_fit_candidate(tie)[0]==0
+tie[0]['reason']='stationarity';tie[1]['cost']=1.+np.finfo(float).eps
+assert M.select_fit_candidate(tie)[0]==0
 ck=np.load(M.HERE/'assets/head_k8_n64.npz')
 p={key:jnp.asarray(ck['p_'+key]) for key in ('W1','b1','W2','b2','W3','b3','Ws')}
 z=jnp.asarray(ck['Z'][0])

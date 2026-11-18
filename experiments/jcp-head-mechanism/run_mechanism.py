@@ -85,13 +85,28 @@ def solve(evaluate, x0, args, gtol, budget, record=True):
 def fit_eval(z,target,p):
     return H.head_apply(p,z)-target,H.head_jacobian(p,z)
 
+def select_fit_candidate(infos):
+    """A stationary candidate may replace a nonstationary winner only inside an f64 cost tie."""
+    costs=np.asarray([q['cost'] for q in infos]);raw=int(np.argmin(costs))
+    band=1024*np.finfo(np.float64).eps*max(float(costs[raw]),1e-300)
+    selected=raw
+    if infos[raw]['reason']!='stationarity':
+        eligible=[i for i,q in enumerate(infos) if q['reason']=='stationarity' and costs[i]<=costs[raw]+band]
+        if eligible:selected=min(eligible,key=lambda i:costs[i])
+    return selected,raw,band
+
 def fit_head(target,p,Z,Hcand,starts=4,extra=None,gtol=1e-7,budget=250):
     dist=np.sum((Hcand-np.asarray(target)[None,:])**2,axis=1)
     seeds=[np.asarray(Z[i]) for i in np.argsort(dist)[:starts]]
     if extra is not None: seeds.extend(np.atleast_2d(extra))
     results=[solve(fit_eval,z,(jnp.asarray(target),p),gtol,budget) for z in seeds]
-    idx=int(np.argmin([q[1]['cost'] for q in results]))
-    return results[idx][0], {'best_index':idx,'starts':[q[1] for q in results],
+    idx,raw,band=select_fit_candidate([q[1] for q in results])
+    coefficient_gap=float(np.linalg.norm(np.asarray(H.head_apply(p,jnp.asarray(results[idx][0])))-np.asarray(H.head_apply(p,jnp.asarray(results[raw][0]))))) if idx!=raw else 0.0
+    return results[idx][0], {'best_index':idx,'raw_minimum_cost_index':raw,'selection_tie_band':band,
+                           'selected_stationary_tie':idx!=raw,'all_final_codes':[q[0] for q in results],
+                           'coefficient_gap_selected_vs_raw':coefficient_gap,
+                           'raw_minimum_found_distance':float(np.sqrt(2*results[raw][1]['cost'])),
+                           'starts':[q[1] for q in results],
                            'best_found_fixed_frame_distance':float(np.sqrt(2*results[idx][1]['cost']))}
 
 def make_eval(dt,n,r,k,kind):
@@ -235,6 +250,7 @@ def main():
         ahead=np.asarray(H.head_apply(p,jnp.asarray(z0)))
         icgap=float(np.linalg.norm(ahead-np.asarray(H.head_apply(p,jnp.asarray(zlo))))/norm0)
         icfit['tight_tighter_gap']=icgap
+        icfit['raw_to_selected_physical_relative_gap']=icfit['coefficient_gap_selected_vs_raw']/norm0
         icfit['looser_fit']=icfitlo
         icfit['qualified']=bool(icgap<=1e-6 and icfit['starts'][icfit['best_index']]['reason']=='stationarity' and icfitlo['starts'][icfitlo['best_index']]['reason']=='stationarity')
         field1=np.asarray(reconstruct(basis,jnp.asarray(ahead),jnp.asarray(center)))

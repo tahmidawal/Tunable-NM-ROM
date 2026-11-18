@@ -1,0 +1,42 @@
+{
+  "schema": "mechanism-prospective-amendment-v1",
+  "amendment": "P04",
+  "status": "registered design; await dev16 qualification and parent cluster slot",
+  "question": "Does the full span catch up when the matched weak objective receives substantially more residual information?",
+  "changes": {
+    "case_indices": [
+      0,
+      1
+    ],
+    "common_solved_scalar_rows": [
+      1168,
+      2336
+    ],
+    "dt": 0.01,
+    "fixed_independent_observer_rows": [
+      2336,
+      4672
+    ],
+    "expanded_exact_operator_rows": 4672
+  },
+  "frozen": [
+    "physicalPDE",
+    "bank",
+    "head",
+    "physicalinitialfield",
+    "sharedheadinitialfit",
+    "solverandthresholds",
+    "referenceandthresholds",
+    "frameupdate",
+    "precision"
+  ],
+  "primary_outcome": "Report head/span paired physical-error ratios and independent residuals at every setting; a disappeared or reversed head benefit is retained, not tuned away.",
+  "scope": "Finite richer-test robustness check on exposed pilot cases; not test-space convergence or uniform stability proof.",
+  "compute": {
+    "one_active_lane_job": true,
+    "gpu": 1,
+    "maximum_minutes": 45,
+    "lane_gpu_hours_total_ceiling": 3
+  },
+  "no_new_results_at_registration": true
+}

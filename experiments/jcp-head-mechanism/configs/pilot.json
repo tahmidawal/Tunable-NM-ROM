@@ -140,17 +140,38 @@
     "absolute_cutoff": 1e-30,
     "report_all_eigenvalues_and_retained_rank": true
   },
-  "amendment": "p03_exposed_development_extension",
+  "amendment": "p03b_stationary_objective_tie_selection",
   "independent_shell": {
     "first_row_zero_based": 584,
     "last_exclusive": 1168,
     "full_residual_vector_saved": true
   },
   "shared_state_geometry": true,
-  "reproducibility_reference": "p02",
+  "reproducibility_reference": "p03",
   "reproducibility_case_indices": [
     0,
-    1
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
   ],
-  "family": "original periodic NS3D two-potential family; source INITIAL_AMPLITUDE=0.2"
+  "family": "original periodic NS3D two-potential family; source INITIAL_AMPLITUDE=0.2",
+  "fit_selection": {
+    "only_if_raw_minimum_is_nonstationary": true,
+    "stationarity_gate_unchanged": true,
+    "objective_tie_band": "1024 * float64 epsilon * max(raw_minimum_cost,1e-300)",
+    "choose": "lowest-cost stationary candidate within band; otherwise preserve original winner and failure",
+    "retain": "all candidate final codes, costs, gradients, histories; raw/selected indices; tie band; physical coefficient difference"
+  }
 }

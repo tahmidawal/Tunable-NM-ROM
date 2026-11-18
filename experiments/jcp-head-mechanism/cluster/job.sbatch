@@ -5,6 +5,7 @@
 #SBATCH --signal=B:TERM@120
 set -euo pipefail
 TASK_ROOT="$PWD"
+CONFIG="${1:-experiments/jcp-head-mechanism/configs/pilot.json}"
 PY=/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python
 export JAX_ENABLE_X64=true JAX_DEFAULT_MATMUL_PRECISION=highest
 export OPENBLAS_NUM_THREADS=8 OMP_NUM_THREADS=8
@@ -20,7 +21,7 @@ df -h /cluster/tufts/paralab
 sha256sum -c INPUTS.sha256
 "$PY" experiments/jcp-head-mechanism/check_fixtures.py --out output/fixture_results.json
 set +e
-"$PY" experiments/jcp-head-mechanism/run_mechanism.py --config experiments/jcp-head-mechanism/configs/pilot.json --out output
+"$PY" experiments/jcp-head-mechanism/run_mechanism.py --config "$CONFIG" --out output
 RUN_EXIT=$?
 set -e
 manifest

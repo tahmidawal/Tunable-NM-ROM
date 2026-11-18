@@ -5,6 +5,8 @@ export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=gc.auto GIT_CONFIG_VALUE_0=0
 LANE=experiments/jcp-head-mechanism
 NS=/cluster/tufts/paralab/tawal01/jcp-head-mechanism-20261118-488b0837
 JOB="${1:?unique pilot id required}"
+CONFIG="${2:-configs/pilot.json}"
+[[ "$CONFIG" =~ ^configs/[a-z0-9_]+\.json$ ]] || exit 2
 [[ "$JOB" =~ ^[a-z0-9]+$ ]] || exit 2
 ROOT="$(git rev-parse --show-toplevel)"
 cd "$ROOT"
@@ -19,7 +21,7 @@ COMMIT=$(git rev-parse HEAD)
 ssh tufts-login "cd $DEST && tar -xzf code.tar.gz && rm code.tar.gz && printf '%s\\n' '$COMMIT' > COMMIT.txt && find experiments -type f -print0 | sort -z | xargs -0 sha256sum > INPUTS.sha256"
 ssh tufts-login 'squeue -u tawal01 -o "%.12i %.30j %.10T %.10M %R"'
 if ssh tufts-login 'squeue -u tawal01 -h -o "%j"' | rg -q '^ctol_jhm_'; then echo 'Lane already has active job'; exit 2; fi
-ID=$(ssh tufts-login "cd $DEST && sbatch --parsable --job-name=ctol_jhm_$JOB --gres=gpu:a100:1 --constraint=a100-80G --mem=64G --time=00:45:00 --output=$DEST/logs/%j.out --error=$DEST/logs/%j.err experiments/jcp-head-mechanism/cluster/job.sbatch")
+ID=$(ssh tufts-login "cd $DEST && sbatch --parsable --job-name=ctol_jhm_$JOB --gres=gpu:a100:1 --constraint=a100-80G --mem=64G --time=00:45:00 --output=$DEST/logs/%j.out --error=$DEST/logs/%j.err experiments/jcp-head-mechanism/cluster/job.sbatch $LANE/$CONFIG")
 printf '%s\n' "$ID" > "$LANE/runs/$JOB.jobid"
 ssh tufts-login 'squeue -u tawal01 -o "%.12i %.30j %.10T %.10M %R"'
 printf 'JOB_ID=%s DEST=%s\n' "$ID" "$DEST"

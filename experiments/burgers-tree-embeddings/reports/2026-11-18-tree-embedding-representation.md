@@ -45,7 +45,7 @@ The child correction adds to the jointly refitted parent shown separately. The v
 
 ![Component costs](representation-component-cost.png)
 
-These are synchronized cached-feature field and Jacobian-vector-product calls at 4096 integration points, with five saved repetitions in one GPU allocation. They include call/dispatch overhead and exclude compilation and feature-cache construction. They are **not** timings for 4096-by4096 output or complete PDE queries. No cross-job wall-clock comparison is used. The central PDE-cost question remains unanswered because accuracy failed first.
+These are synchronized cached-feature field and Jacobian-vector-product calls at 4096 integration points, with five saved repetitions in one GPU allocation. They include call/dispatch overhead and exclude compilation and feature-cache construction. They are **not** timings for 4096-by-4096 output or complete PDE queries. No cross-job wall-clock comparison is used. The central PDE-cost question remains unanswered because accuracy failed first.
 
 The following separate R1 component memory measurements use 128-by-128 integration in fresh GPU processes. They include feature construction, common checkpoint loading and cached field/Jacobian calls. All ancestor contributions are included; inference has no inactive padding. These process peaks exclude code fitting, PDE evolution and dense output, and cannot establish production memory requirements. Cache size is the stored matrix, distinct from allocator peak; fixed global transform entries are recorded separately in the raw audit.
 
@@ -74,7 +74,7 @@ Direct spectral evaluation and neural decoding produced actual 4096-by-4096 arra
 
 ![Actual dense witness for the best repaired model](actual4096-best-witness.png)
 
-Maximum pointwise errors, their locations, 2048/4096 scoring changes, returned arrays needed to recompute signed/absolute errors are retained in each audit. Pointwise diagnostics are not a 1% pointwise guarantee. An independent NumPy audit reproduces every saved 4096 error, checks boundaries and peak locations, and rejects deliberate use of the old initial-field denominator.
+Maximum pointwise errors, their locations, 2048/4096 scoring changes and returned arrays needed to recompute signed/absolute errors are retained in the audits. Pointwise diagnostics are not a 1% pointwise guarantee. An independent NumPy audit reproduces every saved 4096 error, checks boundaries and peak locations, and rejects deliberate use of the old initial-field denominator.
 
 | Recipe | Zero-child field change | Child Jacobian rank | Rank after removing parent directions |
 |---|---:|---:|---:|

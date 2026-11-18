@@ -31,6 +31,15 @@ cpu_hours=sum(r['elapsed_seconds']*r['allocated_cpus'] for r in ledger)/3600
 references=[read(j) for j in ('refsdev01','refstrain01')]
 allowance=max(max(c['allowance']) for r in references for c in r['cases'])
 cross=read('crossref01');crossmax=max(max(c['levels'][-1]['relative_error']) for c in cross['cases'])
+assert cross['passed'] and all(c['provisional_ladder_pass'] for r in references for c in r['cases'])
+assert all(not r['final_test_opened'] for r in references)
+qualification=dict(status='qualified_empirically_for_representation_study',spectral_trajectories=sum(len(r['cases']) for r in references),
+    maximum_spectral_allowance=allowance,maximum_independent_difference=crossmax,
+    independent_cases=[c['case'] for c in cross['cases']],all_required_crosschecks_passed=cross['passed'],
+    final_test_solution_fields_opened=False,
+    raw_status_note='Reference generation records retain their original pre-crosscheck status; this composite record incorporates the separate crosscheck job.',
+    sources={j:hashlib.sha256((H/f'results/{j}/output/result.json').read_bytes()).hexdigest() for j in ['refsdev01','refstrain01','crossref01']})
+(H/'manifests/reference-qualification.json').write_text(json.dumps(qualification,indent=2)+'\n')
 table='\n'.join(f'| {r["recipe"]} | {r["method"]} | {r["allocation"]} | {r["variables"]} | {100*r["random"]:.4f}% | {100*r["alignment"]:.4f}% | {100*r["median"]:.4f}% | {100*r["p90"]:.4f}% | {r["failing_trajectories"]}/28 |' for r in rows)
 dense=[]
 for recipe,a in audits.items():
@@ -180,6 +189,6 @@ main=Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports');assets=main/'2026-11
 for file in ['bounded-repairs.png','representation-capacity.png','parent-children-witness.png','representation-component-cost.png','actual4096-best-witness.png']:
     shutil.copy2(out/file,assets/file);text=text.replace(']('+file+')',']('+assets.name+'/'+file+')')
 (main/report.name).write_text(text)
-sources=[H/'cluster/ledger.json',H/'DECISION-B0.json',H/'manifests/independent-array-audit.json',H/'manifests/allocation-audit.json']+[H/f'results/{r["name"]}/output/result.json' for r in ledger]
+sources=[H/'cluster/ledger.json',H/'DECISION-B0.json',H/'manifests/independent-array-audit.json',H/'manifests/allocation-audit.json',H/'manifests/reference-qualification.json']+[H/f'results/{r["name"]}/output/result.json' for r in ledger]
 (out/'closeout-source-hashes.json').write_text(json.dumps({str(p.relative_to(H)):hashlib.sha256(p.read_bytes()).hexdigest() for p in sources},indent=2)+'\n')
 print(json.dumps(decision,indent=2))

@@ -1,0 +1,31 @@
+{
+  "backend": "gpu",
+  "dtype": "float64",
+  "affine_solve": {
+    "reason": "stationarity",
+    "gradient": 1.6219876377335632e-10,
+    "cost": 0.37555555555555553,
+    "residual_norm": 0.8666666666666666,
+    "iterations": 6,
+    "accepted": 3
+  },
+  "cap_reason": "budget",
+  "head_jacobian_relative": 8.213325132335196e-17,
+  "physical_tangent_gram_relative": 3.840554636534596e-16,
+  "tangent_retained_rank": 4,
+  "tangent_excluded": 3,
+  "analytic_residual_action": {
+    "epsilons": [
+      0.0001,
+      1e-05,
+      1e-06
+    ],
+    "relative_errors": [
+      3.891966986971741e-13,
+      5.1075620714731075e-12,
+      4.7972166893348774e-11
+    ],
+    "minimum": 3.891966986971741e-13
+  },
+  "all_passed": true
+}

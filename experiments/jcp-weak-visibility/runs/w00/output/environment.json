@@ -1,0 +1,119 @@
+{
+  "config": {
+    "version": "P2-W0-prefix-projection-20261118",
+    "reference_arithmetic": "neighbor-difference",
+    "mesh_intervals": 256,
+    "bank_width": 512,
+    "solve_rows": [
+      256,
+      512,
+      1024,
+      2048
+    ],
+    "observer_rows": 1024,
+    "case_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "cohort": "dev6",
+    "seed_first_draw": 7090702,
+    "seed_first_count": 4,
+    "dt": 0.005,
+    "horizon": 0.25,
+    "solver_gtols": {
+      "prod": 1e-05,
+      "tight": 1e-07,
+      "tighter": 1e-08
+    },
+    "solver_max_iterations": 200,
+    "reference_tolerances": [
+      [
+        1e-12,
+        1e-10
+      ],
+      [
+        1e-14,
+        1e-12
+      ]
+    ],
+    "reference_max_disagreement": 1e-08,
+    "tangent_relative_eigenvalue_threshold": 1e-12,
+    "lane_budget_gpu_hours": 3,
+    "initial_job_limit_minutes": 45,
+    "timing_repetitions": 2,
+    "physical_reference_scope": "same-grid same-step discrete FOM only",
+    "cohort_phase": "all-dev6-width",
+    "seed_second_draw": 911702,
+    "seed_second_count": 2,
+    "local_parameter_reference": [
+      [
+        0.28252396549391534,
+        0.6366084820193556,
+        0.1868965964536891,
+        1.0820386491896183,
+        0.03172924415397142
+      ],
+      [
+        0.6969516647251746,
+        0.3451044576480736,
+        0.10606757516929861,
+        1.883079655612731,
+        0.09507673822337352
+      ],
+      [
+        0.45131714866409367,
+        0.5960642645978614,
+        0.09280172370327633,
+        1.5231312745422343,
+        0.014089575881689515
+      ],
+      [
+        0.15227706255373677,
+        0.28851457124797375,
+        0.13591160848175055,
+        1.2767181974115185,
+        0.017628207277743224
+      ],
+      [
+        0.8130532184264921,
+        0.8113791413070836,
+        0.08364773158362382,
+        1.0772552621887435,
+        0.025703631918398633
+      ],
+      [
+        0.4606729763621312,
+        0.16598352069267147,
+        0.07016574189598321,
+        1.1994479966226255,
+        0.04655240960473743
+      ]
+    ],
+    "local_parameter_sha256": "3610a428db73a58615a5a2dc7dae5045da0f4977f93fcd1f798c3a9723289e57",
+    "prefix_widths": [
+      128,
+      256,
+      512
+    ],
+    "projection_admission_ratio": 0.8,
+    "job_limit_minutes": 10
+  },
+  "checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+  "rotation_sha256": "51149166b53dad386c93fa0682079aec96b61276801d9a6d4f622453d6426772",
+  "source_sha256": {
+    "screen_prefix.py": "f7041263cb20ea9de8aa55b5ee55d100bacb2c8a0f19d5f869704cc073ef56de",
+    "core.py": "e4904a1736f6c3893fb19f01c3320e761d951e937f69414153ab79ce78e1215b",
+    "run.py": "ee61ce3e9240aad3c1f20516733e251c341b8242001442498c7af99538cd2230",
+    "cohort_guard.py": "906c4cd55c76bc04ea215554a489374894d9babc50532608e2610b98ea5fcafa"
+  },
+  "job_id": "7355058",
+  "commit": "128750d37c4076bf3c298c224071b40ac2075eb4",
+  "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition, GPU-5726d0d3-70ae-a17c-0693-976a7ba7e4a6",
+  "backend": "gpu",
+  "x64": true,
+  "matmul_precision": "highest"
+}

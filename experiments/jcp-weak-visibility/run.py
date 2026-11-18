@@ -129,6 +129,11 @@ def main():
         assert admission['W0_raw_audit_passed'] and admission['R128_reproduction_passed']
         assert admission['admitted_widths']
         assert width == 128 or width in admission['admitted_widths']
+        for key, expected in admission['fixed_contract'].items():
+            assert cfg[key] == expected, f'Width-study contract mismatch: {key}'
+        assert cfg['solve_rows'] == admission['allowed_test_spaces'][str(width)]
+        assert cfg['observer_start'] == admission['required_observer_start'] and cfg['observer_rows'] == admission['required_observer_rows']
+        assert cfg['initialization'] == admission['required_initialization']
     dt, steps = cfg['dt'], int(round(cfg['horizon']/cfg['dt']))
     assert abs(steps*dt-cfg['horizon']) < 1e-12
     ms = cfg['solve_rows']
@@ -137,6 +142,10 @@ def main():
     assert observer_start >= max_m
     modes, lam = C.mode_order(n, observer_start+cfg['observer_rows'])
     ckpt, rotation = HERE/'inputs/frozen.pkl', HERE/'inputs/rotation_R512.npz'
+    if cfg.get('width_followup'):
+        assert sha(ckpt) == admission['source_checkpoint_sha256']
+        assert sha(rotation) == admission['source_rotation_sha256']
+        assert sha(HERE/'core.py') == admission['source_core_sha256']
     checkpoint = pickle.load(open(ckpt, 'rb'))
     params = jax.tree_util.tree_map(jnp.asarray, checkpoint['params'])
     T = np.load(rotation)['T'][:, :width]
@@ -150,6 +159,14 @@ def main():
     gram, eigenvalues, transform = C.physical_tangent(G, n, cfg['tangent_relative_eigenvalue_threshold'])
     ranks = {str(t): int(np.sum(eigenvalues > t*eigenvalues[-1])) for t in (1e-10, 1e-12, 1e-14)}
     assert transform.shape[1] == width, 'Frozen span lost rank; retain this failure before changing thresholds.'
+    if cfg.get('width_followup'):
+        assert all(rank == width for rank in ranks.values()), 'Width prefix fails one of the three declared Gram rank cutoffs.'
+    if cfg.get('initialization') == 'mass-qr':
+        Qmass, Rmass = jax.block_until_ready(jnp.linalg.qr(G/n, mode='reduced'))
+        qr_singular = np.linalg.svd(np.asarray(Rmass), compute_uv=False)
+        qr_ranks = {str(t):int(np.sum(qr_singular**2 > t*qr_singular[0]**2)) for t in (1e-10,1e-12,1e-14)}
+        assert all(rank == width for rank in qr_ranks.values()), 'Width prefix fails one of the three declared QR rank cutoffs.'
+        npz(out/'initialization-qr.npz', Rmass=Rmass, singular_values=qr_singular)
     for start in range(0, width, 64):
         npz(out/f'bank-columns-{start:03d}.npz', bank=G[:, start:start+64])
     npz(out/'operators.npz', A=A, modes=modes, lam=lam, gram=gram, gram_eigenvalues=eigenvalues, transform=transform)
@@ -169,6 +186,7 @@ def main():
     environment['observer_start_row_zero_based'] = observer_start
     if cfg.get('width_followup'):
         environment['width_admission_sha256'] = sha(admission_path)
+        environment['initialization_qr_ranks'] = qr_ranks
     save_json(out/'environment.json', environment)
     solver = C.make_solver(n, dt, steps, cfg['solver_max_iterations'])
     diagnostic = jax.jit(lambda c, old, nu, d: C.value_jac(c, old, nu, d, n, dt))
@@ -229,7 +247,6 @@ def main():
         Ghost = np.asarray(G)
         # Exact mass projection in this fixed linear span; same coefficients initialize all M.
         if cfg.get('initialization') == 'mass-qr':
-            Qmass, Rmass = jax.block_until_ready(jnp.linalg.qr(G/n, mode='reduced'))
             rhs = Qmass.T @ (reference.T/n)
             project_coeff = jax.scipy.linalg.solve_triangular(Rmass, rhs, lower=False).T
             qr_projection = (Qmass @ rhs).T*n

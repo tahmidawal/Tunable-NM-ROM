@@ -4,6 +4,17 @@ This is the development protocol for the experiments authorized on November 18, 
 
 The central questions are whether the nonlinear head improves trajectories under matched numerical controls, whether richer weak tests detect errors missed by the minimized residual, and whether the selected method saves complete-query cost at matched accuracy. The earlier optimistic sketches remain hypotheses, not acceptance criteria or promised outcomes.
 
+<!-- GENERATED EXPERIMENT SUMMARY BEGIN -->
+These measurements support a constrained-dynamics explanation for the head and identify a separate representation limit in Burgers.
+
+- **Head mechanism (qualified):** at the last registered setting, M=584 and $\Delta t=0.01$, median maximum evolved error is 0.0967% for the head versus 0.6697% for the span. The median paired span/head error ratio is 7.06; 16/16 cases favor the head.
+- **Weak-test enrichment:** increasing M from 256 to 2048 reduces median maximum saved-time error from 2.0064% to 1.3228%. Worst error remains 4.2979%, set by the initial projection. This is the original frozen-width baseline.
+- **Head complete-query cost, latest 2-case panel:** selected accuracy-eligible any-mesh classical time / head time is 1.103. Above one favors the ROM. This is a finite development comparison, with both methods measured in the same allocation.
+- **Span complete-query cost, latest 2-case panel:** selected accuracy-eligible any-mesh classical time / span time is 0.405. Above one favors the ROM. This is a finite development comparison, with both methods measured in the same allocation.
+
+The figures below contain measured values. All cohorts here are exposed development data; untouched confirmation and broader JCP claims remain separate work.
+<!-- GENERATED EXPERIMENT SUMMARY END -->
+
 ## Separate ownership and initial resources
 
 The following are **initial resource reservations**, not measured costs. Every lane starts from the canonical consolidated fork and has its own worktree, experiment code, cluster namespace, ownership record and job ledger. The coordinator remains on the main checkout for this report and the canonical lab log.
@@ -129,7 +140,7 @@ Adding unchanged rows cannot decrease the smallest singular value at an identica
 
 ### Complete-query cost
 
-These are instrumented queries from the original host-resident physical input to complete host-resident fields, including native initial fitting, transfers, evolution and recovery. Accuracy is scored on the six requested output fields, not the denser mechanism-history grid. Candidate selection and independent timing repetitions use exposed development cases within each allocation. Eligibility requires both median and worst error no greater than the target. A finite candidate search does not certify the fastest possible comparator.
+These are instrumented queries from the original host-resident physical input to six complete host-resident fields, including native initial fitting, transfers, evolution and recovery. Primary accuracy is the maximum error over the five evolved requested fields; initial error is retained separately. This differs from both the denser mechanism-history grid and the Burgers metric that includes initialization. Candidate selection and independent timing repetitions use exposed development cases within each allocation. Eligibility requires both the median and worst casewise evolved error no greater than the target; it does not require every individual case to match. A finite candidate search does not certify the fastest possible comparator.
 
 | Run / target | Cases | Comparator | Target time (ms) | Comparator time (ms) | Comparator / target | Qualification |
 |---|---:|---|---:|---:|---:|---|
@@ -146,6 +157,14 @@ cost-p01 used **NVIDIA L40S**, job **7354479**. Ratios above one favor the targe
 
 Cold measurements, where retained in the experiment lane, cover asset activation, compilation and the first query within an already initialized runtime. They retain the operating-system page cache and exclude runtime/context startup. They cannot be relabeled process-cold deployment costs.
 
+Retained cost attempts that stopped before accepted timing:
+
+| Run / job | Outcome | Allocated GPU-seconds |
+|---|---|---:|
+| [cost-p02-failure](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p02-failure.json) / 7354813 | Native learned-head initialization on case14 did not reach declared stationarity; no timing result accepted. | 223 |
+
+A scalar compiled replay subsequently tests the same targets and comparator grid with unchanged convergence thresholds. Its different GPU allocation prevents attributing any successful repair exclusively to the earlier batched arithmetic.
+
 ### Reproducibility
 
 The [builder](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/build_2026_11_18_jcp_controlled_experiments.py) reads the [registered sources](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/sources.json), freezes the JSON evidence, and generates every numerical table and plot above. [Source hashes](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/source-manifest.json) and [derived values](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/measured-values.json) are saved separately. Full histories, configurations, numerical arrays, hardware logs and checksum manifests remain in the linked experiment lanes. No synthetic values enter these figures.
@@ -161,3 +180,5 @@ The [environment review](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-
 **Quadrature** approximates integrals with weighted sample points. **Jacobian** measures local sensitivity. **POD** is a linear basis derived from training snapshots. **Matched accuracy** requires comparable physical error under the same reference and eligibility rules. **Complete query** includes all work needed to turn the agreed input into the requested answer. **Allocated GPU-hours** count the reserved GPU time actually charged to a job, including setup. **Development amendment** is a recorded change tested on exposed development cases. **Confirmation** evaluates a frozen choice on previously untouched cases.
 
 **Case** means one initial field and its PDE parameters. **M** is the actual number of scalar weak residual equations. **Time step** is the interval between successive numerical updates. **Trajectory error** compares a predicted field with its reference at each saved time; the stated normalization specifies the field norm used as denominator. **Median / worst** denote the middle / largest casewise error, after first maximizing over the stated times. **Numerical qualification** requires the registered reference, operator, derivative and solver checks; an attractive error alone does not pass it. **Stationarity** is a small objective gradient and does not certify a global minimum. **Independent shell residual** measures equations outside every solved test space, using the same extra rows for every compared method. **Source hash** identifies the exact saved file bytes.
+
+**FOM** means the full discretized PDE solver. **Same-mesh / any-mesh classical** distinguish comparators restricted to the requested mesh from those allowed a different internal mesh while returning the same requested fields. **Initial projection** is a model's approximation of the supplied physical initial field. **Mass projection** is the closest field in a linear span under the spatially weighted field norm. **Singular value** measures the sensitivity of residual measurements to a particular perturbation; its smallest value identifies a least visible direction. **Physical rank** counts independent field changes after normalization. **Outside-head norm fraction** measures the part of a specified perturbation that cannot be expressed by the local head-plus-frame tangent. It is a fraction of a norm, not of cases or directions.

@@ -11,12 +11,15 @@ import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+matplotlib.rcParams["svg.hashsalt"] = "jcp-controlled-experiments"
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / "reports/2026-11-18-jcp-controlled-experiments-assets"
 REPORT = ROOT / "reports/2026-11-18-jcp-controlled-experiments.md"
 BEGIN = "<!-- GENERATED EXPERIMENT RESULTS BEGIN -->"
 END = "<!-- GENERATED EXPERIMENT RESULTS END -->"
+SUMMARY_BEGIN = "<!-- GENERATED EXPERIMENT SUMMARY BEGIN -->"
+SUMMARY_END = "<!-- GENERATED EXPERIMENT SUMMARY END -->"
 
 
 def digest(data):
@@ -88,7 +91,7 @@ def head_plot(entry, data):
     fig.text(.5, .015, f"Lines: pointwise medians. Shading: case range, not uncertainty intervals. Source: {entry['id']}, job {data['job_id']}.", ha="center", fontsize=9)
     fig.tight_layout(rect=[0, .07, 1, .94])
     for suffix in ("png", "svg"):
-        fig.savefig(ASSETS / f"{entry['id']}-trajectories.{suffix}", dpi=170)
+        fig.savefig(ASSETS / f"{entry['id']}-trajectories.{suffix}", dpi=170, metadata={"Date": None} if suffix == "svg" else None)
     plt.close(fig)
     return ASSETS / f"{entry['id']}-trajectories.png"
 
@@ -152,7 +155,7 @@ def head_probes(entry, data, manifest):
     fig.text(.5, .015, "Each dot is one restarted time-step solve; steps within a case are correlated.\nBelow 1 horizontally: lower residual. Above 1 vertically: greater physical error.", ha="center", fontsize=9)
     fig.tight_layout(rect=[0, .09, 1, 1])
     for suffix in ("png", "svg"):
-        fig.savefig(ASSETS / f"{entry['id']}-residual-versus-error.{suffix}", dpi=170)
+        fig.savefig(ASSETS / f"{entry['id']}-residual-versus-error.{suffix}", dpi=170, metadata={"Date": None} if suffix == "svg" else None)
     plt.close(fig)
     return records, ASSETS / f"{entry['id']}-residual-versus-error.png"
 
@@ -190,7 +193,7 @@ def weak_plot(entry, data):
     fig.text(.5, .015, f"{entry['id']}: same-grid/same-step discrete reference. Error includes initial time. Shading is case range.\nSingular-value monotonicity for nested unchanged rows is algebraic; physical improvement must be measured separately.", ha="center", fontsize=9)
     fig.tight_layout(rect=[0, .11, 1, .94])
     for suffix in ("png", "svg"):
-        fig.savefig(ASSETS / f"{entry['id']}-test-enrichment.{suffix}", dpi=170)
+        fig.savefig(ASSETS / f"{entry['id']}-test-enrichment.{suffix}", dpi=170, metadata={"Date": None} if suffix == "svg" else None)
     plt.close(fig)
     return ASSETS / f"{entry['id']}-test-enrichment.png"
 
@@ -247,7 +250,7 @@ def enrichment_plot(entry, data, baseline):
     fig.text(.5, .015, "Same frozen bank/head, common initial reconstruction and discrete reference. Finite enrichment; no asymptotic convergence claim.", ha="center", fontsize=8)
     fig.tight_layout(rect=[0, .06, 1, 1])
     for suffix in ("png", "svg"):
-        fig.savefig(ASSETS / f"{entry['id']}-richer-tests.{suffix}", dpi=170)
+        fig.savefig(ASSETS / f"{entry['id']}-richer-tests.{suffix}", dpi=170, metadata={"Date": None} if suffix == "svg" else None)
     plt.close(fig)
     return records, ASSETS / f"{entry['id']}-richer-tests.png"
 
@@ -269,7 +272,7 @@ def cost_plot(entry, data, selection, provenance):
                 axes[0].annotate(name.replace("learned_", ""), (v["median_case_ms"], 100*v["worst_evolved_error"]),
                                  xytext=(5, 5), textcoords="offset points", fontsize=8)
     axes[0].set(xscale="log", yscale="log", title="Finite development candidate set",
-                xlabel="Median complete-query time (ms)", ylabel="Worst error at requested outputs\n(% of initial field norm)")
+                xlabel="Median complete-query time (ms)", ylabel="Worst error at evolved requested outputs\n(% of initial field norm)")
     axes[0].legend(fontsize=8)
     axes[0].text(.02, .025, f"Outside display: {overflow} above {display_cap_percent}% error; {failed} failed.\nAll retained in the raw selection table.",
                  transform=axes[0].transAxes, fontsize=8, va="bottom")
@@ -289,10 +292,10 @@ def cost_plot(entry, data, selection, provenance):
     for ax in axes:
         ax.grid(alpha=.17)
     fig.suptitle(f"{entry['id']}: instrumented complete-query measurements\n{provenance['gpu'].split(',')[0]}", fontsize=11)
-    fig.text(.5, .015, "Left: displayed candidate subset with exclusions stated. Right: median paired case ratios and case range.\nAccuracy uses the six requested output fields; initial fitting and host transfers are included. Finite search, same allocation only.", ha="center", fontsize=9)
+    fig.text(.5, .015, "Left: displayed candidate subset with exclusions stated. Right: median paired case ratios and case range.\nPrimary accuracy: five evolved fields; initial error retained separately. Six fields returned, native fitting and transfers included.", ha="center", fontsize=9)
     fig.tight_layout(rect=[0, .10, 1, .93])
     for suffix in ("png", "svg"):
-        fig.savefig(ASSETS / f"{entry['id']}-complete-query.{suffix}", dpi=170)
+        fig.savefig(ASSETS / f"{entry['id']}-complete-query.{suffix}", dpi=170, metadata={"Date": None} if suffix == "svg" else None)
     plt.close(fig)
     return ASSETS / f"{entry['id']}-complete-query.png"
 
@@ -391,7 +394,7 @@ def main():
     costs = [(e, d, p) for e, d, p in loaded if e["kind"] == "cost"]
     if costs:
         chunks += ["### Complete-query cost", "",
-                   "These are instrumented queries from the original host-resident physical input to complete host-resident fields, including native initial fitting, transfers, evolution and recovery. Accuracy is scored on the six requested output fields, not the denser mechanism-history grid. Candidate selection and independent timing repetitions use exposed development cases within each allocation. Eligibility requires both median and worst error no greater than the target. A finite candidate search does not certify the fastest possible comparator.", "",
+                   "These are instrumented queries from the original host-resident physical input to six complete host-resident fields, including native initial fitting, transfers, evolution and recovery. Primary accuracy is the maximum error over the five evolved requested fields; initial error is retained separately. This differs from both the denser mechanism-history grid and the Burgers metric that includes initialization. Candidate selection and independent timing repetitions use exposed development cases within each allocation. Eligibility requires both the median and worst casewise evolved error no greater than the target; it does not require every individual case to match. A finite candidate search does not certify the fastest possible comparator.", "",
                    "| Run / target | Cases | Comparator | Target time (ms) | Comparator time (ms) | Comparator / target | Qualification |",
                    "|---|---:|---|---:|---:|---:|---|"]
         for e, d, p in costs:
@@ -412,6 +415,14 @@ def main():
         plot = cost_plot(e, d, selection, provenance)
         chunks += [f"![Measured complete-query accuracy and cost]({plot})", "",
                    "Cold measurements, where retained in the experiment lane, cover asset activation, compilation and the first query within an already initialized runtime. They retain the operating-system page cache and exclude runtime/context startup. They cannot be relabeled process-cold deployment costs.", ""]
+    cost_failures = [(e, d, p) for e, d, p in loaded if e["kind"] == "cost_failure"]
+    if cost_failures:
+        chunks += ["Retained cost attempts that stopped before accepted timing:", "",
+                   "| Run / job | Outcome | Allocated GPU-seconds |",
+                   "|---|---|---:|"]
+        for e, d, p in cost_failures:
+            chunks.append(f"| [{e['id']}]({p['frozen']}) / {d['job_id']} | {d['failure']} | {d['allocated_gpu_seconds']} |")
+        chunks += ["", "A scalar compiled replay subsequently tests the same targets and comparator grid with unchanged convergence thresholds. Its different GPU allocation prevents attributing any successful repair exclusively to the earlier batched arithmetic.", ""]
     chunks += ["### Reproducibility", "",
                f"The [builder]({Path(__file__).resolve()}) reads the [registered sources]({ASSETS/'sources.json'}), freezes the JSON evidence, and generates every numerical table and plot above. [Source hashes]({ASSETS/'source-manifest.json'}) and [derived values]({ASSETS/'measured-values.json'}) are saved separately. Full histories, configurations, numerical arrays, hardware logs and checksum manifests remain in the linked experiment lanes. No synthetic values enter these figures.", ""]
     for e, d, p in loaded:
@@ -425,6 +436,33 @@ def main():
         report = before + block + after
     else:
         report = report.replace("## Glossary", block + "\n\n## Glossary")
+    overview = ["These measurements support a constrained-dynamics explanation for the head and identify a separate representation limit in Burgers.", ""]
+    if heads:
+        e, d, _ = heads[-1]
+        v = values[e["id"]][-1]
+        overview += [f"- **Head mechanism ({'qualified' if d['qualification']['passed'] else 'provisional'}):** at the last registered setting, M={v['rows']} and $\\Delta t={v['dt']:g}$, median maximum evolved error is {v['head_median_percent']:.4f}% for the head versus {v['span_median_percent']:.4f}% for the span. The median paired span/head error ratio is {v['paired_ratio_median']:.2f}; {v['head_lower_count']}/{len(v['cases'])} cases favor the head."]
+    if weaks:
+        e, _, _ = weaks[-1]
+        rr = values[e["id"]]
+        first_m, last_m = min(v["M"] for v in rr), max(v["M"] for v in rr)
+        first = [v["max_error_percent"] for v in rr if v["M"] == first_m]
+        last = [v["max_error_percent"] for v in rr if v["M"] == last_m]
+        overview += [f"- **Weak-test enrichment:** increasing M from {first_m} to {last_m} reduces median maximum saved-time error from {np.median(first):.4f}% to {np.median(last):.4f}%. Worst error remains {max(last):.4f}%, set by the initial projection. This is the original frozen-width baseline."]
+    if costs:
+        e, _, _ = costs[-1]
+        rr = values[e["id"]]
+        for target, name in (("learned_head", "Head"), ("learned_span64", "Span")):
+            row = next((v for v in rr if v["target"] == target and v["group"] == "any_mesh_classical"), None)
+            if row and row["qualified"]:
+                overview += [f"- **{name} complete-query cost, latest {row['case_count']}-case panel:** selected accuracy-eligible any-mesh classical time / {name.lower()} time is {row['comparator_over_target']:.3f}. Above one favors the ROM. This is a finite development comparison, with both methods measured in the same allocation."]
+    overview += ["", "The figures below contain measured values. All cohorts here are exposed development data; untouched confirmation and broader JCP claims remain separate work."]
+    summary = SUMMARY_BEGIN + "\n" + "\n".join(overview) + "\n" + SUMMARY_END
+    if SUMMARY_BEGIN in report:
+        before, tail = report.split(SUMMARY_BEGIN, 1)
+        _, after = tail.split(SUMMARY_END, 1)
+        report = before + summary + after
+    else:
+        report = report.replace("## Separate ownership and initial resources", summary + "\n\n## Separate ownership and initial resources")
     report = report.replace("No new experimental result has yet been accepted; numerical tables will be generated from saved run records as the studies finish.", "New measured development runs and their qualification status are generated below from retained records; failed attempts remain visible.")
     REPORT.write_text(report)
     (ASSETS / "source-manifest.json").write_text(json.dumps(manifest, indent=2)+"\n")

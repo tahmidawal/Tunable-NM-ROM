@@ -22,8 +22,9 @@ def regenerate(cfg, draw):
     physical = draw(cfg['seed_first_draw'], cfg['seed_first_count'])
     record = dict(phase=cfg.get('cohort_phase', 'initial-dev2'), first_draw_seed=cfg['seed_first_draw'],
                   first_draw_count=cfg['seed_first_count'], selected_case_ids=cfg['case_ids'])
-    if cfg.get('cohort_phase') == 'remaining-dev6':
-        assert cfg['case_ids'] == [2, 3, 4, 5]
+    if cfg.get('cohort_phase') in ('remaining-dev6', 'all-dev6-width'):
+        expected_ids = [2, 3, 4, 5] if cfg['cohort_phase'] == 'remaining-dev6' else [0, 1, 2, 3, 4, 5]
+        assert cfg['case_ids'] == expected_ids
         assert cfg['seed_second_draw'] == 911702 and cfg['seed_second_count'] == 2
         physical = np.concatenate((physical, draw(cfg['seed_second_draw'], cfg['seed_second_count'])))
         # Execute only the two original metadata functions, never module imports or other cohorts.

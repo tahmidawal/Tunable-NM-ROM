@@ -43,3 +43,27 @@ def reduced_trajectory(N,dt=.0025):
   _,v=jax.lax.scan(block,a0,None,length=10)
   return jnp.concatenate([a0[None],v])
  return run
+
+def flux_tables(W,N,q):
+ from numpy.polynomial.legendre import leggauss
+ x,w=leggauss(q);x=(x+1)/2;w=w/2;k=jnp.arange(1,N,dtype=jnp.float64)
+ S=jnp.sin(jnp.pi*jnp.asarray(x)[:,None]*k);D=jnp.pi*k*jnp.cos(jnp.pi*jnp.asarray(x)[:,None]*k)
+ V=W.reshape(N-1,N-1,-1)
+ def tensor(A,B):return jnp.einsum('ai,ijr,bj->abr',A,V,B).reshape(q*q,-1)
+ G=2*tensor(S,S);grad=2*(tensor(D,S)+tensor(S,D));weights=jnp.asarray(np.outer(w,w).ravel())
+ return G,.5*weights[:,None]*grad
+
+def flux_trajectory(dt=.005):
+ @jax.jit
+ def run(a0,nu,G,H,eigs):
+  co=P.etdrk4_coefs(-nu*eigs,dt,32)
+  def nonlin(a):return H.T@(G@a)**2
+  def step(v):
+   nv=nonlin(v);a=co['E2']*v+co['Q']*nv;na=nonlin(a);b=co['E2']*v+co['Q']*na;nb=nonlin(b)
+   c=co['E2']*a+co['Q']*(2*nb-nv);nc=nonlin(c)
+   return co['E']*v+co['f1']*nv+2*co['f2']*(na+nb)+co['f3']*nc
+  def block(v,_):
+   v=jax.lax.fori_loop(0,round(.025/dt),lambda i,x:step(x),v);return v,v
+  _,v=jax.lax.scan(block,a0,None,length=10)
+  return jnp.concatenate([a0[None],v])
+ return run

@@ -9,9 +9,21 @@ REMOTE=$(cat "$LOCAL/REMOTE.txt")
 JOB_ID=$(cat "$LOCAL/JOB_ID.txt")
 [[ "$JOB_ID" =~ ^[0-9]+$ ]] || exit 2
 [[ "$REMOTE" == "/cluster/tufts/paralab/tawal01/jcp-paired-cost-20261118-488b0837/$RUN_ID" ]] || exit 2
-ACTIVE=$(ssh tufts-login "squeue -h -j '$JOB_ID' -o '%i'")
-[[ -z "$ACTIVE" ]] || { echo 'job still queued/running; do not collect terminal evidence' >&2; exit 3; }
+set +e
+ACTIVE=$(ssh tufts-login "squeue -h -j '$JOB_ID' -o '%i'" 2>&1)
+QUEUE_RC=$?
+set -e
+if [[ "$QUEUE_RC" -ne 0 && "$ACTIVE" != *'Invalid job id specified'* ]]; then
+  echo "$ACTIVE" >&2
+  exit 3
+fi
+if [[ "$QUEUE_RC" -eq 0 && -n "$ACTIVE" ]]; then
+  echo 'job still queued/running; do not collect terminal evidence' >&2
+  exit 3
+fi
 ssh tufts-login "sacct -j '$JOB_ID' --format=JobID,JobName,State,ElapsedRaw,AllocTRES,NodeList,ExitCode -P" > "$LOCAL/sacct.txt"
+STATE=$(awk -F'|' -v job="$JOB_ID" '$1==job {print $3}' "$LOCAL/sacct.txt")
+case "$STATE" in COMPLETED|FAILED|TIMEOUT|OUT_OF_MEMORY|CANCELLED*|NODE_FAIL) ;; *) echo "unverified terminal state: $STATE" >&2; exit 3;; esac
 # Caches and temporary compiler products are not scientific outputs. Preserve all
 # code, generated model assets, configs, raw measurements and logs before deletion.
 ssh tufts-login bash -s -- "$REMOTE" <<'REMOTE_SCRIPT'

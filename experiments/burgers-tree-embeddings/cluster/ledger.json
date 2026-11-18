@@ -85,8 +85,19 @@
     "gpu": "a100",
     "submitted_utc": "2026-11-18T20:22:21.011835+00:00",
     "state": "RUNNING",
-    "elapsed_seconds": 94,
+    "elapsed_seconds": 136,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "diag01",
+    "id": 7352154,
+    "reserved_minutes": 45,
+    "commit": "f6bf32b937e9ef7fb9ac00c1807ceeafd1fed2d5",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/diag01",
+    "driver": "diagnose.py",
+    "args": "--train /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/refstrain01/output --dev /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/refsdev01/output --global-model /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/global01/output --local-model /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/local01/output",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-18T20:25:33.355030+00:00"
   }
 ]

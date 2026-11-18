@@ -1,0 +1,20 @@
+{
+  "meta": {
+    "job": null,
+    "commit": null,
+    "devices": [
+      "cuda:0"
+    ],
+    "jax": "0.10.1",
+    "x64": true,
+    "precision": "highest"
+  },
+  "L": 16,
+  "M": 64,
+  "m": 225,
+  "fine_stencil_spacing": 0.0625,
+  "sign_changing_fixture": true,
+  "vendor_spatial_bitwise_equal": true,
+  "tested_dense_discrepancy": 1.7763568394002505e-15,
+  "status": "passed_arithmetic_fixture_only; no large-mesh or dynamics admission"
+}

@@ -5,12 +5,18 @@ This is the development protocol for the experiments authorized on November 18, 
 The central questions are whether the nonlinear head improves trajectories under matched numerical controls, whether richer weak tests detect errors missed by the minimized residual, and whether the selected method saves complete-query cost at matched accuracy. The earlier optimistic sketches remain hypotheses, not acceptance criteria or promised outcomes.
 
 <!-- GENERATED EXPERIMENT SUMMARY BEGIN -->
-These measurements support a constrained-dynamics explanation for the head and identify a separate representation limit in Burgers.
+These measurements support a constrained-dynamics explanation for the head and distinguish test-space and representation errors in Burgers.
 
 - **Head mechanism (qualified):** at the last registered setting, M=584 and $\Delta t=0.01$, median maximum evolved error is 0.0967% for the head versus 0.6697% for the span. The median paired span/head error ratio is 7.06; 16/16 cases favor the head.
 - **Weak-test enrichment:** increasing M from 256 to 2048 reduces median maximum saved-time error from 2.0064% to 1.3228%. Worst error remains 4.2979%, set by the initial projection. This is the original frozen-width baseline.
-- **Head complete-query cost, latest 16-case panel:** selected accuracy-eligible any-mesh classical time / head time is 0.714. Above one favors the ROM. This is a finite development comparison, with both methods measured in the same allocation.
-- **Span complete-query cost, latest 16-case panel:** selected accuracy-eligible any-mesh classical time / span time is 0.437. Above one favors the ROM. This is a finite development comparison, with both methods measured in the same allocation.
+- **Frozen-width PDE dynamics:** worst maximum saved-time error is 4.2979% at R=128, M=2048, and 0.3918% at the largest registered setting, R=512, M=8192. The latter qualifies 6/6 cases. Common-test width comparisons are retained below.
+
+**Latest complete-query comparison: cost-p03, 16 development cases.** Each comparator satisfies the stated median-and-worst accuracy rule. The ratios divide comparator median time by target median time; above one favors the target. All times in this table come from the same allocation.
+
+| Target | Worst evolved error (%) | Time (ms) | Any-mesh classical / target | POD / target |
+|---|---:|---:|---:|---:|
+| Head M584, Δt=0.01 | 0.1856 | 33.497 | 0.714 | 0.961 |
+| Span R64 | 1.2643 | 37.122 | 0.437 | 0.712 |
 
 The figures below contain measured values. All cohorts here are exposed development data; untouched confirmation and broader JCP claims remain separate work.
 <!-- GENERATED EXPERIMENT SUMMARY END -->
@@ -76,9 +82,9 @@ These are new measured development runs. A numerical failure remains visible eve
 
 | Retained run / job | Cases | Numerical qualification | Failed gates |
 |---|---:|---|---|
-| [head-p01](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p01.json) / 7354236 | 2 | Provisional: failed | all_stationary, ic_fit_passed, reference_passed |
+| [head-p01](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p01.json) / 7354236 | 2 | Excluded: failed gates | all_stationary, ic_fit_passed, reference_passed |
 | [head-p02](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p02.json) / 7354339 | 2 | Pass | None |
-| [head-p03](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03.json) / 7354386 | 16 | Provisional: failed | ic_fit_passed |
+| [head-p03](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03.json) / 7354386 | 16 | Excluded: failed gates | ic_fit_passed |
 | [head-p03b](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b.json) / 7354705 | 16 | Pass | None |
 
 **Numerically qualified development comparison — head-p03b.** Errors below are maxima over each evolved trajectory, normalized by its original physical initial field. Both primary arms have identical reconstructed initial states. Median and worst are across the same cases.
@@ -152,6 +158,34 @@ This prospectively bounded follow-up targets the initial projection floor diagno
 
 ![Measured frozen-bank projection floors](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/weak-width-w00-projection-floors.png)
 
+### Frozen-width follow-up: actual equation solves
+
+These trajectories initialize once from each prefix's native projection and subsequently solve the reduced PDE without reference-state resets. Width changes both the representation and its initial approximation. The common-test comparison holds residual rows fixed; each within-width enrichment adds tests. The fresh baseline reproduces the original accepted trajectory. All widths use the same disjoint observer, and the dense implementation carries no online speed claim.
+
+| Width R | Weak rows M | Median / worst maximum field error (%) | Qualified cases | Prospective improvement versus baseline |
+|---:|---:|---:|---:|---|
+| 128 | 2048 | 1.322786 / 4.297893 | 6 / 6 | Baseline |
+| 256 | 2048 | 0.461987 / 1.019474 | 6 / 6 | Pass |
+| 256 | 4096 | 0.458617 / 0.834834 | 6 / 6 | Pass |
+| 512 | 2048 | 0.221961 / 0.654043 | 6 / 6 | Pass |
+| 512 | 8192 | 0.148417 / 0.391845 | 6 / 6 | Pass |
+
+[Saved-array analysis](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-width-final.json) records original-baseline reproduction to a maximum error-curve difference of 4.857e-17. The prospective improvement rule requires every numerical gate, at least a 20% reduction of the worst maximum-over-time error, and no case's maximum error worsening by more than 2%. Initialization is included. The registered matrix is complete.
+
+![Measured frozen-width PDE trajectories](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/weak-width-final-width-dynamics.png)
+
+The [width-study pointwise audit](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-width-final-counterexamples.json) retains 14 of 60 tested transitions with increases at some saved times; the largest increase is 0.228597 percentage points. These post-run diagnostics are separate from the prospective maximum-over-time criterion.
+
+| Change being compared | Case/transitions checked | Transitions with a pointwise increase | Largest increase (percentage points) |
+|---|---:|---:|---:|
+| Width at common tests | 18 | 6 | 0.226726 |
+| Width and tests together | 30 | 6 | 0.228597 |
+| Tests at fixed width | 12 | 2 | 0.000730 |
+
+The largest increase occurs for case 5 at time 0.015, changing $(R,M)=(256,4096)$ to $(R,M)=(512,2048)$. The comparison type matters: some transitions change both width and test count.
+
+![Measured fixed-test width counterexample](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/weak-width-final-counterexamples-width-counterexample.png)
+
 ### Complete-query cost
 
 These are instrumented queries from the original host-resident physical input to six complete host-resident fields, including native initial fitting, transfers, evolution and recovery. Primary accuracy is the maximum error over the five evolved requested fields; initial error is retained separately. This differs from both the denser mechanism-history grid and the Burgers metric that includes initialization. Candidate selection and independent timing repetitions use exposed development cases within each allocation. Eligibility requires both the median and worst casewise evolved error no greater than the target; it does not require every individual case to match. A finite candidate search does not certify the fastest possible comparator.
@@ -179,6 +213,20 @@ The main table divides cohort median times. The following diagnostics pair case 
 | learned_span64 / fom_m64_cnab2_s40 | 1.358406 | 2 / 2 | 1 / 2 |
 | learned_span64 / fom_m28_rk4_s5 | 0.405582 | 0 / 2 | 1 / 1 |
 
+Accuracy of every retained confirmation subject, scored at the requested output times:
+
+| Subject | Median / worst evolved maximum error (%) | Worst initial error (%) | Complete numerical records |
+|---|---:|---:|---|
+| learned_head | 0.065171 / 0.076069 | 0.039679 | Yes |
+| learned_span64 | 0.609294 / 0.817315 | 0.039578 | Yes |
+| pod_span32 | 0.516467 / 0.636411 | 0.130740 | Yes |
+| fom_m28_rk4_s5 | 0.496102 / 0.604733 | 0.000129 | Yes |
+| fom_m48_rk4_s15 | 0.017310 / 0.031768 | 0.000000 | Yes |
+| fom_m64_cnab2_s40 | 0.107182 / 0.135496 | 0.000000 | Yes |
+| fom_m64_cnab2_s60 | 0.047318 / 0.059689 | 0.000000 | Yes |
+
+These cost-panel accuracies are not a new improvement over the mechanism panel: their saved-time sets differ. Initial error is reported separately; it is not part of the evolved-error eligibility statistic.
+
 **cost-p03**
 
 | Run / target | Cases | Comparator | Target time (ms) | Comparator time (ms) | Comparator / target | Qualification |
@@ -203,7 +251,24 @@ The main table divides cohort median times. The following diagnostics pair case 
 | learned_span64 / fom_m64_cnab2_s40 | 1.353591 | 16 / 16 | 7 / 5 |
 | learned_span64 / fom_m32_cnab2_s20 | 0.437530 | 0 / 16 | 7 / 4 |
 
+Accuracy of every retained confirmation subject, scored at the requested output times:
+
+| Subject | Median / worst evolved maximum error (%) | Worst initial error (%) | Complete numerical records |
+|---|---:|---:|---|
+| learned_head | 0.085866 / 0.185633 | 0.062162 | Yes |
+| learned_span64 | 0.673384 / 1.264262 | 0.061962 | Yes |
+| pod_head_m292_dt0.01 | 0.073134 / 0.134687 | 0.065178 | Yes |
+| pod_span32 | 0.522900 / 0.957675 | 0.345731 | Yes |
+| fom_m32_cnab2_s20 | 0.418537 / 0.996812 | 0.000013 | Yes |
+| fom_m40_rk4_s10 | 0.035395 / 0.163923 | 0.000000 | Yes |
+| fom_m64_cnab2_s40 | 0.091706 / 0.384403 | 0.000000 | Yes |
+| fom_m64_cnab2_s50 | 0.058487 / 0.099053 | 0.000000 | Yes |
+
+These cost-panel accuracies are not a new improvement over the mechanism panel: their saved-time sets differ. Initial error is reported separately; it is not part of the evolved-error eligibility statistic.
+
 ![Measured complete-query accuracy and cost](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/cost-p03-complete-query.png)
+
+The pilot and expanded panels differ in cohort, candidate grid and initial-fit implementation. Their historical results are retained, but cross-panel timing changes do not isolate any one of those factors. Every reported speed comparison uses its own allocation.
 
 Cold measurements, where retained in the experiment lane, cover asset activation, compilation and the first query within an already initialized runtime. They retain the operating-system page cache and exclude runtime/context startup. They cannot be relabeled process-cold deployment costs.
 
@@ -225,11 +290,23 @@ The [environment review](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-
 
 <!-- GENERATED EXPERIMENT RESULTS END -->
 
+## How to use these results in the JCP paper
+
+| Proposed claim | Evidence supplied by this campaign | Boundary and next step |
+|---|---|---|
+| The nonlinear head reduces trajectory drift relative to its own full span. | Matched original-family dynamics, common initial states, converged solves, same-previous-state probes and richer-test controls. | Keep the claim within the tested family and horizon. A causal claim for the historical harder-flow example still needs its own matched control. |
+| A small weak residual can coexist with substantial physical error. | Residual-versus-error probes, physically normalized tangent diagnostics and a disjoint residual observer. | Sampled local diagnostics support an explanation; a uniform stability theorem requires separately justified assumptions. |
+| Test enrichment and frozen-width tuning can improve the learned-basis solver. | Separate test-count, projection-capacity and native-initialized PDE studies, with pointwise exceptions retained. | Use the measured maximum-over-time criterion. Neither monotone error at every time nor universal convergence follows. |
+| The selected method offers a useful accuracy–cost tradeoff. | Complete physical-input/full-field-output measurements, strong finite comparator grids, separate selection and timing-confirmation repetitions. | Report all qualified target settings and negative comparisons. A finite search does not establish global superiority over POD or classical solvers. |
+| Wider diagnostic models provide efficient hyper-reduced deployment. | The width study establishes accuracy using exact dense evaluation. | A deployment claim needs the chosen quadrature's reached-state residual/Jacobian checks and complete-query cost. Dense diagnostic accuracy alone does not establish it. |
+
+The next scientific decision is to freeze the paper's method configuration and accuracy/output contract using the completed development results. Fresh-cohort confirmation can then assess that frozen choice. Reuse the already qualified temporal, mesh, quadrature, seed and physical-fidelity analyses identified in the [pre-campaign audit](2026-11-18-jcp-results-audit-and-priorities.md), checking that they apply to the selected configuration. Extend only the missing control or changed component. Full training/lifetime amortization and process-cold deployment remain separate from the warm complete-query measurements here.
+
 ## Glossary
 
 **Head, bank and span:** the bank contains spatial functions; the head maps a small latent state to their coefficients; the span allows arbitrary coefficients. **Weak tests** measure smooth weighted averages of the PDE residual. **Residual visibility** describes how well those measurements detect changes in the physical state. **Tangent** means a field change reachable by a small coordinate change; mass normalization accounts for physical spatial volume. **Frame** is the coordinate shift used to follow moving structures.
 
-**Quadrature** approximates integrals with weighted sample points. **Jacobian** measures local sensitivity. **POD** is a linear basis derived from training snapshots. **Matched accuracy** requires comparable physical error under the same reference and eligibility rules. **Complete query** includes all work needed to turn the agreed input into the requested answer. **Allocated GPU-hours** count the reserved GPU time actually charged to a job, including setup. **Development amendment** is a recorded change tested on exposed development cases. **Confirmation** evaluates a frozen choice on previously untouched cases.
+**Quadrature** approximates integrals with weighted sample points. **Jacobian** measures local sensitivity. **POD** is a linear basis derived from training snapshots. **Matched accuracy** requires comparable physical error under the same reference and eligibility rules. **Complete query** includes all work needed to turn the agreed input into the requested answer. **Allocated GPU-hours** count the reserved GPU time actually charged to a job, including setup. **Development amendment** is a recorded change tested on exposed development cases. **Timing confirmation** uses new repetitions after comparator choices are frozen, on the same development cases. **Fresh-cohort confirmation** evaluates a frozen choice on previously untouched cases; these are different forms of confirmation.
 
 **Case** means one initial field and its PDE parameters. **M** is the actual number of scalar weak residual equations. **Time step** is the interval between successive numerical updates. **Trajectory error** compares a predicted field with its reference at each saved time; the stated normalization specifies the field norm used as denominator. **Median / worst** denote the middle / largest casewise error, after first maximizing over the stated times. **Numerical qualification** requires the registered reference, operator, derivative and solver checks; an attractive error alone does not pass it. **Stationarity** is a small objective gradient and does not certify a global minimum. **Independent shell residual** measures equations outside every solved test space, using the same extra rows for every compared method. **Source hash** identifies the exact saved file bytes.
 

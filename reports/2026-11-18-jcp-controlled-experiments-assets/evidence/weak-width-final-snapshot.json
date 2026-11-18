@@ -1,0 +1,59 @@
+{
+  "status": "scientifically accepted, frozen development result; remote duplicate cleanup tracked separately",
+  "frozen_utc": "2026-11-18T22:59:21.990104+00:00",
+  "scope": "six exposed development cases; same-grid same-step discrete Burgers target; initial-field error denominator; no continuum, held-out, uniform-stability or cross-job speed claim",
+  "spectra_scope": "Projected-reference states are common across M within each width; different widths use different projected states.",
+  "primary_metric": "maximum over all 51 times including initialization",
+  "files": [
+    {
+      "path": "checks/width-results/analysis.json",
+      "sha256": "00a1b048511628493b5d9aedccc8dc2842117d0d2f32538aa0bc66fe024244d0"
+    },
+    {
+      "path": "checks/width-results/combined-source.json",
+      "sha256": "9e6ea04b60f52ca3a0bcf62ae15f223413dcdbf767bd41ba6264960e335658a8"
+    },
+    {
+      "path": "checks/width-results/measured-width-maxima.png",
+      "sha256": "1fc927f079ecb4c7d1a87c3ffc2bb448f6810a28ea56867f3aff8d6ce8c5bf3f"
+    },
+    {
+      "path": "checks/width-results/measured-width-maxima.svg",
+      "sha256": "e72f19e21408fb19e90af737da270f0e8b11b47d23160d3905b782b6bb1d1278"
+    },
+    {
+      "path": "checks/width-results/measured-width-trajectories.png",
+      "sha256": "c6f03d948c467d75feebdbe8a441c6117ad8eddeb3f3d130d3e8f0538b26b41e"
+    },
+    {
+      "path": "checks/width-results/measured-width-trajectories.svg",
+      "sha256": "6d55162e86cf6ca940096254e72e29357457f6aa5f5713dbf3a497efc0139538"
+    },
+    {
+      "path": "checks/width-results/pointwise-counterexamples.json",
+      "sha256": "5ec0c43c49cf6a149f926fb3aedb7627605e31b89ca8ed2d90356023c36d8fde"
+    },
+    {
+      "path": "checks/width-results/table.json",
+      "sha256": "87ea81807cc5e05628f70758e7bcd7af2ab2da4bfd0be0f20d7c5aa008821241"
+    }
+  ],
+  "generator": {
+    "path": "analyze_width_results.py",
+    "sha256": "8341e93ebc0fe69223808dda6c11af767e5178e51056f4b4e35b99d773182a29"
+  },
+  "independent_reviews": [
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/reviews/p2-W1-baseline-independent-review.json",
+      "sha256": "8eeaff5d0e6977b76d7a425461c267b77593deebfd49e07606d71f4baa77fdaa"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/reviews/p2-R256-independent-result-review.json",
+      "sha256": "1df55fa28ae077ee82b18d8ebe3718b05b85227471f22a00e4e198a320e2c27d"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/reviews/p2-R512-independent-result-review.json",
+      "sha256": "9825389db52a9656ace72bed5578e2b244e1e6c6413fd96926c91c61eceec77c"
+    }
+  ]
+}

@@ -224,6 +224,18 @@ def cost_rows(data):
     return rows
 
 
+def target_label(name, config):
+    if name == "learned_span64":
+        return "Span R64"
+    specs = config.get("targets", [])
+    spec = next((v for v in specs if v["name"] == name), None)
+    if spec is None and name == "learned_head":
+        spec = config["rom"]
+    if spec is not None:
+        return f"Head M{spec['rows']}, Δt={spec['dt']:g}"
+    return name.replace("learned_", "")
+
+
 def projection_screen_plot(entry, audit):
     records = audit["records"]
     widths = sorted({v["width"] for v in records})
@@ -265,6 +277,89 @@ def projection_screen_plot(entry, audit):
     return tables, ASSETS / f"{entry['id']}-projection-floors.png"
 
 
+def width_dynamics_plot(entry, data, environments):
+    """Separate width at common tests from enrichment within each width."""
+    rows = []
+    for name, v in data["aggregates"].items():
+        width, m = (int(s[1:]) for s in name.split("-"))
+        rows.append({"R": width, "M": m, **v})
+    rows.sort(key=lambda v: (v["R"], v["M"]))
+    widths = sorted({v["R"] for v in rows})
+    fig, axes = plt.subplots(1, 2, figsize=(11.2, 4.4))
+    common_m = min(v["M"] for v in rows)
+    common = [v for v in rows if v["M"] == common_m]
+    richer = [max((v for v in rows if v["R"] == w), key=lambda v: v["M"]) for w in widths]
+    axes[0].plot(widths, [100*v["maximum_error_worst"] for v in common], "o-", color="#ad601e", label=f"Common M={common_m}")
+    axes[0].plot(widths, [100*v["maximum_error_worst"] for v in richer], "s--", color="#157c75", label="Richer registered tests")
+    for row in richer:
+        last = row["R"] == max(widths)
+        axes[0].annotate(f"M={row['M']}", (row["R"], 100*row["maximum_error_worst"]),
+                         xytext=(-7, 9) if last else (5, -15), ha="right" if last else "left",
+                         textcoords="offset points", fontsize=8)
+    floors = []
+    for w in widths:
+        cc = [v for k, v in data["cases"].items() if k.startswith(f"R{w}-")]
+        floors.append(100*max(max(v["projection_error"]) for v in cc))
+    axes[0].plot(widths, floors, ":", color=".45", label="Worst projection floor")
+    axes[0].set(xscale="log", yscale="log", xticks=widths, xticklabels=[str(w) for w in widths],
+                xlabel="Frozen basis functions R", ylabel="Worst maximum saved-time error (% initial norm)",
+                title="Measured equation solves and approximation floor")
+    axes[0].xaxis.set_minor_locator(matplotlib.ticker.NullLocator())
+    axes[0].legend(fontsize=8, loc="upper right")
+    colors = ["#ad601e", "#667c87", "#157c75"]
+    for row, color in zip(richer, colors):
+        err = 100*np.array([v["arms"][str(row["M"])]["error"] for k, v in data["cases"].items() if k.startswith(f"R{row['R']}-")])
+        # Use the frozen configuration, rather than infer a time axis from plot length.
+        dt = environments[str(row["R"])]["config"]["dt"]
+        axes[1].plot(dt*np.arange(err.shape[1]), err.max(0), color=color, label=f"R={row['R']}, M={row['M']}")
+    axes[1].set(xlabel="Nondimensional time", ylabel="Worst-case field error (% initial norm)",
+                yscale="log", title="Predicted trajectories with richer registered tests")
+    axes[1].legend(fontsize=8)
+    for ax in axes:
+        ax.grid(alpha=.18)
+    status = "all numerical gates passed" if data["all_arms_numerically_eligible"] and data["all_saved_array_checks_passed"] else "some numerical gates failed"
+    completeness = "Complete registered matrix" if data["matrix_complete"] else "Partial registered matrix"
+    fig.suptitle(f"Measured Burgers frozen-width dynamics • {status}", fontsize=11)
+    fig.text(.5, .015, f"{completeness}. Native projection at initialization only; no later reference reset.\nSame-grid/same-step discrete truth. {rows[0]['case_count']} original development cases; no cross-job speed claim.", ha="center", fontsize=9)
+    fig.tight_layout(rect=[0, .13, 1, .94])
+    for suffix in ("png", "svg"):
+        fig.savefig(ASSETS / f"{entry['id']}-width-dynamics.{suffix}", dpi=170, metadata={"Date": None} if suffix == "svg" else None)
+    plt.close(fig)
+    return rows, ASSETS / f"{entry['id']}-width-dynamics.png"
+
+
+def width_counterexample_plot(entry, audit, dynamics, environments):
+    candidates = [v for v in audit["comparisons"] if v.get("comparison_kind") == "common_M_width_change" and v["increased_time_count"]]
+    if not candidates:
+        return None
+    v = max(candidates, key=lambda x: x["maximum_increase"])
+    case = v["case"]
+    old = dynamics["cases"][f"R{v['previous_R']}-case{case}"]
+    new = dynamics["cases"][f"R{v['R']}-case{case}"]
+    largest_m = max(int(m) for m in new["arms"])
+    settings = [(old, v["previous_R"], v["previous_M"], "#ad601e", "-"),
+                (new, v["R"], v["M"], "#667c87", "-"),
+                (new, v["R"], largest_m, "#157c75", "-")]
+    fig, ax = plt.subplots(figsize=(8.6, 4.3))
+    for record, width, m, color, style in settings:
+        error = 100*np.array(record["arms"][str(m)]["error"])
+        dt = environments[str(width)]["config"]["dt"]
+        ax.plot(dt*np.arange(len(error)), error, color=color, ls=style, label=f"R={width}, M={m}")
+    floor = 100*np.array(new["projection_error"])
+    ax.plot(dt*np.arange(len(floor)), floor, color=".35", ls=":", label=f"R={v['R']} projection floor")
+    ax.axvline(v["time_of_maximum_increase"], color=".75", lw=.8)
+    ax.set(xlabel="Nondimensional time", ylabel="Field error (% of original initial norm)", ylim=(0, None),
+           title=f"Larger basis can worsen evolved error at a fixed test count • case {case}")
+    ax.legend(fontsize=8)
+    ax.grid(alpha=.18)
+    fig.text(.5, .015, "Post-run diagnostic: case selected by the largest fixed-test width regression, with all cases retained.\nEach trajectory starts from its own native projection and subsequently solves the same discrete PDE.", ha="center", fontsize=9)
+    fig.tight_layout(rect=[0, .12, 1, 1])
+    for suffix in ("png", "svg"):
+        fig.savefig(ASSETS / f"{entry['id']}-width-counterexample.{suffix}", dpi=170, metadata={"Date": None} if suffix == "svg" else None)
+    plt.close(fig)
+    return ASSETS / f"{entry['id']}-width-counterexample.png"
+
+
 def enrichment_plot(entry, data, baseline):
     ids = {c["index"] for c in data["cases"]}
     dt = data["config"]["test_settings"][0]["dt"]
@@ -301,7 +396,10 @@ def enrichment_plot(entry, data, baseline):
 
 
 def cost_plot(entry, data, selection, provenance):
-    fig, axes = plt.subplots(1, 2, figsize=(12, 4.6))
+    qualified = [r for r in cost_rows(data) if r["qualified"]]
+    multi_target = len(data["comparisons"]) > 2
+    height = max(4.6, .52*len(qualified)+2) if multi_target else 4.6
+    fig, axes = plt.subplots(1, 2, figsize=(13 if multi_target else 12, height))
     colors = {"classical": "#667c87", "pod": "#82798e", "target": "#157c75"}
     display_cap_percent = 100
     def finite_metrics(v):
@@ -317,26 +415,28 @@ def cost_plot(entry, data, selection, provenance):
                         marker=marker, color=colors[family], s=95 if family == "target" else 28, label=family)
         if family == "target":
             for name, v in chosen.items():
-                axes[0].annotate(name.replace("learned_", ""), (v["median_case_ms"], 100*v["worst_evolved_error"]),
-                                 xytext=(5, 5), textcoords="offset points", fontsize=8)
+                label = target_label(name, provenance["config"]) if multi_target else name.replace("learned_", "")
+                axes[0].annotate(label, (v["median_case_ms"], 100*v["worst_evolved_error"]),
+                                 xytext=(5, 5), textcoords="offset points", fontsize=7 if multi_target else 8)
     axes[0].set(xscale="log", yscale="log", title="Finite development candidate set",
                 xlabel="Median complete-query time (ms)", ylabel="Worst error at evolved requested outputs\n(% of initial field norm)")
     axes[0].legend(fontsize=8)
     axes[0].text(.02, .025, f"Outside display: {overflow} above {display_cap_percent}% error; {failed} failed / nonfinite.\nAll retained in the raw selection table.",
                  transform=axes[0].transAxes, fontsize=8, va="bottom")
-    qualified = [r for r in cost_rows(data) if r["qualified"]]
     labels = []
     for index, row in enumerate(qualified):
         ratios = row["individual_case_ratios"]
         median = float(np.median(ratios))
         axes[1].plot([min(ratios), max(ratios)], [index, index], color=".6", lw=3)
         axes[1].scatter([median], [index], color="#157c75", zorder=3)
-        target_label = {"learned_head": "Head", "learned_span64": "Span"}.get(row["target"], row["target"])
+        name = target_label(row["target"], provenance["config"]) if multi_target else {"learned_head": "Head", "learned_span64": "Span"}.get(row["target"], row["target"])
         group_label = {"any_mesh_classical": "any-mesh FOM", "same_mesh_classical": "same-mesh FOM", "pod": "POD"}.get(row["group"], row["group"])
-        labels.append(target_label+" vs "+group_label)
+        labels.append(name+("\nvs " if multi_target else " vs ")+group_label)
     axes[1].axvline(1, color=".5", ls="--", lw=1)
     axes[1].set(yticks=range(len(labels)), yticklabels=labels,
                 xlabel="Comparator / target time (above 1 favors target)", title="Qualified confirmation speed ratios")
+    if multi_target:
+        axes[1].tick_params(axis="y", labelsize=8)
     for ax in axes:
         ax.grid(alpha=.17)
     fig.suptitle(f"{entry['id']}: instrumented complete-query measurements\n{provenance['gpu'].split(',')[0]}", fontsize=11)
@@ -367,7 +467,7 @@ def main():
         for e, d, p in heads:
             q = d["qualification"]
             failures = [k for k, v in q.items() if v is False and k != "passed"]
-            chunks.append(f"| [{e['id']}]({p['frozen']}) / {d['job_id']} | {len(d['cases'])} | {'Pass' if q.get('passed') else 'Provisional: failed'} | {', '.join(failures) or 'None'} |")
+            chunks.append(f"| [{e['id']}]({p['frozen']}) / {d['job_id']} | {len(d['cases'])} | {'Pass' if q.get('passed') else 'Excluded: failed gates'} | {', '.join(failures) or 'None'} |")
             values[e["id"]] = head_rows(d)
         # Display the latest registered run, not the most favorable outcome.
         e, d, p = heads[-1]
@@ -457,6 +557,50 @@ def main():
             chunks.append(f"| {row['width']} | {row['median_max_percent']:.6f} / {row['worst_max_percent']:.6f} | {row['worst_initial_percent']:.6f} | {status} |")
         chunks += ["", f"[Projection audit and admission]({p['frozen']}) bind the results to the saved model, basis ordering, references and numerical settings. All registered rank, projection and original-baseline reproduction checks pass. A prefix enters the PDE study only if both worst initial and worst all-time projection errors are at most 80% of baseline. No training was performed.", "",
                    f"![Measured frozen-bank projection floors]({plot})", ""]
+    dynamics = [(e, d, p) for e, d, p in loaded if e["kind"] == "width_dynamics"]
+    for e, d, p in dynamics:
+        environments = {}
+        for width, source in d["sources"].items():
+            for suffix in ("summary", "environment"):
+                source_path = Path(source["output"]) / f"{suffix}.json"
+                raw, rp = freeze({"id": f"{e['id']}-R{width}-{suffix}", "kind": f"width_{suffix}", "source": str(source_path.relative_to(ROOT))})
+                assert rp["sha256"] == source[f"{suffix}_sha256"]
+                manifest.append(rp)
+                if suffix == "environment":
+                    environments[width] = raw
+        rows, plot = width_dynamics_plot(e, d, environments)
+        values[e["id"]] = rows
+        comparisons = {(v["R"], v["M"]): v for v in d["comparisons"]}
+        chunks += ["### Frozen-width follow-up: actual equation solves", "",
+                   "These trajectories initialize once from each prefix's native projection and subsequently solve the reduced PDE without reference-state resets. Width changes both the representation and its initial approximation. The common-test comparison holds residual rows fixed; each within-width enrichment adds tests. The fresh baseline reproduces the original accepted trajectory. All widths use the same disjoint observer, and the dense implementation carries no online speed claim.", "",
+                   "| Width R | Weak rows M | Median / worst maximum field error (%) | Qualified cases | Prospective improvement versus baseline |",
+                   "|---:|---:|---:|---:|---|"]
+        for row in rows:
+            c = comparisons.get((row["R"], row["M"]))
+            verdict = "Baseline" if c is None else "Pass" if c["prospective_primary_improvement_passed"] else "Fail"
+            chunks.append(f"| {row['R']} | {row['M']} | {100*row['maximum_error_median']:.6f} / {100*row['maximum_error_worst']:.6f} | {row['qualified_count']} / {row['case_count']} | {verdict} |")
+        gap = max(v["maximum_error_curve_gap"] for v in d["baseline_reproduction"])
+        chunks += ["", f"[Saved-array analysis]({p['frozen']}) records original-baseline reproduction to a maximum error-curve difference of {gap:.3e}. The prospective improvement rule requires every numerical gate, at least a 20% reduction of the worst maximum-over-time error, and no case's maximum error worsening by more than 2%. Initialization is included. {'The registered matrix is complete.' if d['matrix_complete'] else 'This is a partial registered matrix; unrun or unresolved settings are not inferred.'}", "",
+                   f"![Measured frozen-width PDE trajectories]({plot})", ""]
+    for e, d, p in loaded:
+        if e["kind"] == "width_counterexamples":
+            bad = [v for v in d["comparisons"] if v["increased_time_count"]]
+            maximum = max((v["maximum_increase"] for v in d["comparisons"]), default=0)
+            chunks += [f"The [width-study pointwise audit]({p['frozen']}) retains {len(bad)} of {len(d['comparisons'])} tested transitions with increases at some saved times; the largest increase is {100*maximum:.6f} percentage points. These post-run diagnostics are separate from the prospective maximum-over-time criterion.", ""]
+            chunks += ["| Change being compared | Case/transitions checked | Transitions with a pointwise increase | Largest increase (percentage points) |",
+                       "|---|---:|---:|---:|"]
+            kinds = sorted({v.get("comparison_kind", "unspecified") for v in d["comparisons"]})
+            labels = {"common_M_width_change": "Width at common tests", "within_width_test_change": "Tests at fixed width", "joint_width_and_test_change": "Width and tests together"}
+            for kind in kinds:
+                rows = [v for v in d["comparisons"] if v.get("comparison_kind", "unspecified") == kind]
+                chunks.append(f"| {labels.get(kind, kind)} | {len(rows)} | {sum(v['increased_time_count'] > 0 for v in rows)} | {100*max(v['maximum_increase'] for v in rows):.6f} |")
+            if bad:
+                v = max(bad, key=lambda v: v["maximum_increase"])
+                chunks += ["", f"The largest increase occurs for case {v['case']} at time {v['time_of_maximum_increase']:g}, changing $(R,M)=({v['previous_R']},{v['previous_M']})$ to $(R,M)=({v['R']},{v['M']})$. The comparison type matters: some transitions change both width and test count.", ""]
+            if dynamics:
+                plot = width_counterexample_plot(e, d, dynamics[-1][1], environments)
+                if plot:
+                    chunks += [f"![Measured fixed-test width counterexample]({plot})", ""]
     costs = [(e, d, p) for e, d, p in loaded if e["kind"] == "cost"]
     if costs:
         chunks += ["### Complete-query cost", "",
@@ -486,8 +630,16 @@ def main():
                 if row["qualified"]:
                     chunks.append(f"| {row['target']} / {row['comparator']} | {row['paired_ratio_median']:.6f} | {row['target_faster_case_count']} / {row['case_count']} | {row['target_timing_outlier_count']} / {row['comparator_timing_outlier_count']} |")
             chunks += [""]
+            chunks += ["Accuracy of every retained confirmation subject, scored at the requested output times:", "",
+                       "| Subject | Median / worst evolved maximum error (%) | Worst initial error (%) | Complete numerical records |",
+                       "|---|---:|---:|---|"]
+            for name, v in d["confirmation"].items():
+                initial = max(c["initial_error"] for c in v["cases"].values())
+                chunks.append(f"| {name} | {100*v['median_case_evolved_max_error']:.6f} / {100*v['worst_evolved_error']:.6f} | {100*initial:.6f} | {'Yes' if v['complete'] else 'No'} |")
+            chunks += ["", "These cost-panel accuracies are not a new improvement over the mechanism panel: their saved-time sets differ. Initial error is reported separately; it is not part of the evolved-error eligibility statistic.", ""]
         plot = cost_plot(e, d, selection, provenance)
         chunks += [f"![Measured complete-query accuracy and cost]({plot})", "",
+                   "The pilot and expanded panels differ in cohort, candidate grid and initial-fit implementation. Their historical results are retained, but cross-panel timing changes do not isolate any one of those factors. Every reported speed comparison uses its own allocation.", "",
                    "Cold measurements, where retained in the experiment lane, cover asset activation, compilation and the first query within an already initialized runtime. They retain the operating-system page cache and exclude runtime/context startup. They cannot be relabeled process-cold deployment costs.", ""]
     for e, d, p in loaded:
         if e["kind"] == "cost_audit":
@@ -514,7 +666,7 @@ def main():
         report = before + block + after
     else:
         report = report.replace("## Glossary", block + "\n\n## Glossary")
-    overview = ["These measurements support a constrained-dynamics explanation for the head and identify a separate representation limit in Burgers.", ""]
+    overview = ["These measurements support a constrained-dynamics explanation for the head and distinguish test-space and representation errors in Burgers.", ""]
     if heads:
         e, d, _ = heads[-1]
         v = values[e["id"]][-1]
@@ -526,13 +678,27 @@ def main():
         first = [v["max_error_percent"] for v in rr if v["M"] == first_m]
         last = [v["max_error_percent"] for v in rr if v["M"] == last_m]
         overview += [f"- **Weak-test enrichment:** increasing M from {first_m} to {last_m} reduces median maximum saved-time error from {np.median(first):.4f}% to {np.median(last):.4f}%. Worst error remains {max(last):.4f}%, set by the initial projection. This is the original frozen-width baseline."]
-    if costs:
-        e, _, _ = costs[-1]
+    if dynamics:
+        e, d, _ = dynamics[-1]
         rr = values[e["id"]]
-        for target, name in (("learned_head", "Head"), ("learned_span64", "Span")):
-            row = next((v for v in rr if v["target"] == target and v["group"] == "any_mesh_classical"), None)
-            if row and row["qualified"]:
-                overview += [f"- **{name} complete-query cost, latest {row['case_count']}-case panel:** selected accuracy-eligible any-mesh classical time / {name.lower()} time is {row['comparator_over_target']:.3f}. Above one favors the ROM. This is a finite development comparison, with both methods measured in the same allocation."]
+        baseline = min(rr, key=lambda v: (v["R"], v["M"]))
+        last = max(rr, key=lambda v: (v["R"], v["M"]))
+        overview += [f"- **Frozen-width PDE dynamics:** worst maximum saved-time error is {100*baseline['maximum_error_worst']:.4f}% at R={baseline['R']}, M={baseline['M']}, and {100*last['maximum_error_worst']:.4f}% at the largest registered setting, R={last['R']}, M={last['M']}. The latter qualifies {last['qualified_count']}/{last['case_count']} cases. Common-test width comparisons are retained below."]
+    if costs:
+        e, d, _ = costs[-1]
+        rr = values[e["id"]]
+        cfg = json.loads((ASSETS/"evidence"/(e["id"]+"-provenance.json")).read_text())["config"]
+        overview += ["", f"**Latest complete-query comparison: {e['id']}, {rr[0]['case_count']} development cases.** Each comparator satisfies the stated median-and-worst accuracy rule. The ratios divide comparator median time by target median time; above one favors the target. All times in this table come from the same allocation.", "",
+                     "| Target | Worst evolved error (%) | Time (ms) | Any-mesh classical / target | POD / target |",
+                     "|---|---:|---:|---:|---:|"]
+        for target in d["comparisons"]:
+            target_rows = [v for v in rr if v["target"] == target]
+            v = target_rows[0]
+            ratios = []
+            for group in ("any_mesh_classical", "pod"):
+                r = next(x for x in target_rows if x["group"] == group)
+                ratios.append(f"{r['comparator_over_target']:.3f}" if r["qualified"] else "Unqualified / unmatched")
+            overview += [f"| {target_label(target, cfg)} | {v['target_worst_error_percent']:.4f} | {v['target_median_ms']:.3f} | {ratios[0]} | {ratios[1]} |"]
     overview += ["", "The figures below contain measured values. All cohorts here are exposed development data; untouched confirmation and broader JCP claims remain separate work."]
     summary = SUMMARY_BEGIN + "\n" + "\n".join(overview) + "\n" + SUMMARY_END
     if SUMMARY_BEGIN in report:

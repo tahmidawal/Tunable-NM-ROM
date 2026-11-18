@@ -9491,6 +9491,73 @@
       "admitted_to_dynamics": true
     }
   ],
+  "weak-width-final": [
+    {
+      "R": 128,
+      "M": 2048,
+      "case_count": 6,
+      "qualified_count": 6,
+      "maximum_error_median": 0.013227855417308549,
+      "maximum_error_worst": 0.0429789304436911,
+      "evolved_error_worst": 0.02801620250706044,
+      "evolution_distance_worst": 0.010674254037664947,
+      "initial_time_is_maximum_count": 4,
+      "tighter_iterations_median": 150.0,
+      "tighter_rejected_total": 0
+    },
+    {
+      "R": 256,
+      "M": 2048,
+      "case_count": 6,
+      "qualified_count": 6,
+      "maximum_error_median": 0.0046198662963796416,
+      "maximum_error_worst": 0.010194737751109004,
+      "evolved_error_worst": 0.010194737751109004,
+      "evolution_distance_worst": 0.007032253427386945,
+      "initial_time_is_maximum_count": 3,
+      "tighter_iterations_median": 150.0,
+      "tighter_rejected_total": 0
+    },
+    {
+      "R": 256,
+      "M": 4096,
+      "case_count": 6,
+      "qualified_count": 6,
+      "maximum_error_median": 0.004586173822211081,
+      "maximum_error_worst": 0.008348344801886872,
+      "evolved_error_worst": 0.008348344801886872,
+      "evolution_distance_worst": 0.0039006116679694493,
+      "initial_time_is_maximum_count": 3,
+      "tighter_iterations_median": 150.0,
+      "tighter_rejected_total": 0
+    },
+    {
+      "R": 512,
+      "M": 2048,
+      "case_count": 6,
+      "qualified_count": 6,
+      "maximum_error_median": 0.0022196101552808866,
+      "maximum_error_worst": 0.006540428991170233,
+      "evolved_error_worst": 0.006540428991170233,
+      "evolution_distance_worst": 0.00574797125003024,
+      "initial_time_is_maximum_count": 1,
+      "tighter_iterations_median": 169.5,
+      "tighter_rejected_total": 0
+    },
+    {
+      "R": 512,
+      "M": 8192,
+      "case_count": 6,
+      "qualified_count": 6,
+      "maximum_error_median": 0.00148416865617849,
+      "maximum_error_worst": 0.00391844645739062,
+      "evolved_error_worst": 0.0038420589068307595,
+      "evolution_distance_worst": 0.0019572071946504406,
+      "initial_time_is_maximum_count": 4,
+      "tighter_iterations_median": 150.0,
+      "tighter_rejected_total": 0
+    }
+  ],
   "cost-p01": [
     {
       "target": "learned_head",

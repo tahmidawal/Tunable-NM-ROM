@@ -119,6 +119,34 @@
     "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p03-audit.json"
   },
   {
+    "id": "weak-width-final",
+    "kind": "width_dynamics",
+    "source": "worktrees/2026-11-18-jcp-weak-visibility/experiments/jcp-weak-visibility/checks/width-results/analysis.json",
+    "sha256": "00a1b048511628493b5d9aedccc8dc2842117d0d2f32538aa0bc66fe024244d0",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-width-final.json"
+  },
+  {
+    "id": "weak-width-final-counterexamples",
+    "kind": "width_counterexamples",
+    "source": "worktrees/2026-11-18-jcp-weak-visibility/experiments/jcp-weak-visibility/checks/width-results/pointwise-counterexamples.json",
+    "sha256": "5ec0c43c49cf6a149f926fb3aedb7627605e31b89ca8ed2d90356023c36d8fde",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-width-final-counterexamples.json"
+  },
+  {
+    "id": "weak-width-final-table",
+    "kind": "width_detail",
+    "source": "worktrees/2026-11-18-jcp-weak-visibility/experiments/jcp-weak-visibility/checks/width-results/table.json",
+    "sha256": "87ea81807cc5e05628f70758e7bcd7af2ab2da4bfd0be0f20d7c5aa008821241",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-width-final-table.json"
+  },
+  {
+    "id": "weak-width-final-snapshot",
+    "kind": "width_snapshot",
+    "source": "worktrees/2026-11-18-jcp-weak-visibility/experiments/jcp-weak-visibility/checks/width-results/SNAPSHOT.json",
+    "sha256": "4b06d7819c6f240d25311ff42b59472021081c628553d8d989f2e967d22e29da",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-width-final-snapshot.json"
+  },
+  {
     "id": "head-p03b-case000-reset_m292_dt0.02",
     "kind": "head_probe",
     "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_000/reset_m292_dt0.02.json",
@@ -460,6 +488,48 @@
     "source": "worktrees/2026-11-18-jcp-weak-visibility/experiments/jcp-weak-visibility/runs/w00/output/summary.json",
     "sha256": "e0609912ff1ba797939ce2d19414a05515233134cf53c8f2c91ad4761adf3f54",
     "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-width-w00-raw.json"
+  },
+  {
+    "id": "weak-width-final-R128-summary",
+    "kind": "width_summary",
+    "source": "worktrees/2026-11-18-jcp-weak-visibility/experiments/jcp-weak-visibility/runs/w128/output/summary.json",
+    "sha256": "c20b00359e9837979c3c9a31a675e7ea75b0067c7d33135cf6c37374002ca699",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-width-final-R128-summary.json"
+  },
+  {
+    "id": "weak-width-final-R128-environment",
+    "kind": "width_environment",
+    "source": "worktrees/2026-11-18-jcp-weak-visibility/experiments/jcp-weak-visibility/runs/w128/output/environment.json",
+    "sha256": "1ac9ab632941f1240fc6608cced6ebed83432e4e7f2bf51bee9cfeab7840ee23",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-width-final-R128-environment.json"
+  },
+  {
+    "id": "weak-width-final-R256-summary",
+    "kind": "width_summary",
+    "source": "worktrees/2026-11-18-jcp-weak-visibility/experiments/jcp-weak-visibility/runs/w256/output/summary.json",
+    "sha256": "a616bad1c20aba751f080dfed5a3dcd561ce6208f1e92c625f1a75a80901a7fb",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-width-final-R256-summary.json"
+  },
+  {
+    "id": "weak-width-final-R256-environment",
+    "kind": "width_environment",
+    "source": "worktrees/2026-11-18-jcp-weak-visibility/experiments/jcp-weak-visibility/runs/w256/output/environment.json",
+    "sha256": "ffaa73741314b6c8e009f327c9998eccc277c2704d32afe420fc64fc0599415d",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-width-final-R256-environment.json"
+  },
+  {
+    "id": "weak-width-final-R512-summary",
+    "kind": "width_summary",
+    "source": "worktrees/2026-11-18-jcp-weak-visibility/experiments/jcp-weak-visibility/runs/w512/output/summary.json",
+    "sha256": "2f5354c04f51d60de8d79999b0e3024a308318b0d5fd26d9f210403f65680cc8",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-width-final-R512-summary.json"
+  },
+  {
+    "id": "weak-width-final-R512-environment",
+    "kind": "width_environment",
+    "source": "worktrees/2026-11-18-jcp-weak-visibility/experiments/jcp-weak-visibility/runs/w512/output/environment.json",
+    "sha256": "a571e48d90b80583b4acb88093dd4c2092b9a588910b5a3caa0c6bf847dddab7",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-width-final-R512-environment.json"
   },
   {
     "id": "cost-p01-selection",

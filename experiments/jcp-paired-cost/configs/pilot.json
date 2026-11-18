@@ -1,0 +1,385 @@
+{
+  "schema": "jcp-paired-cost-dev2-v1",
+  "parent_release": "2026-11-18 parent: P02 accepted; native head/span M584 dt0.01 authorized after parity; slot coordination required",
+  "n": 64,
+  "horizon": 0.2,
+  "eval_seed": 202609202,
+  "case_ids": [
+    0,
+    1
+  ],
+  "closed_seeds": [
+    202609203,
+    202609211,
+    202609221
+  ],
+  "truth_dt": 0.00025,
+  "reference_absolute_gate": 1e-05,
+  "reference_fraction_of_target_error": 0.01,
+  "rom": {
+    "rows": 584,
+    "dt": 0.01,
+    "gtol": 1e-07,
+    "fit_gtol": 1e-09,
+    "budget": 250,
+    "fit_starts": 4,
+    "roundoff_repair": true
+  },
+  "approved_reference_states": {
+    "learned_head": {
+      "0": {
+        "file": "inputs/accepted_learned_head_case0.npz",
+        "sha256": "3a5b1f8906fdd801a1780602d1c6ae826a8c846ced573143172d6d2b2bba5596",
+        "source_file": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p02/output/case_000/head_common_m584_dt0.01_g1e-07.npz",
+        "source_tag": "head_common_m584_dt0.01_g1e-07",
+        "source_job": "7354339",
+        "source_summary_sha256": "9b31968695efaff4fe36b6c6ac6c6e623a29239020e21f29e35af5a0d18558a2"
+      },
+      "1": {
+        "file": "inputs/accepted_learned_head_case1.npz",
+        "sha256": "0396a3a2d646f4662a2131087cdb80099d64a6f652cc37b24e97be2b46e3c1a7",
+        "source_file": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p02/output/case_001/head_common_m584_dt0.01_g1e-07.npz",
+        "source_tag": "head_common_m584_dt0.01_g1e-07",
+        "source_job": "7354339",
+        "source_summary_sha256": "9b31968695efaff4fe36b6c6ac6c6e623a29239020e21f29e35af5a0d18558a2"
+      }
+    },
+    "learned_span64": {
+      "0": {
+        "file": "inputs/accepted_learned_span64_case0.npz",
+        "sha256": "9cfc8e97eee739574ce0c934ab8f4b835840f843f2ebf098e185884f13b35e36",
+        "source_file": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p02/output/case_000/span_native_m584_dt0.01_g1e-07.npz",
+        "source_tag": "span_native_m584_dt0.01_g1e-07",
+        "source_job": "7354339",
+        "source_summary_sha256": "9b31968695efaff4fe36b6c6ac6c6e623a29239020e21f29e35af5a0d18558a2"
+      },
+      "1": {
+        "file": "inputs/accepted_learned_span64_case1.npz",
+        "sha256": "7c8eeb2de235ad4bbf6ea91e1dc3d355976e478df61702661ef7c5dd66ae364d",
+        "source_file": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p02/output/case_001/span_native_m584_dt0.01_g1e-07.npz",
+        "source_tag": "span_native_m584_dt0.01_g1e-07",
+        "source_job": "7354339",
+        "source_summary_sha256": "9b31968695efaff4fe36b6c6ac6c6e623a29239020e21f29e35af5a0d18558a2"
+      }
+    }
+  },
+  "implementation_parity_gate": 1e-06,
+  "pod_span_ranks": [
+    8,
+    16,
+    32,
+    64
+  ],
+  "classical_candidates": [
+    {
+      "mesh": 24,
+      "scheme": "cnab2",
+      "steps": 20
+    },
+    {
+      "mesh": 24,
+      "scheme": "cnab2",
+      "steps": 25
+    },
+    {
+      "mesh": 24,
+      "scheme": "cnab2",
+      "steps": 40
+    },
+    {
+      "mesh": 24,
+      "scheme": "cnab2",
+      "steps": 50
+    },
+    {
+      "mesh": 24,
+      "scheme": "cnab2",
+      "steps": 60
+    },
+    {
+      "mesh": 24,
+      "scheme": "cnab2",
+      "steps": 80
+    },
+    {
+      "mesh": 24,
+      "scheme": "rk4",
+      "steps": 5
+    },
+    {
+      "mesh": 24,
+      "scheme": "rk4",
+      "steps": 10
+    },
+    {
+      "mesh": 24,
+      "scheme": "rk4",
+      "steps": 15
+    },
+    {
+      "mesh": 24,
+      "scheme": "rk4",
+      "steps": 20
+    },
+    {
+      "mesh": 28,
+      "scheme": "cnab2",
+      "steps": 20
+    },
+    {
+      "mesh": 28,
+      "scheme": "cnab2",
+      "steps": 25
+    },
+    {
+      "mesh": 28,
+      "scheme": "cnab2",
+      "steps": 40
+    },
+    {
+      "mesh": 28,
+      "scheme": "cnab2",
+      "steps": 50
+    },
+    {
+      "mesh": 28,
+      "scheme": "cnab2",
+      "steps": 60
+    },
+    {
+      "mesh": 28,
+      "scheme": "cnab2",
+      "steps": 80
+    },
+    {
+      "mesh": 28,
+      "scheme": "rk4",
+      "steps": 5
+    },
+    {
+      "mesh": 28,
+      "scheme": "rk4",
+      "steps": 10
+    },
+    {
+      "mesh": 28,
+      "scheme": "rk4",
+      "steps": 15
+    },
+    {
+      "mesh": 28,
+      "scheme": "rk4",
+      "steps": 20
+    },
+    {
+      "mesh": 32,
+      "scheme": "cnab2",
+      "steps": 20
+    },
+    {
+      "mesh": 32,
+      "scheme": "cnab2",
+      "steps": 25
+    },
+    {
+      "mesh": 32,
+      "scheme": "cnab2",
+      "steps": 40
+    },
+    {
+      "mesh": 32,
+      "scheme": "cnab2",
+      "steps": 50
+    },
+    {
+      "mesh": 32,
+      "scheme": "cnab2",
+      "steps": 60
+    },
+    {
+      "mesh": 32,
+      "scheme": "cnab2",
+      "steps": 80
+    },
+    {
+      "mesh": 32,
+      "scheme": "rk4",
+      "steps": 5
+    },
+    {
+      "mesh": 32,
+      "scheme": "rk4",
+      "steps": 10
+    },
+    {
+      "mesh": 32,
+      "scheme": "rk4",
+      "steps": 15
+    },
+    {
+      "mesh": 32,
+      "scheme": "rk4",
+      "steps": 20
+    },
+    {
+      "mesh": 40,
+      "scheme": "cnab2",
+      "steps": 20
+    },
+    {
+      "mesh": 40,
+      "scheme": "cnab2",
+      "steps": 25
+    },
+    {
+      "mesh": 40,
+      "scheme": "cnab2",
+      "steps": 40
+    },
+    {
+      "mesh": 40,
+      "scheme": "cnab2",
+      "steps": 50
+    },
+    {
+      "mesh": 40,
+      "scheme": "cnab2",
+      "steps": 60
+    },
+    {
+      "mesh": 40,
+      "scheme": "cnab2",
+      "steps": 80
+    },
+    {
+      "mesh": 40,
+      "scheme": "rk4",
+      "steps": 5
+    },
+    {
+      "mesh": 40,
+      "scheme": "rk4",
+      "steps": 10
+    },
+    {
+      "mesh": 40,
+      "scheme": "rk4",
+      "steps": 15
+    },
+    {
+      "mesh": 40,
+      "scheme": "rk4",
+      "steps": 20
+    },
+    {
+      "mesh": 48,
+      "scheme": "cnab2",
+      "steps": 20
+    },
+    {
+      "mesh": 48,
+      "scheme": "cnab2",
+      "steps": 25
+    },
+    {
+      "mesh": 48,
+      "scheme": "cnab2",
+      "steps": 40
+    },
+    {
+      "mesh": 48,
+      "scheme": "cnab2",
+      "steps": 50
+    },
+    {
+      "mesh": 48,
+      "scheme": "cnab2",
+      "steps": 60
+    },
+    {
+      "mesh": 48,
+      "scheme": "cnab2",
+      "steps": 80
+    },
+    {
+      "mesh": 48,
+      "scheme": "rk4",
+      "steps": 5
+    },
+    {
+      "mesh": 48,
+      "scheme": "rk4",
+      "steps": 10
+    },
+    {
+      "mesh": 48,
+      "scheme": "rk4",
+      "steps": 15
+    },
+    {
+      "mesh": 48,
+      "scheme": "rk4",
+      "steps": 20
+    },
+    {
+      "mesh": 64,
+      "scheme": "cnab2",
+      "steps": 20
+    },
+    {
+      "mesh": 64,
+      "scheme": "cnab2",
+      "steps": 25
+    },
+    {
+      "mesh": 64,
+      "scheme": "cnab2",
+      "steps": 40
+    },
+    {
+      "mesh": 64,
+      "scheme": "cnab2",
+      "steps": 50
+    },
+    {
+      "mesh": 64,
+      "scheme": "cnab2",
+      "steps": 60
+    },
+    {
+      "mesh": 64,
+      "scheme": "cnab2",
+      "steps": 80
+    },
+    {
+      "mesh": 64,
+      "scheme": "rk4",
+      "steps": 5
+    },
+    {
+      "mesh": 64,
+      "scheme": "rk4",
+      "steps": 10
+    },
+    {
+      "mesh": 64,
+      "scheme": "rk4",
+      "steps": 15
+    },
+    {
+      "mesh": 64,
+      "scheme": "rk4",
+      "steps": 20
+    }
+  ],
+  "selection_repetitions": 3,
+  "confirmation_repetitions": 5,
+  "drift_gate_ratio": 1.1,
+  "timing_order_seed": 2026111803,
+  "timing_scope": "host original physical field through host six full output fields; native initialization recomputed; one GPU allocation",
+  "cold_scope": "first query with compiled cache cleared; asset disk loading/device activation/compilation included; OS page cache remains",
+  "scientific_scope": "previously exposed development pilot only; no final confirmation cohort",
+  "initial_job_minutes": 30,
+  "allocated_gpu_hours_ceiling": 2,
+  "candidate_set_note": "registered finite classical candidate set, not global optimality; both median and worst errors must match"
+}

@@ -49,9 +49,25 @@ class Subject:
     cold_query: Callable[[np.ndarray, float], np.ndarray] | None = None
 
 
+def json_safe(value):
+    if isinstance(value, dict):
+        return {str(k): json_safe(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [json_safe(v) for v in value]
+    if isinstance(value, np.ndarray):
+        return json_safe(value.tolist())
+    if isinstance(value, np.generic):
+        return json_safe(value.item())
+    if isinstance(value, float) and not math.isfinite(value):
+        return None
+    return value
+
+
 def write_json(path: Path, value):
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(value, indent=2, allow_nan=False) + "\n")
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(json.dumps(json_safe(value), indent=2, allow_nan=False) + "\n")
+    temporary.replace(path)
 
 
 def output_metrics(output, case: Case):
@@ -126,7 +142,7 @@ def block(subjects: list[Subject], cases: list[Case], repetitions: int, seed: in
             rows.append(row)
             output.parent.mkdir(parents=True, exist_ok=True)
             with output.open("a") as stream:
-                stream.write(json.dumps(row, allow_nan=False) + "\n")
+                stream.write(json.dumps(json_safe(row), allow_nan=False) + "\n")
                 stream.flush()
     return rows
 

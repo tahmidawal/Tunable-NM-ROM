@@ -34,7 +34,7 @@ def main():
     assert digest(span/'pod_basis.npz')==sr['basis_sha256']
     base=jnp.asarray(np.load(span/'pod_basis.npz')['coefficients'][:512].reshape(512,-1))*.5
     candidates=sorted((i*128+j for i in range(64) for j in range(64)),key=lambda p:((p//128+1)**2+(p%128+1)**2,p))
-    Q,n,used,accepted,sizes=complete(base,jnp.asarray(candidates))
+    Q,n,used,accepted,sizes=complete(base,jnp.asarray(candidates,dtype=jnp.int32))
     assert int(n)==1376
     defect=float(jnp.max(jnp.abs(Q@Q.T-jnp.eye(len(Q)))));assert defect<1e-9
     # Ordering and all basis decisions are frozen before development solution fields open.

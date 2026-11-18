@@ -81,6 +81,7 @@ def main():
             dense.append(ee)
         result['dense2048']=summary(np.asarray(dense));result['max_scoring_change']=float(np.max(np.abs(np.asarray(dense)-np.asarray(allerrors))))
     result['representation_gate']=bool(dense) and max(np.max(dense),result['actual4096_witness']['error'])<=.005 and result['max_scoring_change']<=.0002
+    result['representation_gate']=result['representation_gate'] and result['zero_jacobian']['independent_directions']==P*k and result['zero_jacobian']['zero_child_max']<1e-13
     result['status']='complete_frozen_child_growth';save(out/'result.json',result)
 
 

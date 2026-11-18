@@ -14,7 +14,15 @@ ACTIVE=$(ssh tufts-login "squeue -h -j '$JOB_ID' -o '%i'")
 ssh tufts-login "sacct -j '$JOB_ID' --format=JobID,JobName,State,ElapsedRaw,AllocTRES,NodeList,ExitCode -P" > "$LOCAL/sacct.txt"
 # Caches and temporary compiler products are not scientific outputs. Preserve all
 # code, generated model assets, configs, raw measurements and logs before deletion.
-ssh tufts-login "cd '$REMOTE' && find code output -type f -print0 | sort -z | xargs -0 -r sha256sum > COMPLETE.sha256 && sha256sum COMMIT.txt INPUTS.sha256 job.sbatch job.log >> COMPLETE.sha256 && tar -czf result.tar.gz code output COMMIT.txt INPUTS.sha256 job.sbatch job.log COMPLETE.sha256 && sha256sum result.tar.gz > RESULT_ARCHIVE.sha256"
+ssh tufts-login bash -s -- "$REMOTE" <<'REMOTE_SCRIPT'
+set -euo pipefail
+cd "$1"
+ITEMS=(code COMMIT.txt INPUTS.sha256 job.sbatch job.log)
+if [[ -d output ]]; then ITEMS+=(output); fi
+find "${ITEMS[@]}" -type f -print0 | sort -z | xargs -0 -r sha256sum > COMPLETE.sha256
+tar -czf result.tar.gz "${ITEMS[@]}" COMPLETE.sha256
+sha256sum result.tar.gz > RESULT_ARCHIVE.sha256
+REMOTE_SCRIPT
 scp "tufts-login:$REMOTE/result.tar.gz" "tufts-login:$REMOTE/RESULT_ARCHIVE.sha256" "$LOCAL/"
 cd "$LOCAL"
 sha256sum -c RESULT_ARCHIVE.sha256

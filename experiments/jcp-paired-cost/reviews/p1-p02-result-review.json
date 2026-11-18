@@ -1,0 +1,107 @@
+{
+  "schema": "independent-result-review-v1",
+  "source_summary": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p02/output/summary.json",
+  "source_summary_sha256": "9b31968695efaff4fe36b6c6ac6c6e623a29239020e21f29e35af5a0d18558a2",
+  "job": "7354339",
+  "qualification": {
+    "all_stationary": true,
+    "all_tight_tighter": true,
+    "all_action_checks": true,
+    "common_ic": true,
+    "ic_fit_passed": true,
+    "operator_passed": true,
+    "reference_passed": true,
+    "cases_completed": 2,
+    "passed": true
+  },
+  "accuracy_admissible": true,
+  "timing_claim_admissible": false,
+  "environment_note": "Three known hwloc CPU affinity failures, GPU backend confirmed and all numerical gates passed. Retain limitation; no diagnostic wall-time claim.",
+  "environment_source": "https://github.com/openxla/xla/issues/45484",
+  "tangent_scope": "At each arm own reached states; common-state spectra planned in development extension.",
+  "selected_tangents": [
+    {
+      "case": 0,
+      "arm": "head_common",
+      "retained_ranks": [
+        11
+      ],
+      "excluded_directions": [
+        0
+      ],
+      "smallest_physical_singular_min": 307.39352430010416,
+      "gram_minimum_relative_eigenvalue": 0.0009556565098020526
+    },
+    {
+      "case": 0,
+      "arm": "span_common",
+      "retained_ranks": [
+        67
+      ],
+      "excluded_directions": [
+        0
+      ],
+      "smallest_physical_singular_min": 4.300754589844825,
+      "gram_minimum_relative_eigenvalue": 4.343749623630894e-08
+    },
+    {
+      "case": 0,
+      "arm": "span_native",
+      "retained_ranks": [
+        67
+      ],
+      "excluded_directions": [
+        0
+      ],
+      "smallest_physical_singular_min": 4.3008016722974265,
+      "gram_minimum_relative_eigenvalue": 4.343878650162404e-08
+    },
+    {
+      "case": 1,
+      "arm": "head_common",
+      "retained_ranks": [
+        11
+      ],
+      "excluded_directions": [
+        0
+      ],
+      "smallest_physical_singular_min": 282.62943610877056,
+      "gram_minimum_relative_eigenvalue": 0.0008320217563833095
+    },
+    {
+      "case": 1,
+      "arm": "span_common",
+      "retained_ranks": [
+        67
+      ],
+      "excluded_directions": [
+        0
+      ],
+      "smallest_physical_singular_min": 4.288603951876389,
+      "gram_minimum_relative_eigenvalue": 3.5810628578565646e-08
+    },
+    {
+      "case": 1,
+      "arm": "span_native",
+      "retained_ranks": [
+        67
+      ],
+      "excluded_directions": [
+        0
+      ],
+      "smallest_physical_singular_min": 4.288604699562913,
+      "gram_minimum_relative_eigenvalue": 3.5808467566780885e-08
+    }
+  ],
+  "containment": {
+    "probes": 80,
+    "stationary": 80,
+    "residual_lower": 80,
+    "physical_error_higher": 80
+  },
+  "fits": {
+    "best_found_total": 172,
+    "selected_fit_not_stationary": 6
+  },
+  "fit_interpretation": "All span-to-head fits are best-found fixed-frame upper bounds, including selected nonstationary fits; no global distance/stability certification."
+}

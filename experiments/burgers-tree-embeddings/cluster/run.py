@@ -20,6 +20,7 @@ def main():
     ap=argparse.ArgumentParser();ap.add_argument('action',choices=['submit','reconcile','status'])
     ap.add_argument('--name');ap.add_argument('--driver');ap.add_argument('--minutes',type=int)
     ap.add_argument('--args',default='');ap.add_argument('--gpu',default='a100',choices=['a100','h100','h200','l40s'])
+    ap.add_argument('--after',type=int)
     a=ap.parse_args();owner=json.loads((H/'OWNER.json').read_text());ns=owner['namespace']
     rows=reconcile(json.loads((H/'cluster/ledger.json').read_text()))
     q=ssh('squeue -u tawal01 -h -o "%i %j %T %Z"')
@@ -49,11 +50,13 @@ def main():
     sp.run(['ssh','tufts-login',f'cat > {remote}/SOURCE.sha256'],input=('\n'.join(manifest)+'\n').encode(),check=True)
     cmd=' '.join(shlex.quote(x) for x in [a.driver,'--out',remote+'/output']+shlex.split(a.args))
     constraint='#SBATCH --constraint=a100-80G\n' if a.gpu=='a100' else ''
+    if a.after:assert any(r.get('id')==a.after for r in rows),'Dependency must be an owned job'
+    dependency=f'#SBATCH --dependency=afterok:{a.after}\n' if a.after else ''
     script=f'''#!/bin/bash
 #SBATCH --job-name=bte_{a.name}
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:{a.gpu}:1
-{constraint}#SBATCH --cpus-per-task=8
+{dependency}{constraint}#SBATCH --cpus-per-task=8
 #SBATCH --mem=96G
 #SBATCH --time={a.minutes}
 #SBATCH --chdir={remote}

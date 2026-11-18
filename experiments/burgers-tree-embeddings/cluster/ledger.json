@@ -9,8 +9,8 @@
     "args": "--group dev",
     "gpu": "a100",
     "submitted_utc": "2026-11-18T20:07:21.220657+00:00",
-    "state": "RUNNING",
-    "elapsed_seconds": 56,
+    "state": "COMPLETED",
+    "elapsed_seconds": 254,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
   },
@@ -23,6 +23,21 @@
     "driver": "references.py",
     "args": "--group train",
     "gpu": "a100",
-    "submitted_utc": "2026-11-18T20:08:24.428118+00:00"
+    "submitted_utc": "2026-11-18T20:08:24.428118+00:00",
+    "state": "RUNNING",
+    "elapsed_seconds": 230,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "crossref01",
+    "id": 7351776,
+    "reserved_minutes": 60,
+    "commit": "b6f47bf310bf473d97be98084143b00db23b6644",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/crossref01",
+    "driver": "crosscheck.py",
+    "args": "--reference /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/refsdev01/output",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-18T20:12:24.772185+00:00"
   }
 ]

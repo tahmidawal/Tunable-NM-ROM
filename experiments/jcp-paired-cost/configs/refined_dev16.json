@@ -1,0 +1,551 @@
+{
+  "schema": "jcp-paired-cost-dev16-refinement-v1",
+  "parent_release": "2026-11-18 parent: original16exposedcases, fixedM584dt.01targets; finerclassicalmeshes and strongerPOD numericalgrid approved; requires admittedP03B all16nativeparity states",
+  "n": 64,
+  "horizon": 0.2,
+  "eval_seed": 202609202,
+  "case_ids": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "closed_seeds": [
+    202609203,
+    202609211,
+    202609221
+  ],
+  "truth_dt": 0.00025,
+  "reference_absolute_gate": 1e-05,
+  "reference_fraction_of_target_error": 0.01,
+  "rom": {
+    "rows": 584,
+    "dt": 0.01,
+    "gtol": 1e-07,
+    "fit_gtol": 1e-09,
+    "budget": 250,
+    "fit_starts": 4,
+    "roundoff_repair": true
+  },
+  "approved_reference_states": null,
+  "implementation_parity_gate": 1e-06,
+  "pod_span_ranks": [
+    8,
+    16,
+    32,
+    64
+  ],
+  "classical_candidates": [
+    {
+      "mesh": 24,
+      "scheme": "cnab2",
+      "steps": 20
+    },
+    {
+      "mesh": 24,
+      "scheme": "cnab2",
+      "steps": 25
+    },
+    {
+      "mesh": 24,
+      "scheme": "cnab2",
+      "steps": 40
+    },
+    {
+      "mesh": 24,
+      "scheme": "cnab2",
+      "steps": 50
+    },
+    {
+      "mesh": 24,
+      "scheme": "cnab2",
+      "steps": 60
+    },
+    {
+      "mesh": 24,
+      "scheme": "cnab2",
+      "steps": 80
+    },
+    {
+      "mesh": 24,
+      "scheme": "rk4",
+      "steps": 5
+    },
+    {
+      "mesh": 24,
+      "scheme": "rk4",
+      "steps": 10
+    },
+    {
+      "mesh": 24,
+      "scheme": "rk4",
+      "steps": 15
+    },
+    {
+      "mesh": 24,
+      "scheme": "rk4",
+      "steps": 20
+    },
+    {
+      "mesh": 28,
+      "scheme": "cnab2",
+      "steps": 20
+    },
+    {
+      "mesh": 28,
+      "scheme": "cnab2",
+      "steps": 25
+    },
+    {
+      "mesh": 28,
+      "scheme": "cnab2",
+      "steps": 40
+    },
+    {
+      "mesh": 28,
+      "scheme": "cnab2",
+      "steps": 50
+    },
+    {
+      "mesh": 28,
+      "scheme": "cnab2",
+      "steps": 60
+    },
+    {
+      "mesh": 28,
+      "scheme": "cnab2",
+      "steps": 80
+    },
+    {
+      "mesh": 28,
+      "scheme": "rk4",
+      "steps": 5
+    },
+    {
+      "mesh": 28,
+      "scheme": "rk4",
+      "steps": 10
+    },
+    {
+      "mesh": 28,
+      "scheme": "rk4",
+      "steps": 15
+    },
+    {
+      "mesh": 28,
+      "scheme": "rk4",
+      "steps": 20
+    },
+    {
+      "mesh": 32,
+      "scheme": "cnab2",
+      "steps": 20
+    },
+    {
+      "mesh": 32,
+      "scheme": "cnab2",
+      "steps": 25
+    },
+    {
+      "mesh": 32,
+      "scheme": "cnab2",
+      "steps": 40
+    },
+    {
+      "mesh": 32,
+      "scheme": "cnab2",
+      "steps": 50
+    },
+    {
+      "mesh": 32,
+      "scheme": "cnab2",
+      "steps": 60
+    },
+    {
+      "mesh": 32,
+      "scheme": "cnab2",
+      "steps": 80
+    },
+    {
+      "mesh": 32,
+      "scheme": "rk4",
+      "steps": 5
+    },
+    {
+      "mesh": 32,
+      "scheme": "rk4",
+      "steps": 10
+    },
+    {
+      "mesh": 32,
+      "scheme": "rk4",
+      "steps": 15
+    },
+    {
+      "mesh": 32,
+      "scheme": "rk4",
+      "steps": 20
+    },
+    {
+      "mesh": 40,
+      "scheme": "cnab2",
+      "steps": 20
+    },
+    {
+      "mesh": 40,
+      "scheme": "cnab2",
+      "steps": 25
+    },
+    {
+      "mesh": 40,
+      "scheme": "cnab2",
+      "steps": 40
+    },
+    {
+      "mesh": 40,
+      "scheme": "cnab2",
+      "steps": 50
+    },
+    {
+      "mesh": 40,
+      "scheme": "cnab2",
+      "steps": 60
+    },
+    {
+      "mesh": 40,
+      "scheme": "cnab2",
+      "steps": 80
+    },
+    {
+      "mesh": 40,
+      "scheme": "rk4",
+      "steps": 5
+    },
+    {
+      "mesh": 40,
+      "scheme": "rk4",
+      "steps": 10
+    },
+    {
+      "mesh": 40,
+      "scheme": "rk4",
+      "steps": 15
+    },
+    {
+      "mesh": 40,
+      "scheme": "rk4",
+      "steps": 20
+    },
+    {
+      "mesh": 48,
+      "scheme": "cnab2",
+      "steps": 20
+    },
+    {
+      "mesh": 48,
+      "scheme": "cnab2",
+      "steps": 25
+    },
+    {
+      "mesh": 48,
+      "scheme": "cnab2",
+      "steps": 40
+    },
+    {
+      "mesh": 48,
+      "scheme": "cnab2",
+      "steps": 50
+    },
+    {
+      "mesh": 48,
+      "scheme": "cnab2",
+      "steps": 60
+    },
+    {
+      "mesh": 48,
+      "scheme": "cnab2",
+      "steps": 80
+    },
+    {
+      "mesh": 48,
+      "scheme": "rk4",
+      "steps": 5
+    },
+    {
+      "mesh": 48,
+      "scheme": "rk4",
+      "steps": 10
+    },
+    {
+      "mesh": 48,
+      "scheme": "rk4",
+      "steps": 15
+    },
+    {
+      "mesh": 48,
+      "scheme": "rk4",
+      "steps": 20
+    },
+    {
+      "mesh": 64,
+      "scheme": "cnab2",
+      "steps": 20
+    },
+    {
+      "mesh": 64,
+      "scheme": "cnab2",
+      "steps": 25
+    },
+    {
+      "mesh": 64,
+      "scheme": "cnab2",
+      "steps": 40
+    },
+    {
+      "mesh": 64,
+      "scheme": "cnab2",
+      "steps": 50
+    },
+    {
+      "mesh": 64,
+      "scheme": "cnab2",
+      "steps": 60
+    },
+    {
+      "mesh": 64,
+      "scheme": "cnab2",
+      "steps": 80
+    },
+    {
+      "mesh": 64,
+      "scheme": "rk4",
+      "steps": 5
+    },
+    {
+      "mesh": 64,
+      "scheme": "rk4",
+      "steps": 10
+    },
+    {
+      "mesh": 64,
+      "scheme": "rk4",
+      "steps": 15
+    },
+    {
+      "mesh": 64,
+      "scheme": "rk4",
+      "steps": 20
+    },
+    {
+      "mesh": 42,
+      "scheme": "cnab2",
+      "steps": 20
+    },
+    {
+      "mesh": 42,
+      "scheme": "cnab2",
+      "steps": 25
+    },
+    {
+      "mesh": 42,
+      "scheme": "cnab2",
+      "steps": 40
+    },
+    {
+      "mesh": 42,
+      "scheme": "cnab2",
+      "steps": 50
+    },
+    {
+      "mesh": 42,
+      "scheme": "cnab2",
+      "steps": 60
+    },
+    {
+      "mesh": 42,
+      "scheme": "cnab2",
+      "steps": 80
+    },
+    {
+      "mesh": 42,
+      "scheme": "rk4",
+      "steps": 5
+    },
+    {
+      "mesh": 42,
+      "scheme": "rk4",
+      "steps": 10
+    },
+    {
+      "mesh": 42,
+      "scheme": "rk4",
+      "steps": 15
+    },
+    {
+      "mesh": 42,
+      "scheme": "rk4",
+      "steps": 20
+    },
+    {
+      "mesh": 44,
+      "scheme": "cnab2",
+      "steps": 20
+    },
+    {
+      "mesh": 44,
+      "scheme": "cnab2",
+      "steps": 25
+    },
+    {
+      "mesh": 44,
+      "scheme": "cnab2",
+      "steps": 40
+    },
+    {
+      "mesh": 44,
+      "scheme": "cnab2",
+      "steps": 50
+    },
+    {
+      "mesh": 44,
+      "scheme": "cnab2",
+      "steps": 60
+    },
+    {
+      "mesh": 44,
+      "scheme": "cnab2",
+      "steps": 80
+    },
+    {
+      "mesh": 44,
+      "scheme": "rk4",
+      "steps": 5
+    },
+    {
+      "mesh": 44,
+      "scheme": "rk4",
+      "steps": 10
+    },
+    {
+      "mesh": 44,
+      "scheme": "rk4",
+      "steps": 15
+    },
+    {
+      "mesh": 44,
+      "scheme": "rk4",
+      "steps": 20
+    },
+    {
+      "mesh": 46,
+      "scheme": "cnab2",
+      "steps": 20
+    },
+    {
+      "mesh": 46,
+      "scheme": "cnab2",
+      "steps": 25
+    },
+    {
+      "mesh": 46,
+      "scheme": "cnab2",
+      "steps": 40
+    },
+    {
+      "mesh": 46,
+      "scheme": "cnab2",
+      "steps": 50
+    },
+    {
+      "mesh": 46,
+      "scheme": "cnab2",
+      "steps": 60
+    },
+    {
+      "mesh": 46,
+      "scheme": "cnab2",
+      "steps": 80
+    },
+    {
+      "mesh": 46,
+      "scheme": "rk4",
+      "steps": 5
+    },
+    {
+      "mesh": 46,
+      "scheme": "rk4",
+      "steps": 10
+    },
+    {
+      "mesh": 46,
+      "scheme": "rk4",
+      "steps": 15
+    },
+    {
+      "mesh": 46,
+      "scheme": "rk4",
+      "steps": 20
+    }
+  ],
+  "selection_repetitions": 3,
+  "confirmation_repetitions": 5,
+  "drift_gate_ratio": 1.1,
+  "timing_order_seed": 2026111803,
+  "timing_scope": "instrumented complete query: host original physical field through host six full output fields and solver diagnostic conversion; native initialization recomputed; one GPU allocation",
+  "cold_scope": "direct asset activation + compilation + first instrumented query in existing JAX/CUDA process; excludes runtime/context startup; OS page cache remains",
+  "scientific_scope": "previously exposed development pilot only; no final confirmation cohort",
+  "initial_job_minutes": 45,
+  "allocated_gpu_hours_ceiling": 2,
+  "candidate_set_note": "Prospective refinement after p01: original60 plus42/44/46mesh configurations; PODhead9numericalsettings plus4spanranks. Allretimedonall16existingdevelopmentcases inonesameallocation; no globaloptimality/freshcohortclaim.",
+  "cohort_scope": "original-dev16",
+  "pod_head_settings": [
+    {
+      "rows": 292,
+      "dt": 0.02
+    },
+    {
+      "rows": 292,
+      "dt": 0.01
+    },
+    {
+      "rows": 292,
+      "dt": 0.005
+    },
+    {
+      "rows": 584,
+      "dt": 0.02
+    },
+    {
+      "rows": 584,
+      "dt": 0.01
+    },
+    {
+      "rows": 584,
+      "dt": 0.005
+    },
+    {
+      "rows": 1168,
+      "dt": 0.02
+    },
+    {
+      "rows": 1168,
+      "dt": 0.01
+    },
+    {
+      "rows": 1168,
+      "dt": 0.005
+    }
+  ]
+}

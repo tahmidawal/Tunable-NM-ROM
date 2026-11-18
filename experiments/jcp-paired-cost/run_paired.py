@@ -101,26 +101,27 @@ def save_assets(path, basis, operators, params, codes):
     write_json(path / "MANIFEST.json", {p.name: sha(p) for p in sorted(path.glob("*.npy"))})
 
 
-def activate_assets(path, rank, kind):
+def activate_assets(path, rank, kind, rows):
     arrays = {p.stem: np.load(p, allow_pickle=False) for p in path.glob("*.npy")}
     params = {name[2:]: jnp.asarray(value) for name, value in arrays.items() if name.startswith("p_")} if kind == "head" else {}
     codes = jnp.asarray(arrays["codes"]) if kind == "head" else jnp.zeros((0, 0))
     basis = jnp.asarray(np.ascontiguousarray(arrays["basis"][:, :rank]))
-    A = jnp.asarray(np.ascontiguousarray(arrays["A"][:, :rank]))
-    T = jnp.asarray(np.ascontiguousarray(arrays["T"][:, :rank, :rank]))
-    lam = jnp.asarray(arrays["lam"])
-    Dd = jnp.asarray(np.ascontiguousarray(arrays["Dd"][:, :, :rank]))
+    A = jnp.asarray(np.ascontiguousarray(arrays["A"][:rows, :rank]))
+    T = jnp.asarray(np.ascontiguousarray(arrays["T"][:rows, :rank, :rank]))
+    lam = jnp.asarray(arrays["lam"][:rows])
+    Dd = jnp.asarray(np.ascontiguousarray(arrays["Dd"][:, :rows, :rank]))
     candidates = H.head_apply(params, codes) if kind == "head" else jnp.zeros((0, 0))
     return jax.block_until_ready((basis, A, T, lam, Dd, params, codes, candidates))
 
 
-def native_subject(name, family, kind, rank, cfg, asset_path):
-    settings = cfg["rom"]
+def native_subject(name, family, kind, rank, cfg, asset_path, override=None):
+    settings = dict(cfg["rom"])
+    settings.update(override or {})
     steps = round(cfg["horizon"] / settings["dt"])
     compiled = Q.make_query(kind, n=cfg["n"], rank=rank, latent=8, dt=settings["dt"],
         steps=steps, output_every=steps//5, budget=settings["budget"],
         fit_starts=settings["fit_starts"], roundoff_repair=settings["roundoff_repair"])
-    assets = activate_assets(asset_path, rank, kind)
+    assets = activate_assets(asset_path, rank, kind, settings["rows"])
 
     def use(u0, viscosity, active):
         output, stats, initial = compiled(jnp.asarray(u0), jnp.asarray(viscosity), *active,
@@ -135,6 +136,9 @@ def native_subject(name, family, kind, rank, cfg, asset_path):
             "step_roundoff_acceptances": stats[:, 5].astype(int).tolist(),
             "initial_fit_reason": int(initial[0]), "initial_fit_gradient": float(initial[1]),
             "initial_fit_iterations": int(initial[3]),
+            "initial_fit_raw_winner": int(initial[6]), "initial_fit_selected": int(initial[7]),
+            "initial_fit_tie_band": float(initial[8]),
+            "initial_fit_raw_selected_coefficient_gap": float(initial[9]),
         }
         return QueryResult(fields, valid, diagnostics)
 
@@ -145,7 +149,7 @@ def native_subject(name, family, kind, rank, cfg, asset_path):
         # clear_caches is called by the outer cold block before the timer.
         # Asset disk loading, device activation, fitting, compilation and output
         # are all inside this directly timed callback.
-        active = activate_assets(asset_path, rank, kind)
+        active = activate_assets(asset_path, rank, kind, settings["rows"])
         return use(u0, viscosity, active)
 
     return Subject(name, family, cfg["n"], query, {
@@ -190,8 +194,9 @@ def main():
     cfg = json.loads(args.config.read_text())
     if not cfg.get("parent_release") or not cfg.get("approved_reference_states"):
         raise RuntimeError("scientific release and admitted parity states are required before running")
-    if cfg["eval_seed"] != 202609202 or set(cfg["case_ids"]) - {0, 1}:
-        raise RuntimeError("initial cost pilot is restricted to existing development cases 0 and 1")
+    allowed = list(range(16)) if cfg.get("cohort_scope") == "original-dev16" else [0, 1]
+    if cfg["eval_seed"] != 202609202 or cfg["case_ids"] != allowed:
+        raise RuntimeError("only the registered original development prefix is allowed")
     if cfg["n"] != 64 or cfg["horizon"] != .2:
         raise RuntimeError("initial cost pilot is the original frozen NS64 problem")
     if jax.default_backend() != "gpu" or not jax.config.jax_enable_x64:
@@ -230,7 +235,8 @@ def main():
     start = time.perf_counter()
     log("regenerating original POD bank from training seed")
     pod_G, pod_info = rebuild_pod(original, cfg["n"], cfg["horizon"])
-    pod_ops, pod_checks = SR.build_operators_fast(pod_G, cfg["n"], cfg["rom"]["rows"], check_modes=8)
+    pod_rows = max([cfg["rom"]["rows"]] + [v["rows"] for v in cfg.get("pod_head_settings", [])])
+    pod_ops, pod_checks = SR.build_operators_fast(pod_G, cfg["n"], pod_rows, check_modes=8)
     pod_params, pod_codes = load_head(HERE / "assets/pod_head_k8_n64.npz")
     pod_assets = args.out / "deployed_assets/pod"
     save_assets(pod_assets, pod_G, pod_ops, pod_params, pod_codes)
@@ -260,8 +266,10 @@ def main():
                           "dt_refinement_max": delta, "initial_projection_gap": initial_projection_gap})
     write_json(args.out / "references.json", reference)
     subjects = [native_subject("learned_head", "target", "head", 64, cfg, learned_assets),
-                native_subject("learned_span64", "target", "span", 64, cfg, learned_assets),
-                native_subject("pod_head", "pod", "head", 64, cfg, pod_assets)]
+                native_subject("learned_span64", "target", "span", 64, cfg, learned_assets)]
+    for setting in cfg.get("pod_head_settings", [{"rows": cfg["rom"]["rows"], "dt": cfg["rom"]["dt"]}]):
+        name = f"pod_head_m{setting['rows']}_dt{setting['dt']:g}"
+        subjects.append(native_subject(name, "pod", "head", 64, cfg, pod_assets, setting))
     for rank in cfg["pod_span_ranks"]:
         subjects.append(native_subject(f"pod_span{rank}", "pod", "span", rank, cfg, pod_assets))
     subjects.extend(classical_subject(candidate, cfg) for candidate in cfg["classical_candidates"])
@@ -270,6 +278,7 @@ def main():
     # must match P1's admitted native head/span coefficients and centers.
     parity, warmups = [], []
     for subject in subjects:
+        log(f"compile and numerical check: {subject.name}")
         for case in cases:
             started = time.perf_counter()
             value = subject.query(case.initial, case.viscosity)
@@ -302,6 +311,8 @@ def main():
                     write_json(args.out / "implementation_parity.json", parity)
                     write_json(args.out / "first_invocations.json", warmups)
                     raise RuntimeError("compiled query failed admitted scientific reference parity")
+        write_json(args.out / "first_invocations.json", warmups)
+        write_json(args.out / "implementation_parity.json", parity)
     write_json(args.out / "implementation_parity.json", parity)
     write_json(args.out / "first_invocations.json", warmups)
     result = run_suite(subjects, cases, target_names=["learned_head", "learned_span64"],

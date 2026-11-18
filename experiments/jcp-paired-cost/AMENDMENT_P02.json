@@ -1,0 +1,68 @@
+{
+  "schema": "prospective-cost-amendment-v1",
+  "baseline_job": 7354479,
+  "baseline_summary_sha256": "d7104edbe090e2c6b04ae761083f65d9c480727c10dc1c52dcd256669db97325",
+  "reason": "Small strict matched-any-mesh development speedmargin with a sparse classicalmeshgrid and no PODhead eligible at fixednumericalsettings; assess stronger comparators and full existingdevelopmentcohort.",
+  "frozen_targets": {
+    "rows": 584,
+    "dt": 0.01,
+    "cohort_seed": 202609202,
+    "case_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ]
+  },
+  "new_classical_meshes": [
+    42,
+    44,
+    46
+  ],
+  "classical_schemes_steps": {
+    "cnab2": [
+      20,
+      25,
+      40,
+      50,
+      60,
+      80
+    ],
+    "rk4": [
+      5,
+      10,
+      15,
+      20
+    ]
+  },
+  "pod_head_rows": [
+    292,
+    584,
+    1168
+  ],
+  "pod_head_dt": [
+    0.02,
+    0.01,
+    0.005
+  ],
+  "fit_selector": "P1P03B convergence-respecting stationary objective-tie rule, applied to every head; originalrawwinner retained outside fixedband.",
+  "retime": "all90classical,9PODhead,4PODspan and2target configurations in onesameallocation with new selection/repetitionconfirmation blocks",
+  "qualification": "unchanged median+worst eligibility, unchanged drift and stationarity thresholds, completeinput/outputscope",
+  "confirmation_scope": "timingrepetitionconfirmation on alreadyexposeddevelopmentcases, not freshstatisticaltest",
+  "pending": "P03Bqualifiedall16nativeparityfiles must be pinned before submission",
+  "remaining_allocated_gpu_hours": 1.9119444444444444,
+  "job_limit_minutes": 45,
+  "no_new_refinement_results_at_registration": true
+}

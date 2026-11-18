@@ -21964,3 +21964,12 @@ Regenerated original-family NS64 held-out worst evolved errors from saved record
 The optimistic figure is explicitly hypothetical, with qualitative axes and separate formula-generated arrays; it is neither measured evidence nor a numerical forecast. Preserve the measured nonmonotonic prefix curve and classical-solver counterexample. Proposed priorities: assemble qualified existing figures, then matched head/span dynamics, physical-tangent weak-test visibility, and a selected complete-query comparison. For a narrower quadrature article, prioritize final-model time-step/quadrature and dual-reference consistency instead. Fresh confirmation follows only after freezing a selected policy; opened historical tests cannot become fresh tests again.
 
 No training, PDE solves, cluster operations, experimental code changes, merge or campaign resumption occurred. Active and paused experiment owners remain unchanged. No new numerical success or retraction is claimed; this audit corrects stale completion statuses and narrows interpretation. The ranked experiments are proposals, not launched work.
+
+
+## 2026-11-18
+
+### Codex — clarify the proposed head/drift mechanism
+
+Checked the current manuscript's fixed-test residual minimization and nonlinear decoder Jacobian, together with Lee and Carlberg's manifold projection formulation. Refined the optimistic drift-control wording: the head constrains bank coefficients to its learned image and can exclude harmful state directions poorly detected by the tested residual. This is a possible mechanism, not an established stability property. A translation-only sine-wave example illustrates coefficient coupling and possible amplitude-error suppression, while phase error can still grow along the manifold. A learned head does not automatically enforce the toy example's exact invariant.
+
+For a fixed previous state and identical residual definition, the full span can attain no larger optimal residual than its head subset; physical accuracy can rank differently because the tested residual is not the physical-error norm. Existing selected head/span packages do not isolate the mechanism. The proposed matched-control experiment should distinguish drift away from the learned manifold from inaccurate motion along it. No new experiments, numerical findings, implementation edits, campaign resumption or theory guarantee.

@@ -7,21 +7,22 @@ def read(name):
     p=H/'results'/name/'output/result.json';sources[name]=hashlib.sha256(p.read_bytes()).hexdigest()
     return json.loads(p.read_text())
 r=read('b1directaudit');g=read('b1globalfull');n=read('b1child8refit')
+stable=read('b1stableglobal');child=read('b1child16');refit=read('b1child16refit');head=read('b1headspan2')
 pilots=[]
-for name in ['b1weakpilot1','b1weakL2048','b1weakL4096','b1weakdt125','b1weakdt625']:
+for name in ['b1weakpilot1','b1weakL2048','b1weakL4096','b1weakdt125','b1weakdt625','b1cn2048','b1cn2048half','b1cnQ512','b1cnQ1024']:
     if (H/'results'/name/'output/result.json').exists():
         p=read(name)
         if p['status']=='complete_fixed_tree_diagnostic_pilot':pilots.append((name,p))
 ledger=json.loads((H/'cluster/ledger.json').read_text());terminal={'COMPLETED','FAILED','TIMEOUT','CANCELLED','OUT_OF_MEMORY','NODE_FAIL','PREEMPTED'}
 active=[v for v in ledger if v.get('state') not in terminal]
 seconds=sum(v.get('elapsed_seconds',0) for v in ledger);stamp=datetime.datetime.now(datetime.timezone.utc).isoformat()
-status=f'''**New Burgers tree-embedding study: B1 ACTIVE, fixed-tree physics under numerical refinement.** The direct local representation passes its screen: worst {100*r['dense_witness']['relative_l2']:.4f}% on actual4096 output. Initial complete PDE pilots converge but pulse errors remain above1%; spatial/time/test refinement is required. Frozen child8 refitting reaches {100*n['worst_projection']:.4f}%, with unresolved stationarity. The saved global1280 span reaches {100*g['POD']['1280']['projection']['worst']:.4f}%, but includes numerically null training directions and needs stability qualification. No complete-runtime win or final-test result. [Generated evidence and plots](reports/2026-11-18-tree-embedding-representation.md). Old campaign remains PAUSED; no merge.'''
-title='### 2026-11-18 — Tree-embedding B1 physics evidence: '+', '.join(name for name,_ in pilots)
+status=f'''**New Burgers tree-embedding study: B1 ACTIVE, fixed-tree physics under numerical refinement.** The direct local representation passes its screen: worst {100*r['dense_witness']['relative_l2']:.4f}% on actual4096 output. Frozen child16 fitting reaches {100*refit['worst_projection']:.4f}%; remaining representation failures are alignment cases. A stronger prescribed global POD-plus-Fourier space reaches {100*stable['controls']['960']['worst']:.4f}% at the same variable count as child16, so the child's error-per-variable advantage is not established. Common spatial/time/integration checks and a bounded same-head child-growth diagnostic continue. No complete-runtime win or final-test result. [Generated evidence and plots](reports/2026-11-18-tree-embedding-representation.md). Old campaign remains PAUSED; no merge.'''
+title='### 2026-11-18 — Tree-embedding B1 frozen/global audits and physics: '+', '.join(name for name,_ in pilots)
 lines=[]
 for name,p in pilots:
     for c in p['cases']:
         for method,v in c['methods'].items():
-            line=f"- {name}, {c['case']}, {method}: L{p['L']}, dt{p['dt']:g}, worst evolved error {100*max(v['physical_error'][1:]):.6f}%, actual4096 final {100*v['actual4096_final_error']:.6f}%; all steps stationary {v['all_steps_stationary']}, accuracy pass {v['physical_accuracy_pass']}."
+            line=f"- {name}, {c['case']}, {method}: L{p['L']}, {p.get('time_integrator','be').upper()}, Q{p.get('quadrature_intervals',p['L'])}, dt{p['dt']:g}, worst evolved error {100*max(v['physical_error'][1:]):.6f}%, actual4096 final {100*v['actual4096_final_error']:.6f}%; all steps stationary {v['all_steps_stationary']}, accuracy pass {v['physical_accuracy_pass']}."
             if 'previous_state_relative_change' in v:line+=f" Maximum physical state change from prior setting {100*max(v['previous_state_relative_change'][1:]):.6f}%."
             lines.append(line)
 entry=f'''{title}
@@ -33,6 +34,14 @@ Published {stamp} from checksum-verified results in the owned lane. These are co
 The extended saved global POD1280 space gives worst {100*g['POD']['1280']['projection']['worst']:.6f}% versus direct-tree1376 {100*r['dense_witness']['relative_l2']:.6f}%. The trailing relative training singular value is {g['POD']['1280']['relative_training_singular_value']:.4g}: this is a numerical-null completion, not reliably learned variance. Keep its real saved-space error visible and require stability qualification. The data-independent complete sine48 space gives {100*g['complete_sine']['48']['projection']['worst']:.6f}% with {g['complete_sine']['48']['variables']} variables. No error-per-variable result establishes cost.
 
 Frozen child8 dense250 fitting gives {100*n['worst_projection']:.6f}%, maximum stationarity {n['max_stationarity']:.4g}; weights unchanged. This does not prove a global fitting minimum. A frozen global output-span relaxation is prospectively registered to separate final-layer shape restrictions from nonlinear coding. No additional trained recipe is claimed by that audit.
+
+The completed global-head audit gives frozen affine-space bounds {', '.join(f"latent{v['latent']}: {100*v['panels']['dev']['worst']:.6f}% at rank{v['affine_span_rank']}" for v in head['models'])}. Those bounds cannot be reduced by code optimization on the same frozen head. The gap above the bound does not distinguish nonlinear image restriction from imperfect fitting. Its first job failed on an absent label in legacy metadata; logs and allocated time are retained, and the retry reads the matching span's labels. No scientific result is taken from the failed attempt.
+
+Child16 training ends at its registered stop: selected update{child['selected_update']}, worst{100*child['worst_projection']:.6f}%; all{child['zero_jacobian']['independent_directions']}/{child['zero_jacobian']['child_variables']} zero-child directions are independent after parent removal. Frozen250-step Cholesky refitting gives{100*refit['worst_projection']:.6f}% with maximum stationarity{refit['max_stationarity']:.4g}. Only alignment cases miss0.5%; a64-node prescribed growth test is registered with weights and all old windows retained. It is an offline projection diagnostic with initial-callable-only node selection, not online truth assistance.
+
+The prescribed global completion of training POD512 gives960-variable error{100*stable['controls']['960']['worst']:.6f}%, orthogonality defect{stable['orthogonality_defect']:.3g}. This defeats child16's projection error at the same count; all complete-runtime conclusions remain open. The two fixed training-row permutations give pure saved POD1280 errors {', '.join(f"{100*v['controls']['1280']['projection']['worst']:.6f}%" for v in stable['permutations'])}: modest score changes in this limited check do not turn null directions into learned variance. The retained integer-scatter future warning in the completion job affects index dtype, not float64 arithmetic; the source now explicitly uses int32 indices.
+
+Registered common CN time-integration and structured weak-integration diagnostics preserve the fine sign-upwind spacing and discrete diffusion. The local sub-minute fixtures verify independent old/new CN stencils, all five sparse fine-grid samples and dense-equivalent returned states. Composite integration weights are deterministic, not trained on residuals; its real convergence test is still required. Every method in a comparison shares the same operator/integrator/rule.
 
 Ledger snapshot: {seconds} elapsed allocated GPU-seconds ({seconds/3600:.6f}h), including active elapsed time. Outstanding full reservations remain charged by the submission guard. Active owned names: {', '.join(v['name'] for v in active) or 'none'}. Old paused namespace and final-test solution fields remain untouched. Source, selected models and generated report are mirrored; raw evidence has local and designated cluster copies. No merge.
 '''

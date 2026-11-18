@@ -42,6 +42,8 @@ The direct local entries use resolved physical Gram integration; actual-grid aud
 
 The extended global control reaches 0.3227% with 1280 variables, better than the admitted direct tree at its larger variable count. Retain that result, with an essential qualification: its trailing training singular value is only 3.01e-18 of the largest. These are valid saved orthonormal spaces extended into numerically null training directions, not reliably learned variance directions. Their stability under retraining is unqualified. The complete data-independent sine space provides a separate control without this ambiguity. Neither variable counts nor projection errors establish PDE cost.
 
+Reordering the identical training rows in two prescribed permutations gives global1280 errors 0.3161%, 0.3235%. The accuracy changes modestly in this limited check; the directions remain numerically null. A separate, explicitly constructed global space avoids those arbitrary SVD directions: retain the reliable training POD512 prefix and append orthogonalized low-frequency sine directions in fixed order. It reaches 0.3304% with960 variables, compared with frozen child16 refitting at 0.6492% with the same count. Its measured orthogonality defect is 1.7e-14. This is a POD-plus-Fourier control, not pure POD or a neural method. It currently defeats the child's error-per-variable comparison; cost and actual-output qualification remain separate.
+
 | Global span control | Variables | Worst all | Relative trailing training singular value |
 |---|---:|---:|---:|
 | Global saved POD prefix 768 | 768 | 1.6145% | 4.79e-07 |
@@ -56,6 +58,11 @@ The extended global control reaches 0.3227% with 1280 variables, better than the
 | Complete sine 40 per axis | 1600 | 0.9292% | Not trained |
 | Complete sine 48 per axis | 2304 | 0.4543% | Not trained |
 | Complete sine 64 per axis | 4096 | 0.1139% | Not trained |
+| POD512 + prescribed Fourier completion | 768 | 0.5263% | Not a null-tail completion |
+| POD512 + prescribed Fourier completion | 960 | 0.3304% | Not a null-tail completion |
+| POD512 + prescribed Fourier completion | 1024 | 0.3097% | Not a null-tail completion |
+| POD512 + prescribed Fourier completion | 1280 | 0.2367% | Not a null-tail completion |
+| POD512 + prescribed Fourier completion | 1376 | 0.2113% | Not a null-tail completion |
 
 ![Error against active variables](b1-representation-capacity.png)
 
@@ -85,24 +92,26 @@ The historical attribution JSON accidentally calls a selected update number `old
 
 The direct local POD24 model passes representation and its independent dense audit, so fixed-tree physics has begun. Frozen-weight, longer dense fitting of child8 reduces its worst error to 1.4861%; maximum stationarity remains 0.000136. The small change weakens the explanation that its entire remaining error is a short code fit, but it is not a proof of a global minimum. Shared nonlinear children train against the assembled physical metric, with jointly refitted parent and child variables at multiple depths.
 
+Child16 also finishes its registered training and frozen-weight fitting audit. Longer fitting reaches 0.6492%, with maximum stationarity 1.61e-05. Every random development trajectory clears the representation threshold, but alignment cases still fail. A finite same-checkpoint prescribed-tree growth diagnostic is registered to test that specific allocation/compression bottleneck while preserving parents and windows; it is not yet a qualified online adaptive method.
+
 ## Fixed-tree PDE diagnosis
 
-These pilots solve complete trajectories from the shared initial callable with the frozen prescribed tree and global POD768 control. Both use the same exact fine-grid upwind weak operator, backward Euler, common test set and dense integration. Reference fields are opened for scoring only after both methods finish each case. The table reports all requested evolved times, not only the final output.
+These pilots solve complete trajectories from the shared initial callable with the frozen prescribed tree and global POD768 control. Within each pilot, both use the same exact fine-grid upwind weak operator, time integrator, common test set and integration rule. BE is backward Euler; the registered CN repair is Crank–Nicolson. Q denotes integration intervals; Q=L is dense integration. Smaller Q retains fine stencil spacing1/L and requires independent returned-state refinement. Reference fields are opened for scoring only after both methods finish each case. The table reports all requested evolved times, not only the final output.
 
-| Case | Method | Spatial intervals | Time step | Worst evolved error | Every step stationary | Physical accuracy pass |
-|---|---|---:|---:|---:|---|---|
-| dev000 | tree_direct24 | 1024 | 0.0025 | 2.5373% | True | False |
-| dev000 | global_POD768 | 1024 | 0.0025 | 2.4895% | True | False |
-| dev003 | tree_direct24 | 1024 | 0.0025 | 0.2945% | True | True |
-| dev003 | global_POD768 | 1024 | 0.0025 | 0.2944% | True | True |
-| align002 | tree_direct24 | 1024 | 0.0025 | 2.2570% | True | False |
-| align002 | global_POD768 | 1024 | 0.0025 | 2.0991% | True | False |
-| dev000 | tree_direct24 | 2048 | 0.0025 | 2.0921% | True | False |
-| dev000 | global_POD768 | 2048 | 0.0025 | 1.9700% | True | False |
-| dev003 | tree_direct24 | 2048 | 0.0025 | 0.2248% | True | True |
-| dev003 | global_POD768 | 2048 | 0.0025 | 0.2246% | True | True |
-| align002 | tree_direct24 | 2048 | 0.0025 | 1.9630% | True | False |
-| align002 | global_POD768 | 2048 | 0.0025 | 1.6391% | True | False |
+| Case | Method | Spatial intervals | Integrator | Integration Q | Time step | Worst evolved error | Every step stationary | Physical accuracy pass |
+|---|---|---:|---|---:|---:|---:|---|---|
+| dev000 | tree_direct24 | 1024 | BE | 1024 | 0.0025 | 2.5373% | True | False |
+| dev000 | global_POD768 | 1024 | BE | 1024 | 0.0025 | 2.4895% | True | False |
+| dev003 | tree_direct24 | 1024 | BE | 1024 | 0.0025 | 0.2945% | True | True |
+| dev003 | global_POD768 | 1024 | BE | 1024 | 0.0025 | 0.2944% | True | True |
+| align002 | tree_direct24 | 1024 | BE | 1024 | 0.0025 | 2.2570% | True | False |
+| align002 | global_POD768 | 1024 | BE | 1024 | 0.0025 | 2.0991% | True | False |
+| dev000 | tree_direct24 | 2048 | BE | 2048 | 0.0025 | 2.0921% | True | False |
+| dev000 | global_POD768 | 2048 | BE | 2048 | 0.0025 | 1.9700% | True | False |
+| dev003 | tree_direct24 | 2048 | BE | 2048 | 0.0025 | 0.2248% | True | True |
+| dev003 | global_POD768 | 2048 | BE | 2048 | 0.0025 | 0.2246% | True | True |
+| align002 | tree_direct24 | 2048 | BE | 2048 | 0.0025 | 1.9630% | True | False |
+| align002 | global_POD768 | 2048 | BE | 2048 | 0.0025 | 1.6391% | True | False |
 
 ![Fixed-tree physics diagnosis](b1-fixed-tree-physics.png)
 
@@ -114,7 +123,7 @@ Original recipes, unsuccessful repairs and the original decision remain in [the 
 
 ## Accounting and provenance
 
-Generated 2026-11-18T23:30:18.024010+00:00. Terminal allocations recorded in the current ledger total 11748 GPU-seconds (3.263333 GPU-hours); nonterminal or not-yet-reconciled names: b1weakL4096. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
+Generated 2026-11-18T23:44:05.514697+00:00. Terminal allocations recorded in the current ledger total 12074 GPU-seconds (3.353889 GPU-hours); nonterminal or not-yet-reconciled names: b1weakL4096, b1cn2048. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
 
 ## Glossary
 

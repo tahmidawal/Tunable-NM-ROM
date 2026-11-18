@@ -22,6 +22,7 @@ old=read('auditr1');g0=read('global01');attr=read('b1attrib01');p16=read('b1pare
 alias=read('b1spanaudit');span=read('b1expanded');cache=read('b1cache')
 fullglobal=read('b1globalfull');refit8=read('b1child8refit')
 headspan=read('b1headspan2')
+stable=read('b1stableglobal');refit16=read('b1child16refit')
 labels=[r['case'] for r in cache['cases']['dev']]
 plt.rcParams.update({'font.size':10,'axes.spines.top':False,'axes.spines.right':False})
 
@@ -37,6 +38,8 @@ ax.loglog(xx,yy,'o--',mfc='white',color='#546d9c',label='Global extension into n
 ax.loglog([v['variables'] for v in fullglobal['complete_sine'].values()],
           [100*v['projection']['worst'] for v in fullglobal['complete_sine'].values()],
           '^:',color='#9a752c',label='Complete tensor sine space (data-independent)')
+ax.loglog([int(k) for k in stable['controls']],[100*v['worst'] for v in stable['controls'].values()],
+          'P-',color='#c45c41',label='Global POD512 + prescribed Fourier completion')
 xx=[v['active_variables'] for v in cache['direct_controls'].values()];yy=[100*v['projection']['worst'] for v in cache['direct_controls'].values()]
 ax.loglog(xx,yy,'o-',color='#00877c',label='Shared local POD + global parent')
 for k,v in cache['direct_controls'].items():ax.annotate(f'{k}/node',(v['active_variables'],100*v['projection']['worst']),xytext=(4,7),textcoords='offset points',fontsize=8)
@@ -51,7 +54,7 @@ for name in ['b1global64','b1global128','b1child8','b1child16']:
 ax.axhline(.5,color='#b5413c',ls='--',lw=1,label='Representation gate (every snapshot)')
 ax.set(xlabel='Total adjustable variables, including retained parents',ylabel='Worst current-time relative L2 error (%)',
        title='Expanded panel: shared local corrections versus global variables')
-ax.grid(alpha=.17,which='both');ax.legend(fontsize=8,loc='upper right',bbox_to_anchor=(1.02,1.02));figure(fig,'b1-representation-capacity')
+ax.grid(alpha=.17,which='both');ax.legend(fontsize=8,loc='lower left');figure(fig,'b1-representation-capacity')
 
 fig,axs=plt.subplots(2,3,figsize=(10,6),constrained_layout=True)
 for row,name,title in [(0,'auditr1','Original learned local model'),(1,'b1directaudit','Shared local POD24')]:
@@ -103,9 +106,10 @@ directaudit=read('b1directaudit')
 allocation_rows='\n'.join(f"| {k} | {v['active_variables']} | {pct(v['projection']['worst'])} |" for k,v in directaudit['controls'].items())
 global_rows='\n'.join(f"| Global saved POD prefix {k} | {v['variables']} | {pct(v['projection']['worst'])} | {v['relative_training_singular_value']:.3g} |" for k,v in fullglobal['POD'].items())
 global_rows+='\n'+'\n'.join(f"| Complete sine {k} per axis | {v['variables']} | {pct(v['projection']['worst'])} | Not trained |" for k,v in fullglobal['complete_sine'].items())
+global_rows+='\n'+'\n'.join(f"| POD512 + prescribed Fourier completion | {k} | {pct(v['worst'])} | Not a null-tail completion |" for k,v in stable['controls'].items())
 head_rows='\n'.join(f"| {v['latent']} | {v['feature_count']} | {v['affine_span_rank']} | {pct(v['panels']['dev']['worst'])} | {pct(v['head_projection']['worst'])} |" for v in headspan['models'])
 pde_runs=[]
-for run in ['b1weakpilot1','b1weakL2048','b1weakL4096','b1weakdt125','b1weakdt625']:
+for run in ['b1weakpilot1','b1weakL2048','b1weakL4096','b1weakdt125','b1weakdt625','b1cn2048','b1cn2048half','b1cnQ512','b1cnQ1024']:
     if (H/'results'/run/'output/result.json').exists():
         r=read(run)
         if r['status']=='complete_fixed_tree_diagnostic_pilot':pde_runs.append((run,r))
@@ -114,9 +118,9 @@ fig,axs=plt.subplots(1,3,figsize=(12,3.7),constrained_layout=True,sharey=True)
 for run,r in pde_runs:
     for i,c in enumerate(r['cases']):
         for method,v in c['methods'].items():
-            pde_rows.append(f"| {c['case']} | {method} | {r['L']} | {r['dt']:g} | {pct(max(v['physical_error'][1:]))} | {v['all_steps_stationary']} | {v['physical_accuracy_pass']} |")
+            pde_rows.append(f"| {c['case']} | {method} | {r['L']} | {r.get('time_integrator','be').upper()} | {r.get('quadrature_intervals',r['L'])} | {r['dt']:g} | {pct(max(v['physical_error'][1:]))} | {v['all_steps_stationary']} | {v['physical_accuracy_pass']} |")
             axs[i].plot(np.arange(6)*.05,np.array(v['physical_error'])*100,
-                '--' if method.startswith('global') else '-',label=f"{'Global' if method.startswith('global') else 'Tree'} L{r['L']}, dt{r['dt']:g}")
+                '--' if method.startswith('global') else '-',label=f"{'Global' if method.startswith('global') else 'Tree'} {r.get('time_integrator','be').upper()} L{r['L']} Q{r.get('quadrature_intervals',r['L'])}, dt{r['dt']:g}")
             axs[i].set(title=c['case'],xlabel='Time');axs[i].axhline(1,color='gray',ls=':',lw=.7);axs[i].grid(alpha=.15)
 axs[0].set_ylabel('Current-time physical error (%)');axs[-1].legend(fontsize=7)
 figure(fig,'b1-fixed-tree-physics')
@@ -157,6 +161,8 @@ The direct local entries use resolved physical Gram integration; actual-grid aud
 
 The extended global control reaches {pct(fullglobal['POD']['1280']['projection']['worst'])} with {fullglobal['POD']['1280']['variables']} variables, better than the admitted direct tree at its larger variable count. Retain that result, with an essential qualification: its trailing training singular value is only {fullglobal['POD']['1280']['relative_training_singular_value']:.3g} of the largest. These are valid saved orthonormal spaces extended into numerically null training directions, not reliably learned variance directions. Their stability under retraining is unqualified. The complete data-independent sine space provides a separate control without this ambiguity. Neither variable counts nor projection errors establish PDE cost.
 
+Reordering the identical training rows in two prescribed permutations gives global1280 errors {', '.join(pct(v['controls']['1280']['projection']['worst']) for v in stable['permutations'])}. The accuracy changes modestly in this limited check; the directions remain numerically null. A separate, explicitly constructed global space avoids those arbitrary SVD directions: retain the reliable training POD512 prefix and append orthogonalized low-frequency sine directions in fixed order. It reaches {pct(stable['controls']['960']['worst'])} with960 variables, compared with frozen child16 refitting at {pct(refit16['worst_projection'])} with the same count. Its measured orthogonality defect is {stable['orthogonality_defect']:.3g}. This is a POD-plus-Fourier control, not pure POD or a neural method. It currently defeats the child's error-per-variable comparison; cost and actual-output qualification remain separate.
+
 | Global span control | Variables | Worst all | Relative trailing training singular value |
 |---|---:|---:|---:|
 {global_rows}
@@ -185,12 +191,14 @@ The historical attribution JSON accidentally calls a selected update number `old
 
 The direct local POD24 model passes representation and its independent dense audit, so fixed-tree physics has begun. Frozen-weight, longer dense fitting of child8 reduces its worst error to {pct(refit8['worst_projection'])}; maximum stationarity remains {refit8['max_stationarity']:.3g}. The small change weakens the explanation that its entire remaining error is a short code fit, but it is not a proof of a global minimum. Shared nonlinear children train against the assembled physical metric, with jointly refitted parent and child variables at multiple depths.
 
+Child16 also finishes its registered training and frozen-weight fitting audit. Longer fitting reaches {pct(refit16['worst_projection'])}, with maximum stationarity {refit16['max_stationarity']:.3g}. Every random development trajectory clears the representation threshold, but alignment cases still fail. A finite same-checkpoint prescribed-tree growth diagnostic is registered to test that specific allocation/compression bottleneck while preserving parents and windows; it is not yet a qualified online adaptive method.
+
 ## Fixed-tree PDE diagnosis
 
-These pilots solve complete trajectories from the shared initial callable with the frozen prescribed tree and global POD768 control. Both use the same exact fine-grid upwind weak operator, backward Euler, common test set and dense integration. Reference fields are opened for scoring only after both methods finish each case. The table reports all requested evolved times, not only the final output.
+These pilots solve complete trajectories from the shared initial callable with the frozen prescribed tree and global POD768 control. Within each pilot, both use the same exact fine-grid upwind weak operator, time integrator, common test set and integration rule. BE is backward Euler; the registered CN repair is Crank–Nicolson. Q denotes integration intervals; Q=L is dense integration. Smaller Q retains fine stencil spacing1/L and requires independent returned-state refinement. Reference fields are opened for scoring only after both methods finish each case. The table reports all requested evolved times, not only the final output.
 
-| Case | Method | Spatial intervals | Time step | Worst evolved error | Every step stationary | Physical accuracy pass |
-|---|---|---:|---:|---:|---|---|
+| Case | Method | Spatial intervals | Integrator | Integration Q | Time step | Worst evolved error | Every step stationary | Physical accuracy pass |
+|---|---|---:|---|---:|---:|---:|---|---|
 {chr(10).join(pde_rows)}
 
 ![Fixed-tree physics diagnosis](b1-fixed-tree-physics.png)

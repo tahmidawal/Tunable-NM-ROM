@@ -15,13 +15,13 @@ def finer_dataset(directory,D,n=128):
     return E
 
 def dense_field(model,pl,child,z,cells,n):
-    parent=model['heads']['16'];k=child['linear'].shape[1]
+    parent=model['heads']['16'];k=child['linear'].shape[1] if child is not None else 4
     rawcoeff=jnp.asarray(model['global_transform'])@dec.head(parent,z[:16])
-    localcoeff=dec.head(child,z[16:].reshape(len(cells),k))
+    localcoeff=dec.head(child,z[16:].reshape(len(cells),k)) if child is not None else z[16:].reshape(len(cells),k)
     @jax.jit
     def block(x,rawcoeff,localcoeff):
         u=dec.global_features(model['global_params'],x)@rawcoeff
-        for p,c in enumerate(cells):u=u+dec.local_features(pl,x,c)@localcoeff[p]
+        for p,c in enumerate(cells):u=u+dec.local_features(pl,x,c)[:,:localcoeff.shape[1]]@localcoeff[p]
         return u
     axis=jnp.linspace(0.,1.,n);chunks=[]
     for i in range(0,n,32):
@@ -47,9 +47,11 @@ def main():
         print('nonlinear',cap,[(r['allocation'],r['projection']['worst']) for r in rows],flush=True)
     E=finer_dataset(a.dev,D,128)
     fine,fcodes=LS.evaluate_pair(model,pl,child,E,zd,k,125,3,128)
+    directfine,directcodes=LS.evaluate_pair(model,pl,None,E,zd,4,125,3,128)
     result['fine_projection']=fine;checkpoint(out/'fine_fits.pkl',fcodes)
-    result['representation_gate']=any(row['projection']['worst']<=.005 for row in fine)
-    result['passing_allocations']=[row['allocation'] for row in fine if row['projection']['worst']<=.005]
+    result['direct_fine_projection']=directfine;checkpoint(out/'direct_fine_fits.pkl',directcodes)
+    result['representation_gate']=any(row['projection']['worst']<=.005 for row in fine+directfine)
+    result['passing_allocations']=[row['allocation'] for row in fine+directfine if row['projection']['worst']<=.005]
     # The trained checkpoint must independently preserve zero children and useful directions.
     x,w=E['xy'],E['w'];cells=fcodes[1]['trees'][0];G0=LS.global_matrix(model,x);B=dec.local_matrix(pl,x,cells,16)
     zparent=zd[0];zero=jnp.concatenate([zparent,jnp.zeros(len(cells)*k)])
@@ -97,16 +99,23 @@ def main():
             _,sec=timer(lambda:jj(GG,z,directions[name]));records[name]['jvp_seconds'].append(sec)
     result['component_timing']=dict(contract='cached-feature field and JVP only; not complete PDE solve',methods=records)
     # Dense output witness uses the same optimized state; full4096, not an upsampled image.
-    chosen=min(fine,key=lambda r:r['projection']['worst']);ci=next(i for i,v in enumerate(fcodes) if v['allocation']==chosen['allocation'])
+    for row in fine:row['method']='nonlinear_child'
+    for row in directfine:row['method']='direct_local4'
+    for row in fcodes:row['method']='nonlinear_child'
+    for row in directcodes:row['method']='direct_local4'
+    fcodes=fcodes+directcodes
+    chosen=min(fine+directfine,key=lambda r:r['projection']['worst'])
+    ci=next(i for i,v in enumerate(fcodes) if v['allocation']==chosen['allocation'] and v['method']==chosen['method'])
+    output_child=child if chosen['method']=='nonlinear_child' else None
     ii,tt=np.unravel_index(np.argmax(chosen['projection']['per_snapshot']),np.asarray(chosen['projection']['per_snapshot']).shape)
     cs=fcodes[ci]['trees'][ii];z=jnp.asarray(fcodes[ci]['codes'][ii][tt]);label=D['labels'][ii]
     rraw=json.loads((Path(a.dev)/'result.json').read_text());rr=next(r for r in rraw['cases'] if r['case']==label)
     b=jnp.asarray(np.load(Path(a.dev)/rr['levels'][-1]['file'])['coefficients'][tt]);dense={}
     rawco=jnp.asarray(model['global_transform'])@dec.head(parent,z[:16])
-    lc=dec.head(child,z[16:].reshape(len(cs),k))
+    lc=dec.head(child,z[16:].reshape(len(cs),k)) if output_child is not None else z[16:].reshape(len(cs),4)
     def pointfield(pt):
         u=dec.global_features(model['global_params'],pt[None])[0]@rawco
-        for j,c in enumerate(cs):u=u+dec.local_features(pl,pt[None],c)[0]@lc[j]
+        for j,c in enumerate(cs):u=u+dec.local_features(pl,pt[None],c)[0,:lc.shape[1]]@lc[j]
         return u
     grad=jax.jit(jax.vmap(jax.grad(pointfield)))(E['xy'])
     axis=jnp.unique(E['xy'][:,0],size=128);freq=jnp.pi*jnp.arange(1,b.shape[0]+1)
@@ -121,7 +130,7 @@ def main():
     np.testing.assert_allclose(ad,finite,rtol=1e-4,atol=1e-7)
     result['trained_derivative_fixture']=dict(AD=ad,finite_difference=finite,passed=True)
     for n in (2048,4096):
-        pred,sec=timer(lambda:dense_field(model,pl,child,z,cs,n));ref=data.synth_grid(b,jnp.linspace(0.,1.,n))
+        pred,sec=timer(lambda:dense_field(model,pl,output_child,z,cs,n));ref=data.synth_grid(b,jnp.linspace(0.,1.,n))
         err=float(jnp.linalg.norm(pred-ref)/jnp.linalg.norm(ref));peak=float(jnp.max(jnp.abs(pred-ref))/jnp.max(jnp.abs(ref)))
         location=np.unravel_index(int(jnp.argmax(jnp.abs(pred-ref))),pred.shape)
         dense[str(n)]=dict(shape=list(pred.shape),relative_l2=err,relative_linf=peak,peak_index=location,
@@ -129,18 +138,18 @@ def main():
         if n==4096:
             np.savez_compressed(out/'actual4096.npz',prediction=np.asarray(pred),reference=np.asarray(ref),
                       parameters=D['parameters'][ii],case=label,time=data.TIMES[tt],cells=cs,codes=np.asarray(z))
-    result['dense_witness']=dict(case=label,time=data.TIMES[tt],allocation=chosen['allocation'],grids=dense,
+    result['dense_witness']=dict(case=label,time=data.TIMES[tt],method=chosen['method'],allocation=chosen['allocation'],grids=dense,
          scoring_change=abs(dense['4096']['relative_l2']-dense['2048']['relative_l2']),PDE_solve=False)
     # Also exercise the requested final-time output shape, keeping its projection
     # status explicit: no online method was allowed to read this reference.
     zfinal=jnp.asarray(fcodes[ci]['codes'][ii][-1])
     bfinal=jnp.asarray(np.load(Path(a.dev)/rr['levels'][-1]['file'])['coefficients'][-1])
-    pred,sec=timer(lambda:dense_field(model,pl,child,zfinal,cs,4096))
+    pred,sec=timer(lambda:dense_field(model,pl,output_child,zfinal,cs,4096))
     ref=data.synth_grid(bfinal,jnp.linspace(0.,1.,4096))
     finalerr=float(jnp.linalg.norm(pred-ref)/jnp.linalg.norm(ref))
     np.savez_compressed(out/'actual4096-final.npz',prediction=np.asarray(pred),reference=np.asarray(ref),
                        parameters=D['parameters'][ii],case=label,time=.25,cells=cs,codes=np.asarray(zfinal))
-    result['final_time_output_witness']=dict(case=label,time=.25,shape=[4096,4096],relative_l2=finalerr,
+    result['final_time_output_witness']=dict(case=label,time=.25,method=chosen['method'],shape=[4096,4096],relative_l2=finalerr,
            field_evaluation_including_compilation_seconds=sec,reference_assisted_projection=True,PDE_solve=False)
     result['status']='complete_representation_audit';save(out/'result.json',result)
     print('representation_gate',result['representation_gate'],'dense',dense['4096']['relative_l2'],flush=True)

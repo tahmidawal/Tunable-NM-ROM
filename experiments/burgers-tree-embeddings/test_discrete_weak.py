@@ -29,6 +29,15 @@ def main():
     assert float(jnp.linalg.norm(field(ci,cache)-u)/jnp.linalg.norm(u))<1e-7
     out,status=step(c,cache,dt,nu,1e-8,1e-10)
     assert jnp.all(jnp.isfinite(out)) and float(status[1])<1e-7,status
+    # Explicit old/new dense stencils independently qualify the CN option.
+    cnstep,cnres=W.make_solver(field,L,theta=.5)
+    old=.98*c;oldu=field(old,cache);oldadv,oldlap=operators.spatial(oldu,L)
+    oldtest=cache['A']@old
+    rhs=oldtest*(1-.5*dt*nu*lam)-.5*dt*(phi.T@oldadv/L)
+    densecn=(exact-oldtest+.5*dt*(phi.T@(adv+oldadv-nu*(lap+oldlap))/L))/(1+.5*dt*nu*lam)/norm
+    assert float(jnp.max(jnp.abs(cnres(c,rhs,cache,dt,nu,norm)-densecn)))<1e-12
+    cnout,cnstatus=cnstep(c,cache,dt,nu,1e-8,1e-10)
+    assert jnp.all(jnp.isfinite(cnout)) and float(cnstatus[1])<1e-7,cnstatus
     print('PASS exact dense weak-upwind / eigen-diffusion / field / Jacobian / step',np.asarray(status),flush=True)
 
 if __name__=='__main__':main()

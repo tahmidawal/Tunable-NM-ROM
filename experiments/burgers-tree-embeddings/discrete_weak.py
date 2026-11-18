@@ -70,15 +70,20 @@ def make_field(slices,rank):
     return field
 
 
-def make_solver(field,L,iterations=30,cg_iterations=80):
+def make_solver(field,L,iterations=30,cg_iterations=80,theta=1.):
+    assert theta in (1.,.5)
     def residual(c,previous,cache,dt,nu,norm):
         u=field(c,cache);adv,_=operators.spatial(u,L)
         advtests=dst2(adv.reshape(L-1,L-1))[cache['indices'][0],cache['indices'][1]]/L
-        denom=1+dt*nu*cache['lam']
-        return (cache['A']@c-previous/denom+dt*advtests/denom)/norm
+        denom=1+theta*dt*nu*cache['lam']
+        return (cache['A']@c-previous/denom+theta*dt*advtests/denom)/norm
     @jax.jit
     def step(c0,cache,dt,nu,station_tolerance,update_tolerance):
         previous=cache['A']@c0;norm=jnp.sqrt(jnp.maximum(c0@cache['gram']@c0,1e-30))
+        if theta!=1.:
+            old_adv,_=operators.spatial(field(c0,cache),L)
+            old_tested=dst2(old_adv.reshape(L-1,L-1))[cache['indices'][0],cache['indices'][1]]/L
+            previous=previous*(1-(1-theta)*dt*nu*cache['lam'])-(1-theta)*dt*old_tested
         func=lambda c:residual(c,previous,cache,dt,nu,norm)
         H0=(cache['A'].T@cache['A'])/norm**2;diag=jnp.maximum(jnp.diag(H0),1e-12)
         def body(_,state):

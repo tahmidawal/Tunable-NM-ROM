@@ -19,6 +19,8 @@ def main():
     ap.add_argument('--L',type=int,default=1024);ap.add_argument('--dt',type=float,default=.0025)
     ap.add_argument('--labels',default='dev000,dev003,align002');ap.add_argument('--test-factor',type=int,default=4)
     ap.add_argument('--compare-previous')
+    ap.add_argument('--integrator',choices=['be','cn'],default='be')
+    ap.add_argument('--allow-integrator-comparison',action='store_true')
     a=ap.parse_args();out=Path(a.out);out.mkdir(parents=True,exist_ok=True);meta=preflight()
     admission=json.loads((Path(a.admission)/'result.json').read_text());assert admission['representation_gate']
     cachepath=Path(a.cache);cache_rec=json.loads((cachepath/'result.json').read_text())
@@ -27,7 +29,8 @@ def main():
     allbasis=np.load(spanpath/'pod_basis.npz')['coefficients'];assert len(allbasis)==768
     refmap={r['case']:(p,r) for p,r in cohort(a.dev)};metric=TM.make_geometry(6);rule=TM.rule()
     result=dict(meta=meta,status='fixed_tree_pilot_running',L=a.L,dt=a.dt,labels=a.labels.split(','),cases=[],
-        operator='incumbent scaled tested weak residual; exact fine-grid sign-upwind; discrete sine eigen-diffusion; backward Euler',
+        operator='incumbent scaled tested weak residual; exact fine-grid sign-upwind; discrete sine eigen-diffusion; '+('backward Euler' if a.integrator=='be' else 'Crank-Nicolson'),
+        time_integrator=a.integrator,
         integration='all fine-grid interior nodes; exact dense tested sum through orthonormal DST',
         input_contract='shared initial-field callable only; no reference in initialization, tree selection or stepping',
         admission_sha256=digest(Path(a.admission)/'result.json'),global_basis_sha256=spanrec['basis_sha256'],
@@ -36,7 +39,11 @@ def main():
     if a.compare_previous:
         previous_path=Path(a.compare_previous);assert str(previous_path).startswith(os.environ['STUDY_NAMESPACE']+'/')
         previous_result=json.loads((previous_path/'result.json').read_text())
-        assert previous_result['status']=='complete_fixed_tree_diagnostic_pilot' and previous_result['operator']==result['operator']
+        assert previous_result['status']=='complete_fixed_tree_diagnostic_pilot'
+        if previous_result['operator']!=result['operator']:
+            assert a.allow_integrator_comparison and previous_result['operator'].rsplit(';',1)[0]==result['operator'].rsplit(';',1)[0]
+            result['comparison_kind']='different_integrator_diagnostic_not_a_step_convergence_check'
+        else:result['comparison_kind']='same_integrator_numerical_refinement'
         result['previous_result_sha256']=digest(previous_path/'result.json')
     save(out/'result.json',result)
     for label in result['labels']:
@@ -60,7 +67,7 @@ def main():
         for name,model in models.items():
             ca=model['cache'];ca=dict(ca,A=ca['A'][:commonM],indices=ca['indices'][:,:commonM],lam=ca['lam'][:commonM])
             field=W.make_field(model['slices'],24 if name.startswith('tree') else 0)
-            initial_fit=W.make_initial_fit(field);step,residual=W.make_solver(field,a.L)
+            initial_fit=W.make_initial_fit(field);step,residual=W.make_solver(field,a.L,theta=1. if a.integrator=='be' else .5)
             burn_gpu();start=time.perf_counter();axis=jnp.arange(1,a.L)/a.L;xy=jnp.stack(jnp.meshgrid(axis,axis,indexing='ij'),axis=-1)
             u0=initial(xy);c,e0,lin=initial_fit(u0,ca);jax.block_until_ready(c)
             cold=time.perf_counter()-start;states=[np.asarray(c)];statuses=[];valid=True

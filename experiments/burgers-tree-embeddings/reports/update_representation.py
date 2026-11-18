@@ -21,6 +21,7 @@ def panel(err,labels,prefix):
 old=read('auditr1');g0=read('global01');attr=read('b1attrib01');p16=read('b1parent16');resolved=read('b1resolved2')
 alias=read('b1spanaudit');span=read('b1expanded');cache=read('b1cache')
 fullglobal=read('b1globalfull');refit8=read('b1child8refit')
+headspan=read('b1headspan2')
 labels=[r['case'] for r in cache['cases']['dev']]
 plt.rcParams.update({'font.size':10,'axes.spines.top':False,'axes.spines.right':False})
 
@@ -80,6 +81,14 @@ axs[1].loglog([2048,4096],[100*resolved['dense_witness']['errors'][str(n)] for n
 axs[1].axhline(.5,color='gray',ls='--',lw=1);axs[1].set(xlabel='Independent scoring points per axis',ylabel='Current-time relative L2 error (%)',title='Dense scoring exposed a numerical failure')
 axs[1].legend(fontsize=8);figure(fig,'b1-training-and-integration')
 
+fig,ax=plt.subplots(figsize=(7.5,4),constrained_layout=True)
+ix=np.arange(len(headspan['models']));width=.35
+ax.bar(ix-width/2,[100*r['panels']['dev']['worst'] for r in headspan['models']],width,label='Unrestricted coefficients in frozen output span')
+ax.bar(ix+width/2,[100*r['head_projection']['worst'] for r in headspan['models']],width,label='Actual nonlinear head: best found fit')
+ax.set(xticks=ix,xticklabels=[f"{r['latent']} variables\n{r['affine_span_rank']} field directions" for r in headspan['models']],
+       ylabel='Worst development projection error (%)',title='Frozen global heads: shape-space limit plus coding/fitting gap')
+ax.legend(fontsize=8);figure(fig,'b1-global-head-limits')
+
 name='2026-11-18-tree-embedding-representation.md';old_report=OUT/name;archive=OUT/'B0-retained-representation.md'
 if not archive.exists():shutil.copy2(old_report,archive)
 bestold=min(old['direct_fine_projection'],key=lambda x:x['projection']['worst'])
@@ -94,6 +103,7 @@ directaudit=read('b1directaudit')
 allocation_rows='\n'.join(f"| {k} | {v['active_variables']} | {pct(v['projection']['worst'])} |" for k,v in directaudit['controls'].items())
 global_rows='\n'.join(f"| Global saved POD prefix {k} | {v['variables']} | {pct(v['projection']['worst'])} | {v['relative_training_singular_value']:.3g} |" for k,v in fullglobal['POD'].items())
 global_rows+='\n'+'\n'.join(f"| Complete sine {k} per axis | {v['variables']} | {pct(v['projection']['worst'])} | Not trained |" for k,v in fullglobal['complete_sine'].items())
+head_rows='\n'.join(f"| {v['latent']} | {v['feature_count']} | {v['affine_span_rank']} | {pct(v['panels']['dev']['worst'])} | {pct(v['head_projection']['worst'])} |" for v in headspan['models'])
 pde_runs=[]
 for run in ['b1weakpilot1','b1weakL2048','b1weakL4096','b1weakdt125','b1weakdt625']:
     if (H/'results'/run/'output/result.json').exists():
@@ -122,6 +132,14 @@ This generated report covers the original bounded failure and the user-authorize
 The original best tree had {pct(bestold['projection']['worst'])} worst projection error at 128 adjustable variables. Its actual-grid witness remains {pct(old['dense_witness']['grids']['4096']['relative_l2'])}; that failure is real, not the subsequently retracted quadrature result.
 
 The evidence supports several contributing limitations. The original parent alone has {pct(g0['heads']['16']['worst_projection'])} worst development error. Better-scaled training with a richer frozen feature span reduces selected training error from {pct(train[0])} to {pct(train[1])}, but development error remains {pct(dev[1])}. Thus optimization and generalization are both relevant; changing scaling and the feature bank together does not isolate one cause. The old head’s relative departure from its best affine map is {pct(attr['old_parent_nonlinearity']['relative_departure_from_best_affine'])}, so describing it as exactly linear would be wrong.
+
+A separate frozen-weight audit identifies a definite global-head restriction: a linear skip plus a finite-width final hidden layer confines every output to a fixed affine span. Giving that span unrestricted coefficients produces the bounds below. Their remaining error cannot be fixed by additional code fitting on the same frozen head. The gap above the bound can reflect both the nonlinear image and imperfect fitting; it does not isolate those two causes. The smaller normalized model uses the original cohort; the larger two use the expanded cohort.
+
+| Global latent variables | Frozen features | Output-space rank | Relaxed output-span error | Nonlinear head error |
+|---|---:|---:|---:|---:|
+{head_rows}
+
+![Frozen global head limits](b1-global-head-limits.png)
 
 Attribution on the old fixed trees provisionally improves when parent and local coefficient restrictions are relaxed. Those sampled-integration diagnostics also increase variable counts and are not an additive causal decomposition. Stronger evidence is the resolved richer local span: its worst original-panel error is {pct(resolved['root_controls']['128']['projection']['worst'])} with {resolved['root_controls']['128']['variables']} coefficients, confirmed by actual output at {pct(resolved['dense_witness']['errors']['4096'])}. This rules out a universal error floor at the original value for the broader local representation. It does not yet establish efficient nonlinear compression.
 

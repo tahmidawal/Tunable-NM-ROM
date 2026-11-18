@@ -44,6 +44,15 @@
       "result": "PASS Cholesky and LU on identical SPD physical LM system and known optimum; zero transfer retained",
       "benchmark": false,
       "source_sha256": "49a84f84dfc5a6c75a9497313da09865965c3a5dc0d2c9838c0ff4f18f730405"
+    },
+    {
+      "script": "test_discrete_weak.py",
+      "utc": "2026-11-18T23:27:19.365626+00:00",
+      "maximum_seconds": 55,
+      "launcher": "timeout 55s jaxrun",
+      "result": "PASS independent old/new dense CN stencil, original BE operator, eigen-diffusion, field, Jacobian and step",
+      "benchmark": false,
+      "source_sha256": "29d06e140ed3a703546bd54c02cdea30249d787620497e1c61eb6dbebee8b9f0"
     }
   ]
 }

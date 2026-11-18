@@ -8,6 +8,16 @@ The original best tree had 16.5299% worst projection error at 128 adjustable var
 
 The evidence supports several contributing limitations. The original parent alone has 40.8695% worst development error. Better-scaled training with a richer frozen feature span reduces selected training error from 28.5599% to 4.5584%, but development error remains 31.7719%. Thus optimization and generalization are both relevant; changing scaling and the feature bank together does not isolate one cause. The old head’s relative departure from its best affine map is 7.9823%, so describing it as exactly linear would be wrong.
 
+A separate frozen-weight audit identifies a definite global-head restriction: a linear skip plus a finite-width final hidden layer confines every output to a fixed affine span. Giving that span unrestricted coefficients produces the bounds below. Their remaining error cannot be fixed by additional code fitting on the same frozen head. The gap above the bound can reflect both the nonlinear image and imperfect fitting; it does not isolate those two causes. The smaller normalized model uses the original cohort; the larger two use the expanded cohort.
+
+| Global latent variables | Frozen features | Output-space rank | Relaxed output-span error | Nonlinear head error |
+|---|---:|---:|---:|---:|
+| 16 | 512 | 144 | 8.8096% | 31.7719% |
+| 64 | 768 | 192 | 5.5359% | 16.7303% |
+| 128 | 768 | 256 | 4.0264% | 7.8825% |
+
+![Frozen global head limits](b1-global-head-limits.png)
+
 Attribution on the old fixed trees provisionally improves when parent and local coefficient restrictions are relaxed. Those sampled-integration diagnostics also increase variable counts and are not an additive causal decomposition. Stronger evidence is the resolved richer local span: its worst original-panel error is 0.2282% with 2000 coefficients, confirmed by actual output at 0.2282%. This rules out a universal error floor at the original value for the broader local representation. It does not yet establish efficient nonlinear compression.
 
 ![Training and numerical diagnosis](b1-training-and-integration.png)
@@ -103,7 +113,7 @@ Original recipes, unsuccessful repairs and the original decision remain in [the 
 
 ## Accounting and provenance
 
-Generated 2026-11-18T23:23:09.706776+00:00. Terminal allocations recorded in the current ledger total 8524 GPU-seconds (2.367778 GPU-hours); nonterminal or not-yet-reconciled names: b1child16. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
+Generated 2026-11-18T23:27:24.582170+00:00. Terminal allocations recorded in the current ledger total 8559 GPU-seconds (2.377500 GPU-hours); nonterminal or not-yet-reconciled names: b1child16, b1weakL4096. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
 
 ## Glossary
 

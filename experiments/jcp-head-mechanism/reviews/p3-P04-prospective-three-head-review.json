@@ -1,0 +1,163 @@
+{
+  "reviewer": "head_mechanism_run",
+  "decision": "Prospective P04 design/code cleared; launch held for current P03 result audit, actual accounting and parent release.",
+  "source_hashes": [
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-paired-cost/experiments/jcp-paired-cost/AMENDMENT_P04.json",
+      "sha256": "791c27f29f0d4c5d739510ee7d397d58b52d158cbf2e7e9d3757b8c400794452"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-paired-cost/experiments/jcp-paired-cost/configs/three_head_dev16.json",
+      "sha256": "d368f03b29ba3817c9f44090b344d427d3c41c4d68768e8bd2bdcb6f14e12cd9"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-paired-cost/experiments/jcp-paired-cost/THREE_HEAD_NATIVE_PARITY_MANIFEST.json",
+      "sha256": "32a5c5eb5582a7d38dd1c2de04a34206997d06e67c4b4163f2fa90cff881117d"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-paired-cost/experiments/jcp-paired-cost/run_paired.py",
+      "sha256": "ca1c782007918247be007cebcd5baa62916b073d83f54f4628b042a43702b6c4"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-paired-cost/experiments/jcp-paired-cost/ns_query.py",
+      "sha256": "ca4afc0b1560361c6ca3e1f87a788219973a9d26f911b87a3ff7a80b72554620"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-paired-cost/experiments/jcp-paired-cost/paired_measurement.py",
+      "sha256": "0e0c818420819ebe8c5091d98fde7a877444af2a7b7eb0dc559f81ed2165f0e0"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-paired-cost/experiments/jcp-paired-cost/analyze_paired.py",
+      "sha256": "246e81ed521b59a714f9583abba6fdf2d55d36a13304b8c0a7ee373318f403ed"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-paired-cost/experiments/jcp-paired-cost/check_measurement.py",
+      "sha256": "1c147f9dd3829e129d025300cd23f3cc025c2373e0a7edc1a0e3196d106a3536"
+    }
+  ],
+  "target_settings": [
+    {
+      "name": "learned_head_m292_dt0.02",
+      "kind": "head",
+      "rows": 292,
+      "dt": 0.02
+    },
+    {
+      "name": "learned_head_m584_dt0.02",
+      "kind": "head",
+      "rows": 584,
+      "dt": 0.02
+    },
+    {
+      "name": "learned_head",
+      "kind": "head",
+      "rows": 584,
+      "dt": 0.01
+    },
+    {
+      "name": "learned_span64",
+      "kind": "span",
+      "rows": 584,
+      "dt": 0.01
+    }
+  ],
+  "native_reference_files_verified": 64,
+  "source_summary_sha256": "5bd8eed34cb03731964a2ec10a4c6c38e5668fcce35d35a92d27348e81eac133",
+  "unchanged_contract_keys": [
+    "classical_candidates",
+    "pod_head_settings",
+    "pod_span_ranks",
+    "rom",
+    "case_ids",
+    "truth_dt",
+    "reference_absolute_gate",
+    "reference_fraction_of_target_error",
+    "implementation_parity_gate",
+    "selection_repetitions",
+    "confirmation_repetitions",
+    "drift_gate_ratio"
+  ],
+  "synthetic_metric_fixture": [
+    {
+      "subject": "exact",
+      "case_id": 0,
+      "status": "ok",
+      "elapsed_ms": 0.012384,
+      "solver_diagnostics": {},
+      "relative_errors": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "initial_error": 0.0,
+      "final_error": 0.0,
+      "evolved_max_error": 0.0,
+      "output_sha256": "6ef38a009dcc7a3e6fe6efa83150e7db71ac83eb8a1d0a6ac6d3dab284863246",
+      "normalization": "original truth initial field L2 norm",
+      "output_shape": [
+        6,
+        2,
+        2
+      ],
+      "output_dtype": "float64"
+    },
+    {
+      "subject": "large_finite_metric",
+      "case_id": 0,
+      "status": "ok",
+      "elapsed_ms": 0.007408,
+      "solver_diagnostics": {},
+      "relative_errors": [
+        1e+150,
+        1e+150,
+        1e+150,
+        1e+150,
+        1e+150,
+        1e+150
+      ],
+      "initial_error": 1e+150,
+      "final_error": 1e+150,
+      "evolved_max_error": 1e+150,
+      "output_sha256": "81a2e05112f4b2b0d0cca78cceabc4fa8eb5e0f36f5c6e3791a76c6c6597c0c3",
+      "normalization": "original truth initial field L2 norm",
+      "output_shape": [
+        6,
+        2,
+        2
+      ],
+      "output_dtype": "float64"
+    },
+    {
+      "subject": "finite_field_norm_overflow",
+      "case_id": 0,
+      "status": "failed",
+      "elapsed_ms": 0.025393,
+      "reason": "FloatingPointError: overflow encountered in multiply"
+    },
+    {
+      "subject": "nonfinite",
+      "case_id": 0,
+      "status": "failed",
+      "elapsed_ms": 0.00848,
+      "reason": "ValueError: nonfinite returned field"
+    }
+  ],
+  "findings": [
+    "Exactly the three P03B-admitted head settings and original span control are registered. Every native state file and returned-state stationarity history was checked against the original P1 evidence.",
+    "All target/reference pairs are checked before comparator construction. The unchanged classical/POD grid is measured again in the same allocation, with separate target-specific selections and confirmation repetitions.",
+    "All targets use native initial fits from the same physical input and return six full host fields. Initial error remains separately retained; the unchanged primary gate compares both median and worst evolved error.",
+    "The prospective metric guard rejects nonfinite error measures even when the returned field is finite. Independent CPU fixtures confirm exact/large finite metrics remain valid and norm overflow/nonfinite fields fail.",
+    "No additional head setting, training, cohort opening or cross-job speed ratio is admitted.",
+    "Existing-runtime activation and first query excludes process/CUDA startup and is labeled accordingly."
+  ],
+  "remaining_requirements": [
+    "Audit legacy P03 ok/null-metric invocation IDs and prove their candidate names appear in no eligible, selected or confirmed set. Preserve raw rows unchanged.",
+    "Update actual P03 GPU accounting and enforce registered remaining budget before submission.",
+    "Update stale fixed-target parent_release metadata to the eventual concrete P04 release.",
+    "Retain all three head outcomes, including losses and failed accuracy/drift gates.",
+    "Parent controls launch release after current result review."
+  ]
+}

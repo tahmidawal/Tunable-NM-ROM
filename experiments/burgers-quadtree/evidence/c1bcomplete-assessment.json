@@ -78,11 +78,12 @@
       "name": "tree768",
       "worst_error": 0.009532298565693842,
       "worst_error_plus_uncertainty": 0.009807006983145496,
-      "qualified": false,
+      "qualified": true,
       "checks": {
         "feature_change": 0.00013329966604506792,
         "fine_time_change": 7.018883600305716e-05,
-        "query_controls_pending": true
+        "query_time_change": 7.019273556620145e-05,
+        "query_integration_change": 5.196449555480577e-07
       },
       "first_case_cold_query_seconds": 21.11869752779603,
       "median_seconds": 0.0781875541433692,
@@ -125,11 +126,12 @@
       "name": "uniform1152",
       "worst_error": 0.0061120053234773744,
       "worst_error_plus_uncertainty": 0.006261411618923947,
-      "qualified": false,
+      "qualified": true,
       "checks": {
         "feature_change": 0.0001256856543416884,
         "fine_time_change": 7.152655928429283e-05,
-        "query_controls_pending": true
+        "query_time_change": 7.152972399479046e-05,
+        "query_integration_change": 5.475993002647784e-07
       },
       "first_case_cold_query_seconds": 18.7378601571545,
       "median_seconds": 0.11250573536381125,
@@ -565,7 +567,7 @@
       ],
       "useful_speed_pass": false,
       "substantial_speed_pass": false,
-      "rom_accuracy_qualified": false
+      "rom_accuracy_qualified": true
     },
     {
       "name": "uniform1152",
@@ -594,7 +596,7 @@
       ],
       "useful_speed_pass": false,
       "substantial_speed_pass": false,
-      "rom_accuracy_qualified": false
+      "rom_accuracy_qualified": true
     }
   ],
   "setup_seconds": 40.835207112599164,

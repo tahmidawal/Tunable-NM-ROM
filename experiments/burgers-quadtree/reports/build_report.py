@@ -24,11 +24,12 @@ for label,panel in panels:
  if all('first_case_cold_query_seconds' in x for x in panel['methods']):lines+=['',table(['Method','First-case cold query (s), excluding reusable cache'],[(x['name'],f"{x['first_case_cold_query_seconds']:.3f}") for x in panel['methods']])]
  setup=panel.get('setup_seconds',panel.get('speed',{}).get('setup_seconds') if isinstance(panel.get('speed'),dict) else None)
  if setup is not None:lines+=['',f'Reusable cache preparation: {setup:.3f}s. A warm method that is already slower has no positive break-even query count after adding nonnegative setup/training cost.']
-fig,axes=plt.subplots(1,len(panels),figsize=(5.5*len(panels),4.3),squeeze=False)
+fig,axes=plt.subplots(1,len(panels),figsize=(5.5*len(panels),5.8),squeeze=False)
 for ax,(label,panel) in zip(axes[0],panels):
- for x in panel['methods']:
-  ax.scatter(1000*x['median_seconds'],100*x['worst_error_plus_uncertainty'],marker='o' if x['qualified'] else 'x',s=45);ax.annotate(x['name'],(1000*x['median_seconds'],100*x['worst_error_plus_uncertainty']),fontsize=7,xytext=(3,4),textcoords='offset points')
- ax.axhline(1,color='black',ls='--',lw=.8);ax.set(xlabel='Complete warm query (ms)',ylabel='Worst error + uncertainty (%)',title=label);ax.set_xscale('log');ax.set_yscale('log');ax.grid(alpha=.2)
+ for index,x in enumerate(panel['methods']):
+  labelkey=chr(65+index)
+  ax.scatter(1000*x['median_seconds'],100*x['worst_error_plus_uncertainty'],marker='o' if x['qualified'] else 'x',s=45,label=f"{labelkey}: {x['name']}");ax.annotate(labelkey,(1000*x['median_seconds'],100*x['worst_error_plus_uncertainty']),fontsize=7,xytext=(3,4),textcoords='offset points')
+ ax.axhline(1,color='black',ls='--',lw=.8);ax.set(xlabel='Complete warm query (ms)',ylabel='Worst error + uncertainty (%)',title=label);ax.set_xscale('log');ax.set_yscale('log');ax.grid(alpha=.2);ax.legend(loc='upper center',bbox_to_anchor=(.5,-.18),fontsize=6,ncol=2,frameon=False)
 fig.tight_layout();fig.savefig(assets/'accuracy-cost.png',dpi=160);plt.close(fig);lines+=['','![Independent complete-output cost panels](2026-11-18-burgers-continuation-assets/accuracy-cost.png)','','The dashed line is the1% target. Crosses indicate a failed or incomplete numerical qualification, not eligible matched-accuracy speed competitors.']
 for job in ('c1compresscost','c1bcomplete'):
  if (H/f'evidence/{job}-witness-audit.json').exists():

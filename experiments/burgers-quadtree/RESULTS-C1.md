@@ -27,9 +27,71 @@ local_hybrid / spectral32_dt01 median time ratios by block: 2.529, 2.524. Paired
 
 Reusable cache preparation: 7.606s. A warm method that is already slower has no positive break-even query count after adding nonnegative setup/training cost.
 
+### Compressed family-A panel
+
+|Method|Worst physical error|With reference uncertainty|Median warm time (ms)|All accuracy controls pass|
+|---|---|---|---|---|
+|compressed384|0.5380%|0.5569%|8.935|True|
+|spectral24|0.5473%|0.5663%|7.271|True|
+|spectral32|0.1219%|0.1409%|7.334|True|
+|spectral48|0.0703%|0.0892%|6.755|True|
+
+compressed384 / spectral48 median time ratios by block: 1.353, 1.342. Paired case-bootstrap95% intervals: [1.291, 1.389], [1.294, 1.368]. Useful-speed gate: **False**; substantial-speed gate: **False**.
+
+|Method|First-case cold query (s), excluding reusable cache|
+|---|---|
+|compressed384|20.490|
+|spectral24|4.326|
+|spectral32|4.354|
+|spectral48|4.319|
+
+Reusable cache preparation: 6.653s. A warm method that is already slower has no positive break-even query count after adding nonnegative setup/training cost.
+
+### Family-B tree/uniform panel
+
+|Method|Worst physical error|With reference uncertainty|Median warm time (ms)|All accuracy controls pass|
+|---|---|---|---|---|
+|tree768|0.9532%|0.9807%|78.188|False|
+|uniform1152|0.6112%|0.6261%|112.506|False|
+|spectral24_dt0.0125|1.7866%|1.8141%|7.007|False|
+|spectral24_dt0.00625|1.8024%|1.8298%|12.055|False|
+|spectral32_dt0.0125|0.6447%|0.6643%|7.189|False|
+|spectral32_dt0.00625|0.6458%|0.6707%|12.432|True|
+|spectral48_dt0.0125|0.1714%|0.1989%|6.577|False|
+|spectral48_dt0.00625|0.1146%|0.1362%|11.235|True|
+|spectral64_dt0.0125|0.1607%|0.1882%|7.249|False|
+|spectral64_dt0.00625|0.0611%|0.0886%|12.695|True|
+
+tree768 / spectral48_dt0.00625 median time ratios by block: 6.994, 6.928. Paired case-bootstrap95% intervals: [6.924, 7.059], [6.765, 7.151]. Useful-speed gate: **False**; substantial-speed gate: **False**.
+
+uniform1152 / spectral48_dt0.00625 median time ratios by block: 10.072, 9.990. Paired case-bootstrap95% intervals: [10.009, 10.189], [9.688, 10.296]. Useful-speed gate: **False**; substantial-speed gate: **False**.
+
+|Method|First-case cold query (s), excluding reusable cache|
+|---|---|
+|tree768|21.119|
+|uniform1152|18.738|
+|spectral24_dt0.0125|4.175|
+|spectral24_dt0.00625|4.004|
+|spectral32_dt0.0125|4.202|
+|spectral32_dt0.00625|4.205|
+|spectral48_dt0.0125|4.364|
+|spectral48_dt0.00625|4.244|
+|spectral64_dt0.0125|4.367|
+|spectral64_dt0.00625|4.296|
+
+Reusable cache preparation: 40.835s. A warm method that is already slower has no positive break-even query count after adding nonnegative setup/training cost.
+
 ![Independent complete-output cost panels](2026-11-18-burgers-continuation-assets/accuracy-cost.png)
 
 The dashed line is the1% target. Crosses indicate a failed or incomplete numerical qualification, not eligible matched-accuracy speed competitors.
+
+![c1compresscost full-grid audited witness](2026-11-18-burgers-continuation-assets/c1compresscost-witness.png)
+
+Independent NumPy audit uses every4096×4096 value; plotting alone is subsampled. The deliberately incorrect final-field normalization is rejected: True.
+
+![c1bcomplete full-grid audited witness](2026-11-18-burgers-continuation-assets/c1bcomplete-witness.png)
+
+Independent NumPy audit uses every4096×4096 value; plotting alone is subsampled. The deliberately incorrect final-field normalization is rejected: True.
 
 ## Capacity, integration and conditional-frame studies
 
@@ -81,11 +143,18 @@ Finite-start latent optimization is not a proof of globally optimal manifold dis
 |0|2.9652%|
 |9|18.7507%|
 
-The separately registered matched-data global coordinate-neural bank comparator is not yet complete. It is distinct from the completed nonlinear POD-autoencoder and historical frozen-bank comparisons.
+Matched-data global coordinate-neural banks have their own TRAIN-only POD teachers. Exact POD controls use the same data. Projection failures receive only the prospectively specified diagnostic PDE cases; their PDE column is not an all-case score.
+
+|Family|Global bank|Worst projection|Worst diagnostic/PDE error|PDE cases|
+|---|---|---|---|---|
+|A|neural|0.5632%|0.6951%|32|
+|A|POD|0.4638%|0.5098%|32|
+|B|neural|6.3316%|2.3483%|2|
+|B|POD|12.3389%|2.2686%|2|
 
 ## Allocation, limitations and reproducibility
 
-Completed allocation: **2.41167 GPU-hours** across 38 terminal jobs. The registered finite cumulative ceiling is 8.35583 GPU-hours; it is an accounting limit for this batch, not a user-imposed total cap. Failed numerical recipes are included. Active/pending ledger entries: c1compresscost (7346653), c1bcomplete (7346814).
+Completed allocation: **3.03000 GPU-hours** across 41 terminal jobs. The registered finite cumulative ceiling is 8.35583 GPU-hours; it is an accounting limit for this batch, not a user-imposed total cap. Failed numerical recipes are included. Active/pending ledger entries: c1bcontrols (7347300), c3globalcompress (7347331).
 
 All owned jobs use isolated paths, A10080GB preflight, float64 and highest matrix precision. At most two owned GPU jobs run concurrently. The branch is `exp/2026-11-17-burgers-quadtree`, backed up through `codeonly/exp/2026-11-17-burgers-quadtree`; no implementation merge occurred. Raw outputs, trained weights, checksums, source commits and failures are retained. Large derived arrays remain explicitly remote-only where indicated by retention manifests.
 

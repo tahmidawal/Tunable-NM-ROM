@@ -434,8 +434,8 @@
     "commit": "6939375e723c6cce970df305de395cc33655a5e5",
     "remote": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/c1compresscost",
     "driver": "c1_compress_cost",
-    "state": "RUNNING",
-    "elapsed_seconds": 208,
+    "state": "COMPLETED",
+    "elapsed_seconds": 932,
     "allocated_cpus": 8
   },
   {
@@ -444,6 +444,39 @@
     "reserved_minutes": 120,
     "commit": "b6b19320b283d95b0d045235a341d78c890a8745",
     "remote": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/c1bcomplete",
-    "driver": "c1_b_complete"
+    "driver": "c1_b_complete",
+    "state": "COMPLETED",
+    "elapsed_seconds": 938,
+    "allocated_cpus": 8
+  },
+  {
+    "name": "c1globalneural",
+    "id": 7347185,
+    "reserved_minutes": 120,
+    "commit": "f9e375301e84c47c6a74a6ba8863a8a6eaa27172",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/c1globalneural",
+    "driver": "c1_global_neurals",
+    "state": "COMPLETED",
+    "elapsed_seconds": 356,
+    "allocated_cpus": 8
+  },
+  {
+    "name": "c1bcontrols",
+    "id": 7347300,
+    "reserved_minutes": 60,
+    "commit": "8ac33c70bb7ec029587f6156ee86652b09b914df",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/c1bcontrols",
+    "driver": "c1_b_controls",
+    "state": "RUNNING",
+    "elapsed_seconds": 86,
+    "allocated_cpus": 8
+  },
+  {
+    "name": "c3globalcompress",
+    "id": 7347331,
+    "reserved_minutes": 120,
+    "commit": "8ac33c70bb7ec029587f6156ee86652b09b914df",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/c3globalcompress",
+    "driver": "c3_global_compress"
   }
 ]

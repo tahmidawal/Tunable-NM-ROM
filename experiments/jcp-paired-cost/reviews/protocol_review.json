@@ -1,0 +1,18 @@
+{
+  "schema": "independent-development-protocol-review-v1",
+  "reviewer": "/root/cost_and_review_run",
+  "date": "2026-11-18",
+  "P1": {
+    "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/PROTOCOL.md",
+    "decision": "protocol acceptable for scoped development pilot; driver review pending",
+    "controls_present": ["identical initial head coefficients and frame", "original physical truth retained", "native span separate", "matched scalar weak rows and time grid", "tight and tighter stationarity", "same previous-state containment probes", "full free-frame physical tangent", "negative outcomes retained"],
+    "driver_review_focus": ["returned-state LM stationarity", "common initial field/frame parity", "operator and Jacobian-action checks", "truth time-refinement and discrete scope", "physical norm and tangent rank cutoff"]
+  },
+  "P2": {
+    "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-weak-visibility/experiments/jcp-weak-visibility/PROTOCOL.md",
+    "decision": "protocol acceptable for scoped discrete-target development pilot; driver review pending",
+    "controls_present": ["exact original sign-upwind discrete operator", "shared mass-projected initial state", "same-grid same-step tight and tighter FOM", "fixed nested weighted test rows", "disjoint expanded observer shell", "physical tangent normalization", "action and finite-difference checks", "negative outcomes retained"],
+    "nonblocking_interpretation_notes": ["At a common state with fixed nested row scaling, nondecrease of the minimum singular value follows algebraically; magnitude, near-null directions and drift linkage supply the empirical information.", "Coordinate-rescaling spectrum comparison requires identical retained tangent rank; rank changes are cutoff sensitivity, not automatically a failed weak action."]
+  },
+  "submission_clearance": "parent delegated concrete driver and fixture clearance to reviewer; no job cleared by this protocol-only record"
+}

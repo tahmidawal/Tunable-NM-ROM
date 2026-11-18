@@ -238,5 +238,16 @@
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1",
     "archived_remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/limits01"
+  },
+  {
+    "name": "b1attrib01",
+    "id": 7354184,
+    "reserved_minutes": 120,
+    "commit": "b60e9f2d5efdf5c2476dc36f883f996dce5f8183",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1attrib01",
+    "driver": "b1_attribution.py",
+    "args": "--train /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/refstrain01/output --dev /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/refsdev01/output --global-model /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/global01/output --local-model /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/localr1/output --audit /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/auditr1/output",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-18T21:35:06.239495+00:00"
   }
 ]

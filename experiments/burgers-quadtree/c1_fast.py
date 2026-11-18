@@ -3,7 +3,7 @@ from campaign import *
 from owned_inputs import verified
 import continuous as C,argparse
 ap=argparse.ArgumentParser();ap.add_argument('--out',required=True);a=ap.parse_args();o=Path(a.out);o.mkdir(parents=True,exist_ok=True)
-_,dev=draw();tiles=json.loads(verified('c1tiles','result.json').read_text())['rows'];rows=[];solvers={h:C.flux_trajectory(h) for h in (.005,.0025)};widths=[]
+_,dev=draw();tiles=json.loads(verified('c1tiles','result.json').read_text())['rows'];rows=[];solvers={h:C.flux_trajectory(h) for h in (.0125,.00625,.005,.0025)};widths=[]
 for ph in dev[:32]:
  u=E.initial(4095,ph)[::16,::16];x=np.arange(256)*16/4095;s=u.sum();mx=(u.sum(1)*x).sum()/s;my=(u.sum(0)*x).sum()/s
  widths.append(float(np.sqrt(((u.sum(1)*(x-mx)**2).sum()+(u.sum(0)*(x-my)**2).sum())/(2*s))))
@@ -16,7 +16,7 @@ for rank in (128,256):
    np.savez_compressed(o/f'r{rank}_tile{i}{j}_basis.npz',basis=W,eigenvalues=eigs,rotation=rot)
    for q in (48,64,80,96,128):
     G,H=C.flux_tables(W,128,q)
-    for dt in (.005,.0025):
+    for dt in (.0125,.00625,.005,.0025):
      for case in cases:
       d=np.load(verified('c1data',f'case{128+case}.npz'));truth=jnp.asarray(d['coefficients']);norm=float(d['initial_norm']);a0=W.T@truth[0].ravel()/2
       states,sec=timer(lambda:solvers[dt](a0,dev[case,4],G,H,eigs));pred=(2*(states@W.T)).reshape(11,127,127);err=np.asarray(jnp.linalg.norm((pred-truth).reshape(11,-1),axis=1))/(2*norm)

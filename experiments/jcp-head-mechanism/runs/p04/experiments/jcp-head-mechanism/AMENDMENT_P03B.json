@@ -1,0 +1,35 @@
+{
+  "schema": "mechanism-prospective-amendment-v1",
+  "amendment": "P03B",
+  "baseline_summary_sha256": "9dc0dcab825549e820c642a0b150cfb3c263dcbc2d5cf6d13501287564df3abb",
+  "baseline_qualification": {
+    "all_stationary": true,
+    "all_tight_tighter": true,
+    "all_action_checks": true,
+    "common_ic": true,
+    "ic_fit_passed": false,
+    "pilot_reproducibility": true,
+    "operator_passed": true,
+    "reference_passed": true,
+    "cases_completed": 16,
+    "passed": false
+  },
+  "observed_failure": {
+    "case_index": 6,
+    "selected_fit": "minimum-cost candidate nonstationary, three stationary alternatives, one within fixed rounding band"
+  },
+  "selection_rule": {
+    "only_if_raw_minimum_is_nonstationary": true,
+    "stationarity_gate_unchanged": true,
+    "objective_tie_band": "1024 * float64 epsilon * max(raw_minimum_cost,1e-300)",
+    "choose": "lowest-cost stationary candidate within band; otherwise preserve original winner and failure",
+    "retain": "all candidate final codes, costs, gradients, histories; raw/selected indices; tie band; physical coefficient difference"
+  },
+  "replay": {
+    "all_exposed_cases": 16,
+    "same_previous_settings": true,
+    "compare_physical_fields_with_p03": true,
+    "physical_field_difference_gate": 1e-10
+  },
+  "no_new_results_at_registration": true
+}

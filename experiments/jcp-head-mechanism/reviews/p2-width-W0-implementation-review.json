@@ -1,0 +1,55 @@
+{
+  "schema": "independent-code-review-v1",
+  "reviewer": "head_mechanism_run",
+  "decision": "Cleared for the projection-only screen, conditional on the registered cluster fixture and post-pull baseline/environment checks. This does not release W1 equation solves.",
+  "reviewed_sources": [
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-weak-visibility/experiments/jcp-weak-visibility/screen_prefix.py",
+      "sha256": "f7041263cb20ea9de8aa55b5ee55d100bacb2c8a0f19d5f869704cc073ef56de"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-weak-visibility/experiments/jcp-weak-visibility/cohort_guard.py",
+      "sha256": "906c4cd55c76bc04ea215554a489374894d9babc50532608e2610b98ea5fcafa"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-weak-visibility/experiments/jcp-weak-visibility/cluster/stage.py",
+      "sha256": "c8cff7f254ddd96f9eec6dc0535f1200e46c817d62ebb0cc3e412a439ba81e49"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-weak-visibility/experiments/jcp-weak-visibility/PROTOCOL-WIDTH.md",
+      "sha256": "b259c990d2e89e4c20bd5eadd1534129378f54bf65c549b5f2f0a67de04165b3"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-weak-visibility/experiments/jcp-weak-visibility/configs/width_projection.json",
+      "sha256": "d51a15bcacb8246385adf4bf6afd1dd6a6c0a1fcb1e78e7e5d6fea37c3e39d3c"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-weak-visibility/experiments/jcp-weak-visibility/PROVENANCE.json",
+      "sha256": "09d930a91a4f2bb9fc9f377ffc8b3deab77870ccfa2af8e9a68be32722857820"
+    }
+  ],
+  "frozen_assets": [
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-weak-visibility/experiments/jcp-weak-visibility/inputs/frozen.pkl",
+      "sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-weak-visibility/experiments/jcp-weak-visibility/inputs/rotation_R512.npz",
+      "sha256": "51149166b53dad386c93fa0682079aec96b61276801d9a6d4f622453d6426772"
+    }
+  ],
+  "findings": [
+    "The ordered mass QR and triangular coefficient solves use every original column, without numerical rank truncation or basis reordering.",
+    "Each prefix retains Gram eigenvalues and independently computed triangular-factor singular values, with all declared rank cutoffs enforced. R128 baseline rank and projection controls enter every candidate admission.",
+    "Per-prefix QR orthogonality, normal-residual orthogonality, coefficient-field versus direct QR parity, finite error curves and nested-projection checks are explicit.",
+    "All original development cases are regenerated under the legacy source/seed/count guard, with original/stable operator and Jacobian-action checks and tight/tighter references retained.",
+    "Both prospective worst-initial and worst-all-time projection criteria enter candidate admission. Original primary metrics and prior test-count evidence are preserved.",
+    "Admission stays provisional until the accepted R128 error curves are reproduced after collection and logs/checksums are reviewed. Per-prefix controls allow a valid smaller candidate to proceed if a larger candidate fails, without excluding cases.",
+    "The staged batch has a ten-minute ceiling, GPU/f64/highest preflight and the original operator fixture before the screen."
+  ],
+  "not_yet_admitted": [
+    "W0 numerical results",
+    "W1 equation-solve implementation",
+    "Any broader accuracy, continuum, stability or speed claim"
+  ]
+}

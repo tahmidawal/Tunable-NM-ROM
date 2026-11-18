@@ -1,0 +1,190 @@
+{
+  "schema": "independent-code-review-v1",
+  "reviewer": "head_mechanism_run",
+  "decision": "Cleared for the bounded unchanged-grid P02B replay, conditional on cluster fixture and unchanged all-target parity gates.",
+  "reviewed_sources": [
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-paired-cost/experiments/jcp-paired-cost/ns_query.py",
+      "sha256": "ca4afc0b1560361c6ca3e1f87a788219973a9d26f911b87a3ff7a80b72554620"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-paired-cost/experiments/jcp-paired-cost/run_paired.py",
+      "sha256": "994fa719d28445026fe637168d5c1d268b134d2f0bc1840254b01a5ba738537e"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-paired-cost/experiments/jcp-paired-cost/check_ns_fixture.py",
+      "sha256": "283c0713a75aff3d7f6a6b3e4b9309f5c8eaa320e25bf70aa7ae103889c31f08"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-paired-cost/experiments/jcp-paired-cost/AMENDMENT_P02B.json",
+      "sha256": "c465820d16e7a0388cf98b2d6ff3e98cdb8081abe37a7703c943fa7689fb3beb"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-paired-cost/experiments/jcp-paired-cost/configs/refined_dev16.json",
+      "sha256": "b026d00a2be9a628cb8d62c754f626002e7e255a65b3b966eacce2c26fed073b"
+    }
+  ],
+  "failed_evidence": {
+    "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-paired-cost/experiments/jcp-paired-cost/runs/p02/output/implementation_parity.json",
+    "sha256": "c74f3a8e407d3c45be9b15d461994234a69c6cd7899558b9930e27808eec48b0",
+    "checks_completed_before_guard": 15,
+    "failures": [
+      {
+        "subject": "learned_head",
+        "case": 14,
+        "max_relative_field_difference": 1.7124521670545564e-13,
+        "passed": false,
+        "physical_evolved_max_error": 0.000580407758379419,
+        "reference_refinement_difference": 1.2047032881933966e-06,
+        "reference_refinement_bound": 5.80407758379419e-06,
+        "pinned_reference": {
+          "file": "inputs/accepted_dev16_learned_head_case14.npz",
+          "sha256": "63f695cb41191174961d8af1880de5a85902737bda8dff6cf8101f05996a578d",
+          "source_file": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_014/head_common_m584_dt0.01_g1e-07.npz",
+          "source_tag": "head_common_m584_dt0.01_g1e-07",
+          "source_job": "7354705",
+          "source_summary_sha256": "5bd8eed34cb03731964a2ec10a4c6c38e5668fcce35d35a92d27348e81eac133"
+        },
+        "solver_diagnostics": {
+          "step_reasons": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "step_gradients": [
+            2.875314132978187e-08,
+            4.813222349016924e-10,
+            7.154974799613233e-11,
+            5.657735181913556e-11,
+            4.645148269898677e-11,
+            3.771305763103068e-11,
+            4.5617624628107997e-11,
+            4.823938443522609e-11,
+            4.926632558817356e-11,
+            4.6818715609959366e-11,
+            5.8038407516231845e-11,
+            5.91338155027771e-11,
+            5.027265238302918e-11,
+            3.908415661070485e-11,
+            2.6109818077091875e-11,
+            1.6786696314634935e-11,
+            8.054318492057955e-12,
+            5.395393552092092e-12,
+            6.834841593801364e-12,
+            9.055657519969192e-08
+          ],
+          "step_iterations": [
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            2
+          ],
+          "step_roundoff_acceptances": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "initial_fit_reason": 2,
+          "initial_fit_gradient": 2.4132784127133235e-09,
+          "initial_fit_iterations": 14,
+          "initial_fit_raw_winner": 2,
+          "initial_fit_selected": 2,
+          "initial_fit_tie_band": 1.840762124556472e-18,
+          "initial_fit_raw_selected_coefficient_gap": 0.0
+        }
+      }
+    ]
+  },
+  "p1_reference_evidence": [
+    {
+      "case": 14,
+      "p1_selected_start": 3,
+      "p1_all_initial_starts": [
+        {
+          "reason": "stationarity",
+          "gradient": 8.873521093671381e-11,
+          "cost": 8.095757439671827e-06,
+          "iterations": 3
+        },
+        {
+          "reason": "stationarity",
+          "gradient": 1.2341058127808612e-12,
+          "cost": 8.095757439675701e-06,
+          "iterations": 4
+        },
+        {
+          "reason": "stationarity",
+          "gradient": 2.781155103717298e-12,
+          "cost": 8.095757439672414e-06,
+          "iterations": 5
+        },
+        {
+          "reason": "stationarity",
+          "gradient": 1.8476122782442526e-12,
+          "cost": 8.09575743967151e-06,
+          "iterations": 4
+        }
+      ]
+    }
+  ],
+  "findings": [
+    "Failure was native head initialization stationarity, despite tiny physical output difference; output agreement does not waive the convergence gate.",
+    "Replacing vmap by lax.map retains the same independent starts, adaptive LM objective, damping, acceptance guards, budget, stationary cost-tie selector and tolerances.",
+    "All per-start costs, gradients, termination reasons, iteration counts and acceptance counts are returned by the complete query and persisted within the timing contract.",
+    "Every target head/span case is qualified before POD regeneration and comparator compilation; all comparator candidates are still regenerated and timed in the same new allocation.",
+    "Synthetic fixture checks selector boundaries, solver budget rejection, query shape/finiteness/reproducibility and classical wrapper parity. Actual case acceptance remains the strict production guard.",
+    "Batched arithmetic is a plausible cause, not established until the replay. Sequential compiled arithmetic still differs from P1 host arithmetic."
+  ],
+  "if_replay_fails": "Stop at the unchanged parity gate. Retain returned initial codes/residual/Jacobian and final proposals for diagnosis; no threshold relaxation, case exclusion, or frozen-input replacement.",
+  "timing_claim_status": "No P02 timing result admitted; all eligible contenders must be retimed together."
+}

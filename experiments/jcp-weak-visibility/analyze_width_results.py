@@ -5,6 +5,7 @@ This is a NumPy saved-array audit. It neither reruns a solver nor selects cases.
 from pathlib import Path
 import argparse
 import hashlib
+import itertools
 import json
 import numpy as np
 
@@ -75,6 +76,10 @@ def main():
         assert env['checkpoint_sha256'] == admission['source_checkpoint_sha256']
         assert env['rotation_sha256'] == admission['source_rotation_sha256']
         assert env['source_sha256']['core.py'] == admission['source_core_sha256']
+        cohort = read(output/'cohort-drawing.json')
+        assert cohort['guard_passed'] and cohort['legacy_same_host_bitwise']
+        assert cohort['selected_case_ids'] == list(range(6))
+        assert cohort['first_four_columns_exact'] and cohort['local_portability_max_ulp'] <= 4
         manifest = []
         for line in (output.parent/'RESULTS.sha256').read_text().splitlines():
             expected, rel = line.split('  ', 1)
@@ -84,6 +89,7 @@ def main():
         environment_ok = bool(collect['checksum_verified'] and collect['gpu_log_valid'] and collect['no_environmental_warnings']
             and collect['scheduler_state'] == 'COMPLETED' and env['backend'] == 'gpu' and env['x64'] and env['matmul_precision'] == 'highest')
         G = load_bank(output)
+        assert G.dtype == np.float64
         n = cfg['mesh_intervals']
         operators = np.load(output/'operators.npz')
         gram = G.T @ G/n**2
@@ -96,6 +102,7 @@ def main():
         factor_error = float(np.linalg.norm(R.T @ R-gram)/np.linalg.norm(gram))
         src = dict(output=str(output.resolve()), job_id=env['job_id'], commit=env['commit'],
             environment_sha256=sha(output/'environment.json'), summary_sha256=sha(output/'summary.json'),
+            cohort_sha256=cohort['parameter_sha256'], cohort_guard_passed=True, bank_dtype=str(G.dtype),
             verified_file_count=len(manifest), retention_verified=True, environment_passed=environment_ok,
             gram_reconstruction_relative=gram_error, qr_factor_relative=factor_error, ranks=ranks,
             numerical_basis_passed=bool(rank_pass and gram_error <= 1e-10 and factor_error <= 1e-10))
@@ -104,6 +111,7 @@ def main():
         source_summaries[width] = read(output/'summary.json')
         assert set(source_summaries[width]['cases']) == set(map(str, range(6)))
     assert 128 in outputs, 'The fresh baseline must be included.'
+    assert len({s['cohort_sha256'] for s in audit['sources'].values()}) == 1
     cfg0 = environments[128]['config']
     n = cfg0['mesh_intervals']
     times = np.arange(round(cfg0['horizon']/cfg0['dt'])+1)*cfg0['dt']
@@ -111,8 +119,10 @@ def main():
     for width in sorted(outputs):
         output, G = outputs[width], banks[width]
         cfg, summary = environments[width]['config'], source_summaries[width]
-        shared_bank_gap = float(np.linalg.norm(G[:, :128]-banks[128])/np.linalg.norm(banks[128]))
-        audit['sources'][str(width)]['R128_bank_prefix_relative_gap'] = shared_bank_gap
+        prefix_gaps = {str(r):float(np.linalg.norm(G[:, :r]-banks[r])/np.linalg.norm(banks[r])) for r in banks if r <= width}
+        shared_bank_gap = max(prefix_gaps.values())
+        audit['sources'][str(width)]['R128_bank_prefix_relative_gap'] = prefix_gaps['128']
+        audit['sources'][str(width)]['all_narrower_bank_prefix_relative_gaps'] = prefix_gaps
         for case_id in range(6):
             folder = output/f'case-{case_id:02d}'
             case = summary['cases'][str(case_id)]
@@ -221,28 +231,26 @@ def main():
                 worst_error_ratio=worst_ratio, case_maximum_error_ratios=ratios, no_case_regression_above_two_percent=max(ratios) <= 1.02,
                 prospective_primary_improvement_passed=bool(baseline_ok and all(r['eligible'] for r in rows) and worst_ratio <= .8 and max(ratios) <= 1.02)))
     pointwise = []
-    for width in sorted(outputs):
-        for m in environments[width]['config']['solve_rows']:
-            if width == 128:
-                continue
-            comparison_arms = [(128, 2048)]
-            if m != 2048:
-                comparison_arms.append((width, 2048))
-            for previous_width, previous_m in comparison_arms:
-                for case_id in range(6):
-                    old = np.asarray(audit['cases'][f'R{previous_width}-case{case_id}']['arms'][str(previous_m)]['error'])
-                    new = np.asarray(audit['cases'][f'R{width}-case{case_id}']['arms'][str(m)]['error'])
-                    difference = new-old
-                    pointwise.append(dict(case=case_id, previous_R=previous_width, previous_M=previous_m, R=width, M=m,
-                        increased_time_count=int(np.sum(difference > 1e-10)), maximum_increase=float(max(0., difference.max())),
-                        maximum_signed_error_change=float(difference.max()),
-                        time_of_maximum_increase=float(times[int(np.argmax(difference))])))
+    registered_arms = [(width, m) for width in sorted(outputs) for m in environments[width]['config']['solve_rows']]
+    for (previous_width, previous_m), (width, m) in itertools.combinations(registered_arms, 2):
+        kind = 'within_width_test_change' if previous_width == width else ('common_M_width_change' if previous_m == m else 'joint_width_and_test_change')
+        for case_id in range(6):
+            old_arm = audit['cases'][f'R{previous_width}-case{case_id}']['arms'][str(previous_m)]
+            new_arm = audit['cases'][f'R{width}-case{case_id}']['arms'][str(m)]
+            difference = np.asarray(new_arm['error'])-np.asarray(old_arm['error'])
+            uncertainty = old_arm['tight_tighter_difference']+new_arm['tight_tighter_difference']
+            pointwise.append(dict(case=case_id, comparison_kind=kind, previous_R=previous_width, previous_M=previous_m, R=width, M=m,
+                increased_time_count=int(np.sum(difference > 1e-10)), maximum_increase=float(max(0., difference.max())),
+                maximum_signed_error_change=float(difference.max()), summed_solver_uncertainty=uncertainty,
+                maximum_increase_exceeds_solver_uncertainty=bool(difference.max() > uncertainty),
+                time_of_maximum_increase=float(times[int(np.argmax(difference))])))
     audit['all_saved_array_checks_passed'] = all(a['saved_array_passed'] for c in audit['cases'].values() for a in c['arms'].values())
     audit['all_arms_numerically_eligible'] = all(r['eligible'] for r in table)
     audit['matrix_complete'] = set(outputs) == {128, *admission['admitted_widths']}
     write(dest/'analysis.json', audit)
     write(dest/'table.json', table)
-    write(dest/'pointwise-counterexamples.json', dict(increase_count_threshold=1e-10, comparisons=pointwise))
+    write(dest/'pointwise-counterexamples.json', dict(scope='descriptive all-pairs audit of registered arms; primary gates unchanged',
+        increase_count_threshold=1e-10, comparisons=pointwise))
     write(dest/'combined-source.json', dict(sources=audit['sources'], raw_summaries={str(k):v for k,v in source_summaries.items()}, scope=audit['scope']))
     plot(audit, times, dest)
     print(json.dumps({key:audit[key] for key in ['baseline_reproduction_passed', 'all_saved_array_checks_passed', 'all_arms_numerically_eligible', 'matrix_complete', 'aggregates', 'comparisons']}))
@@ -274,7 +282,7 @@ def plot(audit, times, dest):
     for ax, metric, title in zip(axes, ['maximum_error_median','maximum_error_worst'], ['Median of six case maxima', 'Worst of six case maxima']):
         values = [100*audit['aggregates'][key][metric] for key in keys]
         ax.bar(np.arange(len(keys)), values, color=[colors[int(key.split('-')[0][1:])] for key in keys])
-        ax.set_xticks(np.arange(len(keys)), [key.replace('-', '\n')+'\n'+str(audit['aggregates'][key]['qualified_count'])+'/6 qualified' for key in keys])
+        ax.set_xticks(np.arange(len(keys)), [key.replace('-', '\n')+'\n'+str(audit['aggregates'][key]['qualified_count'])+'/6\nqualified' for key in keys], fontsize=8)
         ax.set(title=title, ylabel='Error / initial-field norm (%)')
         ax.spines[['top', 'right']].set_visible(False)
     fig.suptitle('MEASURED same-grid / same-step accuracy — maximum includes initialization and all evolved times')

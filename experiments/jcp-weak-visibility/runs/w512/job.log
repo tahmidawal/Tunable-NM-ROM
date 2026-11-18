@@ -1,0 +1,53 @@
+jax_backend=gpu
+NVIDIA RTX PRO 6000 Blackwell Server Edition, GPU-5726d0d3-70ae-a17c-0693-976a7ba7e4a6, 97887 MiB
+{"passed": true, "backend": "gpu", "x64": true, "ad_relative_error": 9.916758950512095e-17, "parity": {"residual_relative": 3.286534822430868e-15, "residual_absolute": 4.694150198424765e-18, "directions": [{"seed": 1701, "explicit_action_relative": 6.27894370029461e-16, "explicit_action_absolute": 6.287157597213246e-16, "finite_difference": [{"epsilon": 0.0001, "relative_error": 3.375010753030514e-14, "switched_nodes": 0}, {"epsilon": 1e-05, "relative_error": 1.4194513898341076e-13, "switched_nodes": 0}, {"epsilon": 1e-06, "relative_error": 2.961039606206171e-12, "switched_nodes": 0}, {"epsilon": 1e-07, "relative_error": 4.354749358267374e-11, "switched_nodes": 0}, {"epsilon": 1e-08, "relative_error": 1.0925978616163832e-10, "switched_nodes": 0}], "passed": true}, {"seed": 1702, "explicit_action_relative": 7.13458446676326e-16, "explicit_action_absolute": 7.149246985523805e-16, "finite_difference": [{"epsilon": 0.0001, "relative_error": 6.902225598617941e-14, "switched_nodes": 0}, {"epsilon": 1e-05, "relative_error": 1.9926990373850741e-13, "switched_nodes": 0}, {"epsilon": 1e-06, "relative_error": 2.6689833514979927e-12, "switched_nodes": 0}, {"epsilon": 1e-07, "relative_error": 5.89679381949511e-11, "switched_nodes": 0}, {"epsilon": 1e-08, "relative_error": 2.2929379648027196e-10, "switched_nodes": 0}], "passed": true}, {"seed": 1703, "explicit_action_relative": 7.004288583875471e-16, "explicit_action_absolute": 7.016250170391835e-16, "finite_difference": [{"epsilon": 0.0001, "relative_error": 1.480472834860524e-14, "switched_nodes": 0}, {"epsilon": 1e-05, "relative_error": 6.814805022366257e-13, "switched_nodes": 0}, {"epsilon": 1e-06, "relative_error": 7.547582609059016e-13, "switched_nodes": 0}, {"epsilon": 1e-07, "relative_error": 6.877204769740927e-11, "switched_nodes": 0}, {"epsilon": 1e-08, "relative_error": 3.6612853712031987e-10, "switched_nodes": 0}], "passed": true}], "passed": true}, "solver_stats": [[3.0, 1.0, 1.5326109519891397e-10, 5.014905497782178e-05, 0.0, 3.703703703703703e-05], [3.0, 1.0, 1.5269854313424861e-10, 4.9938447204549266e-05, 0.0, 3.703703703703703e-05]], "serialization_witness": {"scalar": 1.0, "nested": [[1.0, null], {"x": null}]}, "reference_arithmetic_parity": {"primal": 1.1177828557469731e-17, "action": 4.246640859255049e-17}, "seconds": 11.706862011924386}
+jax_backend=gpu x64=True precision=highest
+case=0 start
+case=0 M=2048 level=prod error=0.000984875 stationarity=8.77e-06 eligible=True
+case=0 M=2048 level=tight error=0.000984141 stationarity=9.35e-08 eligible=True
+case=0 M=2048 level=tighter error=0.000984136 stationarity=9.84e-09 eligible=True
+case=0 M=8192 level=prod error=0.000354611 stationarity=4.95e-06 eligible=True
+case=0 M=8192 level=tight error=0.000354611 stationarity=6.92e-08 eligible=True
+case=0 M=8192 level=tighter error=0.000354611 stationarity=2.6e-09 eligible=True
+case=0 finished
+case=1 start
+case=1 M=2048 level=prod error=0.000240105 stationarity=9.81e-06 eligible=True
+case=1 M=2048 level=tight error=0.000240063 stationarity=2.32e-08 eligible=True
+case=1 M=2048 level=tighter error=0.000240063 stationarity=9.15e-09 eligible=True
+case=1 M=8192 level=prod error=0.000237217 stationarity=9.7e-06 eligible=True
+case=1 M=8192 level=tight error=0.000237217 stationarity=4.52e-09 eligible=True
+case=1 M=8192 level=tighter error=0.000237217 stationarity=4.52e-09 eligible=True
+case=1 finished
+case=2 start
+case=2 M=2048 level=prod error=0.00275575 stationarity=8.15e-06 eligible=True
+case=2 M=2048 level=tight error=0.00275714 stationarity=9e-08 eligible=True
+case=2 M=2048 level=tighter error=0.00275716 stationarity=8.46e-09 eligible=True
+case=2 M=8192 level=prod error=0.00128628 stationarity=8.18e-06 eligible=True
+case=2 M=8192 level=tight error=0.00128628 stationarity=5.7e-09 eligible=True
+case=2 M=8192 level=tighter error=0.00128628 stationarity=5.7e-09 eligible=True
+case=2 finished
+case=3 start
+case=3 M=2048 level=prod error=0.00330017 stationarity=7.49e-06 eligible=True
+case=3 M=2048 level=tight error=0.00330112 stationarity=7.66e-08 eligible=True
+case=3 M=2048 level=tighter error=0.00330114 stationarity=9.21e-09 eligible=True
+case=3 M=8192 level=prod error=0.0022573 stationarity=8.32e-06 eligible=True
+case=3 M=8192 level=tight error=0.00225733 stationarity=9.4e-09 eligible=True
+case=3 M=8192 level=tighter error=0.00225733 stationarity=9.4e-09 eligible=True
+case=3 finished
+case=4 start
+case=4 M=2048 level=prod error=0.00168206 stationarity=6.68e-06 eligible=True
+case=4 M=2048 level=tight error=0.00168206 stationarity=4.12e-08 eligible=True
+case=4 M=2048 level=tighter error=0.00168206 stationarity=9.12e-09 eligible=True
+case=4 M=8192 level=prod error=0.00168206 stationarity=4.7e-06 eligible=True
+case=4 M=8192 level=tight error=0.00168206 stationarity=4.4e-09 eligible=True
+case=4 M=8192 level=tighter error=0.00168206 stationarity=4.4e-09 eligible=True
+case=4 finished
+case=5 start
+case=5 M=2048 level=prod error=0.00653264 stationarity=7.32e-06 eligible=True
+case=5 M=2048 level=tight error=0.00654034 stationarity=7.54e-08 eligible=True
+case=5 M=2048 level=tighter error=0.00654043 stationarity=1e-08 eligible=True
+case=5 M=8192 level=prod error=0.00391845 stationarity=2.93e-06 eligible=True
+case=5 M=8192 level=tight error=0.00391845 stationarity=5.57e-09 eligible=True
+case=5 M=8192 level=tighter error=0.00391845 stationarity=5.57e-09 eligible=True
+case=5 finished
+completed=True

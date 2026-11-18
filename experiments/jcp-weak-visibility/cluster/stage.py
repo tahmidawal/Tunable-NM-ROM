@@ -37,6 +37,10 @@ export XLA_PYTHON_CLIENT_PREALLOCATE=false
 export OMP_NUM_THREADS=8
 export OPENBLAS_NUM_THREADS=8
 export SOURCE_COMMIT={commit}
+export TMPDIR="$SLURM_SUBMIT_DIR/tmp"
+export XDG_CACHE_HOME="$SLURM_SUBMIT_DIR/cache"
+export CUDA_CACHE_PATH="$SLURM_SUBMIT_DIR/cache/cuda"
+mkdir -p "$TMPDIR" "$XDG_CACHE_HOME" "$CUDA_CACHE_PATH"
 PY=/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python
 cd "$SLURM_SUBMIT_DIR/code"
 $PY -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={{b}}'); sys.exit(0 if b=='gpu' else 42)"

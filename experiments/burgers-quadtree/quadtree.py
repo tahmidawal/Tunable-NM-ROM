@@ -13,7 +13,7 @@ def leaves(refined):
  for c in Cell(0,0,0).children():out.extend(c.children() if 2*c.i+c.j in refined else [c])
  return tuple(sorted(out))
 def initial_order(initial):
- u=np.asarray(initial)[::16,::16];gx,gy=np.gradient(u);e=(gx*gx+gy*gy).reshape(2,128,2,128).sum((1,3));s=e.copy();s[1:]+=e[:-1]/2;s[:,1:]+=e[:,:-1]/2
+ u=np.asarray(initial[::16,::16]);gx,gy=np.gradient(u);e=(gx*gx+gy*gy).reshape(2,128,2,128).sum((1,3));s=e.copy();s[1:]+=e[:-1]/2;s[:,1:]+=e[:,:-1]/2
  return tuple(int(i) for i in np.argsort(-s.ravel(),kind='stable'))
 def validate(cells):
  occupancy=np.zeros((4,4),int)

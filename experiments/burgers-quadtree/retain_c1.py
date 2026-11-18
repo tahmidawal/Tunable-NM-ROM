@@ -11,8 +11,8 @@ for job in sys.argv[1:]:
  records=[];missing=[]
  for line in manifest.splitlines():
   digest,name=line.split('  ',1);p=Path(name);assert not p.is_absolute() and '..' not in p.parts and p.parts[0]=='output'
-  full=job in ('c1data','c1familyb','c1ref32','c1classical')
-  local=full or p.suffix in ('.json','.pkl') or p.name in ('teacher.npz','normalization.npz','projection.npz') or (job=='c1manifold' and p.name=='lift.npz') or (job=='c1bbank' and p.name=='pod.npz') or (job=='c1cost' and ('_block' in p.name or p.name=='final4096_case9.npz')) or (job=='c1fast' and '_q' in p.name) or (job=='c1cubature' and '_cap' in p.name)
+  full=job in ('c1data','c1familyb','c1ref32','c1classical','c2frame')
+  local=full or p.suffix in ('.json','.pkl') or p.name in ('teacher.npz','normalization.npz','projection.npz') or (job=='c1manifold' and p.name=='lift.npz') or (job=='c1bbank' and p.name=='pod.npz') or (job=='c1cost' and ('_block' in p.name or p.name=='final4096_case9.npz')) or (job in ('c1fast','c1compress') and '_q' in p.name) or (job=='c1cubature' and '_cap' in p.name)
   if local and (not (o/p).exists() or hashlib.sha256((o/p).read_bytes()).hexdigest()!=digest):missing.append(name)
   records.append(dict(relative=name,sha256=digest,local_path=str(o/p) if local else None,remote_path=root+'/'+name,retention='local+remote verified' if local else 'remote raw retained; not downloaded'))
  if missing:

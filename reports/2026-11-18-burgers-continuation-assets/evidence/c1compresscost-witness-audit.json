@@ -1,0 +1,20 @@
+{
+  "job": "c1compresscost",
+  "case": 9,
+  "sha256": "ff4505b7462ae485518c81e6369b25c18855c487a2f3bb10a423f258d2e6baab",
+  "shape": [
+    4096,
+    4096
+  ],
+  "numpy_errors": {
+    "compressed384": 0.0007518033215578383,
+    "spectral24": 0.00017424884219406538,
+    "spectral32": 0.00014723394596492535,
+    "spectral48": 0.00014718632017513594
+  },
+  "wrong_final_normalization": 0.0015079758377899745,
+  "negative_control_pass": true,
+  "display_stride": 8,
+  "local": "compressed384",
+  "baseline": "spectral48"
+}

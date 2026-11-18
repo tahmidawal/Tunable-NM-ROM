@@ -1,0 +1,72 @@
+{
+  "meta": {
+    "job": "7344228",
+    "commit": "87d5fc6f71617fd9080d8250b351d2cae9b769f3",
+    "device": "[CudaDevice(id=0)]",
+    "jax": "0.10.2",
+    "x64": true,
+    "precision": "highest"
+  },
+  "complete": true,
+  "training": [
+    {
+      "step": 3000,
+      "loss": 1.6543480641861107e-05,
+      "score": 0.0003702311147103243
+    },
+    {
+      "step": 6000,
+      "loss": 2.241957851781672e-05,
+      "score": 0.00036748609342087925
+    },
+    {
+      "step": 9000,
+      "loss": 1.7003602663841056e-05,
+      "score": 0.0003678995994420819
+    },
+    {
+      "step": 12000,
+      "loss": 1.371676138465426e-05,
+      "score": 0.0003675072947790195
+    },
+    {
+      "step": 15000,
+      "loss": 2.220818693295714e-05,
+      "score": 0.00036712142248614696
+    },
+    {
+      "step": 18000,
+      "loss": 1.8240705733990986e-05,
+      "score": 0.0003666757766700112
+    },
+    {
+      "step": 21000,
+      "loss": 1.766664801858913e-05,
+      "score": 0.0003671065457974751
+    },
+    {
+      "step": 24000,
+      "loss": 1.727284360602529e-05,
+      "score": 0.0003666495802935286
+    },
+    {
+      "step": 27000,
+      "loss": 1.6746059714484238e-05,
+      "score": 0.0003667554053872669
+    },
+    {
+      "step": 30000,
+      "loss": 1.964549194599801e-05,
+      "score": 0.0003666777440675559
+    }
+  ],
+  "training_seconds": 45.662680110894144,
+  "lift": 1024,
+  "latent": 128,
+  "encoder_worst": 0.16844020410698182,
+  "optimized_worst": 0.1683962521003349,
+  "truncation_worst": 0.004638206523900427,
+  "optimized_cases_below_half_percent": 17,
+  "max_stationarity": 5.917093780451372e-10,
+  "contract": "two-start optimized manifold projection, not a PDE solve; convergence diagnostics retained"
+}

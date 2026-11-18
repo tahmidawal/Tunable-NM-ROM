@@ -1,0 +1,356 @@
+{
+  "schema": "jcp-paired-cost-analysis-v1",
+  "job_id": "7354479",
+  "source_commit": "b7f306436c17085650e446d2b98a3752daef8ec6",
+  "gpu": "NVIDIA L40S, GPU-1ca445d2-8f7a-7faa-e334-fa2e94295427, 46068 MiB",
+  "gpu_seconds": 317,
+  "allocated_gpu_hours": 0.08805555555555555,
+  "scope": "original exposed development cases; instrumented complete queries",
+  "case_ids": [
+    0,
+    1
+  ],
+  "cold_scope": "model activation/compilation/first query in existing JAX/CUDA runtime; OS page cache retained",
+  "checks": {
+    "all_ok_rows_same_call_metrics": true,
+    "all_ok_rows_f64": true,
+    "expected_development_cases": true,
+    "within_same_allocation": true,
+    "all_recorded_costs_nonnegative": true,
+    "learned_head_median_cost_recomputed": true,
+    "learned_head_worst_accuracy_recomputed": true,
+    "learned_span64_median_cost_recomputed": true,
+    "learned_span64_worst_accuracy_recomputed": true,
+    "pod_span32_median_cost_recomputed": true,
+    "pod_span32_worst_accuracy_recomputed": true,
+    "fom_m28_rk4_s5_median_cost_recomputed": true,
+    "fom_m28_rk4_s5_worst_accuracy_recomputed": true,
+    "fom_m48_rk4_s15_median_cost_recomputed": true,
+    "fom_m48_rk4_s15_worst_accuracy_recomputed": true,
+    "fom_m64_cnab2_s40_median_cost_recomputed": true,
+    "fom_m64_cnab2_s40_worst_accuracy_recomputed": true,
+    "fom_m64_cnab2_s60_median_cost_recomputed": true,
+    "fom_m64_cnab2_s60_worst_accuracy_recomputed": true,
+    "scheduler_completed": true,
+    "gpu_log_preflight": true,
+    "no_excluded_runtime_warnings": true,
+    "full_checksum_verification": true
+  },
+  "raw_audit_passed": true,
+  "retained_cpu_affinity_messages": [],
+  "excluded_runtime_messages": [],
+  "comparisons": {
+    "learned_head": {
+      "pod": {
+        "qualified": false,
+        "reason": "no eligible selection comparator"
+      },
+      "same_mesh_classical": {
+        "comparator": "fom_m64_cnab2_s60",
+        "accuracy_eligible": true,
+        "within_confirmation_drift": {
+          "learned_head": 1.0019252481698486,
+          "fom_m64_cnab2_s60": 1.00104579343468
+        },
+        "drift_pass": true,
+        "sentinel_start_end_drift": {
+          "learned_head": 1.0024736631882494,
+          "fom_m64_cnab2_s60": 1.0014854792185512
+        },
+        "selection_confirmation_drift": {
+          "learned_head": 1.001688006053159,
+          "fom_m64_cnab2_s60": 1.00032941203767
+        },
+        "all_drift_gates_pass": true,
+        "qualified": true,
+        "comparator_over_target": 2.1614393140192125,
+        "ratio_direction": "above one favors target; qualified same-allocation only"
+      },
+      "any_mesh_classical": {
+        "comparator": "fom_m48_rk4_s15",
+        "accuracy_eligible": true,
+        "within_confirmation_drift": {
+          "learned_head": 1.0019252481698486,
+          "fom_m48_rk4_s15": 1.0010894362176905
+        },
+        "drift_pass": true,
+        "sentinel_start_end_drift": {
+          "learned_head": 1.0024736631882494,
+          "fom_m48_rk4_s15": 1.0047963595036238
+        },
+        "selection_confirmation_drift": {
+          "learned_head": 1.001688006053159,
+          "fom_m48_rk4_s15": 1.000311801929149
+        },
+        "all_drift_gates_pass": true,
+        "qualified": true,
+        "comparator_over_target": 1.102906758676001,
+        "ratio_direction": "above one favors target; qualified same-allocation only"
+      }
+    },
+    "learned_span64": {
+      "pod": {
+        "comparator": "pod_span32",
+        "accuracy_eligible": true,
+        "within_confirmation_drift": {
+          "learned_span64": 1.0060415870642856,
+          "pod_span32": 1.005719608377036
+        },
+        "drift_pass": true,
+        "sentinel_start_end_drift": {
+          "learned_span64": 1.0037399433418726,
+          "pod_span32": 1.0020959131945788
+        },
+        "selection_confirmation_drift": {
+          "learned_span64": 1.0002253473255245,
+          "pod_span32": 1.0012877538065021
+        },
+        "all_drift_gates_pass": true,
+        "qualified": true,
+        "comparator_over_target": 0.7090508359203037,
+        "ratio_direction": "above one favors target; qualified same-allocation only"
+      },
+      "same_mesh_classical": {
+        "comparator": "fom_m64_cnab2_s40",
+        "accuracy_eligible": true,
+        "within_confirmation_drift": {
+          "learned_span64": 1.0060415870642856,
+          "fom_m64_cnab2_s40": 1.0008214872681023
+        },
+        "drift_pass": true,
+        "sentinel_start_end_drift": {
+          "learned_span64": 1.0037399433418726,
+          "fom_m64_cnab2_s40": 1.0026006566360355
+        },
+        "selection_confirmation_drift": {
+          "learned_span64": 1.0002253473255245,
+          "fom_m64_cnab2_s40": 1.0005742443476688
+        },
+        "all_drift_gates_pass": true,
+        "qualified": true,
+        "comparator_over_target": 1.357728564363668,
+        "ratio_direction": "above one favors target; qualified same-allocation only"
+      },
+      "any_mesh_classical": {
+        "comparator": "fom_m28_rk4_s5",
+        "accuracy_eligible": true,
+        "within_confirmation_drift": {
+          "learned_span64": 1.0060415870642856,
+          "fom_m28_rk4_s5": 1.0038666624081092
+        },
+        "drift_pass": true,
+        "sentinel_start_end_drift": {
+          "learned_span64": 1.0037399433418726,
+          "fom_m28_rk4_s5": 1.0040271321209866
+        },
+        "selection_confirmation_drift": {
+          "learned_span64": 1.0002253473255245,
+          "fom_m28_rk4_s5": 1.0007378209627067
+        },
+        "all_drift_gates_pass": true,
+        "qualified": true,
+        "comparator_over_target": 0.40538972810260465,
+        "ratio_direction": "above one favors target; qualified same-allocation only"
+      }
+    }
+  },
+  "confirmation_from_invocations": {
+    "learned_head": [
+      {
+        "case": 0,
+        "median_ms": 31.368118,
+        "worst_error": 0.0005427398643094582,
+        "failures": 0
+      },
+      {
+        "case": 1,
+        "median_ms": 31.802864,
+        "worst_error": 0.0007606854918795047,
+        "failures": 0
+      }
+    ],
+    "learned_span64": [
+      {
+        "case": 0,
+        "median_ms": 35.868349,
+        "worst_error": 0.004012725119729279,
+        "failures": 0
+      },
+      {
+        "case": 1,
+        "median_ms": 37.520585,
+        "worst_error": 0.008173151647921288,
+        "failures": 0
+      }
+    ],
+    "pod_span32": [
+      {
+        "case": 0,
+        "median_ms": 25.55691,
+        "worst_error": 0.006364105717842152,
+        "failures": 0
+      },
+      {
+        "case": 1,
+        "median_ms": 26.479575,
+        "worst_error": 0.003965242334266138,
+        "failures": 0
+      }
+    ],
+    "fom_m28_rk4_s5": [
+      {
+        "case": 0,
+        "median_ms": 14.854278,
+        "worst_error": 0.003874705841422307,
+        "failures": 0
+      },
+      {
+        "case": 1,
+        "median_ms": 14.896842,
+        "worst_error": 0.00604732821163001,
+        "failures": 0
+      }
+    ],
+    "fom_m48_rk4_s15": [
+      {
+        "case": 0,
+        "median_ms": 34.829516,
+        "worst_error": 2.852076528605437e-05,
+        "failures": 0
+      },
+      {
+        "case": 1,
+        "median_ms": 34.842187,
+        "worst_error": 0.0003176782192467051,
+        "failures": 0
+      }
+    ],
+    "fom_m64_cnab2_s40": [
+      {
+        "case": 0,
+        "median_ms": 49.803197,
+        "worst_error": 0.0007886857585101767,
+        "failures": 0
+      },
+      {
+        "case": 1,
+        "median_ms": 49.839055,
+        "worst_error": 0.001354963581103744,
+        "failures": 0
+      }
+    ],
+    "fom_m64_cnab2_s60": [
+      {
+        "case": 0,
+        "median_ms": 68.255368,
+        "worst_error": 0.00034947653123174613,
+        "failures": 0
+      },
+      {
+        "case": 1,
+        "median_ms": 68.284876,
+        "worst_error": 0.0005968874283599806,
+        "failures": 0
+      }
+    ]
+  },
+  "failure_count_all_blocks": 15,
+  "timed_invocation_count": 694,
+  "raw_sha256": "4ba1989cd9fa6fc7744fb76ef084fe02273f42f516abeb9e13581581534eed75",
+  "casewise_ratios": {
+    "learned_head": {
+      "same_mesh_classical": {
+        "comparator": "fom_m64_cnab2_s60",
+        "qualified": true,
+        "cases": [
+          {
+            "case": 0,
+            "target_ms": 31.368118,
+            "comparator_ms": 68.255368,
+            "comparator_over_target": 2.1759471830602015
+          },
+          {
+            "case": 1,
+            "target_ms": 31.802864,
+            "comparator_ms": 68.284876,
+            "comparator_over_target": 2.1471297679353656
+          }
+        ]
+      },
+      "any_mesh_classical": {
+        "comparator": "fom_m48_rk4_s15",
+        "qualified": true,
+        "cases": [
+          {
+            "case": 0,
+            "target_ms": 31.368118,
+            "comparator_ms": 34.829516,
+            "comparator_over_target": 1.110347646613673
+          },
+          {
+            "case": 1,
+            "target_ms": 31.802864,
+            "comparator_ms": 34.842187,
+            "comparator_over_target": 1.0955675878751048
+          }
+        ]
+      }
+    },
+    "learned_span64": {
+      "pod": {
+        "comparator": "pod_span32",
+        "qualified": true,
+        "cases": [
+          {
+            "case": 0,
+            "target_ms": 35.868349,
+            "comparator_ms": 25.55691,
+            "comparator_over_target": 0.7125198318997062
+          },
+          {
+            "case": 1,
+            "target_ms": 37.520585,
+            "comparator_ms": 26.479575,
+            "comparator_over_target": 0.7057345987542573
+          }
+        ]
+      },
+      "same_mesh_classical": {
+        "comparator": "fom_m64_cnab2_s40",
+        "qualified": true,
+        "cases": [
+          {
+            "case": 0,
+            "target_ms": 35.868349,
+            "comparator_ms": 49.803197,
+            "comparator_over_target": 1.3884998442498704
+          },
+          {
+            "case": 1,
+            "target_ms": 37.520585,
+            "comparator_ms": 49.839055,
+            "comparator_over_target": 1.3283123117616638
+          }
+        ]
+      },
+      "any_mesh_classical": {
+        "comparator": "fom_m28_rk4_s5",
+        "qualified": true,
+        "cases": [
+          {
+            "case": 0,
+            "target_ms": 35.868349,
+            "comparator_ms": 14.854278,
+            "comparator_over_target": 0.41413330733455284
+          },
+          {
+            "case": 1,
+            "target_ms": 37.520585,
+            "comparator_ms": 14.896842,
+            "comparator_over_target": 0.39703117635292734
+          }
+        ]
+      }
+    }
+  }
+}

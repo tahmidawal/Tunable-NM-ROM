@@ -37,7 +37,8 @@ def main():
         row["status"] != "ok" or all(key in row for key in
             ("elapsed_ms", "relative_errors", "output_sha256", "solver_diagnostics")) for row in rows),
         "all_ok_rows_f64": all(row["status"] != "ok" or row["output_dtype"] == "float64" for row in rows),
-        "expected_development_cases": cases == [0, 1],
+        "expected_development_cases": cases == provenance["config"]["case_ids"]
+            and set(cases) <= set(range(16)) and provenance["config"]["eval_seed"] == 202609202,
         "within_same_allocation": bool(provenance.get("job_id") and provenance.get("gpu")),
         "all_recorded_costs_nonnegative": all(row.get("elapsed_ms", 0) >= 0 for row in rows),
     }
@@ -75,7 +76,8 @@ def main():
     analysis = {"schema": "jcp-paired-cost-analysis-v1", "job_id": provenance["job_id"],
         "source_commit": provenance["source_commit"], "gpu": provenance["gpu"],
         "gpu_seconds": gpu_seconds, "allocated_gpu_hours": gpu_seconds / 3600,
-        "scope": "development cases 0 and 1; instrumented complete queries",
+        "scope": "original exposed development cases; instrumented complete queries",
+        "case_ids": cases,
         "cold_scope": "model activation/compilation/first query in existing JAX/CUDA runtime; OS page cache retained",
         "checks": checks, "raw_audit_passed": all(checks.values()),
         "retained_cpu_affinity_messages": affinity, "excluded_runtime_messages": excluded,
@@ -83,6 +85,23 @@ def main():
         "failure_count_all_blocks": sum(r["status"] != "ok" for r in rows),
         "timed_invocation_count": len(rows),
         "raw_sha256": hashlib.sha256((paired / "invocations.jsonl").read_bytes()).hexdigest()}
+    ratios = {}
+    for target, groups in result["comparisons"].items():
+        ratios[target] = {}
+        for group, comparison in groups.items():
+            name = comparison.get("comparator")
+            if name is None:
+                continue
+            values = []
+            for case in cases:
+                a = result["confirmation"][target]["cases"].get(str(case))
+                b = result["confirmation"][name]["cases"].get(str(case))
+                if a is not None and b is not None:
+                    values.append({"case": case, "target_ms": a["median_ms"],
+                                   "comparator_ms": b["median_ms"],
+                                   "comparator_over_target": b["median_ms"]/a["median_ms"]})
+            ratios[target][group] = {"comparator": name, "qualified": comparison["qualified"], "cases": values}
+    analysis["casewise_ratios"] = ratios
     write_json(output / "analysis.json", analysis)
     colors = {"target": "#d35c24", "pod": "#6c5aa5", "classical": "#238a8d"}
     plt.rcParams.update({"font.size": 10, "axes.spines.top": False, "axes.spines.right": False})
@@ -90,7 +109,7 @@ def main():
     ax = axes[0, 0]
     for family in ("classical", "pod", "target"):
         selected = [(name, entry) for name, entry in selection.items()
-                    if entry["family"] == family and entry["complete"]]
+                    if entry["family"] == family and entry["complete"] and entry["worst_evolved_error"] <= 1]
         for name, entry in selected:
             marker = "*" if family == "target" else ("s" if family == "pod" else ("o" if entry["mesh"] == 64 else "."))
             ax.scatter(entry["median_case_ms"], 100*entry["worst_evolved_error"],
@@ -100,8 +119,12 @@ def main():
                             xytext=(5, 6), textcoords="offset points")
         ax.scatter([], [], color=colors[family], marker="*" if family == "target" else "o", label=family)
     ax.set(xscale="log", yscale="log", xlabel="Complete-query median (ms)", ylabel="Worst evolved relative error (%)",
-           title="Development selection: full measured candidate set")
+           title="Development selection: finite candidate frontier")
     ax.legend(frameon=False)
+    above = sum(e["complete"] and e["worst_evolved_error"] > 1 for e in selection.values())
+    failed = sum(not e["complete"] for e in selection.values())
+    ax.text(.02, .02, f"{above} candidates above 100% error; {failed} failed candidates\nAll retained in raw selection table; outside plotted range.",
+            transform=ax.transAxes, fontsize=8, va="bottom")
     names = list(result["confirmation"])
     labels = [name.replace("learned_", "").replace("fom_", "") for name in names]
     ax = axes[0, 1]
@@ -143,6 +166,19 @@ def main():
     figures.mkdir(exist_ok=True)
     fig.savefig(figures / "paired-cost-pilot.png", dpi=170)
     fig.savefig(figures / "paired-cost-pilot.svg")
+    figure2, panels = plt.subplots(1, len(ratios), figsize=(12, 4), constrained_layout=True, squeeze=False)
+    for axis, (target, groups) in zip(panels[0], ratios.items()):
+        for group, comparison in groups.items():
+            rr = comparison["cases"]
+            axis.plot([r["case"] for r in rr], [r["comparator_over_target"] for r in rr], "o-",
+                      label=group.replace("_", " ") + ("" if comparison["qualified"] else " (gate failed)"))
+        axis.axhline(1, color="#555555", lw=1, ls="--")
+        axis.set(xticks=cases, xlabel="Fixed development case", ylabel="Comparator time / target time",
+                 title=target.replace("learned_", "") + ": above one favors target")
+        axis.legend(frameon=False, fontsize=8)
+    figure2.suptitle("Same-allocation confirmation: individual case ratios")
+    figure2.savefig(figures / "paired-case-ratios.png", dpi=170)
+    figure2.savefig(figures / "paired-case-ratios.svg")
     print(json.dumps({"analysis": str(output / "analysis.json"), "raw_audit_passed": analysis["raw_audit_passed"],
                       "figure": str(figures / "paired-cost-pilot.png"), "comparisons": result["comparisons"]}))
 

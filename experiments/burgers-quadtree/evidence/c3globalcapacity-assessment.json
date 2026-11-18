@@ -1,0 +1,149 @@
+{
+  "rows": [
+    {
+      "name": "neural",
+      "rank": 384,
+      "q": 64,
+      "dt": 0.0125,
+      "worst_error_plus_uncertainty": 0.03144271420255149,
+      "worst_quadrature_change": 0.03128853414279067,
+      "worst_time_change": 0.00032981867622446835,
+      "worst_projection": 0.009609958386026228,
+      "passed": false,
+      "median_prepared_seconds": 0.0036752079613506794
+    },
+    {
+      "name": "neural",
+      "rank": 384,
+      "q": 96,
+      "dt": 0.0125,
+      "worst_error_plus_uncertainty": 0.010254387951201689,
+      "worst_quadrature_change": 0.0010128038872825157,
+      "worst_time_change": 0.00032885462286796,
+      "worst_projection": 0.009609958386026228,
+      "passed": false,
+      "median_prepared_seconds": 0.003983043134212494
+    },
+    {
+      "name": "neural",
+      "rank": 384,
+      "q": 128,
+      "dt": 0.0125,
+      "worst_error_plus_uncertainty": 0.010253560820474886,
+      "worst_quadrature_change": 1.4298878791047964e-06,
+      "worst_time_change": 0.00032881994367391494,
+      "worst_projection": 0.009609958386026228,
+      "passed": false,
+      "median_prepared_seconds": 0.0060002850368618965
+    },
+    {
+      "name": "neural",
+      "rank": 512,
+      "q": 64,
+      "dt": 0.0125,
+      "worst_error_plus_uncertainty": 0.04157834555192322,
+      "worst_quadrature_change": 0.04146237885480365,
+      "worst_time_change": 0.0003700079399249458,
+      "worst_projection": 0.006475146906801602,
+      "passed": false,
+      "median_prepared_seconds": 0.005245925858616829
+    },
+    {
+      "name": "neural",
+      "rank": 512,
+      "q": 96,
+      "dt": 0.0125,
+      "worst_error_plus_uncertainty": 0.007071973937195711,
+      "worst_quadrature_change": 0.0013291217841206893,
+      "worst_time_change": 0.00036918734168877454,
+      "worst_projection": 0.006475146906801602,
+      "passed": false,
+      "median_prepared_seconds": 0.004878023639321327
+    },
+    {
+      "name": "neural",
+      "rank": 512,
+      "q": 128,
+      "dt": 0.0125,
+      "worst_error_plus_uncertainty": 0.007071992892617317,
+      "worst_quadrature_change": 1.8741770657047762e-06,
+      "worst_time_change": 0.00036916491621277373,
+      "worst_projection": 0.006475146906801602,
+      "passed": true,
+      "median_prepared_seconds": 0.00750910397619009
+    },
+    {
+      "name": "POD",
+      "rank": 384,
+      "q": 64,
+      "dt": 0.0125,
+      "worst_error_plus_uncertainty": 0.009494743202655018,
+      "worst_quadrature_change": 0.0010751529910924568,
+      "worst_time_change": 0.00032455287483137784,
+      "worst_projection": 0.008711874278581954,
+      "passed": false,
+      "median_prepared_seconds": 0.003657248802483082
+    },
+    {
+      "name": "POD",
+      "rank": 384,
+      "q": 96,
+      "dt": 0.0125,
+      "worst_error_plus_uncertainty": 0.009565334836868285,
+      "worst_quadrature_change": 0.0038045886607315713,
+      "worst_time_change": 0.0003245553864802733,
+      "worst_projection": 0.008711874278581954,
+      "passed": false,
+      "median_prepared_seconds": 0.0039639342576265335
+    },
+    {
+      "name": "POD",
+      "rank": 384,
+      "q": 128,
+      "dt": 0.0125,
+      "worst_error_plus_uncertainty": 0.009482739625481556,
+      "worst_quadrature_change": 7.340888463428263e-08,
+      "worst_time_change": 0.0003245569510399467,
+      "worst_projection": 0.008711874278581954,
+      "passed": true,
+      "median_prepared_seconds": 0.005976985674351454
+    },
+    {
+      "name": "POD",
+      "rank": 512,
+      "q": 64,
+      "dt": 0.0125,
+      "worst_error_plus_uncertainty": 0.006168679163606925,
+      "worst_quadrature_change": 0.0018783334127374263,
+      "worst_time_change": 0.00037562166003480955,
+      "worst_projection": 0.005589312146110954,
+      "passed": false,
+      "median_prepared_seconds": 0.005237589590251446
+    },
+    {
+      "name": "POD",
+      "rank": 512,
+      "q": 96,
+      "dt": 0.0125,
+      "worst_error_plus_uncertainty": 0.007249634100432171,
+      "worst_quadrature_change": 0.006927872827152576,
+      "worst_time_change": 0.00037542173034674046,
+      "worst_projection": 0.005589312146110954,
+      "passed": false,
+      "median_prepared_seconds": 0.004872006829828024
+    },
+    {
+      "name": "POD",
+      "rank": 512,
+      "q": 128,
+      "dt": 0.0125,
+      "worst_error_plus_uncertainty": 0.006130071450609665,
+      "worst_quadrature_change": 2.3566488315876035e-07,
+      "worst_time_change": 0.00037565241107835476,
+      "worst_projection": 0.005589312146110954,
+      "passed": true,
+      "median_prepared_seconds": 0.0075068240985274315
+    }
+  ],
+  "contract": "development prepared-input screen; finer physical features and complete-output cost still required"
+}

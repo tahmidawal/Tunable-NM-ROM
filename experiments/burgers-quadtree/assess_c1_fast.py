@@ -7,7 +7,7 @@ refs.update({x['case']:x['conditional_uncertainty'] for x in json.loads((H/'evid
 def state(rank,q,dt,case):return np.load(o/f'r{rank}_q{q}_dt{dt}_case{case}.npz')['states']
 for threshold in (0.,.06,.08,.10,1.):
  for q in (48,64,80,96,128):
-  for dt in (.0125,.005):
+  for dt in (.025,.0125,.005):
    errors=[];quad=[];time=[];seconds=[];ranks=[]
    for case in range(32):
     rank=256 if threshold==1 or (threshold>0 and lookup[256,128,.005,case]['estimated_width']<threshold) else 128;ranks.append(rank)

@@ -193,5 +193,16 @@
     "elapsed_seconds": 286,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "auditr2",
+    "id": 7353783,
+    "reserved_minutes": 60,
+    "commit": "ff091abe5a0c0b609de02ec1744eab886b8a547d",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/auditr2",
+    "driver": "evaluate.py",
+    "args": "--dev /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/refsdev01/output --global-model /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/global01/output --tree-model /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/childrenr2/output",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-18T21:05:24.616782+00:00"
   }
 ]

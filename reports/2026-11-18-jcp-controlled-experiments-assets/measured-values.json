@@ -9683,6 +9683,50 @@
       "reason": ""
     }
   ],
+  "cost-p01-cold": [
+    {
+      "subject": "learned_head",
+      "case": 0,
+      "seconds": 3.865064244,
+      "status": "ok"
+    },
+    {
+      "subject": "learned_span64",
+      "case": 0,
+      "seconds": 1.7289800560000002,
+      "status": "ok"
+    },
+    {
+      "subject": "pod_span32",
+      "case": 0,
+      "seconds": 1.793362609,
+      "status": "ok"
+    },
+    {
+      "subject": "fom_m28_rk4_s5",
+      "case": 0,
+      "seconds": 0.8177230449999999,
+      "status": "ok"
+    },
+    {
+      "subject": "fom_m48_rk4_s15",
+      "case": 0,
+      "seconds": 1.098879837,
+      "status": "ok"
+    },
+    {
+      "subject": "fom_m64_cnab2_s40",
+      "case": 0,
+      "seconds": 0.937482395,
+      "status": "ok"
+    },
+    {
+      "subject": "fom_m64_cnab2_s60",
+      "case": 0,
+      "seconds": 0.916936724,
+      "status": "ok"
+    }
+  ],
   "cost-p03": [
     {
       "target": "learned_head",
@@ -9893,6 +9937,566 @@
       "target_timing_outlier_count": 7,
       "comparator_timing_outlier_count": 4,
       "reason": ""
+    }
+  ],
+  "cost-p03-cold": [
+    {
+      "subject": "learned_head",
+      "case": 0,
+      "seconds": 4.993030568,
+      "status": "ok"
+    },
+    {
+      "subject": "learned_span64",
+      "case": 0,
+      "seconds": 2.320124246,
+      "status": "ok"
+    },
+    {
+      "subject": "pod_head_m292_dt0.01",
+      "case": 0,
+      "seconds": 4.411826737,
+      "status": "ok"
+    },
+    {
+      "subject": "pod_span32",
+      "case": 0,
+      "seconds": 2.0019318470000003,
+      "status": "ok"
+    },
+    {
+      "subject": "fom_m32_cnab2_s20",
+      "case": 0,
+      "seconds": 1.229513334,
+      "status": "ok"
+    },
+    {
+      "subject": "fom_m40_rk4_s10",
+      "case": 0,
+      "seconds": 1.164724064,
+      "status": "ok"
+    },
+    {
+      "subject": "fom_m64_cnab2_s40",
+      "case": 0,
+      "seconds": 1.012552033,
+      "status": "ok"
+    },
+    {
+      "subject": "fom_m64_cnab2_s50",
+      "case": 0,
+      "seconds": 0.9483133749999999,
+      "status": "ok"
+    }
+  ],
+  "cost-p04": [
+    {
+      "target": "learned_head_m292_dt0.02",
+      "group": "pod",
+      "comparator": "pod_head_m292_dt0.02",
+      "case_count": 16,
+      "qualified": true,
+      "target_median_ms": 26.5063605,
+      "target_median_error_percent": 0.11330844928162122,
+      "target_worst_error_percent": 0.19560039665109563,
+      "comparator_median_ms": 26.6176915,
+      "comparator_over_target": 1.004200161693266,
+      "individual_case_ratios": [
+        1.014430021252423,
+        1.0128458295805713,
+        0.969336262230914,
+        1.039651576449723,
+        0.9988596904223793,
+        0.9802701216720835,
+        1.007980115839161,
+        1.0068354710273293,
+        1.0041856451993036,
+        0.9766226670534764,
+        1.0027722911365333,
+        0.973785374459759,
+        0.9986023107585321,
+        1.0063652042755464,
+        0.9892274537887817,
+        1.006286955006602
+      ],
+      "paired_ratio_median": 1.0034789681679186,
+      "target_faster_case_count": 9,
+      "target_timing_outlier_count": 13,
+      "comparator_timing_outlier_count": 8,
+      "reason": ""
+    },
+    {
+      "target": "learned_head_m292_dt0.02",
+      "group": "same_mesh_classical",
+      "comparator": "fom_m64_cnab2_s50",
+      "case_count": 16,
+      "qualified": true,
+      "target_median_ms": 26.5063605,
+      "target_median_error_percent": 0.11330844928162122,
+      "target_worst_error_percent": 0.19560039665109563,
+      "comparator_median_ms": 59.4805595,
+      "comparator_over_target": 2.2440108101600744,
+      "individual_case_ratios": [
+        2.263699832619867,
+        2.245609447905825,
+        2.158911905439557,
+        2.266234795912175,
+        2.2676900177015966,
+        2.2009800984159873,
+        2.2472216199171138,
+        2.2553253913216484,
+        2.225595509237203,
+        2.214208378895063,
+        2.261019467259702,
+        2.124434870629955,
+        2.235336748036518,
+        2.249200778221351,
+        2.2130082858417186,
+        2.2413369129467973
+      ],
+      "paired_ratio_median": 2.243473180426311,
+      "target_faster_case_count": 16,
+      "target_timing_outlier_count": 13,
+      "comparator_timing_outlier_count": 6,
+      "reason": ""
+    },
+    {
+      "target": "learned_head_m292_dt0.02",
+      "group": "any_mesh_classical",
+      "comparator": "fom_m40_rk4_s10",
+      "case_count": 16,
+      "qualified": true,
+      "target_median_ms": 26.5063605,
+      "target_median_error_percent": 0.11330844928162122,
+      "target_worst_error_percent": 0.19560039665109563,
+      "comparator_median_ms": 23.953465,
+      "comparator_over_target": 0.9036874375869144,
+      "individual_case_ratios": [
+        0.9135281191874353,
+        0.9001834552151868,
+        0.8706352894558814,
+        0.9145015062670406,
+        0.9109691308659815,
+        0.8856306976917607,
+        0.9032988377686544,
+        0.9083694644859711,
+        0.8970928299050311,
+        0.8907340087627293,
+        0.9139857293593203,
+        0.8559337351935855,
+        0.9003513143295445,
+        0.9068289596236263,
+        0.888090637405679,
+        0.9031810964682355
+      ],
+      "paired_ratio_median": 0.90176620539889,
+      "target_faster_case_count": 0,
+      "target_timing_outlier_count": 13,
+      "comparator_timing_outlier_count": 5,
+      "reason": ""
+    },
+    {
+      "target": "learned_head_m584_dt0.02",
+      "group": "pod",
+      "comparator": "pod_head_m292_dt0.02",
+      "case_count": 16,
+      "qualified": true,
+      "target_median_ms": 27.343451,
+      "target_median_error_percent": 0.12468111065026401,
+      "target_worst_error_percent": 0.20047373147104391,
+      "comparator_median_ms": 26.6176915,
+      "comparator_over_target": 0.9734576480488873,
+      "individual_case_ratios": [
+        0.9862348294896599,
+        0.9823254245955177,
+        0.9402618891302528,
+        1.0010269520879744,
+        0.9686669574764611,
+        0.9461330978369663,
+        0.9789875481984402,
+        0.9767122066547089,
+        0.9721901889196937,
+        0.9478592737382353,
+        0.9783119526885883,
+        0.9483735507508079,
+        0.972013191933295,
+        0.973768175742099,
+        0.9612125307247379,
+        0.9706590498399174
+      ],
+      "paired_ratio_median": 0.9721016904264943,
+      "target_faster_case_count": 1,
+      "target_timing_outlier_count": 8,
+      "comparator_timing_outlier_count": 8,
+      "reason": ""
+    },
+    {
+      "target": "learned_head_m584_dt0.02",
+      "group": "same_mesh_classical",
+      "comparator": "fom_m64_cnab2_s50",
+      "case_count": 16,
+      "qualified": true,
+      "target_median_ms": 27.343451,
+      "target_median_error_percent": 0.12468111065026401,
+      "target_worst_error_percent": 0.20047373147104391,
+      "comparator_median_ms": 59.4805595,
+      "comparator_over_target": 2.1753128198777834,
+      "individual_case_ratios": [
+        2.2007822833193713,
+        2.177941785378419,
+        2.094157276240246,
+        2.1820407546675655,
+        2.199144095020868,
+        2.124332949411706,
+        2.182584705165183,
+        2.187848862172606,
+        2.15468337844513,
+        2.148995734715698,
+        2.205867064370825,
+        2.0689957915171195,
+        2.175817924809667,
+        2.1763472439043405,
+        2.1503358876682803,
+        2.1619816767651514
+      ],
+      "paired_ratio_median": 2.1760825843570037,
+      "target_faster_case_count": 16,
+      "target_timing_outlier_count": 8,
+      "comparator_timing_outlier_count": 6,
+      "reason": ""
+    },
+    {
+      "target": "learned_head_m584_dt0.02",
+      "group": "any_mesh_classical",
+      "comparator": "fom_m40_rk4_s10",
+      "case_count": 16,
+      "qualified": true,
+      "target_median_ms": 27.343451,
+      "target_median_error_percent": 0.12468111065026401,
+      "target_worst_error_percent": 0.20047373147104391,
+      "comparator_median_ms": 23.953465,
+      "comparator_over_target": 0.8760220134612855,
+      "individual_case_ratios": [
+        0.8881374071998638,
+        0.8730579413298312,
+        0.8445213636423721,
+        0.8805263957993216,
+        0.8834330835572938,
+        0.8547894065335175,
+        0.8773172214229892,
+        0.8811921804965558,
+        0.868509574851349,
+        0.8645001996390866,
+        0.8916911361856475,
+        0.8335973582508218,
+        0.8763782593673721,
+        0.877455995071372,
+        0.8629399091423994,
+        0.8712036865522921
+      ],
+      "paired_ratio_median": 0.8747181003486016,
+      "target_faster_case_count": 0,
+      "target_timing_outlier_count": 8,
+      "comparator_timing_outlier_count": 5,
+      "reason": ""
+    },
+    {
+      "target": "learned_head",
+      "group": "pod",
+      "comparator": "pod_head_m292_dt0.01",
+      "case_count": 16,
+      "qualified": true,
+      "target_median_ms": 33.5568285,
+      "target_median_error_percent": 0.08586647111746008,
+      "target_worst_error_percent": 0.1856325809152054,
+      "comparator_median_ms": 32.1310505,
+      "comparator_over_target": 0.9575115389703768,
+      "individual_case_ratios": [
+        0.9685067783592086,
+        0.9634688853803131,
+        0.9429506309686844,
+        1.016274435210599,
+        0.964321109919226,
+        0.9378593562551193,
+        0.9666242317788319,
+        0.9588232976586235,
+        0.9574229863737315,
+        0.9404378937284528,
+        0.9636111165924037,
+        0.9331995054782164,
+        0.9585459562910733,
+        0.9585437527788827,
+        0.951466580956173,
+        0.9549032097810928
+      ],
+      "paired_ratio_median": 0.958544854534978,
+      "target_faster_case_count": 1,
+      "target_timing_outlier_count": 11,
+      "comparator_timing_outlier_count": 13,
+      "reason": ""
+    },
+    {
+      "target": "learned_head",
+      "group": "same_mesh_classical",
+      "comparator": "fom_m64_cnab2_s50",
+      "case_count": 16,
+      "qualified": true,
+      "target_median_ms": 33.5568285,
+      "target_median_error_percent": 0.08586647111746008,
+      "target_worst_error_percent": 0.1856325809152054,
+      "comparator_median_ms": 59.4805595,
+      "comparator_over_target": 1.7725322135254824,
+      "individual_case_ratios": [
+        1.7932438621471303,
+        1.7737509446611952,
+        1.7381312389468537,
+        1.826059650272272,
+        1.8144288828369457,
+        1.7472886095023894,
+        1.7903741707915901,
+        1.782329370083004,
+        1.7608087019847647,
+        1.75586144592705,
+        1.7929260187827103,
+        1.7057960659599392,
+        1.7713153904088175,
+        1.7800677561331917,
+        1.760970757744837,
+        1.7671620746447156
+      ],
+      "paired_ratio_median": 1.7725331675350064,
+      "target_faster_case_count": 16,
+      "target_timing_outlier_count": 11,
+      "comparator_timing_outlier_count": 6,
+      "reason": ""
+    },
+    {
+      "target": "learned_head",
+      "group": "any_mesh_classical",
+      "comparator": "fom_m40_rk4_s10",
+      "case_count": 16,
+      "qualified": true,
+      "target_median_ms": 33.5568285,
+      "target_median_error_percent": 0.08586647111746008,
+      "target_worst_error_percent": 0.1856325809152054,
+      "comparator_median_ms": 23.953465,
+      "comparator_over_target": 0.7138179044542305,
+      "individual_case_ratios": [
+        0.723673107638018,
+        0.7110324796439306,
+        0.700944948480748,
+        0.736876118802729,
+        0.7288865274855253,
+        0.7030742492474811,
+        0.71966329146776,
+        0.7178625229289662,
+        0.7097466070671171,
+        0.7063497363075627,
+        0.7247654514671167,
+        0.6872643724694034,
+        0.7134522980698903,
+        0.7176847024881142,
+        0.7066858505247499,
+        0.7121050704136518
+      ],
+      "paired_ratio_median": 0.712778684241771,
+      "target_faster_case_count": 0,
+      "target_timing_outlier_count": 11,
+      "comparator_timing_outlier_count": 5,
+      "reason": ""
+    },
+    {
+      "target": "learned_span64",
+      "group": "pod",
+      "comparator": "pod_span32",
+      "case_count": 16,
+      "qualified": true,
+      "target_median_ms": 37.1125965,
+      "target_median_error_percent": 0.6733837145383117,
+      "target_worst_error_percent": 1.2642615324080082,
+      "comparator_median_ms": 26.474159999999998,
+      "comparator_over_target": 0.7133470168275614,
+      "individual_case_ratios": [
+        0.715708345694036,
+        0.7106772267394121,
+        0.6937796500599683,
+        0.6649575455895852,
+        0.696660609232822,
+        0.7226711516418943,
+        0.7042187208505842,
+        0.7244304121557924,
+        0.7223584832361314,
+        0.7271800605264124,
+        0.6965523384006601,
+        0.7335450094765769,
+        0.7210686259736112,
+        0.7195869933901695,
+        0.7155248138757117,
+        0.722167748632879
+      ],
+      "paired_ratio_median": 0.7176476695421028,
+      "target_faster_case_count": 0,
+      "target_timing_outlier_count": 8,
+      "comparator_timing_outlier_count": 8,
+      "reason": ""
+    },
+    {
+      "target": "learned_span64",
+      "group": "same_mesh_classical",
+      "comparator": "fom_m64_cnab2_s40",
+      "case_count": 16,
+      "qualified": true,
+      "target_median_ms": 37.1125965,
+      "target_median_error_percent": 0.6733837145383117,
+      "target_worst_error_percent": 1.2642615324080082,
+      "comparator_median_ms": 50.2314945,
+      "comparator_over_target": 1.3534890909613395,
+      "individual_case_ratios": [
+        1.3826189914079638,
+        1.326868044859534,
+        1.3236246643751597,
+        1.298829756994938,
+        1.3235627761177038,
+        1.3921188585715125,
+        1.3547680572039613,
+        1.3485647904241809,
+        1.3533015447724297,
+        1.3569933119629674,
+        1.2995414337104754,
+        1.3674420107559957,
+        1.3418106410869923,
+        1.367879246449139,
+        1.3582416879679706,
+        1.3776831208480087
+      ],
+      "paired_ratio_median": 1.3540348009881955,
+      "target_faster_case_count": 16,
+      "target_timing_outlier_count": 8,
+      "comparator_timing_outlier_count": 5,
+      "reason": ""
+    },
+    {
+      "target": "learned_span64",
+      "group": "any_mesh_classical",
+      "comparator": "fom_m32_cnab2_s20",
+      "case_count": 16,
+      "qualified": true,
+      "target_median_ms": 37.1125965,
+      "target_median_error_percent": 0.6733837145383117,
+      "target_worst_error_percent": 1.2642615324080082,
+      "comparator_median_ms": 16.220657000000003,
+      "comparator_over_target": 0.43706607809022474,
+      "individual_case_ratios": [
+        0.44555173702573625,
+        0.4270569688519669,
+        0.4281635802346987,
+        0.41906844846153,
+        0.4286038306179197,
+        0.44935574689759245,
+        0.4370520340735775,
+        0.437096251177728,
+        0.4364037900008522,
+        0.43904255833763933,
+        0.4215734610572239,
+        0.44135653587604373,
+        0.4334351765111998,
+        0.44088190373779057,
+        0.44084402827448865,
+        0.44349935344836433
+      ],
+      "paired_ratio_median": 0.43707414262565275,
+      "target_faster_case_count": 0,
+      "target_timing_outlier_count": 8,
+      "comparator_timing_outlier_count": 10,
+      "reason": ""
+    }
+  ],
+  "cost-p04-cold": [
+    {
+      "subject": "learned_head_m292_dt0.02",
+      "case": 0,
+      "seconds": 8.794869075000001,
+      "status": "ok"
+    },
+    {
+      "subject": "learned_head_m584_dt0.02",
+      "case": 0,
+      "seconds": 9.009322399999999,
+      "status": "ok"
+    },
+    {
+      "subject": "learned_head",
+      "case": 0,
+      "seconds": 7.443413169,
+      "status": "ok"
+    },
+    {
+      "subject": "learned_span64",
+      "case": 0,
+      "seconds": 3.874911166,
+      "status": "ok"
+    },
+    {
+      "subject": "pod_head_m292_dt0.02",
+      "case": 0,
+      "seconds": 8.990208164,
+      "status": "ok"
+    },
+    {
+      "subject": "pod_head_m292_dt0.01",
+      "case": 0,
+      "seconds": 9.229816612,
+      "status": "ok"
+    },
+    {
+      "subject": "pod_span32",
+      "case": 0,
+      "seconds": 4.675580907,
+      "status": "ok"
+    },
+    {
+      "subject": "fom_m32_cnab2_s20",
+      "case": 0,
+      "seconds": 2.450032336,
+      "status": "ok"
+    },
+    {
+      "subject": "fom_m40_rk4_s10",
+      "case": 0,
+      "seconds": 2.440031732,
+      "status": "ok"
+    },
+    {
+      "subject": "fom_m64_cnab2_s40",
+      "case": 0,
+      "seconds": 2.2268159350000003,
+      "status": "ok"
+    },
+    {
+      "subject": "fom_m64_cnab2_s50",
+      "case": 0,
+      "seconds": 2.169437056,
+      "status": "ok"
+    }
+  ],
+  "campaign_accounting": [
+    {
+      "lane": "Head mechanism",
+      "attempts": 5,
+      "seconds": 1179,
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-job-ledger.json"
+    },
+    {
+      "lane": "Weak tests and frozen width",
+      "attempts": 9,
+      "seconds": 1418,
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-job-ledger.json"
+    },
+    {
+      "lane": "Complete-query cost",
+      "attempts": 4,
+      "seconds": 2693,
+      "source": "[7354813](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p02-failure.json) \u00b7 [7354479](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p01-accounting.json) \u00b7 [7355021](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p03-accounting.json) \u00b7 [7355440](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p04-accounting.json)"
     }
   ]
 }

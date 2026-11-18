@@ -1,6 +1,6 @@
 # Controlled experiments for the JCP paper
 
-This is the development protocol for the experiments authorized on November 18, 2026. New measured development runs and their qualification status are generated below from retained records; failed attempts remain visible.
+This report records the completed development experiments authorized on November 18, 2026, with independently reviewed numerical results, measured plots and retained failures. Every numerical result below is generated from saved records; these exposed development studies do not replace fresh-cohort confirmation.
 
 The central questions are whether the nonlinear head improves trajectories under matched numerical controls, whether richer weak tests detect errors missed by the minimized residual, and whether the selected method saves complete-query cost at matched accuracy. The earlier optimistic sketches remain hypotheses, not acceptance criteria or promised outcomes.
 
@@ -11,12 +11,17 @@ These measurements support a constrained-dynamics explanation for the head and d
 - **Weak-test enrichment:** increasing M from 256 to 2048 reduces median maximum saved-time error from 2.0064% to 1.3228%. Worst error remains 4.2979%, set by the initial projection. This is the original frozen-width baseline.
 - **Frozen-width PDE dynamics:** worst maximum saved-time error is 4.2979% at R=128, M=2048, and 0.3918% at the largest registered setting, R=512, M=8192. The latter qualifies 6/6 cases. Common-test width comparisons are retained below.
 
-**Latest complete-query comparison: cost-p03, 16 development cases.** Each comparator satisfies the stated median-and-worst accuracy rule. The ratios divide comparator median time by target median time; above one favors the target. All times in this table come from the same allocation.
+**Latest complete-query comparison: cost-p04, 16 development cases.** Each comparator satisfies the stated median-and-worst accuracy rule. The ratios divide comparator median time by target median time; above one favors the target. All times in this table come from the same allocation.
 
 | Target | Worst evolved error (%) | Time (ms) | Any-mesh classical / target | POD / target |
 |---|---:|---:|---:|---:|
-| Head M584, Δt=0.01 | 0.1856 | 33.497 | 0.714 | 0.961 |
-| Span R64 | 1.2643 | 37.122 | 0.437 | 0.712 |
+| Head M292, Δt=0.02 | 0.1956 | 26.506 | 0.904 | 1.004 |
+| Head M584, Δt=0.02 | 0.2005 | 27.343 | 0.876 | 0.973 |
+| Head M584, Δt=0.01 | 0.1856 | 33.557 | 0.714 | 0.958 |
+| Span R64 | 1.2643 | 37.113 | 0.437 | 0.713 |
+
+Every tested head setting is slower than its selected eligible coarse-grid classical comparator on every case. A broad complete-query speedup is therefore not established by this panel. Same-grid comparisons remain separately reported below.
+The lowest median-cost head's POD comparison has ratio 1.004200; casewise medians favor the head in 9/16 cases, with ratios ranging from 0.969336 to 1.039652. This small aggregate difference does not establish a consistent head advantage over POD.
 
 The figures below contain measured values. All cohorts here are exposed development data; untouched confirmation and broader JCP claims remain separate work.
 <!-- GENERATED EXPERIMENT SUMMARY END -->
@@ -115,6 +120,15 @@ This follow-up retains the fixed pilot cases, model, common initial reconstructi
 | [head-p04](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p04.json) / 7354832 | 2 | Pass | 1168, 2336 |
 
 ![Measured richer-test head/span comparison](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/head-p04-richer-tests.png)
+
+Optional manifold-distance diagnostics retain their convergence limitations:
+
+| Run | Best-found fits | Nonstationary fits | Interpretation |
+|---|---:|---:|---|
+| [head-full16-distance-diagnostics](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-full16-distance-diagnostics.json) | 1376 | 48 | Upper bounds only |
+| [head-richer-distance-diagnostics](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-richer-distance-diagnostics.json) | 168 | 4 | Upper bounds only |
+
+These optional fits are separate from the converged initial fits and equation solves used to qualify the trajectory comparisons. Even stationary local fits do not certify global distance to the nonlinear manifold; nonstationary fits retain that additional limitation.
 
 ### Weak-test visibility
 
@@ -266,13 +280,87 @@ Accuracy of every retained confirmation subject, scored at the requested output 
 
 These cost-panel accuracies are not a new improvement over the mechanism panel: their saved-time sets differ. Initial error is reported separately; it is not part of the evolved-error eligibility statistic.
 
-![Measured complete-query accuracy and cost](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/cost-p03-complete-query.png)
+**cost-p04**
+
+| Run / target | Cases | Comparator | Target time (ms) | Comparator time (ms) | Comparator / target | Qualification |
+|---|---:|---|---:|---:|---:|---|
+| [cost-p04](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p04.json) / learned_head_m292_dt0.02 | 16 | pod_head_m292_dt0.02 | 26.5064 | 26.6177 | 1.004200 | Pass: same-allocation accuracy and timing |
+| [cost-p04](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p04.json) / learned_head_m292_dt0.02 | 16 | fom_m64_cnab2_s50 | 26.5064 | 59.4806 | 2.244011 | Pass: same-allocation accuracy and timing |
+| [cost-p04](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p04.json) / learned_head_m292_dt0.02 | 16 | fom_m40_rk4_s10 | 26.5064 | 23.9535 | 0.903687 | Pass: same-allocation accuracy and timing |
+| [cost-p04](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p04.json) / learned_head_m584_dt0.02 | 16 | pod_head_m292_dt0.02 | 27.3435 | 26.6177 | 0.973458 | Pass: same-allocation accuracy and timing |
+| [cost-p04](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p04.json) / learned_head_m584_dt0.02 | 16 | fom_m64_cnab2_s50 | 27.3435 | 59.4806 | 2.175313 | Pass: same-allocation accuracy and timing |
+| [cost-p04](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p04.json) / learned_head_m584_dt0.02 | 16 | fom_m40_rk4_s10 | 27.3435 | 23.9535 | 0.876022 | Pass: same-allocation accuracy and timing |
+| [cost-p04](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p04.json) / learned_head | 16 | pod_head_m292_dt0.01 | 33.5568 | 32.1311 | 0.957512 | Pass: same-allocation accuracy and timing |
+| [cost-p04](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p04.json) / learned_head | 16 | fom_m64_cnab2_s50 | 33.5568 | 59.4806 | 1.772532 | Pass: same-allocation accuracy and timing |
+| [cost-p04](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p04.json) / learned_head | 16 | fom_m40_rk4_s10 | 33.5568 | 23.9535 | 0.713818 | Pass: same-allocation accuracy and timing |
+| [cost-p04](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p04.json) / learned_span64 | 16 | pod_span32 | 37.1126 | 26.4742 | 0.713347 | Pass: same-allocation accuracy and timing |
+| [cost-p04](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p04.json) / learned_span64 | 16 | fom_m64_cnab2_s40 | 37.1126 | 50.2315 | 1.353489 | Pass: same-allocation accuracy and timing |
+| [cost-p04](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p04.json) / learned_span64 | 16 | fom_m32_cnab2_s20 | 37.1126 | 16.2207 | 0.437066 | Pass: same-allocation accuracy and timing |
+
+cost-p04 used **NVIDIA L40S**, job **7355440**. Ratios above one favor the target; no times are compared across jobs. A missing eligible POD comparator is an unresolved match in this candidate set, not a POD speed defeat.
+
+The main table divides cohort median times. The following diagnostics pair case medians; outliers use the per-case Tukey rule on all retained confirmation repetitions, without deleting them.
+
+| Target / comparator | Median paired time ratio | Cases with faster target | Timing outliers: target / comparator |
+|---|---:|---:|---:|
+| learned_head_m292_dt0.02 / pod_head_m292_dt0.02 | 1.003479 | 9 / 16 | 13 / 8 |
+| learned_head_m292_dt0.02 / fom_m64_cnab2_s50 | 2.243473 | 16 / 16 | 13 / 6 |
+| learned_head_m292_dt0.02 / fom_m40_rk4_s10 | 0.901766 | 0 / 16 | 13 / 5 |
+| learned_head_m584_dt0.02 / pod_head_m292_dt0.02 | 0.972102 | 1 / 16 | 8 / 8 |
+| learned_head_m584_dt0.02 / fom_m64_cnab2_s50 | 2.176083 | 16 / 16 | 8 / 6 |
+| learned_head_m584_dt0.02 / fom_m40_rk4_s10 | 0.874718 | 0 / 16 | 8 / 5 |
+| learned_head / pod_head_m292_dt0.01 | 0.958545 | 1 / 16 | 11 / 13 |
+| learned_head / fom_m64_cnab2_s50 | 1.772533 | 16 / 16 | 11 / 6 |
+| learned_head / fom_m40_rk4_s10 | 0.712779 | 0 / 16 | 11 / 5 |
+| learned_span64 / pod_span32 | 0.717648 | 0 / 16 | 8 / 8 |
+| learned_span64 / fom_m64_cnab2_s40 | 1.354035 | 16 / 16 | 8 / 5 |
+| learned_span64 / fom_m32_cnab2_s20 | 0.437074 | 0 / 16 | 8 / 10 |
+
+Accuracy of every retained confirmation subject, scored at the requested output times:
+
+| Subject | Median / worst evolved maximum error (%) | Worst initial error (%) | Complete numerical records |
+|---|---:|---:|---|
+| learned_head_m292_dt0.02 | 0.113308 / 0.195600 | 0.062162 | Yes |
+| learned_head_m584_dt0.02 | 0.124681 / 0.200474 | 0.062162 | Yes |
+| learned_head | 0.085866 / 0.185633 | 0.062162 | Yes |
+| learned_span64 | 0.673384 / 1.264262 | 0.061962 | Yes |
+| pod_head_m292_dt0.02 | 0.091243 / 0.151112 | 0.065178 | Yes |
+| pod_head_m292_dt0.01 | 0.073134 / 0.134687 | 0.065178 | Yes |
+| pod_span32 | 0.522900 / 0.957675 | 0.345731 | Yes |
+| fom_m32_cnab2_s20 | 0.418537 / 0.996812 | 0.000013 | Yes |
+| fom_m40_rk4_s10 | 0.035395 / 0.163923 | 0.000000 | Yes |
+| fom_m64_cnab2_s40 | 0.091706 / 0.384403 | 0.000000 | Yes |
+| fom_m64_cnab2_s50 | 0.058487 / 0.099053 | 0.000000 | Yes |
+
+These cost-panel accuracies are not a new improvement over the mechanism panel: their saved-time sets differ. Initial error is reported separately; it is not part of the evolved-error eligibility statistic.
+
+![Measured complete-query accuracy and cost](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/cost-p04-complete-query.png)
 
 The pilot and expanded panels differ in cohort, candidate grid and initial-fit implementation. Their historical results are retained, but cross-panel timing changes do not isolate any one of those factors. Every reported speed comparison uses its own allocation.
 
 Cold measurements, where retained in the experiment lane, cover asset activation, compilation and the first query within an already initialized runtime. They retain the operating-system page cache and exclude runtime/context startup. They cannot be relabeled process-cold deployment costs.
 
+Latest panel's [single first-call records](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p04-cold.json), separate from the repeated warm timings:
+
+| Subject | Case | Activation + compilation + first query (s) | Returned result |
+|---|---:|---:|---|
+| learned_head_m292_dt0.02 | 0 | 8.7949 | ok |
+| learned_head_m584_dt0.02 | 0 | 9.0093 | ok |
+| learned_head | 0 | 7.4434 | ok |
+| learned_span64 | 0 | 3.8749 | ok |
+| pod_head_m292_dt0.02 | 0 | 8.9902 | ok |
+| pod_head_m292_dt0.01 | 0 | 9.2298 | ok |
+| pod_span32 | 0 | 4.6756 | ok |
+| fom_m32_cnab2_s20 | 0 | 2.4500 | ok |
+| fom_m40_rk4_s10 | 0 | 2.4400 | ok |
+| fom_m64_cnab2_s40 | 0 | 2.2268 | ok |
+| fom_m64_cnab2_s50 | 0 | 2.1694 | ok |
+
+These single-call records do not estimate timing variability, total training cost or lifetime break-even.
+
 [cost-p03-audit raw audit](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p03-audit.json): 51 effective failed invocations among 6019 retained records, all outside accepted comparisons. The audit separately identifies 12 legacy rows with undefined error metrics. Such rows and their candidates never enter an eligible, selected or confirmed set; the raw records remain unchanged. Subsequent scoring explicitly fails nonfinite metrics.
+
+[cost-p04-audit raw audit](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p04-audit.json): 57 effective failed invocations among 6370 retained records, all outside accepted comparisons. The audit separately identifies 0 legacy rows with undefined error metrics. Such rows and their candidates never enter an eligible, selected or confirmed set; the raw records remain unchanged. Subsequent scoring explicitly fails nonfinite metrics.
 
 Retained cost attempts that stopped before accepted timing:
 
@@ -287,6 +375,23 @@ A scalar compiled replay subsequently tests the same targets and comparator grid
 The [builder](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/build_2026_11_18_jcp_controlled_experiments.py) reads the [registered sources](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/sources.json), freezes the JSON evidence, and generates every numerical table and plot above. [Source hashes](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/source-manifest.json) and [derived values](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/measured-values.json) are saved separately. Full histories, configurations, numerical arrays, hardware logs and checksum manifests remain in the linked experiment lanes. No synthetic values enter these figures.
 
 The [environment review](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p02-environment.json) documents retained host CPU-affinity messages in job 7354339. Explicit GPU and numerical witnesses support accuracy-only admission; diagnostic elapsed times are not used for a speed claim. The message matches the [upstream XLA report](https://github.com/openxla/xla/issues/45484).
+
+Independent numerical and measurement reviews: [head-full16-independent-review](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-full16-independent-review.json), [head-richer-independent-review](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-richer-independent-review.json), [weak-width-independent-review](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-width-independent-review.json), [cost-final-independent-review](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-final-independent-review.json).
+
+Lane retention and closeout records: [weak-closeout](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-closeout.json), [head-closeout](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-closeout.json), [cost-closeout-final](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-closeout-final.json).
+
+### Completed-job accounting
+
+All attempts count, including failed and excluded runs. Allocated time includes setup, compilation, diagnostics and scoring; it is separate from online query timing.
+
+| Lane | Attempts | Allocated GPU-seconds | Allocated GPU-hours | Record |
+|---|---:|---:|---:|---|
+| Head mechanism | 5 | 1179 | 0.327500 | [Ledger](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-job-ledger.json) |
+| Weak tests and frozen width | 9 | 1418 | 0.393889 | [Ledger](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-job-ledger.json) |
+| Complete-query cost | 4 | 2693 | 0.748056 | [7354813](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p02-failure.json) · [7354479](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p01-accounting.json) · [7355021](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p03-accounting.json) · [7355440](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p04-accounting.json) |
+| **Total** | **18** | **5290** | **1.469444** | |
+
+Unique numerical evidence, model checkpoints, source and manifests are backed up through the lane mirrors. Regenerable large sampled operators in the head/cost lanes also have verified local copies and regeneration recipes; their code-only mirrors do not contain every dense deployment array. This distinction is preserved in each lane's retention record.
 
 <!-- GENERATED EXPERIMENT RESULTS END -->
 

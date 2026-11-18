@@ -400,6 +400,8 @@ def cost_plot(entry, data, selection, provenance):
     multi_target = len(data["comparisons"]) > 2
     height = max(4.6, .52*len(qualified)+2) if multi_target else 4.6
     fig, axes = plt.subplots(1, 2, figsize=(13 if multi_target else 12, height))
+    head_names = [name for name in data["comparisons"] if name.startswith("learned_head")]
+    aliases = {name: f"H{i+1}" for i, name in enumerate(head_names)}
     colors = {"classical": "#667c87", "pod": "#82798e", "target": "#157c75"}
     display_cap_percent = 100
     def finite_metrics(v):
@@ -415,9 +417,10 @@ def cost_plot(entry, data, selection, provenance):
                         marker=marker, color=colors[family], s=95 if family == "target" else 28, label=family)
         if family == "target":
             for name, v in chosen.items():
-                label = target_label(name, provenance["config"]) if multi_target else name.replace("learned_", "")
+                label = aliases.get(name, "Span") if multi_target else name.replace("learned_", "")
+                offsets = {"H1": (-23, -17), "H2": (7, 10), "H3": (7, -13)}
                 axes[0].annotate(label, (v["median_case_ms"], 100*v["worst_evolved_error"]),
-                                 xytext=(5, 5), textcoords="offset points", fontsize=7 if multi_target else 8)
+                                 xytext=offsets.get(label, (5, 5)), textcoords="offset points", fontsize=8)
     axes[0].set(xscale="log", yscale="log", title="Finite development candidate set",
                 xlabel="Median complete-query time (ms)", ylabel="Worst error at evolved requested outputs\n(% of initial field norm)")
     axes[0].legend(fontsize=8)
@@ -430,6 +433,8 @@ def cost_plot(entry, data, selection, provenance):
         axes[1].plot([min(ratios), max(ratios)], [index, index], color=".6", lw=3)
         axes[1].scatter([median], [index], color="#157c75", zorder=3)
         name = target_label(row["target"], provenance["config"]) if multi_target else {"learned_head": "Head", "learned_span64": "Span"}.get(row["target"], row["target"])
+        if multi_target and row["target"] in aliases:
+            name = aliases[row["target"]]+": "+name
         group_label = {"any_mesh_classical": "any-mesh FOM", "same_mesh_classical": "same-mesh FOM", "pod": "POD"}.get(row["group"], row["group"])
         labels.append(name+("\nvs " if multi_target else " vs ")+group_label)
     axes[1].axvline(1, color=".5", ls="--", lw=1)
@@ -504,6 +509,15 @@ def main():
             records, plot = enrichment_plot(e, d, heads[-1][1])
             values[e["id"]] = records
             chunks += ["", f"![Measured richer-test head/span comparison]({plot})", ""]
+    fit_diagnostics = [(e, d, p) for e, d, p in loaded if e["kind"] == "head_fit_diagnostics"]
+    if fit_diagnostics:
+        chunks += ["Optional manifold-distance diagnostics retain their convergence limitations:", "",
+                   "| Run | Best-found fits | Nonstationary fits | Interpretation |",
+                   "|---|---:|---:|---|"]
+        for e, d, p in fit_diagnostics:
+            f = d["fits"]
+            chunks.append(f"| [{e['id']}]({p['frozen']}) | {f['count']} | {f['count']-f['chosen_stationary']} | Upper bounds only |")
+        chunks += ["", "These optional fits are separate from the converged initial fits and equation solves used to qualify the trajectory comparisons. Even stationary local fits do not certify global distance to the nonlinear manifold; nonstationary fits retain that additional limitation.", ""]
     weaks = [(e, d, p) for e, d, p in loaded if e["kind"] == "weak"]
     if weaks:
         chunks += ["### Weak-test visibility", "",
@@ -621,7 +635,11 @@ def main():
                                     "source": str((source.parent/"selection.json").relative_to(ROOT))})
             provenance, pp = freeze({"id": e["id"]+"-provenance", "kind": "cost_provenance",
                                      "source": str((source.parent.parent/"provenance.json").relative_to(ROOT))})
-            manifest.extend((sp, pp))
+            cold, cp = freeze({"id": e["id"]+"-cold", "kind": "cost_cold",
+                               "source": str((source.parent.parent/"cold_deployment.json").relative_to(ROOT))})
+            manifest.extend((sp, pp, cp))
+            values[e["id"]+"-cold"] = [{"subject": v["subject"], "case": v["case_id"],
+                                         "seconds": v["elapsed_ms"]/1000, "status": v["status"]} for v in cold]
             chunks += ["", f"{e['id']} used **{provenance['gpu'].split(',')[0]}**, job **{provenance['job_id']}**. Ratios above one favor the target; no times are compared across jobs. A missing eligible POD comparator is an unresolved match in this candidate set, not a POD speed defeat.", ""]
             chunks += ["The main table divides cohort median times. The following diagnostics pair case medians; outliers use the per-case Tukey rule on all retained confirmation repetitions, without deleting them.", "",
                        "| Target / comparator | Median paired time ratio | Cases with faster target | Timing outliers: target / comparator |",
@@ -641,6 +659,12 @@ def main():
         chunks += [f"![Measured complete-query accuracy and cost]({plot})", "",
                    "The pilot and expanded panels differ in cohort, candidate grid and initial-fit implementation. Their historical results are retained, but cross-panel timing changes do not isolate any one of those factors. Every reported speed comparison uses its own allocation.", "",
                    "Cold measurements, where retained in the experiment lane, cover asset activation, compilation and the first query within an already initialized runtime. They retain the operating-system page cache and exclude runtime/context startup. They cannot be relabeled process-cold deployment costs.", ""]
+        chunks += [f"Latest panel's [single first-call records]({cp['frozen']}), separate from the repeated warm timings:", "",
+                   "| Subject | Case | Activation + compilation + first query (s) | Returned result |",
+                   "|---|---:|---:|---|"]
+        for v in values[e["id"]+"-cold"]:
+            chunks.append(f"| {v['subject']} | {v['case']} | {v['seconds']:.4f} | {v['status']} |")
+        chunks += ["", "These single-call records do not estimate timing variability, total training cost or lifetime break-even.", ""]
     for e, d, p in loaded:
         if e["kind"] == "cost_audit":
             assert d["raw_audit_passed"] and all(d["checks"].values())
@@ -658,6 +682,41 @@ def main():
     for e, d, p in loaded:
         if e["kind"] == "environment_review":
             chunks += [f"The [environment review]({p['frozen']}) documents retained host CPU-affinity messages in job {d['job_id']}. Explicit GPU and numerical witnesses support accuracy-only admission; diagnostic elapsed times are not used for a speed claim. The message matches the [upstream XLA report]({d['source']}).", ""]
+    for kind, label in (("independent_review", "Independent numerical and measurement reviews"),
+                        ("archive_closeout", "Lane retention and closeout records")):
+        refs = [f"[{e['id']}]({p['frozen']})" for e, _, p in loaded if e["kind"] == kind]
+        if refs:
+            chunks += [label+": "+", ".join(refs)+".", ""]
+    accounting = []
+    for e, d, p in loaded:
+        if e["kind"] == "head_ledger":
+            seconds = sum(v["allocated_gpu_seconds"] for v in d["jobs"])
+            assert seconds == d["total_allocated_gpu_seconds"]
+            accounting.append({"lane": "Head mechanism", "attempts": len(d["jobs"]), "seconds": seconds,
+                               "source": p["frozen"]})
+        if e["kind"] == "weak_ledger":
+            seconds = sum(v["charged_allocated_gpu_seconds"] for v in d["jobs"])
+            assert seconds == d["total_charged_allocated_gpu_seconds"]
+            accounting.append({"lane": "Weak tests and frozen width", "attempts": len(d["jobs"]), "seconds": seconds,
+                               "source": p["frozen"]})
+    cost_charges = [(e, d, p) for e, d, p in loaded if e["kind"] in ("cost_collection", "cost_failure")]
+    if accounting and cost_charges:
+        ids = [d["job_id"] for _, d, _ in cost_charges]
+        assert len(ids) == len(set(ids))
+        accounting.append({"lane": "Complete-query cost", "attempts": len(cost_charges),
+                           "seconds": sum(d["allocated_gpu_seconds"] for _, d, _ in cost_charges),
+                           "source": " · ".join(f"[{d['job_id']}]({p['frozen']})" for _, d, p in cost_charges)})
+        values["campaign_accounting"] = accounting
+        chunks += ["### Completed-job accounting", "",
+                   "All attempts count, including failed and excluded runs. Allocated time includes setup, compilation, diagnostics and scoring; it is separate from online query timing.", "",
+                   "| Lane | Attempts | Allocated GPU-seconds | Allocated GPU-hours | Record |",
+                   "|---|---:|---:|---:|---|"]
+        for row in accounting:
+            source = row["source"] if row["source"].startswith("[") else f"[Ledger]({row['source']})"
+            chunks.append(f"| {row['lane']} | {row['attempts']} | {row['seconds']} | {row['seconds']/3600:.6f} | {source} |")
+        seconds = sum(v["seconds"] for v in accounting)
+        chunks += [f"| **Total** | **{sum(v['attempts'] for v in accounting)}** | **{seconds}** | **{seconds/3600:.6f}** | |", "",
+                   "Unique numerical evidence, model checkpoints, source and manifests are backed up through the lane mirrors. Regenerable large sampled operators in the head/cost lanes also have verified local copies and regeneration recipes; their code-only mirrors do not contain every dense deployment array. This distinction is preserved in each lane's retention record.", ""]
     block = BEGIN + "\n" + "\n".join(chunks) + "\n" + END
     report = REPORT.read_text()
     if BEGIN in report:
@@ -699,6 +758,14 @@ def main():
                 r = next(x for x in target_rows if x["group"] == group)
                 ratios.append(f"{r['comparator_over_target']:.3f}" if r["qualified"] else "Unqualified / unmatched")
             overview += [f"| {target_label(target, cfg)} | {v['target_worst_error_percent']:.4f} | {v['target_median_ms']:.3f} | {ratios[0]} | {ratios[1]} |"]
+        head_classical = [v for v in rr if v["target"].startswith("learned_head") and v["group"] == "any_mesh_classical"]
+        if head_classical and all(v["qualified"] and v["target_faster_case_count"] == 0 for v in head_classical):
+            overview += ["", "Every tested head setting is slower than its selected eligible coarse-grid classical comparator on every case. A broad complete-query speedup is therefore not established by this panel. Same-grid comparisons remain separately reported below."]
+        if len(head_classical) > 1:
+            fastest = min(head_classical, key=lambda v: v["target_median_ms"])
+            pod = next(v for v in rr if v["target"] == fastest["target"] and v["group"] == "pod")
+            if pod["qualified"]:
+                overview += [f"The lowest median-cost head's POD comparison has ratio {pod['comparator_over_target']:.6f}; casewise medians favor the head in {pod['target_faster_case_count']}/{pod['case_count']} cases, with ratios ranging from {min(pod['individual_case_ratios']):.6f} to {max(pod['individual_case_ratios']):.6f}. This small aggregate difference does not establish a consistent head advantage over POD."]
     overview += ["", "The figures below contain measured values. All cohorts here are exposed development data; untouched confirmation and broader JCP claims remain separate work."]
     summary = SUMMARY_BEGIN + "\n" + "\n".join(overview) + "\n" + SUMMARY_END
     if SUMMARY_BEGIN in report:

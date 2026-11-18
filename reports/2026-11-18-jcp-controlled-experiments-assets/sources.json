@@ -103,5 +103,92 @@
     "id": "weak-width-final-snapshot",
     "kind": "width_snapshot",
     "source": "worktrees/2026-11-18-jcp-weak-visibility/experiments/jcp-weak-visibility/checks/width-results/SNAPSHOT.json"
+  },
+  {
+    "id": "cost-p04",
+    "kind": "cost",
+    "source": "worktrees/2026-11-18-jcp-paired-cost/experiments/jcp-paired-cost/runs/p04/output/paired/result.json"
+  },
+  {
+    "id": "cost-p04-audit",
+    "kind": "cost_audit",
+    "source": "worktrees/2026-11-18-jcp-paired-cost/experiments/jcp-paired-cost/runs/p04/output/analysis.json"
+  },
+  {
+    "id": "head-job-ledger",
+    "kind": "head_ledger",
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/RUN_LEDGER.json"
+  },
+  {
+    "id": "weak-job-ledger",
+    "kind": "weak_ledger",
+    "source": "worktrees/2026-11-18-jcp-weak-visibility/experiments/jcp-weak-visibility/runs/LEDGER.json"
+  },
+  {
+    "id": "cost-p01-accounting",
+    "kind": "cost_collection",
+    "source": "worktrees/2026-11-18-jcp-paired-cost/experiments/jcp-paired-cost/runs/p01/collection.json"
+  },
+  {
+    "id": "cost-p03-accounting",
+    "kind": "cost_collection",
+    "source": "worktrees/2026-11-18-jcp-paired-cost/experiments/jcp-paired-cost/runs/p03/collection.json"
+  },
+  {
+    "id": "cost-p04-accounting",
+    "kind": "cost_collection",
+    "source": "worktrees/2026-11-18-jcp-paired-cost/experiments/jcp-paired-cost/runs/p04/collection.json"
+  },
+  {
+    "id": "head-full16-independent-review",
+    "kind": "independent_review",
+    "source": "worktrees/2026-11-18-jcp-paired-cost/experiments/jcp-paired-cost/reviews/p1-p03b-cost-reference-review.json"
+  },
+  {
+    "id": "head-richer-independent-review",
+    "kind": "independent_review",
+    "source": "worktrees/2026-11-18-jcp-paired-cost/experiments/jcp-paired-cost/reviews/p1-p04-result-review.json"
+  },
+  {
+    "id": "weak-width-independent-review",
+    "kind": "independent_review",
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/reviews/p2-R512-independent-result-review.json"
+  },
+  {
+    "id": "cost-final-independent-review",
+    "kind": "independent_review",
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/reviews/p3-p04-independent-result-review.json"
+  },
+  {
+    "id": "weak-closeout",
+    "kind": "archive_closeout",
+    "source": "worktrees/2026-11-18-jcp-weak-visibility/experiments/jcp-weak-visibility/checks/CLOSEOUT.json"
+  },
+  {
+    "id": "cost-closeout",
+    "kind": "archive_closeout_superseded",
+    "source": "reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-closeout.json",
+    "original_source": "worktrees/2026-11-18-jcp-paired-cost/experiments/jcp-paired-cost/CLOSEOUT.json",
+    "note": "Initial archive metadata referenced a draft independent-review hash. Superseded by cost-closeout-final; numerical and collection records unchanged."
+  },
+  {
+    "id": "head-closeout",
+    "kind": "archive_closeout",
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/ARCHIVE_CLOSURE.json"
+  },
+  {
+    "id": "head-full16-distance-diagnostics",
+    "kind": "head_fit_diagnostics",
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/analysis_compact.json"
+  },
+  {
+    "id": "head-richer-distance-diagnostics",
+    "kind": "head_fit_diagnostics",
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p04/output/analysis_compact.json"
+  },
+  {
+    "id": "cost-closeout-final",
+    "kind": "archive_closeout",
+    "source": "worktrees/2026-11-18-jcp-paired-cost/experiments/jcp-paired-cost/CLOSEOUT.json"
   }
 ]

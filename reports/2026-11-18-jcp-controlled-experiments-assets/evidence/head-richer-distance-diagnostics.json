@@ -1,0 +1,335 @@
+{
+  "qualification": {
+    "all_stationary": true,
+    "all_tight_tighter": true,
+    "all_action_checks": true,
+    "common_ic": true,
+    "ic_fit_passed": true,
+    "pilot_reproducibility": true,
+    "operator_passed": true,
+    "reference_passed": true,
+    "cases_completed": 2,
+    "passed": true
+  },
+  "job_id": "7354832",
+  "groups": [
+    {
+      "case": 0,
+      "rows": 1168,
+      "dt": 0.01,
+      "head_common": 0.0008294689266609844,
+      "head_common_phase_worst": 1.8421452716279543e-05,
+      "head_common_shape_aligned_worst": 0.0008294397132025581,
+      "head_common_divergence_worst": 6.31259468521203e-14,
+      "head_common_energy_error_worst": 0.0002581528793826613,
+      "span_common": 0.0034497278345800427,
+      "span_common_phase_worst": 2.8873084907383512e-05,
+      "span_common_shape_aligned_worst": 0.0034494045889810593,
+      "span_common_divergence_worst": 7.078887767393889e-14,
+      "span_common_energy_error_worst": 0.00018227431980000536,
+      "span_native": 0.003438037429098936,
+      "span_native_phase_worst": 2.9888030186637968e-05,
+      "span_native_shape_aligned_worst": 0.003437773729049037,
+      "span_native_divergence_worst": 7.127406792161748e-14,
+      "span_native_energy_error_worst": 0.0001770869337052721,
+      "span_over_head": 4.15895969541243
+    },
+    {
+      "case": 0,
+      "rows": 2336,
+      "dt": 0.01,
+      "head_common": 0.0008302759108072524,
+      "head_common_phase_worst": 1.8695061487281158e-05,
+      "head_common_shape_aligned_worst": 0.0008305965737281312,
+      "head_common_divergence_worst": 6.314586992060784e-14,
+      "head_common_energy_error_worst": 0.00027690713318870346,
+      "span_common": 0.0039645264049878535,
+      "span_common_phase_worst": 2.503699056455737e-05,
+      "span_common_shape_aligned_worst": 0.003964444346531369,
+      "span_common_divergence_worst": 7.374505682845866e-14,
+      "span_common_energy_error_worst": 0.00016788077234646911,
+      "span_native": 0.0039560860404144905,
+      "span_native_phase_worst": 2.6008565121761614e-05,
+      "span_native_shape_aligned_worst": 0.003956094555346006,
+      "span_native_divergence_worst": 7.359426881187044e-14,
+      "span_native_energy_error_worst": 0.00016211495222748497,
+      "span_over_head": 4.774950535579507
+    },
+    {
+      "case": 1,
+      "rows": 1168,
+      "dt": 0.01,
+      "head_common": 0.0009369437867944561,
+      "head_common_phase_worst": 2.6420147595132525e-05,
+      "head_common_shape_aligned_worst": 0.0009315154884064663,
+      "head_common_divergence_worst": 6.580717207283046e-14,
+      "head_common_energy_error_worst": 0.0002020582018011477,
+      "span_common": 0.00856290548352321,
+      "span_common_phase_worst": 2.655188679988337e-05,
+      "span_common_shape_aligned_worst": 0.008562146993231115,
+      "span_common_divergence_worst": 1.3574162998679538e-13,
+      "span_common_energy_error_worst": 0.00023722335557837526,
+      "span_native": 0.008538107034400553,
+      "span_native_phase_worst": 2.7800244364267043e-05,
+      "span_native_shape_aligned_worst": 0.008537298926244717,
+      "span_native_divergence_worst": 1.355560207585859e-13,
+      "span_native_energy_error_worst": 0.0002389173726027063,
+      "span_over_head": 9.139188075326567
+    },
+    {
+      "case": 1,
+      "rows": 2336,
+      "dt": 0.01,
+      "head_common": 0.000934833615912459,
+      "head_common_phase_worst": 2.755222881901812e-05,
+      "head_common_shape_aligned_worst": 0.0009295622171029866,
+      "head_common_divergence_worst": 6.577969997748547e-14,
+      "head_common_energy_error_worst": 0.00024254357258310963,
+      "span_common": 0.010129683465449825,
+      "span_common_phase_worst": 3.174196016591515e-05,
+      "span_common_shape_aligned_worst": 0.010129719237839303,
+      "span_common_divergence_worst": 1.5833660805672636e-13,
+      "span_common_energy_error_worst": 0.0002657342709267303,
+      "span_native": 0.010112065228265443,
+      "span_native_phase_worst": 3.275451651106244e-05,
+      "span_native_shape_aligned_worst": 0.010112102482176697,
+      "span_native_divergence_worst": 1.5826063567598025e-13,
+      "span_native_energy_error_worst": 0.0002667521273836188,
+      "span_over_head": 10.835814302166048
+    }
+  ],
+  "reference": [
+    {
+      "dt": 0.00025,
+      "dt_refined": 0.000125,
+      "scope": "same mesh and discrete spatial operator, not continuum error",
+      "normalization": "norm original physical u0",
+      "per_time_difference": [
+        0.0,
+        4.662632774417374e-07,
+        8.222499019303522e-07,
+        1.0802816594716482e-06,
+        1.2602969283810385e-06,
+        1.3787932857432743e-06,
+        1.4494901791311979e-06,
+        1.4837065424410444e-06,
+        1.4906472429170781e-06,
+        1.477671681729308e-06,
+        1.4505613380486706e-06,
+        1.4137805896270571e-06,
+        1.370719836643546e-06,
+        1.3239120941649052e-06,
+        1.2752185010990876e-06,
+        1.22598212286393e-06,
+        1.1771521489653245e-06,
+        1.1293820751698704e-06,
+        1.083105996550513e-06,
+        1.0385970670994516e-06,
+        9.960117760498017e-07
+      ],
+      "max_difference": 1.4906472429170781e-06,
+      "original_output_grid_parity": 0.0,
+      "bound": 8.294689266609844e-06,
+      "passed": true
+    },
+    {
+      "dt": 0.00025,
+      "dt_refined": 0.000125,
+      "scope": "same mesh and discrete spatial operator, not continuum error",
+      "normalization": "norm original physical u0",
+      "per_time_difference": [
+        0.0,
+        4.5747752105844654e-07,
+        8.702949700725831e-07,
+        1.2302098154809345e-06,
+        1.53902716534025e-06,
+        1.798904050611838e-06,
+        2.012516062243649e-06,
+        2.183081741204092e-06,
+        2.3142851255391934e-06,
+        2.4101356387064656e-06,
+        2.4748032422455507e-06,
+        2.5124597829708913e-06,
+        2.527145891900116e-06,
+        2.52267113705978e-06,
+        2.5025467880281965e-06,
+        2.469946321576234e-06,
+        2.4276876847622533e-06,
+        2.3782318600028713e-06,
+        2.323693319006425e-06,
+        2.2658589271540753e-06,
+        2.206212601516614e-06
+      ],
+      "max_difference": 2.527145891900116e-06,
+      "original_output_grid_parity": 0.0,
+      "bound": 9.34833615912459e-06,
+      "passed": true
+    }
+  ],
+  "containment": {
+    "count": 80,
+    "stationary": 80,
+    "stationary_lower_residual": 80,
+    "stationary_worse_error": 80,
+    "stationary_error_ratio": {
+      "count": 80,
+      "min": 1.0651309914661358,
+      "median": 1.5197731433824382,
+      "max": 4.080079930347832,
+      "mean": 1.6604395656577478
+    }
+  },
+  "fits": {
+    "count": 168,
+    "chosen_stationary": 164,
+    "distance_semantics": "All best-found distances are upper bounds, including converged local fits; no certified global separation."
+  },
+  "by_setting": [
+    {
+      "rows": 1168,
+      "dt": 0.01,
+      "cases": 2,
+      "head_better_count": 2,
+      "paired_error_ratio": {
+        "count": 2,
+        "min": 4.15895969541243,
+        "median": 6.649073885369498,
+        "max": 9.139188075326567,
+        "mean": 6.649073885369498
+      },
+      "head_common": {
+        "count": 2,
+        "min": 0.0008294689266609844,
+        "median": 0.0008832063567277202,
+        "max": 0.0009369437867944561,
+        "mean": 0.0008832063567277202,
+        "above_half_percent": 0
+      },
+      "span_common": {
+        "count": 2,
+        "min": 0.0034497278345800427,
+        "median": 0.006006316659051627,
+        "max": 0.00856290548352321,
+        "mean": 0.006006316659051627,
+        "above_half_percent": 1
+      },
+      "span_native": {
+        "count": 2,
+        "min": 0.003438037429098936,
+        "median": 0.005988072231749745,
+        "max": 0.008538107034400553,
+        "mean": 0.005988072231749745,
+        "above_half_percent": 1
+      }
+    },
+    {
+      "rows": 2336,
+      "dt": 0.01,
+      "cases": 2,
+      "head_better_count": 2,
+      "paired_error_ratio": {
+        "count": 2,
+        "min": 4.774950535579507,
+        "median": 7.805382418872778,
+        "max": 10.835814302166048,
+        "mean": 7.805382418872778
+      },
+      "head_common": {
+        "count": 2,
+        "min": 0.0008302759108072524,
+        "median": 0.0008825547633598557,
+        "max": 0.000934833615912459,
+        "mean": 0.0008825547633598557,
+        "above_half_percent": 0
+      },
+      "span_common": {
+        "count": 2,
+        "min": 0.0039645264049878535,
+        "median": 0.007047104935218839,
+        "max": 0.010129683465449825,
+        "mean": 0.007047104935218839,
+        "above_half_percent": 1
+      },
+      "span_native": {
+        "count": 2,
+        "min": 0.0039560860404144905,
+        "median": 0.007034075634339967,
+        "max": 0.010112065228265443,
+        "mean": 0.007034075634339967,
+        "above_half_percent": 1
+      }
+    }
+  ],
+  "tight_rollout_steps": {
+    "count": 240,
+    "max_gradient": 9.323046494186242e-10,
+    "guarded_acceptances": 12
+  },
+  "physical_ranks": {
+    "head_common": {
+      "count": 80,
+      "min": 11.0,
+      "median": 11.0,
+      "max": 11.0,
+      "mean": 11.0
+    },
+    "span_common": {
+      "count": 80,
+      "min": 67.0,
+      "median": 67.0,
+      "max": 67.0,
+      "mean": 67.0
+    },
+    "span_native": {
+      "count": 80,
+      "min": 67.0,
+      "median": 67.0,
+      "max": 67.0,
+      "mean": 67.0
+    }
+  },
+  "tight_tighter_max_gap": 2.004252087023003e-08,
+  "pilot_reproducibility": {
+    "count": 0
+  },
+  "same_state_geometry": {
+    "count": 80,
+    "chain_rule_max_relative": 1.0427632305086738e-16,
+    "span_rank": {
+      "count": 80,
+      "min": 67.0,
+      "median": 67.0,
+      "max": 67.0,
+      "mean": 67.0
+    },
+    "head_rank": {
+      "count": 80,
+      "min": 11.0,
+      "median": 11.0,
+      "max": 11.0,
+      "mean": 11.0
+    },
+    "least_visible_outside_head_fraction": {
+      "count": 80,
+      "min": 0.99924233334788,
+      "median": 0.9998287800721367,
+      "max": 0.999899048320283,
+      "mean": 0.9997526707842599
+    },
+    "actual_step_linearized_outside_head_fraction": {
+      "count": 80,
+      "min": 0.9594790515280895,
+      "median": 0.9978303735002699,
+      "max": 0.9999239518349431,
+      "mean": 0.9953816886506572
+    },
+    "head_to_span_smallest_singular_ratio": {
+      "count": 80,
+      "min": 30.026523936096332,
+      "median": 40.67658349383772,
+      "max": 56.1905788190582,
+      "mean": 41.689106383424324
+    },
+    "scope": "The singular-value restriction inequality is algebraic. These finite local samples are not a uniform stability bound; step fractions are tangent-linearized."
+  }
+}

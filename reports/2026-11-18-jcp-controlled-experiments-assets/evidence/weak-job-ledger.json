@@ -1,0 +1,120 @@
+{
+  "lane_ceiling_allocated_gpu_seconds": 10800,
+  "jobs": [
+    {
+      "job_id": 7354325,
+      "attempt": "p01",
+      "job_name": "ctol_jwv_p01",
+      "state": "FAILED",
+      "ceiling_allocated_gpu_seconds": 2700,
+      "charged_allocated_gpu_seconds": 86,
+      "submitted_utc": "2026-11-18T21:42:40.423287+00:00",
+      "source_commit": "c30c9b8e9",
+      "remote": "/cluster/tufts/paralab/tawal01/jcp-weak-visibility-20261118-488b0837/p01",
+      "reviewer": "cost_and_review_run",
+      "review_decision": "initial scoped pilot cleared"
+    },
+    {
+      "job_id": 7354355,
+      "attempt": "p02",
+      "job_name": "ctol_jwv_p02",
+      "state": "COMPLETED",
+      "ceiling_allocated_gpu_seconds": 2700,
+      "charged_allocated_gpu_seconds": 112,
+      "submitted_utc": "2026-11-18T21:46:44.177120+00:00",
+      "source_commit": "2df9fa742",
+      "remote": "/cluster/tufts/paralab/tawal01/jcp-weak-visibility-20261118-488b0837/p02",
+      "reviewer": "cost_and_review_run",
+      "review_decision": "persistence-only retry of cleared pilot"
+    },
+    {
+      "job_id": 7354401,
+      "attempt": "p03",
+      "job_name": "ctol_jwv_p03",
+      "state": "COMPLETED",
+      "ceiling_allocated_gpu_seconds": 2700,
+      "charged_allocated_gpu_seconds": 140,
+      "submitted_utc": "2026-11-18T21:53:02.780436+00:00",
+      "source_commit": "3c7740c0b",
+      "remote": "/cluster/tufts/paralab/tawal01/jcp-weak-visibility-20261118-488b0837/p03",
+      "reviewer": "cost_and_review_run",
+      "review_decision": "A1 arithmetic-only reference repair cleared"
+    },
+    {
+      "job_id": 7354597,
+      "attempt": "p04",
+      "job_name": "ctol_jwv_p04",
+      "state": "FAILED",
+      "ceiling_allocated_gpu_seconds": 2700,
+      "charged_allocated_gpu_seconds": 64,
+      "submitted_utc": "2026-11-18T21:59:24.669226+00:00",
+      "source_commit": "a8074f6ab",
+      "remote": "/cluster/tufts/paralab/tawal01/jcp-weak-visibility-20261118-488b0837/p04",
+      "reviewer": "cost_and_review_run",
+      "review_decision": "A2 remaining original development cases cleared; parent released slot"
+    },
+    {
+      "job_id": 7354803,
+      "attempt": "p04b",
+      "job_name": "ctol_jwv_p04b",
+      "state": "COMPLETED",
+      "ceiling_allocated_gpu_seconds": 2700,
+      "charged_allocated_gpu_seconds": 154,
+      "submitted_utc": "2026-11-18T22:11:12.590801+00:00",
+      "source_commit": "4761a0bf4",
+      "remote": "/cluster/tufts/paralab/tawal01/jcp-weak-visibility-20261118-488b0837/p04b",
+      "reviewer": "cost_and_review_run",
+      "review_decision": "A2a same-host legacy identity and bounded portability guard cleared"
+    },
+    {
+      "job_id": 7355058,
+      "attempt": "w00",
+      "job_name": "ctol_jwv_w00",
+      "state": "COMPLETED",
+      "ceiling_allocated_gpu_seconds": 600,
+      "charged_allocated_gpu_seconds": 169,
+      "submitted_utc": "2026-11-18T22:28:12.491560+00:00",
+      "source_commit": "128750d37",
+      "remote": "/cluster/tufts/paralab/tawal01/jcp-weak-visibility-20261118-488b0837/w00",
+      "reviewer": "head_mechanism_run",
+      "review_decision": "W0 projection-only screen cleared; W1 requires separate admission/review"
+    },
+    {
+      "job_id": 7355331,
+      "attempt": "w128",
+      "job_name": "ctol_jwv_w128",
+      "state": "COMPLETED",
+      "ceiling_allocated_gpu_seconds": 2700,
+      "charged_allocated_gpu_seconds": 119,
+      "source_commit": "61d964c88057be151e67a6899367ad6a962531ff",
+      "remote": "/cluster/tufts/paralab/tawal01/jcp-weak-visibility-20261118-488b0837/w128",
+      "reviewer": "head_mechanism_run",
+      "review_decision": "W1 registered trajectory matrix cleared; each wider launch conditional on baseline audit"
+    },
+    {
+      "job_id": 7355409,
+      "attempt": "w256",
+      "job_name": "ctol_jwv_w256",
+      "state": "COMPLETED",
+      "ceiling_allocated_gpu_seconds": 2700,
+      "charged_allocated_gpu_seconds": 224,
+      "source_commit": "846bbaf4ce64bc3ecdd050ceb371bbd590ea9462",
+      "remote": "/cluster/tufts/paralab/tawal01/jcp-weak-visibility-20261118-488b0837/w256",
+      "reviewer": "head_mechanism_run",
+      "review_decision": "W1 registered trajectory matrix cleared; each wider launch conditional on baseline audit"
+    },
+    {
+      "job_id": 7355448,
+      "attempt": "w512",
+      "job_name": "ctol_jwv_w512",
+      "state": "COMPLETED",
+      "ceiling_allocated_gpu_seconds": 2700,
+      "charged_allocated_gpu_seconds": 350,
+      "source_commit": "1a38b8662d76817b24bbdb0f8a91d038641c8317",
+      "remote": "/cluster/tufts/paralab/tawal01/jcp-weak-visibility-20261118-488b0837/w512",
+      "reviewer": "head_mechanism_run",
+      "review_decision": "W1 registered trajectory matrix cleared; each wider launch conditional on baseline audit"
+    }
+  ],
+  "total_charged_allocated_gpu_seconds": 1418
+}

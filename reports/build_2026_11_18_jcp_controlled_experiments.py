@@ -195,6 +195,108 @@ def weak_plot(entry, data):
     return ASSETS / f"{entry['id']}-test-enrichment.png"
 
 
+def cost_rows(data):
+    rows = []
+    for target, groups in data["comparisons"].items():
+        t = data["confirmation"][target]
+        for group, comp in groups.items():
+            name = comp.get("comparator")
+            c = data["confirmation"].get(name, {})
+            ratios = []
+            if comp["qualified"]:
+                ratios = [c["cases"][k]["median_ms"]/v["median_ms"] for k, v in t["cases"].items()]
+            rows.append({"target": target, "group": group, "comparator": name,
+                         "case_count": len(t["case_ids"]), "qualified": comp["qualified"],
+                         "target_median_ms": t["median_case_ms"],
+                         "target_median_error_percent": 100*t["median_case_evolved_max_error"],
+                         "target_worst_error_percent": 100*t["worst_evolved_error"],
+                         "comparator_median_ms": c.get("median_case_ms"),
+                         "comparator_over_target": comp.get("comparator_over_target"),
+                         "individual_case_ratios": ratios,
+                         "reason": comp.get("reason", "")})
+    return rows
+
+
+def enrichment_plot(entry, data, baseline):
+    ids = {c["index"] for c in data["cases"]}
+    dt = data["config"]["test_settings"][0]["dt"]
+    records = []
+    for source, label in ((baseline, "baseline"), (data, "enrichment")):
+        for case in source["cases"]:
+            if case["index"] not in ids:
+                continue
+            for run in case["runs"]:
+                if run["dt"] != dt or run["gtol"] != min(source["config"]["solver"]["gtols"]):
+                    continue
+                if run["arm"] in ("head_common", "span_common"):
+                    records.append({"source": label, "case": case["index"], "rows": run["rows"],
+                                    "arm": run["arm"], "error_percent": 100*run["evolved_worst"]})
+    fig, ax = plt.subplots(figsize=(8.8, 4.0))
+    ms = sorted({r["rows"] for r in records})
+    for arm, color, name in (("head_common", "#157c75", "Head"), ("span_common", "#ad601e", "Span")):
+        for index, case in enumerate(sorted(ids)):
+            rows = sorted((v for v in records if v["arm"] == arm and v["case"] == case), key=lambda v: v["rows"])
+            ax.plot([v["rows"] for v in rows], [v["error_percent"] for v in rows], color=color,
+                    ls="-" if index == 0 else "--", marker="o" if index == 0 else "s", label=f"{name}, case {case}")
+    ax.set(xscale="log", yscale="log", xticks=ms, xticklabels=[str(m) for m in ms],
+           xlabel="Scalar weak-test rows M (fixed time step)", ylabel="Maximum trajectory error\n(% of initial field norm)")
+    ax.legend(fontsize=8, loc="center right")
+    ax.grid(alpha=.18)
+    status = "numerical gates passed" if data["qualification"].get("passed") else "PROVISIONAL"
+    ax.set_title(f"Richer tests on the fixed pilot cases • Δt={dt:g} • {status}", fontsize=11)
+    fig.text(.5, .015, "Same frozen bank/head, common initial reconstruction and discrete reference. Finite enrichment; no asymptotic convergence claim.", ha="center", fontsize=8)
+    fig.tight_layout(rect=[0, .06, 1, 1])
+    for suffix in ("png", "svg"):
+        fig.savefig(ASSETS / f"{entry['id']}-richer-tests.{suffix}", dpi=170)
+    plt.close(fig)
+    return records, ASSETS / f"{entry['id']}-richer-tests.png"
+
+
+def cost_plot(entry, data, selection, provenance):
+    fig, axes = plt.subplots(1, 2, figsize=(12, 4.6))
+    colors = {"classical": "#667c87", "pod": "#82798e", "target": "#157c75"}
+    display_cap_percent = 100
+    overflow = sum(v["complete"] and 100*v["worst_evolved_error"] > display_cap_percent for v in selection.values())
+    failed = sum(not v["complete"] for v in selection.values())
+    for family, marker in (("classical", "."), ("pod", "s"), ("target", "*")):
+        chosen = {k: v for k, v in selection.items() if v["family"] == family and v["complete"]
+                  and 100*v["worst_evolved_error"] <= display_cap_percent}
+        axes[0].scatter([v["median_case_ms"] for v in chosen.values()],
+                        [100*v["worst_evolved_error"] for v in chosen.values()],
+                        marker=marker, color=colors[family], s=95 if family == "target" else 28, label=family)
+        if family == "target":
+            for name, v in chosen.items():
+                axes[0].annotate(name.replace("learned_", ""), (v["median_case_ms"], 100*v["worst_evolved_error"]),
+                                 xytext=(5, 5), textcoords="offset points", fontsize=8)
+    axes[0].set(xscale="log", yscale="log", title="Finite development candidate set",
+                xlabel="Median complete-query time (ms)", ylabel="Worst error at requested outputs\n(% of initial field norm)")
+    axes[0].legend(fontsize=8)
+    axes[0].text(.02, .025, f"Outside display: {overflow} above {display_cap_percent}% error; {failed} failed.\nAll retained in the raw selection table.",
+                 transform=axes[0].transAxes, fontsize=8, va="bottom")
+    qualified = [r for r in cost_rows(data) if r["qualified"]]
+    labels = []
+    for index, row in enumerate(qualified):
+        ratios = row["individual_case_ratios"]
+        median = float(np.median(ratios))
+        axes[1].plot([min(ratios), max(ratios)], [index, index], color=".6", lw=3)
+        axes[1].scatter([median], [index], color="#157c75", zorder=3)
+        target_label = {"learned_head": "Head", "learned_span64": "Span"}.get(row["target"], row["target"])
+        group_label = {"any_mesh_classical": "any-mesh FOM", "same_mesh_classical": "same-mesh FOM", "pod": "POD"}.get(row["group"], row["group"])
+        labels.append(target_label+" vs "+group_label)
+    axes[1].axvline(1, color=".5", ls="--", lw=1)
+    axes[1].set(yticks=range(len(labels)), yticklabels=labels,
+                xlabel="Comparator / target time (above 1 favors target)", title="Qualified confirmation speed ratios")
+    for ax in axes:
+        ax.grid(alpha=.17)
+    fig.suptitle(f"{entry['id']}: instrumented complete-query measurements\n{provenance['gpu'].split(',')[0]}", fontsize=11)
+    fig.text(.5, .015, "Left: displayed candidate subset with exclusions stated. Right: median paired case ratios and case range.\nAccuracy uses the six requested output fields; initial fitting and host transfers are included. Finite search, same allocation only.", ha="center", fontsize=9)
+    fig.tight_layout(rect=[0, .10, 1, .93])
+    for suffix in ("png", "svg"):
+        fig.savefig(ASSETS / f"{entry['id']}-complete-query.{suffix}", dpi=170)
+    plt.close(fig)
+    return ASSETS / f"{entry['id']}-complete-query.png"
+
+
 def main():
     entries = json.loads((ASSETS / "sources.json").read_text())
     loaded = []
@@ -240,21 +342,76 @@ def main():
             departure = np.median([v["actual_departure_outside_head_norm_fraction"] for v in geometric])
             ranks = sorted(set((v["physical_head_rank"], v["physical_span_rank"]) for v in geometric))
             chunks += [f"At the same reached head states, the median physical-norm fraction of the least visible span direction outside the head-plus-frame tangent is **{outside:.6f}**. The corresponding median fraction of the actual span departure, evaluated with the local linearized field map, is **{departure:.6f}**. Retained physical (head, span) ranks are {ranks}. These are norm fractions of sampled local directions, not fractions of cases or directions, energy fractions, global manifold distances, or uniform stability constants. The run's qualification status above applies to this diagnostic too.", ""]
+    enriched = [(e, d, p) for e, d, p in loaded if e["kind"] == "head_enrichment"]
+    if enriched:
+        chunks += ["### Richer-test check for the head mechanism", "",
+                   "This follow-up retains the fixed pilot cases, model, common initial reconstruction, time step and convergence gates. It tests whether additional residual information closes the span/head gap. The original development-panel result remains separate.", "",
+                   "| Run / job | Cases | Numerical qualification | Rows |",
+                   "|---|---:|---|---|"]
+        for e, d, p in enriched:
+            chunks.append(f"| [{e['id']}]({p['frozen']}) / {d['job_id']} | {len(d['cases'])} | {'Pass' if d['qualification'].get('passed') else 'Provisional: failed'} | {', '.join(str(s['rows']) for s in d['config']['test_settings'])} |")
+            records, plot = enrichment_plot(e, d, heads[-1][1])
+            values[e["id"]] = records
+            chunks += ["", f"![Measured richer-test head/span comparison]({plot})", ""]
     weaks = [(e, d, p) for e, d, p in loaded if e["kind"] == "weak"]
     if weaks:
         chunks += ["### Weak-test visibility", "",
                    "Every panel uses the same-grid, same-time-step discrete Burgers reference. No continuum-error claim is made. Maximum field error includes the initial saved time. Spectral visibility and physical accuracy are separate diagnostics.", "",
-                   "| Retained run | Case | M | Maximum field error (%) | Numerical qualification | Independent shell residual |",
-                   "|---|---:|---:|---:|---|---:|"]
+                   "| Retained run | Cases | Numerically qualified case/row settings |",
+                   "|---|---:|---:|"]
         for e, d, p in weaks:
             rows = weak_rows(d)
             values[e["id"]] = rows
-            for v in rows:
-                chunks.append(f"| [{e['id']}]({p['frozen']}) | {v['case']} | {v['M']} | {v['max_error_percent']:.6f} | {'Pass' if v['numerically_eligible'] else 'Provisional: failed'} | {v['independent_shell_residual']:.6g} |")
+            chunks.append(f"| [{e['id']}]({p['frozen']}) | {len(d['cases'])} | {sum(v['numerically_eligible'] for v in rows)} / {len(rows)} |")
         e, d, p = weaks[-1]
+        rows = values[e["id"]]
+        chunks += ["", "Latest registered panel:", "",
+                   "| Weak rows M | Median / worst maximum field error (%) | Numerically qualified cases |",
+                   "|---:|---:|---:|"]
+        for m in sorted({v["M"] for v in rows}):
+            rr = [v for v in rows if v["M"] == m]
+            ee = [v["max_error_percent"] for v in rr]
+            chunks.append(f"| {m} | {np.median(ee):.6f} / {max(ee):.6f} | {sum(v['numerically_eligible'] for v in rr)} / {len(rr)} |")
         plot = weak_plot(e, d)
         chunks += ["", f"![Measured weak-test enrichment]({plot})", ""]
+        for extra, detail, ep in loaded:
+            if extra["kind"] == "weak_detail":
+                max_m = max(v["M"] for v in detail)
+                final = [v for v in detail if v["M"] == max_m]
+                initial_count = sum(v["maximum_error_time"] == 0 for v in final)
+                min_m = min(v["M"] for v in detail)
+                original = [v for v in detail if v["M"] == min_m]
+                chunks += [f"The largest total error remains limited by the initial projection. At M={max_m}, {initial_count} of {len(final)} cases attain their maximum at initialization. The worst actual distance from the reference's mass projection decreases from {100*max(v['evolution_distance_max'] for v in original):.6f}% to {100*max(v['evolution_distance_max'] for v in final):.6f}%. This distance is computed from the difference of fields, not by subtracting error norms. [Casewise source table]({ep['frozen']}).", ""]
+            if extra["kind"] == "weak_counterexamples":
+                comparisons = detail["comparisons"]
+                increased = [v for v in comparisons if v["increased_time_count"] > 0]
+                maximum = max(v["maximum_increase_in_reported_relative_error"] for v in comparisons)
+                chunks += [f"**Retained counterexample:** {len(increased)} of {len(comparisons)} adjacent case/test-space transitions increase error at some times, even though their maximum-over-time errors do not worsen. The largest pointwise increase is {100*maximum:.6f} percentage points. This is a separately labeled post-run diagnostic; it precludes pointwise error-dominance claims. [All comparisons]({ep['frozen']}).", ""]
         chunks += ["", "Adding unchanged rows cannot decrease the smallest singular value at an identical state. That algebraic property alone does not demonstrate improved physical prediction.", ""]
+    costs = [(e, d, p) for e, d, p in loaded if e["kind"] == "cost"]
+    if costs:
+        chunks += ["### Complete-query cost", "",
+                   "These are instrumented queries from the original host-resident physical input to complete host-resident fields, including native initial fitting, transfers, evolution and recovery. Accuracy is scored on the six requested output fields, not the denser mechanism-history grid. Candidate selection and independent timing repetitions use exposed development cases within each allocation. Eligibility requires both median and worst error no greater than the target. A finite candidate search does not certify the fastest possible comparator.", "",
+                   "| Run / target | Cases | Comparator | Target time (ms) | Comparator time (ms) | Comparator / target | Qualification |",
+                   "|---|---:|---|---:|---:|---:|---|"]
+        for e, d, p in costs:
+            rows = cost_rows(d)
+            values[e["id"]] = rows
+            for row in rows:
+                ct = f"{row['comparator_median_ms']:.4f}" if row["comparator_median_ms"] is not None else "—"
+                ratio = f"{row['comparator_over_target']:.6f}" if row["qualified"] else "—"
+                status = "Pass: same-allocation accuracy and timing" if row["qualified"] else row["reason"] or "Failed qualification"
+                chunks.append(f"| [{e['id']}]({p['frozen']}) / {row['target']} | {row['case_count']} | {row['comparator'] or row['group']} | {row['target_median_ms']:.4f} | {ct} | {ratio} | {status} |")
+            source = ROOT / e["source"]
+            selection, sp = freeze({"id": e["id"]+"-selection", "kind": "cost_selection",
+                                    "source": str((source.parent/"selection.json").relative_to(ROOT))})
+            provenance, pp = freeze({"id": e["id"]+"-provenance", "kind": "cost_provenance",
+                                     "source": str((source.parent.parent/"provenance.json").relative_to(ROOT))})
+            manifest.extend((sp, pp))
+            chunks += ["", f"{e['id']} used **{provenance['gpu'].split(',')[0]}**, job **{provenance['job_id']}**. Ratios above one favor the target; no times are compared across jobs. A missing eligible POD comparator is an unresolved match in this candidate set, not a POD speed defeat.", ""]
+        plot = cost_plot(e, d, selection, provenance)
+        chunks += [f"![Measured complete-query accuracy and cost]({plot})", "",
+                   "Cold measurements, where retained in the experiment lane, cover asset activation, compilation and the first query within an already initialized runtime. They retain the operating-system page cache and exclude runtime/context startup. They cannot be relabeled process-cold deployment costs.", ""]
     chunks += ["### Reproducibility", "",
                f"The [builder]({Path(__file__).resolve()}) reads the [registered sources]({ASSETS/'sources.json'}), freezes the JSON evidence, and generates every numerical table and plot above. [Source hashes]({ASSETS/'source-manifest.json'}) and [derived values]({ASSETS/'measured-values.json'}) are saved separately. Full histories, configurations, numerical arrays, hardware logs and checksum manifests remain in the linked experiment lanes. No synthetic values enter these figures.", ""]
     for e, d, p in loaded:

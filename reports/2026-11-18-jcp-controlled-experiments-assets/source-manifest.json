@@ -21,6 +21,20 @@
     "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03.json"
   },
   {
+    "id": "head-p03b",
+    "kind": "head",
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/summary.json",
+    "sha256": "5bd8eed34cb03731964a2ec10a4c6c38e5668fcce35d35a92d27348e81eac133",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b.json"
+  },
+  {
+    "id": "head-p04",
+    "kind": "head_enrichment",
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p04/output/summary.json",
+    "sha256": "fe482bb284fd6ad5a8fcc6075c6271245ed597ccb80039d7998e21a01e0328ef",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p04.json"
+  },
+  {
     "id": "head-p02-environment",
     "kind": "environment_review",
     "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/ENVIRONMENT_REVIEW.json",
@@ -42,339 +56,388 @@
     "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p03.json"
   },
   {
-    "id": "head-p03-case000-reset_m292_dt0.02",
-    "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_000/reset_m292_dt0.02.json",
-    "sha256": "b1759559b9be43792e106e9258411b940551728792dfdf970d88c362e4c8ace9",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case000-reset_m292_dt0.02.json"
+    "id": "weak-p04b",
+    "kind": "weak_archive",
+    "source": "worktrees/2026-11-18-jcp-weak-visibility/experiments/jcp-weak-visibility/runs/p04b/output/summary.json",
+    "sha256": "e73d3d8f8dffc7e59dbdc64f9c15299ed33b46a5a62ba4fbfc1aec7e5aed2a84",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p04b.json"
   },
   {
-    "id": "head-p03-case000-reset_m584_dt0.02",
-    "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_000/reset_m584_dt0.02.json",
-    "sha256": "5df7f6456e090d82ff13e821e6db8c9f2db5786087913126f00460f848bb6b93",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case000-reset_m584_dt0.02.json"
+    "id": "weak-full6",
+    "kind": "weak",
+    "source": "worktrees/2026-11-18-jcp-weak-visibility/experiments/jcp-weak-visibility/checks/full6/combined-source.json",
+    "sha256": "f24884915d8042c61f287986a45766d622217560b39355ff000e6ee1287ff4a8",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-full6.json"
   },
   {
-    "id": "head-p03-case000-reset_m584_dt0.01",
-    "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_000/reset_m584_dt0.01.json",
-    "sha256": "ed8097a2ac9d9f074517fcab67cb68c6c6d1898bc977a50389428c6222a7d83f",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case000-reset_m584_dt0.01.json"
+    "id": "weak-full6-table",
+    "kind": "weak_detail",
+    "source": "worktrees/2026-11-18-jcp-weak-visibility/experiments/jcp-weak-visibility/checks/full6/table.json",
+    "sha256": "46cdd8fd1317940f22eb1be9933baaa15635566b947a3b25f8b57be90116ae22",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-full6-table.json"
   },
   {
-    "id": "head-p03-case001-reset_m292_dt0.02",
-    "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_001/reset_m292_dt0.02.json",
-    "sha256": "d3feaac85a18a7c4f3973ec34888ad354b013c4ef216073bdada6d5a56b4d885",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case001-reset_m292_dt0.02.json"
+    "id": "weak-pointwise-counterexamples",
+    "kind": "weak_counterexamples",
+    "source": "worktrees/2026-11-18-jcp-weak-visibility/experiments/jcp-weak-visibility/checks/full6/pointwise-counterexamples.json",
+    "sha256": "77c4d112db0846ef9756fa9af6e0c77649ca80469364a4784bcb2f9c21fa0fb6",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-pointwise-counterexamples.json"
   },
   {
-    "id": "head-p03-case001-reset_m584_dt0.02",
-    "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_001/reset_m584_dt0.02.json",
-    "sha256": "b6bab034c6a28f86fa112326f78629d5ea082027d3126dd2c5cd5163f132e44b",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case001-reset_m584_dt0.02.json"
+    "id": "cost-p01",
+    "kind": "cost",
+    "source": "worktrees/2026-11-18-jcp-paired-cost/experiments/jcp-paired-cost/runs/p01/output/paired/result.json",
+    "sha256": "8986c98468ebcba54577f24fcbb712094c8c1d1531fde0a71a82e17d9b349693",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p01.json"
   },
   {
-    "id": "head-p03-case001-reset_m584_dt0.01",
+    "id": "head-p03b-case000-reset_m292_dt0.02",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_001/reset_m584_dt0.01.json",
-    "sha256": "276b701771625acae36fd38780c142a2a8340c7b8808399711b618f641df7d13",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case001-reset_m584_dt0.01.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_000/reset_m292_dt0.02.json",
+    "sha256": "593b6e18000965d01eda8bf1d822f6efe32d5cb8c34d19823279b69d09570215",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case000-reset_m292_dt0.02.json"
   },
   {
-    "id": "head-p03-case002-reset_m292_dt0.02",
+    "id": "head-p03b-case000-reset_m584_dt0.02",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_002/reset_m292_dt0.02.json",
-    "sha256": "b623d1d723fde9142d24952fe364e8ec8e37d0fcdd3b2d6a73b9bea8861a918e",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case002-reset_m292_dt0.02.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_000/reset_m584_dt0.02.json",
+    "sha256": "6b5ee0ca295449476da688f23a29892861e24eaaf516f0ad06156c139888dcad",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case000-reset_m584_dt0.02.json"
   },
   {
-    "id": "head-p03-case002-reset_m584_dt0.02",
+    "id": "head-p03b-case000-reset_m584_dt0.01",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_002/reset_m584_dt0.02.json",
-    "sha256": "06d855f7c6b6e3f0d9d78ab288a8dbe886a36e13b4c90395cef04a2f0e3b9ccb",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case002-reset_m584_dt0.02.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_000/reset_m584_dt0.01.json",
+    "sha256": "4ae03fa87675668ee68495ab99c5914217876637d1eb2ecfd11689980fac4a80",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case000-reset_m584_dt0.01.json"
   },
   {
-    "id": "head-p03-case002-reset_m584_dt0.01",
+    "id": "head-p03b-case001-reset_m292_dt0.02",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_002/reset_m584_dt0.01.json",
-    "sha256": "340120d8356cdc2db62cce48667290dad1b17c1aeadb2dbaa9d909434305c437",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case002-reset_m584_dt0.01.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_001/reset_m292_dt0.02.json",
+    "sha256": "9e804c90889cd1c91b2c64d826607486789a6f8b6e7c389ea7a490876fdbff80",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case001-reset_m292_dt0.02.json"
   },
   {
-    "id": "head-p03-case003-reset_m292_dt0.02",
+    "id": "head-p03b-case001-reset_m584_dt0.02",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_003/reset_m292_dt0.02.json",
-    "sha256": "6ba9223a5f02fdb2b9f75619fdd9996182b07e4c80efbaac8079d1d9ee0ec6bd",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case003-reset_m292_dt0.02.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_001/reset_m584_dt0.02.json",
+    "sha256": "20dbeec257fa5552195f2d4bdb32f734c9065a48fc0c0c354b0ca3c13b9ff661",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case001-reset_m584_dt0.02.json"
   },
   {
-    "id": "head-p03-case003-reset_m584_dt0.02",
+    "id": "head-p03b-case001-reset_m584_dt0.01",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_003/reset_m584_dt0.02.json",
-    "sha256": "67db438fe9c4beaaffb49636ab2718ad3352c5aa4a733a8df77d31d96eaedb38",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case003-reset_m584_dt0.02.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_001/reset_m584_dt0.01.json",
+    "sha256": "3d4031d5cea2b7cee8e84f75bc133a291a260163c576ebab83787a520d8eb16b",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case001-reset_m584_dt0.01.json"
   },
   {
-    "id": "head-p03-case003-reset_m584_dt0.01",
+    "id": "head-p03b-case002-reset_m292_dt0.02",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_003/reset_m584_dt0.01.json",
-    "sha256": "779151ff3635f26d8e9dfd4b060d2c0e308c9f4a359358352b3ca03217b5320d",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case003-reset_m584_dt0.01.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_002/reset_m292_dt0.02.json",
+    "sha256": "48a4a5ac7d83b677b076e725fca2687b92f7074520aff6721d2eecec56e53535",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case002-reset_m292_dt0.02.json"
   },
   {
-    "id": "head-p03-case004-reset_m292_dt0.02",
+    "id": "head-p03b-case002-reset_m584_dt0.02",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_004/reset_m292_dt0.02.json",
-    "sha256": "d21d67a4e3ac56d3ce32acdaf19951103eeebbf59ae4e550f2e6211d101e3364",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case004-reset_m292_dt0.02.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_002/reset_m584_dt0.02.json",
+    "sha256": "d92021d92d2a86da33defed5fea64fabe899d3d889a73d398e42b00b98e262f4",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case002-reset_m584_dt0.02.json"
   },
   {
-    "id": "head-p03-case004-reset_m584_dt0.02",
+    "id": "head-p03b-case002-reset_m584_dt0.01",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_004/reset_m584_dt0.02.json",
-    "sha256": "5be5de70a6abb64f6d5d6df3472a70d14fe0db0fb2e282e7d09141aca5f04772",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case004-reset_m584_dt0.02.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_002/reset_m584_dt0.01.json",
+    "sha256": "9bec112ef76577c1112bc043cafb7ab2300211ffdcff360654b79093ffabd2f1",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case002-reset_m584_dt0.01.json"
   },
   {
-    "id": "head-p03-case004-reset_m584_dt0.01",
+    "id": "head-p03b-case003-reset_m292_dt0.02",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_004/reset_m584_dt0.01.json",
-    "sha256": "4554f97100c2329009a2a9cd23f1bd74a52f6cd3172f9d5b5672199495a58e3a",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case004-reset_m584_dt0.01.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_003/reset_m292_dt0.02.json",
+    "sha256": "dd4ac61b8591aa13a667083ba4cf6ebda4cbf7b2d61bffe180c49c043d9707b3",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case003-reset_m292_dt0.02.json"
   },
   {
-    "id": "head-p03-case005-reset_m292_dt0.02",
+    "id": "head-p03b-case003-reset_m584_dt0.02",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_005/reset_m292_dt0.02.json",
-    "sha256": "54d3f2f1de5c75084024c3c343d0447aee86a62fd4436fe826064734f067fea1",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case005-reset_m292_dt0.02.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_003/reset_m584_dt0.02.json",
+    "sha256": "d23bdb1ac54be23ceb17903c75fbb59e6c35338bac1ca7fbe0e99b90e47b236d",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case003-reset_m584_dt0.02.json"
   },
   {
-    "id": "head-p03-case005-reset_m584_dt0.02",
+    "id": "head-p03b-case003-reset_m584_dt0.01",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_005/reset_m584_dt0.02.json",
-    "sha256": "911289ede9ed27525e723bc074147e7a60f2c80045ffa304567553bbc2f51165",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case005-reset_m584_dt0.02.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_003/reset_m584_dt0.01.json",
+    "sha256": "af434becdda35910786dbd3aed2393bc1e640b9ed02a29b7a595b9ebf130ac98",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case003-reset_m584_dt0.01.json"
   },
   {
-    "id": "head-p03-case005-reset_m584_dt0.01",
+    "id": "head-p03b-case004-reset_m292_dt0.02",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_005/reset_m584_dt0.01.json",
-    "sha256": "cef3178cf59ac81cd394d7991f93430e044b7da7acdb58012dc2e3cd647b710c",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case005-reset_m584_dt0.01.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_004/reset_m292_dt0.02.json",
+    "sha256": "b458dfaa8a24b4958e348d534bd072932eb246c0ec26aa201b5508ea2a31e182",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case004-reset_m292_dt0.02.json"
   },
   {
-    "id": "head-p03-case006-reset_m292_dt0.02",
+    "id": "head-p03b-case004-reset_m584_dt0.02",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_006/reset_m292_dt0.02.json",
-    "sha256": "fd1ddabbd43a896e92174f15bd785bb0ef320bde21dfd731f93fffec85ca2755",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case006-reset_m292_dt0.02.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_004/reset_m584_dt0.02.json",
+    "sha256": "88cb72f7b8a0d738ab37bd97dbc0bf4e34f7c60f1535262c26a565b4136dca26",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case004-reset_m584_dt0.02.json"
   },
   {
-    "id": "head-p03-case006-reset_m584_dt0.02",
+    "id": "head-p03b-case004-reset_m584_dt0.01",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_006/reset_m584_dt0.02.json",
-    "sha256": "936d2b0f583978754f995b9d8e045f8c6bba0268515c5835b0e3a9e54726026d",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case006-reset_m584_dt0.02.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_004/reset_m584_dt0.01.json",
+    "sha256": "5766eb8229fccafa4bc5f0d72fceac9286dd0bd284901704ee373956ab99cd0c",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case004-reset_m584_dt0.01.json"
   },
   {
-    "id": "head-p03-case006-reset_m584_dt0.01",
+    "id": "head-p03b-case005-reset_m292_dt0.02",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_006/reset_m584_dt0.01.json",
-    "sha256": "0094706bdc032a383e6a0cce6eb0720206224edd1d833521f655d33744e59eba",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case006-reset_m584_dt0.01.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_005/reset_m292_dt0.02.json",
+    "sha256": "f509dd60ce386860ffa5c1f65336b0c389864daa33d57530ded9864eef36e679",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case005-reset_m292_dt0.02.json"
   },
   {
-    "id": "head-p03-case007-reset_m292_dt0.02",
+    "id": "head-p03b-case005-reset_m584_dt0.02",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_007/reset_m292_dt0.02.json",
-    "sha256": "854e2c681d0d3ab23f87cb4f2b6ec0ae1169882b688909dcc0eb6083d5e8e59c",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case007-reset_m292_dt0.02.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_005/reset_m584_dt0.02.json",
+    "sha256": "0c10a21979e358c46b628bc7abbde144d3adc159a8ecd47119bf4033f6726db0",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case005-reset_m584_dt0.02.json"
   },
   {
-    "id": "head-p03-case007-reset_m584_dt0.02",
+    "id": "head-p03b-case005-reset_m584_dt0.01",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_007/reset_m584_dt0.02.json",
-    "sha256": "a79b77e04cbb9d743e5946178627b14aafd54d3bf4ba03c2398d89bfb489e0d3",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case007-reset_m584_dt0.02.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_005/reset_m584_dt0.01.json",
+    "sha256": "c7c32347c27ebcf429518e7f3c4378a6869784190cc8c4cf590bf64bdc3c3ef2",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case005-reset_m584_dt0.01.json"
   },
   {
-    "id": "head-p03-case007-reset_m584_dt0.01",
+    "id": "head-p03b-case006-reset_m292_dt0.02",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_007/reset_m584_dt0.01.json",
-    "sha256": "8b06802032ba706d929a4b9071515cef646941ac23f48b9f93ea415b01b307da",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case007-reset_m584_dt0.01.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_006/reset_m292_dt0.02.json",
+    "sha256": "1d834ee9ae6d80e064b2f842db6dcef1dc324921767ec7f90fa67e9a9381a224",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case006-reset_m292_dt0.02.json"
   },
   {
-    "id": "head-p03-case008-reset_m292_dt0.02",
+    "id": "head-p03b-case006-reset_m584_dt0.02",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_008/reset_m292_dt0.02.json",
-    "sha256": "5b093fde5879114ce438c8352254a8a6519b1936d9c7863c4b736ba73a2eb3dd",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case008-reset_m292_dt0.02.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_006/reset_m584_dt0.02.json",
+    "sha256": "fb65eb439d2705d4bfc5fcc67722f22bd0b7ccdd85062d66d81b1a6be38bfe2d",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case006-reset_m584_dt0.02.json"
   },
   {
-    "id": "head-p03-case008-reset_m584_dt0.02",
+    "id": "head-p03b-case006-reset_m584_dt0.01",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_008/reset_m584_dt0.02.json",
-    "sha256": "9152c31c5b160ed81f5d2089f1a3c00a334cd847f0b6cf3e6f0645477874587e",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case008-reset_m584_dt0.02.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_006/reset_m584_dt0.01.json",
+    "sha256": "e4e32ade71b90635d04a7bcec80c52d748e0c1103b464d820f09f5548b294250",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case006-reset_m584_dt0.01.json"
   },
   {
-    "id": "head-p03-case008-reset_m584_dt0.01",
+    "id": "head-p03b-case007-reset_m292_dt0.02",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_008/reset_m584_dt0.01.json",
-    "sha256": "e940334eda8b88cad0f7cf1bd1cd950f2c2f4121bdf5a51e7d7e523c80c314a4",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case008-reset_m584_dt0.01.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_007/reset_m292_dt0.02.json",
+    "sha256": "73cda1ed436627bab004e7308fd2662ffcc5221b69103d3630050ea8ec188eb8",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case007-reset_m292_dt0.02.json"
   },
   {
-    "id": "head-p03-case009-reset_m292_dt0.02",
+    "id": "head-p03b-case007-reset_m584_dt0.02",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_009/reset_m292_dt0.02.json",
-    "sha256": "4d8f1ace7abc161b5c4d1df2cf30bbd3dfd6eb28b8fc7f2e371f1112f7ef115d",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case009-reset_m292_dt0.02.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_007/reset_m584_dt0.02.json",
+    "sha256": "a4c397ec5dc811336489c23fac1bb9ed4191213c01433336fbe9ab66e737840a",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case007-reset_m584_dt0.02.json"
   },
   {
-    "id": "head-p03-case009-reset_m584_dt0.02",
+    "id": "head-p03b-case007-reset_m584_dt0.01",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_009/reset_m584_dt0.02.json",
-    "sha256": "19d9d1476027cdc486650119940772bc78ab209f15a8b0d14fa80a8e9dc52b4e",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case009-reset_m584_dt0.02.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_007/reset_m584_dt0.01.json",
+    "sha256": "f0f439146d6384022b086b79ca7152f78a506dbbd902142d26849c98eb708deb",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case007-reset_m584_dt0.01.json"
   },
   {
-    "id": "head-p03-case009-reset_m584_dt0.01",
+    "id": "head-p03b-case008-reset_m292_dt0.02",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_009/reset_m584_dt0.01.json",
-    "sha256": "192584907f03d073a59ef5e3ba220d165b52157fb0f4310d4604423bcf8de06b",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case009-reset_m584_dt0.01.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_008/reset_m292_dt0.02.json",
+    "sha256": "57430d6fbc34a57cadbf79c701913817cedf8879d5693326b099e4c1463fb1e1",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case008-reset_m292_dt0.02.json"
   },
   {
-    "id": "head-p03-case010-reset_m292_dt0.02",
+    "id": "head-p03b-case008-reset_m584_dt0.02",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_010/reset_m292_dt0.02.json",
-    "sha256": "2a467c31c32cbc84abe02ab10bb1e99f681cec27c1ebdf90eabede698c8bf078",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case010-reset_m292_dt0.02.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_008/reset_m584_dt0.02.json",
+    "sha256": "f0a0e0bfe44f17f16b9e488b15cb425584948fcc4426c9762138fef4681f6900",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case008-reset_m584_dt0.02.json"
   },
   {
-    "id": "head-p03-case010-reset_m584_dt0.02",
+    "id": "head-p03b-case008-reset_m584_dt0.01",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_010/reset_m584_dt0.02.json",
-    "sha256": "017509f8401d28771db31a29da8d350146d55e892fe14ae4dcb99b245570b093",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case010-reset_m584_dt0.02.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_008/reset_m584_dt0.01.json",
+    "sha256": "78b8eac4d8672f9f2063eb5ea518cd995b7486c1cbf44c17c7d23a0ca163e83c",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case008-reset_m584_dt0.01.json"
   },
   {
-    "id": "head-p03-case010-reset_m584_dt0.01",
+    "id": "head-p03b-case009-reset_m292_dt0.02",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_010/reset_m584_dt0.01.json",
-    "sha256": "a1275f6cbe64a78d6a25b5324c6a67d2aa493484abcfb58b5c4f67d4a3f7a4db",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case010-reset_m584_dt0.01.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_009/reset_m292_dt0.02.json",
+    "sha256": "94476efe09c8f34321f4371b703b36f25fd63358dc1507c2390128fab43fd227",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case009-reset_m292_dt0.02.json"
   },
   {
-    "id": "head-p03-case011-reset_m292_dt0.02",
+    "id": "head-p03b-case009-reset_m584_dt0.02",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_011/reset_m292_dt0.02.json",
-    "sha256": "4b53e8c83bf87f5940cedf5161cf9cf90dafb3021cffff2e72d32e88bff5c8f3",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case011-reset_m292_dt0.02.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_009/reset_m584_dt0.02.json",
+    "sha256": "d6af17f066f8d086012fdb787d28bad18febf97a13fde615c28ba6da66b73f97",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case009-reset_m584_dt0.02.json"
   },
   {
-    "id": "head-p03-case011-reset_m584_dt0.02",
+    "id": "head-p03b-case009-reset_m584_dt0.01",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_011/reset_m584_dt0.02.json",
-    "sha256": "c39dad908835e9e412e9f9d7610633cbee93cbb260cf25f5f7f30eade106e375",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case011-reset_m584_dt0.02.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_009/reset_m584_dt0.01.json",
+    "sha256": "3555496c23ec2aa5b8cd181ada10172b13800377cc60c8ee3234901eaf8813b4",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case009-reset_m584_dt0.01.json"
   },
   {
-    "id": "head-p03-case011-reset_m584_dt0.01",
+    "id": "head-p03b-case010-reset_m292_dt0.02",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_011/reset_m584_dt0.01.json",
-    "sha256": "aada6a82a72c0d328fec6b658476cac9b5746a663be2c2c81be3b566434984d2",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case011-reset_m584_dt0.01.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_010/reset_m292_dt0.02.json",
+    "sha256": "02a029efe547ab7634ba7edff4cdacdb4882e5af6beb2f6baac233ea040a4dcc",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case010-reset_m292_dt0.02.json"
   },
   {
-    "id": "head-p03-case012-reset_m292_dt0.02",
+    "id": "head-p03b-case010-reset_m584_dt0.02",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_012/reset_m292_dt0.02.json",
-    "sha256": "65794154d956b2c7040062766284be9484bac27351c104d2d9234dc8688c1f32",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case012-reset_m292_dt0.02.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_010/reset_m584_dt0.02.json",
+    "sha256": "7b04b7f369c11ca098a8057dcec778e36f646c95789574e9ab59e6a154692887",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case010-reset_m584_dt0.02.json"
   },
   {
-    "id": "head-p03-case012-reset_m584_dt0.02",
+    "id": "head-p03b-case010-reset_m584_dt0.01",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_012/reset_m584_dt0.02.json",
-    "sha256": "5c4437499c660765cbb14e0017363c3795db003fa8758f52f10d26fa1d7e0e6f",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case012-reset_m584_dt0.02.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_010/reset_m584_dt0.01.json",
+    "sha256": "04e2de4f145e6e6a875d66955163ea748aac0093e5b600491bc914374ba9ede2",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case010-reset_m584_dt0.01.json"
   },
   {
-    "id": "head-p03-case012-reset_m584_dt0.01",
+    "id": "head-p03b-case011-reset_m292_dt0.02",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_012/reset_m584_dt0.01.json",
-    "sha256": "14b59643b906221844d1f480150acbb57b0a9ad15edb932d49a212973f3dbe58",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case012-reset_m584_dt0.01.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_011/reset_m292_dt0.02.json",
+    "sha256": "79fce0814f046224defe5b0a9314d8eadd4f50f7d2e1fd238f50150040bf66c6",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case011-reset_m292_dt0.02.json"
   },
   {
-    "id": "head-p03-case013-reset_m292_dt0.02",
+    "id": "head-p03b-case011-reset_m584_dt0.02",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_013/reset_m292_dt0.02.json",
-    "sha256": "41d645c056e34dfc27b34b05a58263fb363fae39661e27fb26d7cb25cf72436d",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case013-reset_m292_dt0.02.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_011/reset_m584_dt0.02.json",
+    "sha256": "2f579a212e0a63bc3f320909f32047957f9fd5c8ae838c0e0a0ee6f6340a1979",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case011-reset_m584_dt0.02.json"
   },
   {
-    "id": "head-p03-case013-reset_m584_dt0.02",
+    "id": "head-p03b-case011-reset_m584_dt0.01",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_013/reset_m584_dt0.02.json",
-    "sha256": "3528964d22a652638e2d3400b1aec52d07cb238b7531d9c2123fc134d8e017be",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case013-reset_m584_dt0.02.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_011/reset_m584_dt0.01.json",
+    "sha256": "9b6f4891a8f09e8129b474ab489edafd252665067de23ea463ba9c12d95f967d",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case011-reset_m584_dt0.01.json"
   },
   {
-    "id": "head-p03-case013-reset_m584_dt0.01",
+    "id": "head-p03b-case012-reset_m292_dt0.02",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_013/reset_m584_dt0.01.json",
-    "sha256": "9b5f7db9df1017b3efc57b4de0f6f5fefd33d58ebd28f808c413c6cda481547c",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case013-reset_m584_dt0.01.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_012/reset_m292_dt0.02.json",
+    "sha256": "0afd09fe8a869b9d584e8f20f0bde53d03106f4af25a5f8026b625c52d8f98d6",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case012-reset_m292_dt0.02.json"
   },
   {
-    "id": "head-p03-case014-reset_m292_dt0.02",
+    "id": "head-p03b-case012-reset_m584_dt0.02",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_014/reset_m292_dt0.02.json",
-    "sha256": "3dd96df21b11002fb378765dcf973edc00f1e79f09c9c69e0b2a72d586be6f65",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case014-reset_m292_dt0.02.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_012/reset_m584_dt0.02.json",
+    "sha256": "37d92c0e4d9115c2fc31fef71b3c19c4468eef7f087b0a80be0c0e1baaab0eba",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case012-reset_m584_dt0.02.json"
   },
   {
-    "id": "head-p03-case014-reset_m584_dt0.02",
+    "id": "head-p03b-case012-reset_m584_dt0.01",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_014/reset_m584_dt0.02.json",
-    "sha256": "fe3ac60c8c3cee2fae864f8cff3f86f9303bbee6b931976aa7d2356096ce6be0",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case014-reset_m584_dt0.02.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_012/reset_m584_dt0.01.json",
+    "sha256": "83e6206a5c6e34c37fa7bb445b6da7ac5ee8dbd294e9094465bafa51c2227e4d",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case012-reset_m584_dt0.01.json"
   },
   {
-    "id": "head-p03-case014-reset_m584_dt0.01",
+    "id": "head-p03b-case013-reset_m292_dt0.02",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_014/reset_m584_dt0.01.json",
-    "sha256": "57296ab7557279903d5166979142703daf8bb63c8755986d98c0fffc88d9b6cf",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case014-reset_m584_dt0.01.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_013/reset_m292_dt0.02.json",
+    "sha256": "997e9792d3e304910565d7e877ce059373fdfc7566deeead55ef54c1683b6493",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case013-reset_m292_dt0.02.json"
   },
   {
-    "id": "head-p03-case015-reset_m292_dt0.02",
+    "id": "head-p03b-case013-reset_m584_dt0.02",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_015/reset_m292_dt0.02.json",
-    "sha256": "fc78e1b9ea7130e2af72275a89e29f34432fa89dbb050b57ba1925af6641b866",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case015-reset_m292_dt0.02.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_013/reset_m584_dt0.02.json",
+    "sha256": "24a0edf22084e86e14c62e21efa4dca0b071ff0e187c78f6f7d3861233f20e11",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case013-reset_m584_dt0.02.json"
   },
   {
-    "id": "head-p03-case015-reset_m584_dt0.02",
+    "id": "head-p03b-case013-reset_m584_dt0.01",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_015/reset_m584_dt0.02.json",
-    "sha256": "edde609da1610734eaae1f6006cfc14160a4b10ee2cc306947358393cf081eda",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case015-reset_m584_dt0.02.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_013/reset_m584_dt0.01.json",
+    "sha256": "6c271ecb147befc9b2541e0104c1f7471422fc78b7d5a0fb82ea6b4c54a2047e",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case013-reset_m584_dt0.01.json"
   },
   {
-    "id": "head-p03-case015-reset_m584_dt0.01",
+    "id": "head-p03b-case014-reset_m292_dt0.02",
     "kind": "head_probe",
-    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03/output/case_015/reset_m584_dt0.01.json",
-    "sha256": "a6b987112e4d8df220e3cfd6002ee055457e7744cb6adbd87133cba75811ec7c",
-    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03-case015-reset_m584_dt0.01.json"
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_014/reset_m292_dt0.02.json",
+    "sha256": "93d556fa6e8560f1e82949688e68248ed7f7b09dd9dbf2bb5f0d821ced505987",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case014-reset_m292_dt0.02.json"
+  },
+  {
+    "id": "head-p03b-case014-reset_m584_dt0.02",
+    "kind": "head_probe",
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_014/reset_m584_dt0.02.json",
+    "sha256": "c3bfabf2ad0edabe140c571b77f6b991c60d91b93d31bb789d587d70f130c086",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case014-reset_m584_dt0.02.json"
+  },
+  {
+    "id": "head-p03b-case014-reset_m584_dt0.01",
+    "kind": "head_probe",
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_014/reset_m584_dt0.01.json",
+    "sha256": "af4900484d9e72393f831e081b1940c141980b46e9144d96bf61885131bad031",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case014-reset_m584_dt0.01.json"
+  },
+  {
+    "id": "head-p03b-case015-reset_m292_dt0.02",
+    "kind": "head_probe",
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_015/reset_m292_dt0.02.json",
+    "sha256": "a63fb26f591257ff7986a0cd2154ca438277d2c6b50d1a72a402f8577137f01a",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case015-reset_m292_dt0.02.json"
+  },
+  {
+    "id": "head-p03b-case015-reset_m584_dt0.02",
+    "kind": "head_probe",
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_015/reset_m584_dt0.02.json",
+    "sha256": "aaf880458f7a601cc16f6f7415ef44b0e6be0c38937a65986827616493940073",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case015-reset_m584_dt0.02.json"
+  },
+  {
+    "id": "head-p03b-case015-reset_m584_dt0.01",
+    "kind": "head_probe",
+    "source": "worktrees/2026-11-18-jcp-head-mechanism/experiments/jcp-head-mechanism/runs/p03b/output/case_015/reset_m584_dt0.01.json",
+    "sha256": "8b7b6745e9c39d1d0524f06549f2b0aa896757137af4d47d4765d3674f8942ff",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b-case015-reset_m584_dt0.01.json"
+  },
+  {
+    "id": "cost-p01-selection",
+    "kind": "cost_selection",
+    "source": "worktrees/2026-11-18-jcp-paired-cost/experiments/jcp-paired-cost/runs/p01/output/paired/selection.json",
+    "sha256": "39f1e8714fb225e6012813b92e0817deb2edfc40a85d9b712d2c07d17a6f713e",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p01-selection.json"
+  },
+  {
+    "id": "cost-p01-provenance",
+    "kind": "cost_provenance",
+    "source": "worktrees/2026-11-18-jcp-paired-cost/experiments/jcp-paired-cost/runs/p01/output/provenance.json",
+    "sha256": "5a68b9b07982fd9ecefdeea04d0ca38f69cd58798991ebc3a3aa6378895ca480",
+    "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p01-provenance.json"
   }
 ]

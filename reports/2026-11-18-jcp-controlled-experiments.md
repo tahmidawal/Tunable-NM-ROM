@@ -68,8 +68,9 @@ These are new measured development runs. A numerical failure remains visible eve
 | [head-p01](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p01.json) / 7354236 | 2 | Provisional: failed | all_stationary, ic_fit_passed, reference_passed |
 | [head-p02](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p02.json) / 7354339 | 2 | Pass | None |
 | [head-p03](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03.json) / 7354386 | 16 | Provisional: failed | ic_fit_passed |
+| [head-p03b](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b.json) / 7354705 | 16 | Pass | None |
 
-**Provisional comparison; numerical qualification failed — head-p03.** Errors below are maxima over each evolved trajectory, normalized by its original physical initial field. Both primary arms have identical reconstructed initial states. Median and worst are across the same cases.
+**Numerically qualified development comparison — head-p03b.** Errors below are maxima over each evolved trajectory, normalized by its original physical initial field. Both primary arms have identical reconstructed initial states. Median and worst are across the same cases.
 
 | Scalar weak rows M | Time step | Head median / worst error (%) | Span median / worst error (%) | Cases with lower head error |
 |---:|---:|---:|---:|---:|
@@ -77,44 +78,73 @@ These are new measured development runs. A numerical failure remains visible eve
 | 584 | 0.02 | 0.124681 / 0.200474 | 0.649119 / 1.340350 | 16 / 16 |
 | 584 | 0.01 | 0.096675 / 0.185633 | 0.669708 / 1.270691 | 16 / 16 |
 
-![Measured matched head/span trajectories](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/head-p03-trajectories.png)
+![Measured matched head/span trajectories](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/head-p03b-trajectories.png)
 
-The comparison is designed to isolate the head constraint, but the failed numerical gates currently prevent admitting that conclusion.
+The admitted comparison isolates the head constraint under the registered numerical settings.
 Its scope excludes a universal stability guarantee, fresh-test generalization, a global manifold distance, and a complete-query speedup.
 
 In the same-previous-state control, **640 of 640 stationary probes** reduce the minimized weak residual while increasing physical error; 0 additional probes do not meet stationarity. Each span solve starts from the head's next coefficients and uses the identical previous field and objective. These are correlated step diagnostics across 16 cases, not independent statistical samples.
 
-![Same-previous-state residual and physical-error comparison](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/head-p03-residual-versus-error.png)
+![Same-previous-state residual and physical-error comparison](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/head-p03b-residual-versus-error.png)
 
 At the same reached head states, the median physical-norm fraction of the least visible span direction outside the head-plus-frame tangent is **0.999718**. The corresponding median fraction of the actual span departure, evaluated with the local linearized field map, is **0.995103**. Retained physical (head, span) ranks are [(11, 67)]. These are norm fractions of sampled local directions, not fractions of cases or directions, energy fractions, global manifold distances, or uniform stability constants. The run's qualification status above applies to this diagnostic too.
+
+### Richer-test check for the head mechanism
+
+This follow-up retains the fixed pilot cases, model, common initial reconstruction, time step and convergence gates. It tests whether additional residual information closes the span/head gap. The original development-panel result remains separate.
+
+| Run / job | Cases | Numerical qualification | Rows |
+|---|---:|---|---|
+| [head-p04](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p04.json) / 7354832 | 2 | Pass | 1168, 2336 |
+
+![Measured richer-test head/span comparison](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/head-p04-richer-tests.png)
 
 ### Weak-test visibility
 
 Every panel uses the same-grid, same-time-step discrete Burgers reference. No continuum-error claim is made. Maximum field error includes the initial saved time. Spectral visibility and physical accuracy are separate diagnostics.
 
-| Retained run | Case | M | Maximum field error (%) | Numerical qualification | Independent shell residual |
-|---|---:|---:|---:|---|---:|
-| [weak-p02](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p02.json) | 0 | 256 | 1.904368 | Pass | 0.00243535 |
-| [weak-p02](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p02.json) | 0 | 512 | 1.462042 | Pass | 0.00196867 |
-| [weak-p02](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p02.json) | 0 | 1024 | 1.190747 | Pass | 0.00164771 |
-| [weak-p02](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p02.json) | 0 | 2048 | 1.014660 | Pass | 0.00139583 |
-| [weak-p02](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p02.json) | 1 | 256 | 0.215723 | Provisional: failed | 0.000162037 |
-| [weak-p02](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p02.json) | 1 | 512 | 0.215723 | Provisional: failed | 0.000116262 |
-| [weak-p02](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p02.json) | 1 | 1024 | 0.215723 | Provisional: failed | 9.31746e-05 |
-| [weak-p02](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p02.json) | 1 | 2048 | 0.215723 | Provisional: failed | 8.1317e-05 |
-| [weak-p03](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p03.json) | 0 | 256 | 1.904368 | Pass | 0.00243535 |
-| [weak-p03](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p03.json) | 0 | 512 | 1.462042 | Pass | 0.00196867 |
-| [weak-p03](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p03.json) | 0 | 1024 | 1.190747 | Pass | 0.00164771 |
-| [weak-p03](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p03.json) | 0 | 2048 | 1.014660 | Pass | 0.00139583 |
-| [weak-p03](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p03.json) | 1 | 256 | 0.215723 | Pass | 0.000162037 |
-| [weak-p03](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p03.json) | 1 | 512 | 0.215723 | Pass | 0.000116262 |
-| [weak-p03](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p03.json) | 1 | 1024 | 0.215723 | Pass | 9.31746e-05 |
-| [weak-p03](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p03.json) | 1 | 2048 | 0.215723 | Pass | 8.1317e-05 |
+| Retained run | Cases | Numerically qualified case/row settings |
+|---|---:|---:|
+| [weak-p02](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p02.json) | 2 | 4 / 8 |
+| [weak-p03](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-p03.json) | 2 | 8 / 8 |
+| [weak-full6](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-full6.json) | 6 | 24 / 24 |
 
-![Measured weak-test enrichment](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/weak-p03-test-enrichment.png)
+Latest registered panel:
+
+| Weak rows M | Median / worst maximum field error (%) | Numerically qualified cases |
+|---:|---:|---:|
+| 256 | 2.006441 / 4.297893 | 6 / 6 |
+| 512 | 1.530516 / 4.297893 | 6 / 6 |
+| 1024 | 1.368581 / 4.297893 | 6 / 6 |
+| 2048 | 1.322786 / 4.297893 | 6 / 6 |
+
+![Measured weak-test enrichment](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/weak-full6-test-enrichment.png)
+
+The largest total error remains limited by the initial projection. At M=2048, 4 of 6 cases attain their maximum at initialization. The worst actual distance from the reference's mass projection decreases from 2.998368% to 1.067425%. This distance is computed from the difference of fields, not by subtracting error norms. [Casewise source table](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-full6-table.json).
+
+**Retained counterexample:** 6 of 18 adjacent case/test-space transitions increase error at some times, even though their maximum-over-time errors do not worsen. The largest pointwise increase is 0.021036 percentage points. This is a separately labeled post-run diagnostic; it precludes pointwise error-dominance claims. [All comparisons](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-pointwise-counterexamples.json).
 
 
 Adding unchanged rows cannot decrease the smallest singular value at an identical state. That algebraic property alone does not demonstrate improved physical prediction.
+
+### Complete-query cost
+
+These are instrumented queries from the original host-resident physical input to complete host-resident fields, including native initial fitting, transfers, evolution and recovery. Accuracy is scored on the six requested output fields, not the denser mechanism-history grid. Candidate selection and independent timing repetitions use exposed development cases within each allocation. Eligibility requires both median and worst error no greater than the target. A finite candidate search does not certify the fastest possible comparator.
+
+| Run / target | Cases | Comparator | Target time (ms) | Comparator time (ms) | Comparator / target | Qualification |
+|---|---:|---|---:|---:|---:|---|
+| [cost-p01](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p01.json) / learned_head | 2 | pod | 31.5855 | — | — | no eligible selection comparator |
+| [cost-p01](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p01.json) / learned_head | 2 | fom_m64_cnab2_s60 | 31.5855 | 68.2701 | 2.161439 | Pass: same-allocation accuracy and timing |
+| [cost-p01](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p01.json) / learned_head | 2 | fom_m48_rk4_s15 | 31.5855 | 34.8359 | 1.102907 | Pass: same-allocation accuracy and timing |
+| [cost-p01](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p01.json) / learned_span64 | 2 | pod_span32 | 36.6945 | 26.0182 | 0.709051 | Pass: same-allocation accuracy and timing |
+| [cost-p01](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p01.json) / learned_span64 | 2 | fom_m64_cnab2_s40 | 36.6945 | 49.8211 | 1.357729 | Pass: same-allocation accuracy and timing |
+| [cost-p01](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p01.json) / learned_span64 | 2 | fom_m28_rk4_s5 | 36.6945 | 14.8756 | 0.405390 | Pass: same-allocation accuracy and timing |
+
+cost-p01 used **NVIDIA L40S**, job **7354479**. Ratios above one favor the target; no times are compared across jobs. A missing eligible POD comparator is an unresolved match in this candidate set, not a POD speed defeat.
+
+![Measured complete-query accuracy and cost](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/cost-p01-complete-query.png)
+
+Cold measurements, where retained in the experiment lane, cover asset activation, compilation and the first query within an already initialized runtime. They retain the operating-system page cache and exclude runtime/context startup. They cannot be relabeled process-cold deployment costs.
 
 ### Reproducibility
 

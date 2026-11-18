@@ -1,0 +1,3236 @@
+{
+  "learned_head": {
+    "family": "target",
+    "mesh": 64,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 31.445847,
+        "repetitions_ms": [
+          31.457157,
+          31.445847,
+          31.432737
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0005427398643094582,
+        "initial_error": 0.00019991657680684525,
+        "final_error": 0.0005427398643094582,
+        "repeated_output_hashes": [
+          "373788fc18cd08b39993a0abdb171bf788640457c23be941da792d82330ea5d5"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 31.831768,
+        "repetitions_ms": [
+          31.831768,
+          31.825241,
+          31.874476
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0007606854918795047,
+        "initial_error": 0.00039679419924842604,
+        "final_error": 0.0007606854918795047,
+        "repeated_output_hashes": [
+          "a4ed34c5c395ab142b46f3b9a607bc785a915019fdc9a31c1b1d4e6d95bfb0b9"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 31.6388075,
+    "median_case_evolved_max_error": 0.0006517126780944814,
+    "worst_evolved_error": 0.0007606854918795047,
+    "outlier_count_tukey": 0
+  },
+  "learned_span64": {
+    "family": "target",
+    "mesh": 64,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 35.904205,
+        "repetitions_ms": [
+          35.904205,
+          35.882794,
+          35.909121
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.004012725119729279,
+        "initial_error": 0.0001959242946334057,
+        "final_error": 0.001881109710049532,
+        "repeated_output_hashes": [
+          "571c0169670c693ed1141ef667c1873404397a1a1e3f341cc866ab1fba4014c3"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 37.501267,
+        "repetitions_ms": [
+          37.520756,
+          37.499135,
+          37.501267
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.008173151647921288,
+        "initial_error": 0.00039578247581335244,
+        "final_error": 0.008173151647921288,
+        "repeated_output_hashes": [
+          "a42ee3d49ee0f40c2df17e6da26a2269dabcc82a8ceaa582dd0afbae8faac8c7"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 36.702736,
+    "median_case_evolved_max_error": 0.006092938383825283,
+    "worst_evolved_error": 0.008173151647921288,
+    "outlier_count_tukey": 0
+  },
+  "pod_head": {
+    "family": "pod",
+    "mesh": 64,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 31.900789,
+        "repetitions_ms": [
+          31.900789,
+          31.85486,
+          31.967521
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0007809570530674294,
+        "initial_error": 0.00021579990626095888,
+        "final_error": 0.0007809570530674294,
+        "repeated_output_hashes": [
+          "3ff14da59953e5b4434ef67834a1e1d03cf83888f297360d27562adb7156b79f"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 31.923596,
+        "repetitions_ms": [
+          31.91001,
+          31.923596,
+          31.927889
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0005661266505655521,
+        "initial_error": 0.000316557322965722,
+        "final_error": 0.0005661266505655521,
+        "repeated_output_hashes": [
+          "d59def84e7460c24837114b881253a8d83b3400b02d816bba9e222dde9dd3326"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 31.9121925,
+    "median_case_evolved_max_error": 0.0006735418518164908,
+    "worst_evolved_error": 0.0007809570530674294,
+    "outlier_count_tukey": 0
+  },
+  "pod_span8": {
+    "family": "pod",
+    "mesh": 64,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 21.596485,
+        "repetitions_ms": [
+          21.596485,
+          21.517,
+          21.602142
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.033907507863318226,
+        "initial_error": 0.027432167328302268,
+        "final_error": 0.033907507863318226,
+        "repeated_output_hashes": [
+          "55c091d8fccf87ff6f68946089fce0c3c3efc4665e8b3675d99302ec39c814ac"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 21.278418,
+        "repetitions_ms": [
+          21.295232,
+          21.255066,
+          21.278418
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.025057177913418754,
+        "initial_error": 0.019820160538198076,
+        "final_error": 0.025057177913418754,
+        "repeated_output_hashes": [
+          "c660d3c443e288fbd783465b1568b3695a5fcfec7f64a13c8dbf21da04277154"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 21.4374515,
+    "median_case_evolved_max_error": 0.02948234288836849,
+    "worst_evolved_error": 0.033907507863318226,
+    "outlier_count_tukey": 0
+  },
+  "pod_span16": {
+    "family": "pod",
+    "mesh": 64,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 23.536075,
+        "repetitions_ms": [
+          23.538768,
+          23.536075,
+          23.523487
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.02582990820311076,
+        "initial_error": 0.01186129539281039,
+        "final_error": 0.02582990820311076,
+        "repeated_output_hashes": [
+          "4fc938b94efb32811efc02a6e390a3d501cb0a31d5c9eb9529347a75cd6b4765"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 23.322317,
+        "repetitions_ms": [
+          23.275444,
+          23.341018,
+          23.322317
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.01419046873564121,
+        "initial_error": 0.004846342891457785,
+        "final_error": 0.01419046873564121,
+        "repeated_output_hashes": [
+          "b927b0db92cb4e0d6bf7ec4b3ee92918188f08f528bcd22c64b4acefdb6170c8"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 23.429196,
+    "median_case_evolved_max_error": 0.020010188469375984,
+    "worst_evolved_error": 0.02582990820311076,
+    "outlier_count_tukey": 0
+  },
+  "pod_span32": {
+    "family": "pod",
+    "mesh": 64,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 25.518621,
+        "repetitions_ms": [
+          25.518621,
+          25.549217,
+          25.425915
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.006364105717842152,
+        "initial_error": 0.0010341726850424744,
+        "final_error": 0.006364105717842152,
+        "repeated_output_hashes": [
+          "dabcc6053dde79d9700318de2dd736f02c61cc503192de3edbfbd71a7386c137"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 26.45094,
+        "repetitions_ms": [
+          26.497752,
+          26.45094,
+          26.424199
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.003965242334266138,
+        "initial_error": 0.001307398922005229,
+        "final_error": 0.003965242334266138,
+        "repeated_output_hashes": [
+          "440b77e5e948cb1b3914affc7a34322a8201675b9de8d2b31eeea4c4fbbbb3d4"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 25.9847805,
+    "median_case_evolved_max_error": 0.005164674026054145,
+    "worst_evolved_error": 0.006364105717842152,
+    "outlier_count_tukey": 0
+  },
+  "pod_span64": {
+    "family": "pod",
+    "mesh": 64,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 34.019138,
+        "repetitions_ms": [
+          34.019138,
+          34.014338,
+          34.041594
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0022923300113312766,
+        "initial_error": 0.00021313486313639794,
+        "final_error": 0.002131557106721942,
+        "repeated_output_hashes": [
+          "fba4281d6d86036f29818000674705c7de2e0ce3c57e3b2ec5f69f18c592c9b8"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 36.394355,
+        "repetitions_ms": [
+          36.480005,
+          36.394355,
+          36.351987
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0014788875416735106,
+        "initial_error": 0.0003152775677257396,
+        "final_error": 0.0014788875416735106,
+        "repeated_output_hashes": [
+          "8226ea7fd636a9d7e8cb27047f342374add971d48e5c78496d218fc971230ca4"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 35.206746499999994,
+    "median_case_evolved_max_error": 0.0018856087765023936,
+    "worst_evolved_error": 0.0022923300113312766,
+    "outlier_count_tukey": 0
+  },
+  "fom_m24_cnab2_s20": {
+    "family": "classical",
+    "mesh": 24,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 14.960338,
+        "repetitions_ms": [
+          14.960338,
+          15.00177,
+          14.958366
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.004247961386874436,
+        "initial_error": 9.600421974854694e-05,
+        "final_error": 0.0032271196051598056,
+        "repeated_output_hashes": [
+          "9b8026ed96bd187eeb7fa2fb25ec310fb72b8b3fe7b428da3682799fb52dd065"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 14.952994,
+        "repetitions_ms": [
+          14.88142,
+          14.9797,
+          14.952994
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.01681639270470971,
+        "initial_error": 9.362086210258309e-05,
+        "final_error": 0.01681639270470971,
+        "repeated_output_hashes": [
+          "42e0293f94a3aea1aae9dcda6ed72fb8e1bd2e90422a95047f8aabb41f6b9d56"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 14.956666,
+    "median_case_evolved_max_error": 0.010532177045792073,
+    "worst_evolved_error": 0.01681639270470971,
+    "outlier_count_tukey": 0
+  },
+  "fom_m24_cnab2_s25": {
+    "family": "classical",
+    "mesh": 24,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 15.572108,
+        "repetitions_ms": [
+          15.572108,
+          15.525247,
+          15.663733
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.003514999818547008,
+        "initial_error": 9.600421974854694e-05,
+        "final_error": 0.002772298551209561,
+        "repeated_output_hashes": [
+          "bf328a5e32350e9280c1ccb8af101713fbe2e2b523eb76abd64809ad116a77b3"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 15.636093,
+        "repetitions_ms": [
+          15.636093,
+          15.632948,
+          15.651171
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.016105698448222152,
+        "initial_error": 9.362086210258309e-05,
+        "final_error": 0.016105698448222152,
+        "repeated_output_hashes": [
+          "db5df41cd3d3e4bc012a1c63c0f4929c68ece901f61f24718388fbe9df71be5a"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 15.604100500000001,
+    "median_case_evolved_max_error": 0.00981034913338458,
+    "worst_evolved_error": 0.016105698448222152,
+    "outlier_count_tukey": 0
+  },
+  "fom_m24_cnab2_s40": {
+    "family": "classical",
+    "mesh": 24,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 17.685522,
+        "repetitions_ms": [
+          17.64121,
+          17.685522,
+          17.749134
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0029926390565202876,
+        "initial_error": 9.600421974854694e-05,
+        "final_error": 0.0024605423740865404,
+        "repeated_output_hashes": [
+          "bc6fd41b4dd97ddb38cc3b945ae5c59f70940e1ef7214e8fd268155489faa828"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 17.73947,
+        "repetitions_ms": [
+          17.73947,
+          17.665334,
+          17.751336
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.015572168856787603,
+        "initial_error": 9.362086210258309e-05,
+        "final_error": 0.015572168856787603,
+        "repeated_output_hashes": [
+          "bd857cd78126f45813c26867893b91563d47ff0f5409bc0d514f185a35ac7f57"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 17.712496,
+    "median_case_evolved_max_error": 0.009282403956653945,
+    "worst_evolved_error": 0.015572168856787603,
+    "outlier_count_tukey": 0
+  },
+  "fom_m24_cnab2_s50": {
+    "family": "classical",
+    "mesh": 24,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 19.035426,
+        "repetitions_ms": [
+          19.035426,
+          18.986223,
+          19.145738
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0029267299381933293,
+        "initial_error": 9.600421974854694e-05,
+        "final_error": 0.002423921082393801,
+        "repeated_output_hashes": [
+          "283f02d7f85f5eff276043dfefeb49e8cc620dbde112e57bbb9eeaaba75de143"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 19.103784,
+        "repetitions_ms": [
+          19.128401,
+          19.06331,
+          19.103784
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.015485913781127012,
+        "initial_error": 9.362086210258309e-05,
+        "final_error": 0.015485913781127012,
+        "repeated_output_hashes": [
+          "df734a4d2be1fa7bc3b804bce1f6f3ff64f58d47be046ee620c36b18bcd59c34"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 19.069605000000003,
+    "median_case_evolved_max_error": 0.009206321859660171,
+    "worst_evolved_error": 0.015485913781127012,
+    "outlier_count_tukey": 0
+  },
+  "fom_m24_cnab2_s60": {
+    "family": "classical",
+    "mesh": 24,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 20.520823,
+        "repetitions_ms": [
+          20.465924,
+          20.542269,
+          20.520823
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0029009214939109164,
+        "initial_error": 9.600421974854694e-05,
+        "final_error": 0.0024103268638857563,
+        "repeated_output_hashes": [
+          "00b4cff3bf6e13c513f7a77bfff422dc050b643ce268ccbd05d92580fb751be0"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 20.537615,
+        "repetitions_ms": [
+          20.492621,
+          20.559557,
+          20.537615
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.015445317816630914,
+        "initial_error": 9.362086210258309e-05,
+        "final_error": 0.015445317816630914,
+        "repeated_output_hashes": [
+          "2ba90d24e5931defa317d39885835b838ffd5de40fea42fdb717739c018e6788"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 20.529218999999998,
+    "median_case_evolved_max_error": 0.009173119655270914,
+    "worst_evolved_error": 0.015445317816630914,
+    "outlier_count_tukey": 0
+  },
+  "fom_m24_cnab2_s80": {
+    "family": "classical",
+    "mesh": 24,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 23.279855,
+        "repetitions_ms": [
+          23.279855,
+          23.268171,
+          23.316974
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0028825339075593463,
+        "initial_error": 9.600421974854694e-05,
+        "final_error": 0.0024013539279195122,
+        "repeated_output_hashes": [
+          "4aaa202ca0994daf876cd7509133ff776159d2349eed2bbc917aefc996b47a15"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 23.276924,
+        "repetitions_ms": [
+          23.244768,
+          23.311337,
+          23.276924
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.015409617075830056,
+        "initial_error": 9.362086210258309e-05,
+        "final_error": 0.015409617075830056,
+        "repeated_output_hashes": [
+          "1f24d85174e3fa61268854f078020ea874d8b4ab0d35485816bc63c8fde15562"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 23.278389500000003,
+    "median_case_evolved_max_error": 0.0091460754916947,
+    "worst_evolved_error": 0.015409617075830056,
+    "outlier_count_tukey": 0
+  },
+  "fom_m24_rk4_s5": {
+    "family": "classical",
+    "mesh": 24,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 13.833879,
+        "repetitions_ms": [
+          13.793173,
+          13.88188,
+          13.833879
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.003262992306595026,
+        "initial_error": 9.600421974854694e-05,
+        "final_error": 0.002567734223086796,
+        "repeated_output_hashes": [
+          "38b113208a2a72b574e01eaf2a0dcb9cebd178ec37936db30afe321ca67aaba4"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 13.833623,
+        "repetitions_ms": [
+          13.833623,
+          13.867055,
+          13.827841
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.014924609576004834,
+        "initial_error": 9.362086210258309e-05,
+        "final_error": 0.014924609576004834,
+        "repeated_output_hashes": [
+          "5e5550baa8a7167c476bf6994c9d2b9710e14b559e6cd5b91f88a21084a8184d"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 13.833751,
+    "median_case_evolved_max_error": 0.00909380094129993,
+    "worst_evolved_error": 0.014924609576004834,
+    "outlier_count_tukey": 0
+  },
+  "fom_m24_rk4_s10": {
+    "family": "classical",
+    "mesh": 24,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 15.753296,
+        "repetitions_ms": [
+          15.647332,
+          15.79057,
+          15.753296
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0028745095078154593,
+        "initial_error": 9.600421974854694e-05,
+        "final_error": 0.0024009944133400406,
+        "repeated_output_hashes": [
+          "ec9d8e7349432e9ca73e48abae0c3ecc8a048d88b0ed039fe82a8e9e5be78f96"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 15.767285,
+        "repetitions_ms": [
+          15.642902,
+          15.792552,
+          15.767285
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.015354826192875117,
+        "initial_error": 9.362086210258309e-05,
+        "final_error": 0.015354826192875117,
+        "repeated_output_hashes": [
+          "440faec7b96967cfc193f14ff98c36299cd475b639b94348d8f310049fbb2781"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 15.7602905,
+    "median_case_evolved_max_error": 0.009114667850345289,
+    "worst_evolved_error": 0.015354826192875117,
+    "outlier_count_tukey": 0
+  },
+  "fom_m24_rk4_s15": {
+    "family": "classical",
+    "mesh": 24,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 17.548114,
+        "repetitions_ms": [
+          17.491995,
+          17.562633,
+          17.548114
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0028712152776771325,
+        "initial_error": 9.600421974854694e-05,
+        "final_error": 0.0023975898561535247,
+        "repeated_output_hashes": [
+          "54d244cbce16564a7664f70ece28883a776c5d6733e1675fadb413f71d79ace9"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 17.571974,
+        "repetitions_ms": [
+          17.480842,
+          17.625798,
+          17.571974
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.015370681678958692,
+        "initial_error": 9.362086210258309e-05,
+        "final_error": 0.015370681678958692,
+        "repeated_output_hashes": [
+          "fb6cf908d9907cccf04e7230cba3e28f98a6a1803fd54aca1d62fcbd06e97c1d"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 17.560044,
+    "median_case_evolved_max_error": 0.009120948478317912,
+    "worst_evolved_error": 0.015370681678958692,
+    "outlier_count_tukey": 0
+  },
+  "fom_m24_rk4_s20": {
+    "family": "classical",
+    "mesh": 24,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 19.400519,
+        "repetitions_ms": [
+          19.409733,
+          19.389747,
+          19.400519
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.00287046604494238,
+        "initial_error": 9.600421974854694e-05,
+        "final_error": 0.0023969927542360587,
+        "repeated_output_hashes": [
+          "1a1350cf7ac01debb37752b4106946c8e19faff9be2f63739421815c74b33b7e"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 19.385883,
+        "repetitions_ms": [
+          19.368402,
+          19.385883,
+          19.407636
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.015371730291439643,
+        "initial_error": 9.362086210258309e-05,
+        "final_error": 0.015371730291439643,
+        "repeated_output_hashes": [
+          "fbe1b5e560d334c266fd24c0c007b84032b2bdd8f7d0c182d8977981ad489f22"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 19.393200999999998,
+    "median_case_evolved_max_error": 0.00912109816819101,
+    "worst_evolved_error": 0.015371730291439643,
+    "outlier_count_tukey": 0
+  },
+  "fom_m28_cnab2_s20": {
+    "family": "classical",
+    "mesh": 28,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 16.125207,
+        "repetitions_ms": [
+          16.125207,
+          16.045379,
+          16.131158
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0033007729703119545,
+        "initial_error": 1.2903149649565346e-06,
+        "final_error": 0.0021590590788933555,
+        "repeated_output_hashes": [
+          "599aaff826a9598f014ab6df8fff35444a7ae4c221d8dddb27351f9832a34973"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 16.118701,
+        "repetitions_ms": [
+          15.967884,
+          16.118701,
+          16.201796
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.007649330969585237,
+        "initial_error": 1.2873734719848752e-06,
+        "final_error": 0.007649330969585237,
+        "repeated_output_hashes": [
+          "ffc50faee6678ecfa5cfec8cf9b205efc834ba73610de8d2b77d94f05cab4ba0"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 16.121954000000002,
+    "median_case_evolved_max_error": 0.005475051969948595,
+    "worst_evolved_error": 0.007649330969585237,
+    "outlier_count_tukey": 0
+  },
+  "fom_m28_cnab2_s25": {
+    "family": "classical",
+    "mesh": 28,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 17.066782,
+        "repetitions_ms": [
+          17.066782,
+          16.879473,
+          17.169312
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0021017626806356816,
+        "initial_error": 1.2903149649565346e-06,
+        "final_error": 0.001426944949681759,
+        "repeated_output_hashes": [
+          "9f53ca896c2dd7634c45a1ec810d61fa9ec7c6b767a91ebee08fb94912dc0575"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 17.029007,
+        "repetitions_ms": [
+          17.029007,
+          16.964733,
+          17.179512
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.006567407943423444,
+        "initial_error": 1.2873734719848752e-06,
+        "final_error": 0.006567407943423444,
+        "repeated_output_hashes": [
+          "8c4cf86b89ff57d490cb3bb6554c7a22aca422e31f30f1a6d38bd7363b5dfbfb"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 17.047894499999998,
+    "median_case_evolved_max_error": 0.004334585312029563,
+    "worst_evolved_error": 0.006567407943423444,
+    "outlier_count_tukey": 0
+  },
+  "fom_m28_cnab2_s40": {
+    "family": "classical",
+    "mesh": 28,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 19.962751,
+        "repetitions_ms": [
+          19.962751,
+          19.992972,
+          19.904164
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0009265391368252192,
+        "initial_error": 1.2903149649565346e-06,
+        "final_error": 0.0006975336000749776,
+        "repeated_output_hashes": [
+          "c2a7775c74b7ee12c24b923ae486708604309d6850803910dbd22030e3561f1a"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 19.96568,
+        "repetitions_ms": [
+          19.96568,
+          20.01461,
+          19.84486
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.005786162483192509,
+        "initial_error": 1.2873734719848752e-06,
+        "final_error": 0.005786162483192509,
+        "repeated_output_hashes": [
+          "0dce392ef10038adb86d2f33a5b50ebdd412b51705a5be7027cea8b49f1f9b61"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 19.9642155,
+    "median_case_evolved_max_error": 0.003356350810008864,
+    "worst_evolved_error": 0.005786162483192509,
+    "outlier_count_tukey": 0
+  },
+  "fom_m28_cnab2_s50": {
+    "family": "classical",
+    "mesh": 28,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 21.924721,
+        "repetitions_ms": [
+          21.924721,
+          21.886723,
+          21.950562
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0007332004977047445,
+        "initial_error": 1.2903149649565346e-06,
+        "final_error": 0.0005669314516066962,
+        "repeated_output_hashes": [
+          "7360688706dcc55d271f6b30352130988b8b661bf5425d887546bb4b11479edd"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 21.934393,
+        "repetitions_ms": [
+          21.890985,
+          21.934393,
+          21.950287
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.005678759294954885,
+        "initial_error": 1.2873734719848752e-06,
+        "final_error": 0.005678759294954885,
+        "repeated_output_hashes": [
+          "54f2e5b5bdadd33eeae7f7cea6b712d3d5d377f7304cf76be8c198cb294cb8b7"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 21.929557000000003,
+    "median_case_evolved_max_error": 0.003205979896329815,
+    "worst_evolved_error": 0.005678759294954885,
+    "outlier_count_tukey": 0
+  },
+  "fom_m28_cnab2_s60": {
+    "family": "classical",
+    "mesh": 28,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 23.817993,
+        "repetitions_ms": [
+          23.768551,
+          23.817993,
+          23.822131
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0006493697464114923,
+        "initial_error": 1.2903149649565346e-06,
+        "final_error": 0.0005119735908941863,
+        "repeated_output_hashes": [
+          "fc2a4a0cd733a8b511818cc36dd1abc1fddb5901bed807b5d93fd92a44f60aa3"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 23.729124,
+        "repetitions_ms": [
+          23.729124,
+          23.722347,
+          23.820383
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.00563366204053863,
+        "initial_error": 1.2873734719848752e-06,
+        "final_error": 0.00563366204053863,
+        "repeated_output_hashes": [
+          "cd122b4388562c014e1420f2c6fa8465a4a18055a1e3605d8b4020495335186c"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 23.7735585,
+    "median_case_evolved_max_error": 0.003141515893475061,
+    "worst_evolved_error": 0.00563366204053863,
+    "outlier_count_tukey": 0
+  },
+  "fom_m28_cnab2_s80": {
+    "family": "classical",
+    "mesh": 28,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 27.618256,
+        "repetitions_ms": [
+          27.581121,
+          27.651864,
+          27.618256
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0005891726088554072,
+        "initial_error": 1.2903149649565346e-06,
+        "final_error": 0.0004737532556031137,
+        "repeated_output_hashes": [
+          "7cd379b6766de0bc0b82508b54df7947b2203cd11afc3c444953c2e2181b5f9c"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 27.615129,
+        "repetitions_ms": [
+          27.693185,
+          27.584596,
+          27.615129
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.005598532190780738,
+        "initial_error": 1.2873734719848752e-06,
+        "final_error": 0.005598532190780738,
+        "repeated_output_hashes": [
+          "adb8306e9a4beae14e7be519b4230d089b1f7b751d563ea468724c584ea1006b"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 27.6166925,
+    "median_case_evolved_max_error": 0.0030938523998180725,
+    "worst_evolved_error": 0.005598532190780738,
+    "outlier_count_tukey": 0
+  },
+  "fom_m28_rk4_s5": {
+    "family": "classical",
+    "mesh": 28,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 14.916452,
+        "repetitions_ms": [
+          14.866309,
+          14.953048,
+          14.916452
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.003874705841422307,
+        "initial_error": 1.2903149649565346e-06,
+        "final_error": 0.003874705841422307,
+        "repeated_output_hashes": [
+          "2baa32785222df764fe1c6d489fa0b97d69260b961deffd46ea9eee0d693beff"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 14.856619,
+        "repetitions_ms": [
+          14.856619,
+          14.839333,
+          14.936694
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.00604732821163001,
+        "initial_error": 1.2873734719848752e-06,
+        "final_error": 0.00604732821163001,
+        "repeated_output_hashes": [
+          "debd6f52565d1b71dea51b0a35f366b866b97b70302e386eb8f605d0b621eafa"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 14.8865355,
+    "median_case_evolved_max_error": 0.004961017026526158,
+    "worst_evolved_error": 0.00604732821163001,
+    "outlier_count_tukey": 0
+  },
+  "fom_m28_rk4_s10": {
+    "family": "classical",
+    "mesh": 28,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 17.716465,
+        "repetitions_ms": [
+          17.716465,
+          17.796314,
+          17.621818
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0005647948432537799,
+        "initial_error": 1.2903149649565346e-06,
+        "final_error": 0.00045921236951263834,
+        "repeated_output_hashes": [
+          "4d18071d527ae80b8dd23567976ec21e2b890a30590176f898ecd2bb7f8a2413"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 17.78475,
+        "repetitions_ms": [
+          17.743862,
+          17.806646,
+          17.78475
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0055544674260690815,
+        "initial_error": 1.2873734719848752e-06,
+        "final_error": 0.0055544674260690815,
+        "repeated_output_hashes": [
+          "e75b4cfb2657dd8f61480c502140a20d16c761cb04d81302dcd73177de39ca33"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 17.7506075,
+    "median_case_evolved_max_error": 0.0030596311346614306,
+    "worst_evolved_error": 0.0055544674260690815,
+    "outlier_count_tukey": 0
+  },
+  "fom_m28_rk4_s15": {
+    "family": "classical",
+    "mesh": 28,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 20.582057,
+        "repetitions_ms": [
+          20.582057,
+          20.395182,
+          20.633168
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0005580931860798773,
+        "initial_error": 1.2903149649565346e-06,
+        "final_error": 0.0004557416653459262,
+        "repeated_output_hashes": [
+          "b33b0e895bd86d01d67bf2bcf7b62102e0e7707a4398111eaf02702603cdd896"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 20.57633,
+        "repetitions_ms": [
+          20.57633,
+          20.542299,
+          20.645134
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.005568249054555572,
+        "initial_error": 1.2873734719848752e-06,
+        "final_error": 0.005568249054555572,
+        "repeated_output_hashes": [
+          "16caa79fb8fb288596d17a28cba5a41288d45cb4a5f48252101bbe1e66cb6335"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 20.5791935,
+    "median_case_evolved_max_error": 0.0030631711203177245,
+    "worst_evolved_error": 0.005568249054555572,
+    "outlier_count_tukey": 0
+  },
+  "fom_m28_rk4_s20": {
+    "family": "classical",
+    "mesh": 28,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 23.416421,
+        "repetitions_ms": [
+          23.408609,
+          23.452025,
+          23.416421
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0005577468632840477,
+        "initial_error": 1.2903149649565346e-06,
+        "final_error": 0.000455414704663315,
+        "repeated_output_hashes": [
+          "e8a78b1584bfc8edfda4a9c55ff721d9c0e424bd912e8b85340a1b3d509de8c5"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 23.382666,
+        "repetitions_ms": [
+          23.382666,
+          23.339577,
+          23.419635
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.005568890694821227,
+        "initial_error": 1.2873734719848752e-06,
+        "final_error": 0.005568890694821227,
+        "repeated_output_hashes": [
+          "444ce28d268b724dec47b75c5b7fdb16feebfd2d3e93e45e1e0258688ea55ef8"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 23.3995435,
+    "median_case_evolved_max_error": 0.0030633187790526377,
+    "worst_evolved_error": 0.005568890694821227,
+    "outlier_count_tukey": 0
+  },
+  "fom_m32_cnab2_s20": {
+    "family": "classical",
+    "mesh": 32,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 15.755064,
+        "repetitions_ms": [
+          15.755064,
+          15.731996,
+          15.857559
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0032683422356744605,
+        "initial_error": 1.2839052090881877e-07,
+        "final_error": 0.0021214948643521396,
+        "repeated_output_hashes": [
+          "51d212a11e22c5d8edb4e1486632e3b40e0553c0e3fd4d9f982943bf5be85a09"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 15.747217,
+        "repetitions_ms": [
+          15.795599,
+          15.72571,
+          15.747217
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.006685328412229514,
+        "initial_error": 1.2921712819988318e-07,
+        "final_error": 0.0064670647200434925,
+        "repeated_output_hashes": [
+          "b012ed685310889fc09b5146663e3b6fc2a1a06c0b73373ba7d0f83fddd6061b"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 15.7511405,
+    "median_case_evolved_max_error": 0.004976835323951987,
+    "worst_evolved_error": 0.006685328412229514,
+    "outlier_count_tukey": 0
+  },
+  "fom_m32_cnab2_s25": {
+    "family": "classical",
+    "mesh": 32,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 16.679117,
+        "repetitions_ms": [
+          16.679117,
+          16.68726,
+          16.659242
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0020526764415956804,
+        "initial_error": 1.2839052090881877e-07,
+        "final_error": 0.001367907484719793,
+        "repeated_output_hashes": [
+          "8f5c1077dd77765701160f8a229f30e4f51de7c870fa67622440131ca701edf3"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 16.626426,
+        "repetitions_ms": [
+          16.626426,
+          16.590566,
+          16.729118
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0047163192608847436,
+        "initial_error": 1.2921712819988318e-07,
+        "final_error": 0.0047163192608847436,
+        "repeated_output_hashes": [
+          "81aa1dd193825a5edeac9dafc9f11387dfa64626c5ddae3570a65724acba1133"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 16.6527715,
+    "median_case_evolved_max_error": 0.003384497851240212,
+    "worst_evolved_error": 0.0047163192608847436,
+    "outlier_count_tukey": 0
+  },
+  "fom_m32_cnab2_s40": {
+    "family": "classical",
+    "mesh": 32,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 19.281591,
+        "repetitions_ms": [
+          19.281591,
+          19.345453,
+          19.231574
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0008141623253462344,
+        "initial_error": 1.2839052090881877e-07,
+        "final_error": 0.0005657346398148526,
+        "repeated_output_hashes": [
+          "a1ad29f2fc6934d37983292a67f88837963d542f4fb721fd1b2d3bcdfb0208c2"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 19.355896,
+        "repetitions_ms": [
+          18.935396,
+          19.357725,
+          19.355896
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0036867170613341885,
+        "initial_error": 1.2921712819988318e-07,
+        "final_error": 0.0036867170613341885,
+        "repeated_output_hashes": [
+          "a5ed1b7a555db3cb61180d8d7640983c261e0deaff288f5685699f1607c3cb0a"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 19.3187435,
+    "median_case_evolved_max_error": 0.0022504396933402115,
+    "worst_evolved_error": 0.0036867170613341885,
+    "outlier_count_tukey": 0
+  },
+  "fom_m32_cnab2_s50": {
+    "family": "classical",
+    "mesh": 32,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 21.025961,
+        "repetitions_ms": [
+          21.032964,
+          20.998483,
+          21.025961
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0005409856706145502,
+        "initial_error": 1.2839052090881877e-07,
+        "final_error": 0.0003934419225804881,
+        "repeated_output_hashes": [
+          "0b9e12f4db20d0f8260ea339764c62a473a7e88bd8198258f05808f28b9b45ae"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 21.119246,
+        "repetitions_ms": [
+          21.119246,
+          21.156211,
+          21.113319
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.003546722855643583,
+        "initial_error": 1.2921712819988318e-07,
+        "final_error": 0.003546722855643583,
+        "repeated_output_hashes": [
+          "efd6e1b1ed1bacd4325436b3cb2f82271e127b25d44f768e43fce0ba4d270eef"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 21.0726035,
+    "median_case_evolved_max_error": 0.0020438542631290666,
+    "worst_evolved_error": 0.003546722855643583,
+    "outlier_count_tukey": 0
+  },
+  "fom_m32_cnab2_s60": {
+    "family": "classical",
+    "mesh": 32,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 22.807263,
+        "repetitions_ms": [
+          22.840385,
+          22.801881,
+          22.807263
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.00041094186651091934,
+        "initial_error": 1.2839052090881877e-07,
+        "final_error": 0.0003089543723169968,
+        "repeated_output_hashes": [
+          "4bb25c1e5d9bbb429f3628dca1680ef97abacfa880f874e2388c401edab93bab"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 22.890708,
+        "repetitions_ms": [
+          22.846635,
+          22.919085,
+          22.890708
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.003490492458583669,
+        "initial_error": 1.2921712819988318e-07,
+        "final_error": 0.003490492458583669,
+        "repeated_output_hashes": [
+          "8e65b26dfec0a9810a8d392148691e54a25cc95a363c98dbf18b50bd525a8ef4"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 22.848985499999998,
+    "median_case_evolved_max_error": 0.001950717162547294,
+    "worst_evolved_error": 0.003490492458583669,
+    "outlier_count_tukey": 0
+  },
+  "fom_m32_cnab2_s80": {
+    "family": "classical",
+    "mesh": 32,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 26.371362,
+        "repetitions_ms": [
+          26.329253,
+          26.391155,
+          26.371362
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0003107411340831637,
+        "initial_error": 1.2839052090881877e-07,
+        "final_error": 0.00024027097303929774,
+        "repeated_output_hashes": [
+          "c950f29dd928f9b434fbdd2817f3035fe0de2a880e8b6fe8c7985dc90320143c"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 26.347714,
+        "repetitions_ms": [
+          26.340162,
+          26.347714,
+          26.426097
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0034494426269943645,
+        "initial_error": 1.2921712819988318e-07,
+        "final_error": 0.0034494426269943645,
+        "repeated_output_hashes": [
+          "b0b2c101176175de29bd4bd213d7fe0982a72ce32c73085832640a8ef97562b9"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 26.359538,
+    "median_case_evolved_max_error": 0.001880091880538764,
+    "worst_evolved_error": 0.0034494426269943645,
+    "outlier_count_tukey": 0
+  },
+  "fom_m32_rk4_s5": {
+    "family": "classical",
+    "mesh": 32,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 14.767077,
+        "repetitions_ms": [
+          14.785653,
+          14.767077,
+          14.739787
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.047857910078992434,
+        "initial_error": 1.2839052090881877e-07,
+        "final_error": 0.047857910078992434,
+        "repeated_output_hashes": [
+          "214625ca7920edd42b2d2f2d066e93ad39c9fc808db321f8048fee752bf4fb50"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 14.791921,
+        "repetitions_ms": [
+          14.791921,
+          14.778604,
+          14.875781
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.03502317399115303,
+        "initial_error": 1.2921712819988318e-07,
+        "final_error": 0.03502317399115303,
+        "repeated_output_hashes": [
+          "e52efde4d5c292deca7dd718f1ae8c0b829be8d17be6c5879daae1631c7aed66"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 14.779499000000001,
+    "median_case_evolved_max_error": 0.04144054203507273,
+    "worst_evolved_error": 0.047857910078992434,
+    "outlier_count_tukey": 0
+  },
+  "fom_m32_rk4_s10": {
+    "family": "classical",
+    "mesh": 32,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 17.615159,
+        "repetitions_ms": [
+          17.615159,
+          17.577357,
+          17.677243
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0002681177878639405,
+        "initial_error": 1.2839052090881877e-07,
+        "final_error": 0.00020697117867645077,
+        "repeated_output_hashes": [
+          "a756da256bb73d8dac6c9ade5926ae55ff233291c3ed47d7741a7e35c67e2f9c"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 17.626439,
+        "repetitions_ms": [
+          17.626439,
+          17.618596,
+          17.644344
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0034096922195957008,
+        "initial_error": 1.2921712819988318e-07,
+        "final_error": 0.0034096922195957008,
+        "repeated_output_hashes": [
+          "648d879dffbb125fd96d3a4f1cde24ff99e252800a86a9bfc63886f7061b8bb8"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 17.620798999999998,
+    "median_case_evolved_max_error": 0.0018389050037298205,
+    "worst_evolved_error": 0.0034096922195957008,
+    "outlier_count_tukey": 0
+  },
+  "fom_m32_rk4_s15": {
+    "family": "classical",
+    "mesh": 32,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 20.34657,
+        "repetitions_ms": [
+          20.164032,
+          20.34657,
+          20.447792
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0002516639799787132,
+        "initial_error": 1.2839052090881877e-07,
+        "final_error": 0.0002016360012722408,
+        "repeated_output_hashes": [
+          "596d06a6d44c1d3538b1fb336cb588a4fc896bc2d582e7d009b9088246de77ad"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 20.430166,
+        "repetitions_ms": [
+          20.379254,
+          20.486945,
+          20.430166
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0034197726577062113,
+        "initial_error": 1.2921712819988318e-07,
+        "final_error": 0.0034197726577062113,
+        "repeated_output_hashes": [
+          "77801f171bc286237fb18c573e78df157f61275a059a710f61cc160352504ba3"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 20.388368,
+    "median_case_evolved_max_error": 0.0018357183188424623,
+    "worst_evolved_error": 0.0034197726577062113,
+    "outlier_count_tukey": 0
+  },
+  "fom_m32_rk4_s20": {
+    "family": "classical",
+    "mesh": 32,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 23.119743,
+        "repetitions_ms": [
+          23.097306,
+          23.119743,
+          23.146072
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0002510554252697358,
+        "initial_error": 1.2839052090881877e-07,
+        "final_error": 0.00020131550418103406,
+        "repeated_output_hashes": [
+          "d4533df24893a130dbf03e8c74cbb20e25fdced04c44cee5fc953da23a9174a4"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 23.095539,
+        "repetitions_ms": [
+          23.095539,
+          23.048508,
+          23.166785
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0034201687460803914,
+        "initial_error": 1.2921712819988318e-07,
+        "final_error": 0.0034201687460803914,
+        "repeated_output_hashes": [
+          "1d675feb693966658ce9e9ad5ee07a46c8f1d679e7b1e8712925203c77477e08"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 23.107641,
+    "median_case_evolved_max_error": 0.0018356120856750635,
+    "worst_evolved_error": 0.0034201687460803914,
+    "outlier_count_tukey": 0
+  },
+  "fom_m40_cnab2_s20": {
+    "family": "classical",
+    "mesh": 40,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 19.114195,
+        "repetitions_ms": [
+          19.047476,
+          19.177004,
+          19.114195
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.003264968494385268,
+        "initial_error": 7.507207558889637e-11,
+        "final_error": 0.0021157247730945903,
+        "repeated_output_hashes": [
+          "bf18a5e3cc1d93b34405ada3e4aee9c98f90eb330d71f2b3f8235ca2d9307667"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 18.999413,
+        "repetitions_ms": [
+          19.069549,
+          18.999413,
+          18.953715
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.05259652844726705,
+        "initial_error": 7.512561686269276e-11,
+        "final_error": 0.05259652844726705,
+        "repeated_output_hashes": [
+          "845c444e39a447805b8cf40437dc91b84ea91f737c0db6a2e5ec9fe5f5af9de6"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 19.056804,
+    "median_case_evolved_max_error": 0.02793074847082616,
+    "worst_evolved_error": 0.05259652844726705,
+    "outlier_count_tukey": 0
+  },
+  "fom_m40_cnab2_s25": {
+    "family": "classical",
+    "mesh": 40,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 20.678437,
+        "repetitions_ms": [
+          20.678437,
+          20.625586,
+          20.761843
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.002039173603173438,
+        "initial_error": 7.507207558889637e-11,
+        "final_error": 0.0013532622469043542,
+        "repeated_output_hashes": [
+          "8f199b6142df082dcaad1e42a8e02d70baf56d495fca1a8b7ab8bdebe107eab0"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 20.724582,
+        "repetitions_ms": [
+          20.715371,
+          20.760667,
+          20.724582
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.00414221118795262,
+        "initial_error": 7.512561686269276e-11,
+        "final_error": 0.00414221118795262,
+        "repeated_output_hashes": [
+          "64db2293720bbaa14139b7a4a61bbf8b10e817a3c4fa4d9f1dbcf9382da522a3"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 20.7015095,
+    "median_case_evolved_max_error": 0.0030906923955630293,
+    "worst_evolved_error": 0.00414221118795262,
+    "outlier_count_tukey": 0
+  },
+  "fom_m40_cnab2_s40": {
+    "family": "classical",
+    "mesh": 40,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 25.485461,
+        "repetitions_ms": [
+          25.485461,
+          25.582339,
+          25.450441
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0007889000297747975,
+        "initial_error": 7.507207558889637e-11,
+        "final_error": 0.0005290619173563026,
+        "repeated_output_hashes": [
+          "507cbf8edce568b24402f06e306551957d2e522ebff8adc1385559f150e437a5"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 25.448574,
+        "repetitions_ms": [
+          25.448574,
+          25.377898,
+          25.551612
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0014575900550241035,
+        "initial_error": 7.512561686269276e-11,
+        "final_error": 0.0014530893775610981,
+        "repeated_output_hashes": [
+          "d443fcf64e9339f9d2e48152051342638c3cae487ddcb7c339f10276cca297f1"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 25.4670175,
+    "median_case_evolved_max_error": 0.0011232450423994504,
+    "worst_evolved_error": 0.0014575900550241035,
+    "outlier_count_tukey": 0
+  },
+  "fom_m40_cnab2_s50": {
+    "family": "classical",
+    "mesh": 40,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 28.595008,
+        "repetitions_ms": [
+          28.595008,
+          28.712901,
+          28.546345
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.000504244727056955,
+        "initial_error": 7.507207558889637e-11,
+        "final_error": 0.00033857438262599167,
+        "repeated_output_hashes": [
+          "50bddad085c8f065683084753900c5d447025001425901756681ec1299412be0"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 28.659063,
+        "repetitions_ms": [
+          28.659063,
+          28.641379,
+          28.730766
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.001126979553388261,
+        "initial_error": 7.512561686269276e-11,
+        "final_error": 0.001126979553388261,
+        "repeated_output_hashes": [
+          "c8ec7a55ffa48b8aac020788e34b0fb11d28221e1cc9c16909a00d078d54fa09"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 28.627035499999998,
+    "median_case_evolved_max_error": 0.000815612140222608,
+    "worst_evolved_error": 0.001126979553388261,
+    "outlier_count_tukey": 0
+  },
+  "fom_m40_cnab2_s60": {
+    "family": "classical",
+    "mesh": 40,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 31.783592,
+        "repetitions_ms": [
+          31.809842,
+          31.783592,
+          31.501485
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.00034989060635953024,
+        "initial_error": 7.507207558889637e-11,
+        "final_error": 0.00023512520929536474,
+        "repeated_output_hashes": [
+          "49dca37f3f97fb0fb4c2b341ff97e05749279e888deda09e3359ea5bf3b0a575"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 31.922745,
+        "repetitions_ms": [
+          31.849553,
+          31.922745,
+          31.938077
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.000982358821726589,
+        "initial_error": 7.512561686269276e-11,
+        "final_error": 0.000982358821726589,
+        "repeated_output_hashes": [
+          "922c105bd73b93156044727b313ad630f61ea720007ef93881ad8075cad968cc"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 31.8531685,
+    "median_case_evolved_max_error": 0.0006661247140430596,
+    "worst_evolved_error": 0.000982358821726589,
+    "outlier_count_tukey": 0
+  },
+  "fom_m40_cnab2_s80": {
+    "family": "classical",
+    "mesh": 40,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 38.35241,
+        "repetitions_ms": [
+          38.302059,
+          38.35241,
+          38.366647
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.00019659305971284565,
+        "initial_error": 7.507207558889637e-11,
+        "final_error": 0.00013249719513571702,
+        "repeated_output_hashes": [
+          "1a0e1b1def80fd4ae162ff3f556fcebbbe67d502d19d18a33c0511aac42d180a"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 38.168788,
+        "repetitions_ms": [
+          38.168788,
+          38.354649,
+          38.044279
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0008761921487065229,
+        "initial_error": 7.512561686269276e-11,
+        "final_error": 0.0008761921487065229,
+        "repeated_output_hashes": [
+          "1fde02f99eba4afe810725cf1fc0bc00a823996c6ffe454edda6d830f9f07202"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 38.260599,
+    "median_case_evolved_max_error": 0.0005363926042096842,
+    "worst_evolved_error": 0.0008761921487065229,
+    "outlier_count_tukey": 0
+  },
+  "fom_m40_rk4_s5": {
+    "family": "classical",
+    "mesh": 40,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 17.887335,
+        "repetitions_ms": [
+          17.887335,
+          17.930307,
+          17.85048
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 192318.11545684398,
+        "initial_error": 7.507207558889637e-11,
+        "final_error": 192318.11545684398,
+        "repeated_output_hashes": [
+          "8c8c4a76febadd357cc9d35c1593b0b88dec5dbb9ddca418cdba5691cd8de821"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 17.892015,
+        "repetitions_ms": [
+          17.892015,
+          17.908899,
+          17.852916
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 1746752611.3921244,
+        "initial_error": 7.512561686269276e-11,
+        "final_error": 1746752611.3921244,
+        "repeated_output_hashes": [
+          "c498bd0904a94247d513d77ec11100f2a9d29f22e101a868212502f8d6bb7ba5"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 17.889675,
+    "median_case_evolved_max_error": 873472464.7537906,
+    "worst_evolved_error": 1746752611.3921244,
+    "outlier_count_tukey": 0
+  },
+  "fom_m40_rk4_s10": {
+    "family": "classical",
+    "mesh": 40,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 23.56009,
+        "repetitions_ms": [
+          23.491126,
+          23.562793,
+          23.56009
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.00015452017629593063,
+        "initial_error": 7.507207558889637e-11,
+        "final_error": 4.6087924165021393e-05,
+        "repeated_output_hashes": [
+          "462925de8f0546e326edb9aaafa02ee809962b6b41b2b35fc1326aa1bced55ca"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 23.501246,
+        "repetitions_ms": [
+          23.501246,
+          23.49308,
+          23.554264
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0008359339121801969,
+        "initial_error": 7.512561686269276e-11,
+        "final_error": 0.0008359339121801969,
+        "repeated_output_hashes": [
+          "4ac773dd6fe1944d3d47a72242c1705dce2560088b261872cb109eb3cec7fada"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 23.530668,
+    "median_case_evolved_max_error": 0.0004952270442380637,
+    "worst_evolved_error": 0.0008359339121801969,
+    "outlier_count_tukey": 0
+  },
+  "fom_m40_rk4_s15": {
+    "family": "classical",
+    "mesh": 40,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 29.018359,
+        "repetitions_ms": [
+          29.018359,
+          28.997663,
+          29.099338
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 2.9816565697545746e-05,
+        "initial_error": 7.507207558889637e-11,
+        "final_error": 1.904963168086359e-05,
+        "repeated_output_hashes": [
+          "762e99bf83469ebbb1e6e31fc225ea9da7b0300b8e4920dca7787f62e72cd297"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 29.048461,
+        "repetitions_ms": [
+          29.048461,
+          28.982665,
+          29.090952
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0008188846483232039,
+        "initial_error": 7.512561686269276e-11,
+        "final_error": 0.0008188846483232039,
+        "repeated_output_hashes": [
+          "28a8be5286790430305a66c550a06c903e75ed4033d8f496ed358e42a47c030f"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 29.03341,
+    "median_case_evolved_max_error": 0.00042435060701037484,
+    "worst_evolved_error": 0.0008188846483232039,
+    "outlier_count_tukey": 0
+  },
+  "fom_m40_rk4_s20": {
+    "family": "classical",
+    "mesh": 40,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 34.579063,
+        "repetitions_ms": [
+          34.570121,
+          34.613282,
+          34.579063
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 2.413479522363836e-05,
+        "initial_error": 7.507207558889637e-11,
+        "final_error": 1.745864692223469e-05,
+        "repeated_output_hashes": [
+          "351d143121603b7702d9a2e2643f2af75394031191ddf92288e01a979fac3d37"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 34.491822,
+        "repetitions_ms": [
+          34.43076,
+          34.491822,
+          34.595516
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.000818518371791382,
+        "initial_error": 7.512561686269276e-11,
+        "final_error": 0.000818518371791382,
+        "repeated_output_hashes": [
+          "6f501dc964840395e0c507f751acf4549c53f83bb6055d399842d3afec132da7"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 34.5354425,
+    "median_case_evolved_max_error": 0.0004213265835075102,
+    "worst_evolved_error": 0.000818518371791382,
+    "outlier_count_tukey": 0
+  },
+  "fom_m48_cnab2_s20": {
+    "family": "classical",
+    "mesh": 48,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 22.607746,
+        "repetitions_ms": [
+          22.649875,
+          22.604713,
+          22.607746
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0032660035278746467,
+        "initial_error": 3.5700256429481316e-13,
+        "final_error": 0.002132518667520278,
+        "repeated_output_hashes": [
+          "b6b5b1d0103a9b195c6410d4c71dfc48416f10cf4faeaff3e630c05eeb51381f"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 22.602197,
+        "repetitions_ms": [
+          22.602197,
+          22.59843,
+          22.724732
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.16966667805750643,
+        "initial_error": 3.500708302808538e-13,
+        "final_error": 0.16966667805750643,
+        "repeated_output_hashes": [
+          "2431abfaeed1cac75e3bf02b5ff3ef0657d091a43db9075bd16298fe4ce700bd"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 22.604971499999998,
+    "median_case_evolved_max_error": 0.08646634079269054,
+    "worst_evolved_error": 0.16966667805750643,
+    "outlier_count_tukey": 0
+  },
+  "fom_m48_cnab2_s25": {
+    "family": "classical",
+    "mesh": 48,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 25.084984,
+        "repetitions_ms": [
+          25.001927,
+          25.138393,
+          25.084984
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.002039105824402699,
+        "initial_error": 3.5700256429481316e-13,
+        "final_error": 0.001353171180398822,
+        "repeated_output_hashes": [
+          "365a1f4ce102736e694b3f0b36f14506d21665e9e888c99cb8eade7c953e4b4b"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 25.063277,
+        "repetitions_ms": [
+          25.025831,
+          25.088738,
+          25.063277
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.018247191372989618,
+        "initial_error": 3.500708302808538e-13,
+        "final_error": 0.018247191372989618,
+        "repeated_output_hashes": [
+          "db1241b76488fa23efe47b11b2080fc565620b473b59d1c9746600387fcc0cd2"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 25.0741305,
+    "median_case_evolved_max_error": 0.010143148598696158,
+    "worst_evolved_error": 0.018247191372989618,
+    "outlier_count_tukey": 0
+  },
+  "fom_m48_cnab2_s40": {
+    "family": "classical",
+    "mesh": 48,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 32.178187,
+        "repetitions_ms": [
+          32.030909,
+          32.27211,
+          32.178187
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.000788695139780921,
+        "initial_error": 3.5700256429481316e-13,
+        "final_error": 0.0005287858470518831,
+        "repeated_output_hashes": [
+          "02b07e1b94a77245bf54c48c3b473a8f7ea6e5f246a35e745c372574b53fcbcb"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 32.090435,
+        "repetitions_ms": [
+          32.116854,
+          32.0182,
+          32.090435
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0013620301691553405,
+        "initial_error": 3.500708302808538e-13,
+        "final_error": 0.0012235202443016382,
+        "repeated_output_hashes": [
+          "e67b7abe19b9b589e406efe512df83dd615590691d9b40bcd499277b9d6293a6"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 32.134311,
+    "median_case_evolved_max_error": 0.0010753626544681308,
+    "worst_evolved_error": 0.0013620301691553405,
+    "outlier_count_tukey": 0
+  },
+  "fom_m48_cnab2_s50": {
+    "family": "classical",
+    "mesh": 48,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 36.844748,
+        "repetitions_ms": [
+          36.844748,
+          36.894943,
+          36.830939
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0005039547270232571,
+        "initial_error": 3.5700256429481316e-13,
+        "final_error": 0.0003381472124040366,
+        "repeated_output_hashes": [
+          "fc24411cbe688221c4b6971d016fbf5da5be4f73735e6c2b366b71e485a56116"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 36.920376,
+        "repetitions_ms": [
+          36.907196,
+          36.920376,
+          36.93865
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0008727623541891046,
+        "initial_error": 3.500708302808538e-13,
+        "final_error": 0.0008199677690292101,
+        "repeated_output_hashes": [
+          "ec65f1bf0a0dc93dd031c5945eae20fd1fb82f5fbff0302f5ae8532fa8f6c373"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 36.882562,
+    "median_case_evolved_max_error": 0.0006883585406061808,
+    "worst_evolved_error": 0.0008727623541891046,
+    "outlier_count_tukey": 0
+  },
+  "fom_m48_cnab2_s60": {
+    "family": "classical",
+    "mesh": 48,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 41.615811,
+        "repetitions_ms": [
+          41.578573,
+          41.615811,
+          41.744544
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0003494935320505108,
+        "initial_error": 3.5700256429481316e-13,
+        "final_error": 0.00023451283027645022,
+        "repeated_output_hashes": [
+          "5e45dc2d850717a7a4522793e02e032d98a1be1822ddcfaa74e64b09ab3f98c2"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 41.713585,
+        "repetitions_ms": [
+          41.6318,
+          41.713585,
+          41.800569
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0006227884659013037,
+        "initial_error": 3.500708302808538e-13,
+        "final_error": 0.0006132955797799267,
+        "repeated_output_hashes": [
+          "b37467bbaa61683295a48cf6de94635fff1377fca47c04ad310a8036ede0a45a"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 41.664698,
+    "median_case_evolved_max_error": 0.00048614099897590724,
+    "worst_evolved_error": 0.0006227884659013037,
+    "outlier_count_tukey": 0
+  },
+  "fom_m48_cnab2_s80": {
+    "family": "classical",
+    "mesh": 48,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 51.192832,
+        "repetitions_ms": [
+          51.105365,
+          51.250924,
+          51.192832
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.00019591970799143348,
+        "initial_error": 3.5700256429481316e-13,
+        "final_error": 0.00013141260024509147,
+        "repeated_output_hashes": [
+          "faaf2a5515e10be8bf77c7d349afab808a4b40efbf1fa0787d6493b28a52db17"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 51.218468,
+        "repetitions_ms": [
+          51.218468,
+          51.160876,
+          51.220498
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.00043285636986747163,
+        "initial_error": 3.500708302808538e-13,
+        "final_error": 0.00043285636986747163,
+        "repeated_output_hashes": [
+          "9a09b31d25be51b889a0a74fc92fc53278d0d379d741d4bab89b795e0cb878c4"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 51.205650000000006,
+    "median_case_evolved_max_error": 0.00031438803892945257,
+    "worst_evolved_error": 0.00043285636986747163,
+    "outlier_count_tukey": 0
+  },
+  "fom_m48_rk4_s5": {
+    "family": "classical",
+    "mesh": 48,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 19.999568,
+        "repetitions_ms": [
+          19.999568,
+          20.05336,
+          19.97599
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 6.400383539521427e+17,
+        "initial_error": 3.5700256429481316e-13,
+        "final_error": 6.400383539521427e+17,
+        "repeated_output_hashes": [
+          "9b14094de099a16709952d4241eb80746afeebf3cea52670aa8da1d99c960ea6"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 20.012919,
+        "repetitions_ms": [
+          20.012919,
+          19.982172,
+          20.044463
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 7.79148707319374e+27,
+        "initial_error": 3.500708302808538e-13,
+        "final_error": 7.79148707319374e+27,
+        "repeated_output_hashes": [
+          "c7b284959a1da881e1749d1a7b97a7bcfe2ba422455e337edb7deeefa8c03b58"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 20.0062435,
+    "median_case_evolved_max_error": 3.895743536916889e+27,
+    "worst_evolved_error": 7.79148707319374e+27,
+    "outlier_count_tukey": 0
+  },
+  "fom_m48_rk4_s10": {
+    "family": "classical",
+    "mesh": 48,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 27.441491,
+        "repetitions_ms": [
+          27.441491,
+          27.432331,
+          27.496373
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.025827172147378417,
+        "initial_error": 3.5700256429481316e-13,
+        "final_error": 0.025827172147378417,
+        "repeated_output_hashes": [
+          "4e7b77a3eabb3ab294c7bac5054f7d137ed511e54926397a43dc41acb2f6357e"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 27.412177,
+        "repetitions_ms": [
+          27.412177,
+          27.411647,
+          27.461774
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0004015949028371953,
+        "initial_error": 3.500708302808538e-13,
+        "final_error": 0.0004015949028371953,
+        "repeated_output_hashes": [
+          "b9627a5820cb5b1ffc32465cca96835cdd4e1aadaf9ef8601b1275418727c273"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 27.426834,
+    "median_case_evolved_max_error": 0.013114383525107806,
+    "worst_evolved_error": 0.025827172147378417,
+    "outlier_count_tukey": 0
+  },
+  "fom_m48_rk4_s15": {
+    "family": "classical",
+    "mesh": 48,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 34.822333,
+        "repetitions_ms": [
+          34.821479,
+          34.822333,
+          34.865477
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 2.852076528605437e-05,
+        "initial_error": 3.5700256429481316e-13,
+        "final_error": 8.752349100480373e-06,
+        "repeated_output_hashes": [
+          "8b0121d1c2cfd00c7d3f4cf479797c681657fe2c0d9461530d679fa902dd73ed"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 34.827653,
+        "repetitions_ms": [
+          34.81647,
+          34.827653,
+          34.863183
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0003176782192467051,
+        "initial_error": 3.500708302808538e-13,
+        "final_error": 0.0003176782192467051,
+        "repeated_output_hashes": [
+          "1df2e67d31c1877779883987b8f1bcb989dda361aa9bfe567323085d9d270942"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 34.824993,
+    "median_case_evolved_max_error": 0.00017309949226637975,
+    "worst_evolved_error": 0.0003176782192467051,
+    "outlier_count_tukey": 0
+  },
+  "fom_m48_rk4_s20": {
+    "family": "classical",
+    "mesh": 48,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 42.162698,
+        "repetitions_ms": [
+          42.227611,
+          42.162698,
+          42.149003
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 9.306866872213178e-06,
+        "initial_error": 3.5700256429481316e-13,
+        "final_error": 4.428340910107126e-06,
+        "repeated_output_hashes": [
+          "fcd86f21b75af13922785f4bfe4594e25976dd7e4e4e148711553f09921de6b2"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 42.147272,
+        "repetitions_ms": [
+          42.147272,
+          42.142488,
+          42.221779
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.000315752074394112,
+        "initial_error": 3.500708302808538e-13,
+        "final_error": 0.000315752074394112,
+        "repeated_output_hashes": [
+          "01455ac47534f303113e77bd725ccba41ced8015c06ba8301923b017e58cba70"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 42.154984999999996,
+    "median_case_evolved_max_error": 0.00016252947063316258,
+    "worst_evolved_error": 0.000315752074394112,
+    "outlier_count_tukey": 0
+  },
+  "fom_m64_cnab2_s20": {
+    "family": "classical",
+    "mesh": 64,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 31.348189,
+        "repetitions_ms": [
+          31.348189,
+          31.307294,
+          31.372393
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.003266204349809844,
+        "initial_error": 3.648871681604387e-16,
+        "final_error": 0.0021872516174473444,
+        "repeated_output_hashes": [
+          "a1d5b4c88a95bd7b684666cd590ae0e3d946cf4ecc78a1ce0a5d181c6d76497a"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 31.299641,
+        "repetitions_ms": [
+          31.299641,
+          30.973219,
+          31.384805
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.6291360753922719,
+        "initial_error": 3.480162790100129e-16,
+        "final_error": 0.6291360753922719,
+        "repeated_output_hashes": [
+          "9eebf939320342c9125c655996060f286ab43c3681d0ff9903672018092a28ea"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 31.323915,
+    "median_case_evolved_max_error": 0.31620113987104087,
+    "worst_evolved_error": 0.6291360753922719,
+    "outlier_count_tukey": 0
+  },
+  "fom_m64_cnab2_s25": {
+    "family": "classical",
+    "mesh": 64,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 35.88877,
+        "repetitions_ms": [
+          35.88877,
+          35.886831,
+          35.967794
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0020391424363569977,
+        "initial_error": 3.648871681604387e-16,
+        "final_error": 0.0013536993160850202,
+        "repeated_output_hashes": [
+          "e3d4d71ede4f34a67a895e3cb659b8b6d5bf893b4356a1b90c063af1325001c7"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 35.921308,
+        "repetitions_ms": [
+          35.921308,
+          35.857881,
+          36.025154
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.21223016001775036,
+        "initial_error": 3.480162790100129e-16,
+        "final_error": 0.21223016001775036,
+        "repeated_output_hashes": [
+          "3a35b75b2025621e5e7a35eb353d28d89b85d33e9b4e5783e0f6e8bb735984f0"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 35.905039,
+    "median_case_evolved_max_error": 0.10713465122705368,
+    "worst_evolved_error": 0.21223016001775036,
+    "outlier_count_tukey": 0
+  },
+  "fom_m64_cnab2_s40": {
+    "family": "classical",
+    "mesh": 64,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 49.881265,
+        "repetitions_ms": [
+          49.881265,
+          49.74984,
+          49.89498
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0007886857585101767,
+        "initial_error": 3.648871681604387e-16,
+        "final_error": 0.000528775669606353,
+        "repeated_output_hashes": [
+          "756d3f4112a2f1559c139095560251a51580192663b77b6a832d16fb68a03ce0"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 49.818206,
+        "repetitions_ms": [
+          49.84192,
+          49.775715,
+          49.818206
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.001354963581103744,
+        "initial_error": 3.480162790100129e-16,
+        "final_error": 0.001232318632421357,
+        "repeated_output_hashes": [
+          "ae32d36cb15506e836390736b510888bf3f8d700f117b9747d900c7560d757a1"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 49.8497355,
+    "median_case_evolved_max_error": 0.0010718246698069602,
+    "worst_evolved_error": 0.001354963581103744,
+    "outlier_count_tukey": 0
+  },
+  "fom_m64_cnab2_s50": {
+    "family": "classical",
+    "mesh": 64,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 59.022234,
+        "repetitions_ms": [
+          59.043604,
+          58.943304,
+          59.022234
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0005039419832075112,
+        "initial_error": 3.648871681604387e-16,
+        "final_error": 0.00033813138597403445,
+        "repeated_output_hashes": [
+          "3a0d0147543a491644dc1f7b73b1b23cd08bd0700cb047b877dd873daecb967a"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 59.071405,
+        "repetitions_ms": [
+          59.050569,
+          59.071405,
+          59.079775
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0008624784653272578,
+        "initial_error": 3.480162790100129e-16,
+        "final_error": 0.0007518905704842424,
+        "repeated_output_hashes": [
+          "b67e1b9bab93654d999322f6c9b220de51990debc10ad52064c8e6fc12af82f8"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 59.0468195,
+    "median_case_evolved_max_error": 0.0006832102242673845,
+    "worst_evolved_error": 0.0008624784653272578,
+    "outlier_count_tukey": 0
+  },
+  "fom_m64_cnab2_s60": {
+    "family": "classical",
+    "mesh": 64,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 68.29185,
+        "repetitions_ms": [
+          68.29113,
+          68.29185,
+          68.295615
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.00034947653123174613,
+        "initial_error": 3.648871681604387e-16,
+        "final_error": 0.00023449010622715583,
+        "repeated_output_hashes": [
+          "fb2ec028d45b08cebda480e5d2b85c0ebdadf7c3917795d2b1f7ab2dd4bf0da5"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 68.293372,
+        "repetitions_ms": [
+          68.29895,
+          68.196278,
+          68.293372
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.0005968874283599806,
+        "initial_error": 3.480162790100129e-16,
+        "final_error": 0.0005210822719831464,
+        "repeated_output_hashes": [
+          "beb9b8f672b8e00f421d0b6aa1dca6cfa7cb6ffd94d5293a73ae02efaf9a13ca"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 68.292611,
+    "median_case_evolved_max_error": 0.00047318197979586335,
+    "worst_evolved_error": 0.0005968874283599806,
+    "outlier_count_tukey": 0
+  },
+  "fom_m64_cnab2_s80": {
+    "family": "classical",
+    "mesh": 64,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 86.779124,
+        "repetitions_ms": [
+          86.779124,
+          86.691695,
+          86.793122
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.00019589156557338984,
+        "initial_error": 3.648871681604387e-16,
+        "final_error": 0.00013137223297653839,
+        "repeated_output_hashes": [
+          "a84fc1c2e338792b1e88a906e3eb3e641c3efdf89c62d623e1179930ee718c25"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 86.743385,
+        "repetitions_ms": [
+          86.69973,
+          86.743385,
+          86.775358
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.000333803268169229,
+        "initial_error": 3.480162790100129e-16,
+        "final_error": 0.00029169800820404184,
+        "repeated_output_hashes": [
+          "aa0dfc476ef03828538d764858aaa62c2333b8b5de6b1bb76f1a5b5dfdb01946"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 86.7612545,
+    "median_case_evolved_max_error": 0.0002648474168713094,
+    "worst_evolved_error": 0.000333803268169229,
+    "outlier_count_tukey": 0
+  },
+  "fom_m64_rk4_s5": {
+    "family": "classical",
+    "mesh": 64,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 26.101725,
+        "repetitions_ms": [
+          26.060533,
+          26.140765,
+          26.101725
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 1.091956527739547e+50,
+        "initial_error": 3.648871681604387e-16,
+        "final_error": 1.091956527739547e+50,
+        "repeated_output_hashes": [
+          "090262b5984c280703f0e3a55ca91cd445b24da4201946a50fae085df74cb6d4"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 26.095165,
+        "repetitions_ms": [
+          26.095165,
+          26.049113,
+          26.196347
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 1.360325038602182e+65,
+        "initial_error": 3.480162790100129e-16,
+        "final_error": 1.360325038602182e+65,
+        "repeated_output_hashes": [
+          "a6365b10bcedc568f6efcb53da2fa5be3a9789ed71a107ef1e538e9af68b0370"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 26.098444999999998,
+    "median_case_evolved_max_error": 6.801625193010915e+64,
+    "worst_evolved_error": 1.360325038602182e+65,
+    "outlier_count_tukey": 0
+  },
+  "fom_m64_rk4_s10": {
+    "family": "classical",
+    "mesh": 64,
+    "complete": false,
+    "failure_count": 6,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {},
+    "median_case_ms": null,
+    "median_case_evolved_max_error": null,
+    "worst_evolved_error": null,
+    "outlier_count_tukey": 0
+  },
+  "fom_m64_rk4_s15": {
+    "family": "classical",
+    "mesh": 64,
+    "complete": false,
+    "failure_count": 3,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "1": {
+        "median_ms": 54.574849,
+        "repetitions_ms": [
+          54.56695,
+          54.574849,
+          54.626902
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.00023734781213826918,
+        "initial_error": 3.480162790100129e-16,
+        "final_error": 0.00023734781213826918,
+        "repeated_output_hashes": [
+          "ec2d4645f7aa2065a1f579ddca11132fb2588efe7af3e023ae95de8bb6d6e5aa"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 54.574849,
+    "median_case_evolved_max_error": 0.00023734781213826918,
+    "worst_evolved_error": 0.00023734781213826918,
+    "outlier_count_tukey": 0
+  },
+  "fom_m64_rk4_s20": {
+    "family": "classical",
+    "mesh": 64,
+    "complete": true,
+    "failure_count": 0,
+    "invocation_count": 6,
+    "case_ids": [
+      0,
+      1
+    ],
+    "cases": {
+      "0": {
+        "median_ms": 68.737501,
+        "repetitions_ms": [
+          68.737501,
+          68.654533,
+          68.794278
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 0.02635062020308575,
+        "initial_error": 3.648871681604387e-16,
+        "final_error": 0.02635062020308575,
+        "repeated_output_hashes": [
+          "2f99d3840f32143341ae9dc76d28e7cc12031917b1aa9e7cd40dd2ff824e4286"
+        ],
+        "max_error_repetition_spread": 0.0
+      },
+      "1": {
+        "median_ms": 68.799975,
+        "repetitions_ms": [
+          68.764143,
+          68.828291,
+          68.799975
+        ],
+        "outlier_count_tukey": 0,
+        "evolved_max_error": 1.9742874226033523e-05,
+        "initial_error": 3.480162790100129e-16,
+        "final_error": 1.37132441689649e-05,
+        "repeated_output_hashes": [
+          "e9342e7fbabed7122215203bbe15de020157805ea514edbd899304f7845449c9"
+        ],
+        "max_error_repetition_spread": 0.0
+      }
+    },
+    "median_case_ms": 68.768738,
+    "median_case_evolved_max_error": 0.013185181538655893,
+    "worst_evolved_error": 0.02635062020308575,
+    "outlier_count_tukey": 0
+  }
+}

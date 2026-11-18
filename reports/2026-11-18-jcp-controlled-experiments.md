@@ -112,7 +112,7 @@ This follow-up retains the fixed pilot cases, model, common initial reconstructi
 
 ### Weak-test visibility
 
-Every panel uses the same-grid, same-time-step discrete Burgers reference. No continuum-error claim is made. Maximum field error includes the initial saved time. Spectral visibility and physical accuracy are separate diagnostics.
+The Burgers diagnostic model evolves arbitrary coefficients in the linear span of a frozen learned spatial basis; there are no frame variables. Every panel uses the same-grid, same-time-step discrete Burgers reference. No continuum-error claim is made. Maximum field error includes the initial saved time. Spectral visibility and physical accuracy are separate diagnostics.
 
 | Retained run | Cases | Numerically qualified case/row settings |
 |---|---:|---:|
@@ -137,6 +137,20 @@ The largest total error remains limited by the initial projection. At M=2048, 4 
 
 
 Adding unchanged rows cannot decrease the smallest singular value at an identical state. That algebraic property alone does not demonstrate improved physical prediction.
+
+### Frozen-width follow-up: projection screen
+
+This prospectively bounded follow-up targets the initial projection floor diagnosed above. It takes longer prefixes of the same frozen ordered bank and uses all original development cases. Each curve fits the reference at each saved time; it measures representation capacity and does not predict a trajectory. The physical operator, reference, parameters and error denominator are unchanged.
+
+| Basis width R | Median / worst all-time projection error (%) | Worst initial projection error (%) | Admission to equation solves |
+|---:|---:|---:|---|
+| 128 | 1.293561 / 4.297893 | 4.297893 | Baseline |
+| 256 | 0.452384 / 0.815003 | 0.815003 | Pass |
+| 512 | 0.143086 / 0.391845 | 0.391845 | Pass |
+
+[Projection audit and admission](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-width-w00.json) bind the results to the saved model, basis ordering, references and numerical settings. All registered rank, projection and original-baseline reproduction checks pass. A prefix enters the PDE study only if both worst initial and worst all-time projection errors are at most 80% of baseline. No training was performed.
+
+![Measured frozen-bank projection floors](/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/weak-width-w00-projection-floors.png)
 
 ### Complete-query cost
 

@@ -220,6 +220,47 @@ def cost_rows(data):
     return rows
 
 
+def projection_screen_plot(entry, audit):
+    records = audit["records"]
+    widths = sorted({v["width"] for v in records})
+    cases = sorted({v["case"] for v in records})
+    fig, axes = plt.subplots(1, 2, figsize=(10.8, 3.9))
+    tables = []
+    for width in widths:
+        rr = [v for v in records if v["width"] == width]
+        tables.append({"width": width, "case_count": len(rr),
+                       "median_max_percent": 100*np.median([v["maximum_all_times_error"] for v in rr]),
+                       "worst_max_percent": 100*max(v["maximum_all_times_error"] for v in rr),
+                       "worst_initial_percent": 100*max(v["initial_error"] for v in rr),
+                       "admitted_to_dynamics": width in audit["admitted_widths"]})
+    for case in cases:
+        rr = sorted((v for v in records if v["case"] == case), key=lambda v: v["width"])
+        axes[0].plot(widths, [100*v["maximum_all_times_error"] for v in rr], color=".75", lw=.8)
+    axes[0].plot(widths, [v["worst_max_percent"] for v in tables], "o-", color="#ad601e", label="Worst case")
+    axes[0].plot(widths, [v["median_max_percent"] for v in tables], "o-", color="#157c75", label="Case median")
+    axes[0].set(xscale="log", yscale="log", xticks=widths, xticklabels=[str(w) for w in widths],
+                xlabel="Frozen basis functions R", ylabel="Maximum projection error (% initial norm)",
+                title="Representation capacity over all saved times")
+    axes[0].xaxis.set_minor_locator(matplotlib.ticker.NullLocator())
+    axes[0].legend(fontsize=8)
+    dt = audit["fixed_contract"]["dt"]
+    for width, color in zip(widths, ("#ad601e", "#667c87", "#157c75")):
+        errors = 100*np.array([v["errors"] for v in records if v["width"] == width])
+        axes[1].plot(dt*np.arange(errors.shape[1]), np.max(errors, axis=0), color=color, label=f"R={width}")
+    axes[1].set(xlabel="Nondimensional time", ylabel="Worst-case projection error (% initial norm)",
+                title="Best linear fits of the reference fields", yscale="log")
+    axes[1].legend(fontsize=8)
+    for ax in axes:
+        ax.grid(alpha=.18)
+    fig.suptitle(f"Frozen-basis projection screen • {len(cases)} development cases • independently checked", fontsize=11)
+    fig.text(.5, .015, "Projection uses each reference field at every time. These are approximation floors, not predicted PDE trajectories.\nThe checkpoint and ordered basis are unchanged; no training or fresh cases are involved.", ha="center", fontsize=9)
+    fig.tight_layout(rect=[0, .12, 1, .94])
+    for suffix in ("png", "svg"):
+        fig.savefig(ASSETS / f"{entry['id']}-projection-floors.{suffix}", dpi=170, metadata={"Date": None} if suffix == "svg" else None)
+    plt.close(fig)
+    return tables, ASSETS / f"{entry['id']}-projection-floors.png"
+
+
 def enrichment_plot(entry, data, baseline):
     ids = {c["index"] for c in data["cases"]}
     dt = data["config"]["test_settings"][0]["dt"]
@@ -259,10 +300,13 @@ def cost_plot(entry, data, selection, provenance):
     fig, axes = plt.subplots(1, 2, figsize=(12, 4.6))
     colors = {"classical": "#667c87", "pod": "#82798e", "target": "#157c75"}
     display_cap_percent = 100
-    overflow = sum(v["complete"] and 100*v["worst_evolved_error"] > display_cap_percent for v in selection.values())
-    failed = sum(not v["complete"] for v in selection.values())
+    def finite_metrics(v):
+        return all(isinstance(v.get(k), (int, float)) and np.isfinite(v[k])
+                   for k in ("worst_evolved_error", "median_case_ms"))
+    overflow = sum(v["complete"] and finite_metrics(v) and 100*v["worst_evolved_error"] > display_cap_percent for v in selection.values())
+    failed = sum(not v["complete"] or not finite_metrics(v) for v in selection.values())
     for family, marker in (("classical", "."), ("pod", "s"), ("target", "*")):
-        chosen = {k: v for k, v in selection.items() if v["family"] == family and v["complete"]
+        chosen = {k: v for k, v in selection.items() if v["family"] == family and v["complete"] and finite_metrics(v)
                   and 100*v["worst_evolved_error"] <= display_cap_percent}
         axes[0].scatter([v["median_case_ms"] for v in chosen.values()],
                         [100*v["worst_evolved_error"] for v in chosen.values()],
@@ -274,7 +318,7 @@ def cost_plot(entry, data, selection, provenance):
     axes[0].set(xscale="log", yscale="log", title="Finite development candidate set",
                 xlabel="Median complete-query time (ms)", ylabel="Worst error at evolved requested outputs\n(% of initial field norm)")
     axes[0].legend(fontsize=8)
-    axes[0].text(.02, .025, f"Outside display: {overflow} above {display_cap_percent}% error; {failed} failed.\nAll retained in the raw selection table.",
+    axes[0].text(.02, .025, f"Outside display: {overflow} above {display_cap_percent}% error; {failed} failed / nonfinite.\nAll retained in the raw selection table.",
                  transform=axes[0].transAxes, fontsize=8, va="bottom")
     qualified = [r for r in cost_rows(data) if r["qualified"]]
     labels = []
@@ -359,7 +403,7 @@ def main():
     weaks = [(e, d, p) for e, d, p in loaded if e["kind"] == "weak"]
     if weaks:
         chunks += ["### Weak-test visibility", "",
-                   "Every panel uses the same-grid, same-time-step discrete Burgers reference. No continuum-error claim is made. Maximum field error includes the initial saved time. Spectral visibility and physical accuracy are separate diagnostics.", "",
+                   "The Burgers diagnostic model evolves arbitrary coefficients in the linear span of a frozen learned spatial basis; there are no frame variables. Every panel uses the same-grid, same-time-step discrete Burgers reference. No continuum-error claim is made. Maximum field error includes the initial saved time. Spectral visibility and physical accuracy are separate diagnostics.", "",
                    "| Retained run | Cases | Numerically qualified case/row settings |",
                    "|---|---:|---:|"]
         for e, d, p in weaks:
@@ -391,6 +435,24 @@ def main():
                 maximum = max(v["maximum_increase_in_reported_relative_error"] for v in comparisons)
                 chunks += [f"**Retained counterexample:** {len(increased)} of {len(comparisons)} adjacent case/test-space transitions increase error at some times, even though their maximum-over-time errors do not worsen. The largest pointwise increase is {100*maximum:.6f} percentage points. This is a separately labeled post-run diagnostic; it precludes pointwise error-dominance claims. [All comparisons]({ep['frozen']}).", ""]
         chunks += ["", "Adding unchanged rows cannot decrease the smallest singular value at an identical state. That algebraic property alone does not demonstrate improved physical prediction.", ""]
+    screens = [(e, d, p) for e, d, p in loaded if e["kind"] == "weak_projection_screen"]
+    for e, d, p in screens:
+        assert d["W0_raw_audit_passed"] and d["R128_reproduction_passed"]
+        source = Path(d["source_output"]) / "summary.json"
+        raw, rp = freeze({"id": e["id"]+"-raw", "kind": "weak_projection_raw", "source": str(source.relative_to(ROOT))})
+        assert rp["sha256"] == d["summary_sha256"]
+        manifest.append(rp)
+        rows, plot = projection_screen_plot(e, d)
+        values[e["id"]] = rows
+        chunks += ["### Frozen-width follow-up: projection screen", "",
+                   "This prospectively bounded follow-up targets the initial projection floor diagnosed above. It takes longer prefixes of the same frozen ordered bank and uses all original development cases. Each curve fits the reference at each saved time; it measures representation capacity and does not predict a trajectory. The physical operator, reference, parameters and error denominator are unchanged.", "",
+                   "| Basis width R | Median / worst all-time projection error (%) | Worst initial projection error (%) | Admission to equation solves |",
+                   "|---:|---:|---:|---|"]
+        for row in rows:
+            status = "Baseline" if row["width"] == min(r["width"] for r in rows) else "Pass" if row["admitted_to_dynamics"] else "Fail"
+            chunks.append(f"| {row['width']} | {row['median_max_percent']:.6f} / {row['worst_max_percent']:.6f} | {row['worst_initial_percent']:.6f} | {status} |")
+        chunks += ["", f"[Projection audit and admission]({p['frozen']}) bind the results to the saved model, basis ordering, references and numerical settings. All registered rank, projection and original-baseline reproduction checks pass. A prefix enters the PDE study only if both worst initial and worst all-time projection errors are at most 80% of baseline. No training was performed.", "",
+                   f"![Measured frozen-bank projection floors]({plot})", ""]
     costs = [(e, d, p) for e, d, p in loaded if e["kind"] == "cost"]
     if costs:
         chunks += ["### Complete-query cost", "",

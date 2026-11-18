@@ -5,14 +5,24 @@ from training_io import checkpoint,summary
 import normalized_heads as NH,fit
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--out',required=True);ap.add_argument('--span',required=True)
+    ap=argparse.ArgumentParser();ap.add_argument('--out',required=True);ap.add_argument('--span')
     ap.add_argument('--latent',type=int,default=16);ap.add_argument('--updates',type=int,default=20000)
+    ap.add_argument('--hidden',help='comma-separated decoder hidden widths; default128,128,128')
+    ap.add_argument('--stable-source');ap.add_argument('--train');ap.add_argument('--dev')
     ap.add_argument('--seed',type=int,default=2026111851);a=ap.parse_args();out=Path(a.out);out.mkdir(parents=True,exist_ok=True)
-    meta=preflight();span=Path(a.span);record=json.loads((span/'result.json').read_text())
+    meta=preflight()
+    if a.stable_source:
+        assert a.train and a.dev and not a.span
+        from stable_head_data import prepare
+        span=out/'span';prepare(Path(a.stable_source),a.train,a.dev,span)
+    else:
+        assert a.span;span=Path(a.span)
+    record=json.loads((span/'result.json').read_text())
     assert digest(span/'reduced_data.npz')==record['reduced_data_sha256'];assert digest(span/'pod_basis.npz')==record['basis_sha256']
     d=np.load(span/'reduced_data.npz');C=jnp.asarray(d['train_coefficients']);V=jnp.asarray(d['dev_coefficients'])
     tn=jnp.asarray(d['train_norm']);vn=jnp.asarray(d['dev_norm']);tm=jnp.asarray(d['train_missing']);vm=jnp.asarray(d['dev_missing'])
-    p,mean,scale=NH.initialize(C,tn,a.latent,jax.random.PRNGKey(a.seed))
+    hidden=[int(v) for v in a.hidden.split(',')] if a.hidden else [128,128,128]
+    p,mean,scale=NH.initialize(C,tn,a.latent,jax.random.PRNGKey(a.seed),hidden=hidden)
     opt=optax.adam(optax.cosine_decay_schedule(1e-3,a.updates,alpha=.01));state=opt.init(p)
     def decode(h,z):return NH.head(h,z,mean,scale)
     projector=fit.make_parametric_project(lambda z,h:decode(h,z),75)
@@ -24,6 +34,7 @@ def main():
                 native_reproduction=False,global_zero_anchored=False,basis_sha256=record['basis_sha256'],
                 data_sha256=record['reduced_data_sha256'],train_trajectories=len(C)//11,dev_trajectories=len(V)//11,
                 train_labels=record.get('train_labels'),dev_labels=record.get('dev_labels'),
+                head_hidden_widths=hidden,feature_construction=record.get('construction','training-only POD'),
                 checkpoints=[],final_test_opened=False)
     @jax.jit
     def step(p,state,idx,C,norm,joint):

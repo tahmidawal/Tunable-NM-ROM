@@ -367,7 +367,10 @@
     "reserved_minutes": 120,
     "commit": "803b17d7fd0d07523af28b55df074bfcf0dcc42d",
     "remote": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/c1incumbent",
-    "driver": "c1_incumbent"
+    "driver": "c1_incumbent",
+    "state": "COMPLETED",
+    "elapsed_seconds": 178,
+    "allocated_cpus": 8
   },
   {
     "name": "c1ablation",
@@ -375,6 +378,17 @@
     "reserved_minutes": 120,
     "commit": "803b17d7fd0d07523af28b55df074bfcf0dcc42d",
     "remote": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/c1ablation",
-    "driver": "c1_local_ablation"
+    "driver": "c1_local_ablation",
+    "state": "COMPLETED",
+    "elapsed_seconds": 115,
+    "allocated_cpus": 8
+  },
+  {
+    "name": "c1compress",
+    "id": 7346097,
+    "reserved_minutes": 120,
+    "commit": "e21a7b0d41340ba9f3c06c007294a71c97c801dd",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-quadtree-20261117/c1compress",
+    "driver": "c1_compress"
   }
 ]

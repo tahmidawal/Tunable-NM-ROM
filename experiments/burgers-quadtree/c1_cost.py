@@ -23,7 +23,7 @@ peak=jax.jit(lambda u:jnp.argmax(u))
 def rom(u,nu):
  index=int(peak(u));tile=tuple(min(2,int(v*4/4096)) for v in divmod(index,4096))
  return solve(u,nu,*models[tile])
-queries={'local_hybrid':rom,'spectral64_dt005':make(64,.005,512,'bilinear256'),'spectral64_dt00125':make(64,.00125,512,'bilinear256')}
+queries={'local_hybrid':rom,'spectral16_dt005':make(16,.005,512,'bilinear256'),'spectral32_dt01':make(32,.01,512,'bilinear256'),'spectral32_dt005':make(32,.005,512,'bilinear256'),'spectral64_dt005':make(64,.005,512,'bilinear256'),'spectral64_dt00125':make(64,.00125,512,'bilinear256')}
 rows=[];rng=np.random.default_rng(2026111805)
 for i,ph in enumerate(dev[:32]):
  u=jnp.asarray(E.initial(4095,ph));jax.block_until_ready(u);norm=float(jnp.linalg.norm(u));cold={};times={name:[[],[]] for name in queries};outputs={}

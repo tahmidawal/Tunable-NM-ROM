@@ -51,6 +51,8 @@ def main():
             per = dict(error=error.tolist(), evolution_distance=evolution_distance.tolist(),
                        projection_error=projection_error.tolist(), independent_shell=shell.tolist(),
                        error_max=float(error.max()), evolution_distance_max=float(evolution_distance.max()),
+                       initial_error=float(error[0]), evolved_error_max=float(error[1:].max()),
+                       maximum_error_time=float(times[int(np.argmax(error))]),
                        metric_disagreement=metric_delta, evolution_metric_disagreement=gap_delta,
                        pythagorean_max_absolute=float(np.max(np.abs(identity))),
                        tight_tighter_difference=float(tolerance_delta), independent_scaled_shell_max=float(shell.max()),
@@ -58,6 +60,7 @@ def main():
             evidence['arms'][str(m)] = per
             evidence['max_metric_disagreement'] = max(evidence['max_metric_disagreement'], metric_delta, gap_delta)
             table.append(dict(case=int(case_id), M=m, max_discrete_error=per['error_max'], evolution_distance_max=per['evolution_distance_max'],
+                              initial_error=per['initial_error'], evolved_error_max=per['evolved_error_max'], maximum_error_time=per['maximum_error_time'],
                               projection_error_max=float(projection_error.max()), shell_max=float(shell.max()),
                               tight_tighter=float(tolerance_delta), iterations=arm['levels']['tighter']['total_iterations'],
                               rejected=arm['levels']['tighter']['rejected_steps'], eligible=arm['numerically_eligible'],
@@ -105,10 +108,11 @@ def main():
         ax.legend(fontsize=8)
     for case_index, (case_id, case) in enumerate(summary['cases'].items()):
         rec=case['fixed_state_spectra'][-1]
-        axs[1, 0].semilogy(ms, [rec['spectra'][str(m)]['physical_min'] for m in ms], marker='o', label=f'case {case_id}, same state')
-        axs[1, 1].semilogy(ms, [audit['cases'][case_id]['arms'][str(m)]['independent_scaled_shell_max'] for m in ms], marker='o', label=f'case {case_id}')
+        label = f'case {case_id}' + ('' if all(v['numerically_eligible'] for v in case['arms'].values()) else ' (unqualified)')
+        axs[1, 0].semilogy(ms, [rec['spectra'][str(m)]['physical_min'] for m in ms], marker='o', label=label+', same state')
+        axs[1, 1].semilogy(ms, [audit['cases'][case_id]['arms'][str(m)]['independent_scaled_shell_max'] for m in ms], marker='o', label=label)
     axs[1, 0].set(xlabel='Smooth test rows M', ylabel='Smallest physical tangent singular value', title='Fixed projected-reference state at final time')
-    axs[1, 1].set(xlabel='Smooth test rows M', ylabel='Maximum independent shell residual', title='Next 1024 rows outside every solve objective')
+    axs[1, 1].set(xlabel='Smooth test rows M', ylabel='Maximum independent shell residual', title='Next 1024 rows; maximum over all evolved steps')
     axs[1, 0].legend(fontsize=8)
     axs[1, 1].legend(fontsize=8)
     fig.suptitle('MEASURED development pilot — discrete reference only; qualification shown per curve', fontsize=12)

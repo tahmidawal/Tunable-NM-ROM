@@ -125,8 +125,9 @@ def make_query(kind, *, n, rank, latent, dt, steps, output_every, budget,
             distances = jnp.sum((head_candidates-projected[None])**2, axis=1)
             starts = codes[jnp.argsort(distances, stable=True)[:fit_starts]]
             # P1 evaluates each initial-fit start sequentially. Keep those
-            # independent scalar solves: batching changes reduction/linear-solve
-            # arithmetic enough to trigger a strict f64 stationarity failure.
+            # independent scalar solves: changed batched reduction/linear-solve
+            # arithmetic is a suspected cause of the strict f64 fit failure.
+            # The full-case parity gate must still pass this scalar implementation.
             solutions, fit_info = jax.lax.map(
                 lambda z: fit_lm(z, (projected, params), fit_gtol), starts)
             choice, raw, band = choose_stationary_fit(fit_info)

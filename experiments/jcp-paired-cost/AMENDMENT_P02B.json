@@ -110,7 +110,7 @@
       }
     }
   ],
-  "diagnosis": "Batched compiled initial-fit start arithmetic fails strict native initialization stationarity on development case14; physical field parity and reference refinement passed, and all evolution steps were stationary. No accepted timing result.",
+  "diagnosis": "Strict native initialization stationarity fails on development case14 in the batched compiled fit. Changed batching arithmetic is suspected, not yet proven; scalar compiled arithmetic also differs from P1 host arithmetic. Field parity, reference refinement and evolution stationarity pass. No accepted timing result.",
   "changes": [
     "Replace vmap over the same four initial-fit starts with sequential compiled lax.map; mathematical LM objective, four seeds, initial damping, budget, roundoff guards, stationary tie selector and tolerances unchanged.",
     "Retain all initial-fit per-start cost, stationarity, termination, iteration and acceptance diagnostics in every timed result. Instrumentation remains inside the complete-query timer.",
@@ -120,7 +120,7 @@
   "cohort": "Original exposed development cases0..15, seed202609202",
   "candidate_grid": "Same105 configurations as P02;90 classical+9 POD heads+4 POD spans+2 learned targets.",
   "qualification": "Same field parity, strict initial/evolution stationarity, reference and timing drift gates. All eligible contenders retimed together in one new allocation.",
-  "if_failure": "Stop at unchanged parity guard and isolate failing initialization; no tolerance sweep or exclusion.",
+  "if_failure": "Stop at unchanged parity guard and isolate failing initialization with returned residual/Jacobian, codes and last proposal diagnostics; no tolerance sweep or exclusion.",
   "gpu_hours_spent": 0.15,
   "gpu_hours_remaining": 1.85,
   "job_limit_minutes": 45,

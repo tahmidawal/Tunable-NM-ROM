@@ -201,6 +201,17 @@ def main():
     allowed = list(range(16)) if cfg.get("cohort_scope") == "original-dev16" else [0, 1]
     if cfg["eval_seed"] != 202609202 or cfg["case_ids"] != allowed:
         raise RuntimeError("only the registered original development prefix is allowed")
+    if cfg["eval_seed"] in cfg["closed_seeds"]:
+        raise RuntimeError("closed cohort seed forbidden")
+    classical_keys = [(x["mesh"], x["scheme"], x["steps"]) for x in cfg["classical_candidates"]]
+    if len(classical_keys) != len(set(classical_keys)) or any(
+        m > cfg["n"] or m % 2 or s % 5 or scheme not in ("cnab2", "rk4") for m, scheme, s in classical_keys):
+        raise RuntimeError("invalid/duplicate classical candidate or output schedule")
+    if cfg.get("cohort_scope") == "original-dev16":
+        expected_heads = {(m, dt) for m in (292, 584, 1168) for dt in (.02, .01, .005)}
+        actual_heads = {(x["rows"], x["dt"]) for x in cfg["pod_head_settings"]}
+        if actual_heads != expected_heads or len(classical_keys) != 90:
+            raise RuntimeError("registered refined candidate grid changed")
     if cfg["n"] != 64 or cfg["horizon"] != .2:
         raise RuntimeError("initial cost pilot is the original frozen NS64 problem")
     if jax.default_backend() != "gpu" or not jax.config.jax_enable_x64:

@@ -138,10 +138,10 @@ if cpth.exists():
     cr=json.loads(cpth.read_text())
     if cr['status']=='complete':
         supplement+=f"## Native CROM projection diagnosis\n\nWorst independent subset error changes from{100*cr['worst_encoded']:.3f}% encoded to{100*cr['worst_projected']:.3f}% after native nonlinear projection. This retained-checkpoint diagnostic does not establish CROM's best attainable accuracy or a complete PDE runtime.\n\n"
-spth=H/'results/b6snfnocache/output/result.json'
+spth=H/'results/b6snffixture/output/result.json'
 if spth.exists():
     sr=json.loads(spth.read_text())
-    supplement+=f"## Native SNF environment outcome\n\nFinal bounded cache-disabled compatibility fixture passed: **{sr.get('passed',False)}**. No SNF training or complete PDE timing was performed. The pinned source, resolved dependency manifest and failure logs are retained; SNF-ROM is unavailable as an eligible comparator in this batch.\n\n"
+    supplement+=f"## Native SNF environment outcome\n\nFinal bounded cache-disabled compatibility fixture passed: **{sr.get('passed',False)}**. No SNF training or complete PDE timing was performed. The pinned source, resolved dependency manifest and all failed attempts are retained. The cache-disabled import succeeded; an ambiguity in our synthetic fixture was corrected explicitly. No trained SNF-ROM comparison is admitted in this batch.\n\n"
 doc=doc.replace('## Glossary',supplement+'## Glossary')
 name='2026-11-19-neural-tree-development.md' 
 (CAN/name).write_text(doc);(H/'reports'/name).write_text(doc)

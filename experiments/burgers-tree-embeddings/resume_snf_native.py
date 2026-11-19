@@ -17,14 +17,18 @@ def main():
     depot=out/'julia-depot';depot.mkdir()
     # Julia writes caches into the first depot; the retained dependency/artifact
     # depot is only a lookup layer. No Pkg mutation or dependency resolution here.
-    env=dict(os.environ,JULIA_DEPOT_PATH=str(depot)+':'+str(old/'julia-depot'),
+    lookup=[str(depot)]
+    previous=ns/'b6snfnocache/output/julia-depot'
+    if previous.exists():lookup.append(str(previous))
+    lookup.append(str(old/'julia-depot'))
+    env=dict(os.environ,JULIA_DEPOT_PATH=':'.join(lookup),
         JULIA_PKG_PRECOMPILE_AUTO='0',JULIA_NUM_THREADS='4',GKSwstype='100',
         CUDA_CACHE_PATH=str(out/'cuda-cache'))
     fixture=out/'native_fixture.jl'
     fixture.write_text('''using NeuralROMs, CUDA
 @assert CUDA.functional()
 struct ScalarFixture <: NeuralROMs.AbstractNeuralModel end
-function NeuralROMs.dudx2_2D(::ScalarFixture,x,p;kwargs...)
+function NeuralROMs.dudx2_2D(::ScalarFixture,x::AbstractArray,p::AbstractVector;kwargs...)
     xx=x[1:1,:]; yy=x[2:2,:]
     u=p[1].*sin.(pi.*xx).*sin.(pi.*yy)
     dx=p[1].*pi.*cos.(pi.*xx).*sin.(pi.*yy)

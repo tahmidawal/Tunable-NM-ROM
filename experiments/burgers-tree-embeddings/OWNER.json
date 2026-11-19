@@ -9,7 +9,7 @@
   "batch_gpu_seconds": 7200,
   "max_concurrent_jobs": 2,
   "old_campaign": "PAUSED; read-only",
-  "updated_utc": "2026-11-19T17:59:23.410703+00:00",
+  "updated_utc": "2026-11-19T18:08:55.522201+00:00",
   "decision": "The compact tree does not pass the three-case diagnostic cost criterion. This does not establish native NM-ROM superiority or a final-test result; review measured component costs before any finite next batch.",
   "allocated_gpu_seconds": 40842,
   "allocated_gpu_hours": 11.345,
@@ -22,12 +22,14 @@
   "continuation": {
     "pid": 375437,
     "started_utc": "2026-11-19T17:01:31.582029+00:00",
-    "status": "active",
+    "status": "closed",
     "script": "cluster/finish_b5.py",
     "source_sha256": "9f679fe479c3d872daa4b37b95c9cce826d4594b34e6b2e570004bb5079cf063",
     "initial_job": 7362119,
     "log": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-burgers-tree-embeddings/experiments/burgers-tree-embeddings/results/B5-controller.log",
     "scope": "Only registered B5; no automatic new compute batch",
-    "cumulative_ceiling_gpu_seconds": 42296
+    "cumulative_ceiling_gpu_seconds": 42296,
+    "finished_utc": "2026-11-19T18:08:55.647615+00:00",
+    "reason": "Both registered independent timing blocks completed."
   }
 }

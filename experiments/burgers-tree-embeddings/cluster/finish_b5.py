@@ -50,6 +50,14 @@ def collect_and_audit(names):
 def submit(name,tokens,minutes):
     assert name in ['b5normal','b5compact','b5block0','b5block1']
     assert minutes<=45
+    existing=[v for v in read('cluster/ledger.json') if v['name']==name]
+    if existing:
+        assert len(existing)==1
+        row=existing[0]
+        assert row['driver']=='complete_query_diagnostic.py' and row['gpu']=='a100'
+        assert row['reserved_minutes']==minutes and shlex.split(row['args'])==tokens
+        print(utc(),'resume_existing_job',name,row['id'],flush=True)
+        return
     source=next(v for v in read('cluster/ledger.json') if v['name']=='b5cache')
     assert source['gpu']=='a100','This registration uses A100-80G; hardware changes need a prospective amendment'
     run(PY,'cluster/run.py','submit','--name',name,'--driver','complete_query_diagnostic.py',
@@ -110,7 +118,9 @@ def main():
     assert not (H/'manifests/archive-closeout-B5.json').exists()
     rows=read('cluster/ledger.json');first=next(v for v in rows if v['name']=='b5cache')
     assert first['id']==7362119
-    assert not any(v['name'] in ['b5normal','b5compact','b5block0','b5block1'] for v in rows),'No duplicate continuation'
+    names=[v['name'] for v in rows];assert len(names)==len(set(names))
+    assert 'b5compact' not in names or 'b5normal' in names
+    assert not any(n in names for n in ['b5block0','b5block1']) or 'b5compact' in names
     assert not sp.check_output(['git','-c','gc.auto=0','status','--porcelain','--',str(H)],text=True).strip()
     owner=read('OWNER.json');ns=owner['namespace'];base=shlex.split(first['args'])
     continuation=dict(pid=os.getpid(),started_utc=utc(),status='active',script='cluster/finish_b5.py',
@@ -124,7 +134,7 @@ def main():
     lab=Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/LAB-LOG.md')
     with lab.open('a') as stream:
         stream.write(f'\n\n### {utc()} — Tree-embedding B5 bounded queue continuation\n\n'
-            f'Job{first["id"]} remains queued. Local controller PID{os.getpid()} owns the finite B5 sequence under configs/B5-QUEUE-CONTINUATION.md in the owned lane. '
+            f'Local controller PID{os.getpid()} resumes the finite B5 sequence from its retained ledger under configs/B5-QUEUE-CONTINUATION.md in the owned lane. '
             'It retains/audits each predecessor before submitting the next qualification, then both independent paired blocks only if both reservations fit. '
             f'The cumulative allocated ceiling is{reg["cumulative_ceiling_gpu_seconds"]} seconds. No new batch, final-test opening, old-campaign restart or merge. '
             'Start/provenance: manifests/B5-controller-start.json; live log: results/B5-controller.log.\n')
@@ -136,8 +146,11 @@ def main():
     compact=replace(normal,'--compare-previous',ns+'/b5normal/output')+['--field-kernel','compact','--include-packed-control']
     submit('b5compact',compact,20)
     if not collect_and_audit(['b5compact']):return close('Compact-kernel equivalence failed; paired timing was not submitted.')
-    rows=reconcile();charged=sum(v['elapsed_seconds'] for v in rows)
-    if charged+2*45*60>reg['cumulative_ceiling_gpu_seconds']:
+    rows=reconcile()
+    charged=sum(v['elapsed_seconds'] if (v.get('state') or 'PENDING').split()[0] in TERMINAL
+                else v['reserved_minutes']*60 for v in rows)
+    missing=sum(not any(v['name']==name for v in rows) for name in ['b5block0','b5block1'])
+    if charged+missing*45*60>reg['cumulative_ceiling_gpu_seconds']:
         return close('The remaining finite allocation cannot reserve both45-minute blocks. No budget expansion or unregistered shortened run was made.')
     paired=replace(compact,'--compare-previous',ns+'/b5compact/output')+['--mode','paired',
         '--qualified-implementation',ns+'/b5compact/output']

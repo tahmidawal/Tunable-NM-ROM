@@ -1,0 +1,54 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "failed_condition": "b5cache",
+      "submitted": [],
+      "closed": true
+    },
+    {
+      "failed_condition": "b5normal",
+      "submitted": [
+        "b5normal"
+      ],
+      "closed": true
+    },
+    {
+      "failed_condition": "b5compact",
+      "submitted": [
+        "b5normal",
+        "b5compact"
+      ],
+      "closed": true
+    },
+    {
+      "failed_condition": "reservation",
+      "submitted": [
+        "b5normal",
+        "b5compact"
+      ],
+      "closed": true
+    },
+    {
+      "failed_condition": "b5block1",
+      "submitted": [
+        "b5normal",
+        "b5compact",
+        "b5block0",
+        "b5block1"
+      ],
+      "closed": true
+    },
+    {
+      "failed_condition": null,
+      "submitted": [
+        "b5normal",
+        "b5compact",
+        "b5block0",
+        "b5block1"
+      ],
+      "closed": true
+    }
+  ],
+  "scope": "No external effects; dependency and reservation gates only"
+}

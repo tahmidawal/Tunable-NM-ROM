@@ -30,7 +30,8 @@ for failed in ['b5cache','b5normal','b5compact','reservation','b5block1',None]:
         else:tokens.extend([flag,value])
         return tokens
     env=dict(collect_and_audit=collect,submit=submit,close=close,replace=replace,
-        reconcile=lambda:[dict(elapsed_seconds=40000 if failed=='reservation' else 36000)],
+        reconcile=lambda:[dict(name='fixture',state='COMPLETED',elapsed_seconds=40000 if failed=='reservation' else 36000)],
+        TERMINAL={'COMPLETED'},
         reg=dict(cumulative_ceiling_gpu_seconds=42296),ns='/owned',base=['--compare-previous','/owned/baseline'])
     exec(compile(module,str(path),'exec'),env);env['main']()
     names=[v[0] for v in submitted]

@@ -1100,5 +1100,16 @@
     "elapsed_seconds": 213,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b5compact",
+    "id": 7370535,
+    "reserved_minutes": 20,
+    "commit": "699c37996bfe406b8a22c50b28bcbf124581adb7",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b5compact",
+    "driver": "complete_query_diagnostic.py",
+    "args": "--cache /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1cache/output --span /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1expanded/output --stable-global /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1stableglobal/output --admission /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1directaudit/output --dev /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/refsdev01/output,/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1refextend/output/dev --development-admission manifests/B4-progress-a12b5ef42ae4.json --compare-previous /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b5normal/output --normal-reuse --field-kernel compact --include-packed-control",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-19T17:02:18.521651+00:00"
   }
 ]

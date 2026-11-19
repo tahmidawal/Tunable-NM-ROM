@@ -1524,8 +1524,8 @@
     "args": "",
     "gpu": "a100",
     "submitted_utc": "2026-11-19T20:54:34.378322+00:00",
-    "state": "RUNNING",
-    "elapsed_seconds": 909,
+    "state": "COMPLETED",
+    "elapsed_seconds": 2150,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
   },
@@ -1568,6 +1568,21 @@
     "driver": "diagnose_named_parent.py",
     "args": "",
     "gpu": "a100",
-    "submitted_utc": "2026-11-19T21:12:46.591779+00:00"
+    "submitted_utc": "2026-11-19T21:12:46.591779+00:00",
+    "state": "RUNNING",
+    "elapsed_seconds": 32,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b7parentstarts",
+    "id": 7379349,
+    "reserved_minutes": 10,
+    "commit": "16e82ec486d1537890b8363c6631899e87f4e55e",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b7parentstarts",
+    "driver": "diagnose_parent_starts.py",
+    "args": "",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-19T21:34:36.096103+00:00"
   }
 ]

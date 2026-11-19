@@ -1,0 +1,18 @@
+{
+  "round": "B7 parent-first nonlinear neural tree",
+  "initial_parent_recipe": "neural/stable.py + train_stable_parent.py",
+  "parent_training_repairs_max": 2,
+  "repairs": [
+    {
+      "id": 1,
+      "diagnosis": "Training-only pilot improves but remains above target with stable independent scoring",
+      "source": "polish_stable_parent.py",
+      "max_minutes": 30,
+      "status": "registered"
+    }
+  ],
+  "parent_quality_gate": 0.02,
+  "assembled_representation_gate": 0.005,
+  "pde_accuracy_gate": 0.01,
+  "final_test_opened": false
+}

@@ -9,7 +9,7 @@ import data
 
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--out',required=True);ap.add_argument('--phase',choices=['pilot','full'],required=True)
-    ap.add_argument('--updates',type=int,default=12000);a=ap.parse_args()
+    ap.add_argument('--updates',type=int,default=12000);ap.add_argument('--warm-job',default='b7parentpilot');a=ap.parse_args()
     out=Path(a.out);out.mkdir(parents=True,exist_ok=True);metadata=preflight();ns=Path(os.environ['STUDY_NAMESPACE'])
     original=resolve(ns/'b6parent/output/neural_parent.pkl',ns);old=read_checkpoint(original)
     dp=original.parent/'coordinate_data.npz';assert digest(dp)==old['data_sha256'];dr=old['data_record']
@@ -20,7 +20,8 @@ def main():
     cases=sorted(set([3,int(pulses[np.argmin(params[pulses,3])]),int(pulses[np.argmax(params[pulses,3])]),int(pulses[np.argmax(params[pulses,4])])]))
     pilot_indices=np.array([11*c+t for c in cases for t in [0,5,10]])
     if a.phase=='full':
-        pilot=resolve(ns/'b7parentpilot/output/result.json',ns);pr=json.loads(pilot.read_text());assert pr['pilot_pass']
+        assert a.warm_job in ('b7parentpilot','b7parentpolish')
+        pilot=resolve(ns/(a.warm_job+'/output/result.json'),ns);pr=json.loads(pilot.read_text());assert pr['pilot_pass']
         path=pilot.parent/'stable_parent.pkl';assert digest(path)==pr['selected_sha256'];warm=read_checkpoint(path)
         network=jax.tree.map(jnp.asarray,warm['network']);codes=jnp.asarray(warm['training_codes'])
     netopt=optax.chain(optax.clip_by_global_norm(5.),optax.adam(optax.cosine_decay_schedule(3e-4,a.updates,alpha=.1)))

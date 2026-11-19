@@ -57,8 +57,10 @@ def make_step(apply,L,Q,iterations=60,theta=.5):
                 delta=scale*jnp.linalg.solve(H*scale[:,None]*scale[None,:]+damp*jnp.eye(len(z)),-scale*g)
                 update=jnp.linalg.norm(field(z+delta)-field(z))
                 rr=fun(z+delta);newloss=rr@rr;predicted=-2*g@delta-delta@H@delta
-                good=jnp.isfinite(newloss)&(newloss<loss)&(predicted>0)
-                ratio=(loss-newloss)/jnp.maximum(predicted,1e-30)
+                difference=rr-r
+                reduction=-2*r@difference-difference@difference
+                good=jnp.isfinite(newloss)&(reduction>0)&(predicted>0)
+                ratio=reduction/jnp.maximum(predicted,1e-30)
                 station=jnp.max(jnp.abs(g)*scale)
                 done=(station<=station_tolerance)&((update<=update_tolerance)|(station<=station_tolerance*.01))
                 damp=jnp.where(good,jnp.where(ratio>.75,damp/3,jnp.where(ratio<.25,damp*2,damp)),damp*5)

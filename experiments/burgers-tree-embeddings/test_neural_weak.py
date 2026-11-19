@@ -36,6 +36,11 @@ tight,tight_status=step(None,z,cache,dt,nu,1e-10,1e-12)
 assert status[-1]==1 and tight_status[-1]==1
 change=float(jnp.linalg.norm(field(None,returned,cache['xy'])-field(None,tight,cache['xy']))/jnp.linalg.norm(u))
 assert change<1e-8
-print(json.dumps(dict(mass_error=mass_error,advection_error=advection_error,diffusion_error=diffusion_error,
+base=jnp.array([1.,1e-8]);delta=jnp.array([0.,-1e-10])
+naive=float(base@base-(base+delta)@(base+delta))
+stable=float(-2*base@delta-delta@delta)
+assert naive==0 and stable>0
+assert abs(stable-1.99e-18)<1e-32
+print(json.dumps(dict(cancellation_naive=naive,cancellation_stable=stable,mass_error=mass_error,advection_error=advection_error,diffusion_error=diffusion_error,
                      residual_error=residual_error,jvp_error=jvp_error,status=np.asarray(status).tolist(),
                      tight_status=np.asarray(tight_status).tolist(),tight_field_change=change)))

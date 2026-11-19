@@ -1342,8 +1342,8 @@
     "args": "",
     "gpu": "a100",
     "submitted_utc": "2026-11-19T19:24:34.605472+00:00",
-    "state": "RUNNING",
-    "elapsed_seconds": 25,
+    "state": "CANCELLED by 34493",
+    "elapsed_seconds": 193,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
   },
@@ -1356,6 +1356,21 @@
     "driver": "resume_snf_native.py",
     "args": "--no-compiled-modules",
     "gpu": "a100",
-    "submitted_utc": "2026-11-19T19:25:10.544723+00:00"
+    "submitted_utc": "2026-11-19T19:25:10.544723+00:00",
+    "state": "RUNNING",
+    "elapsed_seconds": 208,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b6namedenc",
+    "id": 7373349,
+    "reserved_minutes": 30,
+    "commit": "3907157c9c5433884b18501d2cf163def8f0b552",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b6namedenc",
+    "driver": "diagnose_named_neural.py",
+    "args": "",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-19T19:28:47.324497+00:00"
   }
 ]

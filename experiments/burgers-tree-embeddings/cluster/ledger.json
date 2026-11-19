@@ -1433,6 +1433,21 @@
     "driver": "train_stable_parent.py",
     "args": "--phase pilot --updates 12000",
     "gpu": "a100",
-    "submitted_utc": "2026-11-19T20:26:37.829724+00:00"
+    "submitted_utc": "2026-11-19T20:26:37.829724+00:00",
+    "state": "COMPLETED",
+    "elapsed_seconds": 32,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b7parentpolish",
+    "id": 7377763,
+    "reserved_minutes": 30,
+    "commit": "7ee867310c09c5572664d9297cf5f38bc952fada",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b7parentpolish",
+    "driver": "polish_stable_parent.py",
+    "args": "",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-19T20:31:15.647116+00:00"
   }
 ]

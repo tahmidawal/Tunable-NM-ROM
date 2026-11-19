@@ -142,6 +142,10 @@ spth=H/'results/b6snffixture/output/result.json'
 if spth.exists():
     sr=json.loads(spth.read_text())
     supplement+=f"## Native SNF environment outcome\n\nFinal bounded cache-disabled compatibility fixture passed: **{sr.get('passed',False)}**. No SNF training or complete PDE timing was performed. The pinned source, resolved dependency manifest and all failed attempts are retained. The cache-disabled import succeeded; an ambiguity in our synthetic fixture was corrected explicitly. No trained SNF-ROM comparison is admitted in this batch.\n\n"
+auditpath=H/'manifests/allocation-audit-B6.json'
+if auditpath.exists():
+    au=json.loads(auditpath.read_text());extra_seconds=au['allocated_gpu_seconds']-40842
+    supplement+=f"## Allocation and stop decision\n\nThis bounded round used{extra_seconds} allocated GPU-seconds ({extra_seconds/3600:.6f} hours) of its8-hour allowance, including failed and cancelled attempts. Cumulative study allocation is{au['allocated_gpu_hours']:.6f} GPU-hours. All{len(au['jobs'])} owned jobs are terminal; final-test fields remain sealed. The neural round stops at its failed representation gate, with no automatic continuation or merge.\n\n"
 doc=doc.replace('## Glossary',supplement+'## Glossary')
 name='2026-11-19-neural-tree-development.md' 
 (CAN/name).write_text(doc);(H/'reports'/name).write_text(doc)

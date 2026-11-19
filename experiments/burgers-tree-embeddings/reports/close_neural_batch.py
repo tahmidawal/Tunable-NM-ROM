@@ -22,7 +22,7 @@ owner=read('OWNER.json');owner.update(status='B6_CLOSED_SCOPED_NEGATIVE',updated
     latest_neural_status=summary,latest_batch_review='configs/B6-REVIEW.md',continuation=dict(status='closed',active=False))
 save('OWNER.json',owner)
 claim=Path('/home/tahmid/Dev/QuadtreeNMROM/execution/tree-embeddings-owner.lock/owner.json');c=json.loads(claim.read_text());assert c['owner']==owner['owner']
-c.update(status=owner['status'],updated_utc=now,latest_neural_status=summary,allocated_gpu_seconds=total,active_jobs=0);claim.write_text(json.dumps(c,indent=2)+'\n')
+c.update(owner);claim.write_text(json.dumps(c,indent=2)+'\n')
 recipes=read('configs/B6-RECIPES.json');recipes['recipes'][2]['status']='native training/projection diagnostic failed; strong PDE comparator not reproduced'
 recipes['recipes'][3]['status']='native GPU scalar-equivalence fixture '+str(snf.get('passed',False))+'; no trained comparator'
 save('configs/B6-RECIPES.json',recipes)

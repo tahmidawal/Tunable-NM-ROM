@@ -1,15 +1,19 @@
 """Publish completed B7 parent and named-family evidence without PDE claims."""
 from pathlib import Path
-import json,hashlib,shutil
+import json,hashlib,shutil,argparse
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 H=Path(__file__).resolve().parents[1]
+ap=argparse.ArgumentParser();ap.add_argument('--output-root');args=ap.parse_args()
+output_root=Path(args.output_root) if args.output_root else H/'reports'
+output_root.mkdir(parents=True,exist_ok=True)
 load=lambda name:json.loads((H/f'results/{name}/output/result.json').read_text())
 initial=load('b7parentfull');final=load('b7parentrepair');named=load('b7namedparent');snf=load('b7snff64')
 assert final['status']=='complete_stable_parent' and named['status']=='complete'
-out=H/'reports/2026-11-19-neural-parent-assets';out.mkdir(exist_ok=True)
+out=output_root/'2026-11-19-neural-parent-assets';out.mkdir(exist_ok=True)
+if args.output_root:shutil.copy2(H/'reports/2026-11-19-neural-parent-assets/fit-diagnosis.png',out/'fit-diagnosis.png')
 fig,axes=plt.subplots(1,2,figsize=(12,4),constrained_layout=True)
 for ax,r,title in zip(axes,[initial,final],['Initial full-data training','Final alternating-training repair']):
     history=r['history'];x=[v['update'] for v in history]
@@ -40,7 +44,7 @@ fig.suptitle(f'Final parent, worst primary case {final["actual4096"]["case"]}; a
 fig.savefig(out/'final-parent-actual4096.png',dpi=170);plt.close(fig);witness.close()
 del ref,pred,difference
 plots=[];full_exports=[]
-export_dir=H/'results/b7-parent-exports';export_dir.mkdir(exist_ok=True)
+export_dir=out/'full-resolution' if args.output_root else H/'results/b7-parent-exports';export_dir.mkdir(exist_ok=True)
 for ci,case in enumerate(named['cases']):
     if abs(case['nu']-.005)>1e-12:continue
     frames=[];rows=[r for r in case['rows'] if 'actual4096' in r]
@@ -64,7 +68,7 @@ for ci,case in enumerate(named['cases']):
             if k==len(frames)-1:fig.colorbar(im,ax=axes[j,:],shrink=.8)
     fig.suptitle(case['definition']['name']+' — actual 4096 × 4096 arrays, previewed at 512 × 512; offline fits, not PDE rollouts')
     p=out/f'named-{ci:02d}-actual4096-times.png';fig.savefig(p,dpi=150);plt.close(fig);plots.append((case,p));print('full_resolution_exports',case['case'],flush=True)
-report=H/'reports/2026-11-19-neural-parent-training.md'
+report=output_root/'2026-11-19-neural-parent-training.md'
 lines=['# Neural parent training, full-resolution reconstructions and advancement','',
        'Completed B7 parent-training evidence and named-family reconstruction diagnostics. These fields are independently fitted offline reconstructions; they are not neural PDE rollouts. Final-test solution fields remain sealed.','',
        '| Measurement | Initial full parent | Final training repair |','|---|---:|---:|']
@@ -111,6 +115,19 @@ lines.extend(['','The embedding-space weak PDE stepper also received an arithmet
 lines.extend(['',f'Native SNF patched-environment qualification passed: **{snf["passed"]}**. The fixture verifies float64 GPU weights and gradients and a scalar-equivalent native Burgers RHS. It is not a trained SNF model. Earlier missing-adapter and precision-port failures are retained. CROM remains an unqualified reproduction with recorded training limitations. No fair complete-PDE-solve timing comparison against CROM or SNF-ROM is available.','',
  'Glossary: parent means the global nonlinear coordinate neural decoder; embedding means its independently fitted field code; reconstruction means fitting a known field offline; PDE rollout means advancing codes using the PDE without future solution fields; unfinished means the original stopping test failed; independent scoring uses 256² quadrature instead of 128² training quadrature; actual 4096 means all 4096² field values were produced and scored. The parent prerequisite allows residual-child development but does not replace the stricter assembled representation or PDE requirements.'])
 report.write_text('\n'.join(lines)+'\n')
+if args.output_root:
+    def checksum(path):
+        h=hashlib.sha256()
+        with path.open('rb') as f:
+            for block in iter(lambda:f.read(1<<20),b''):h.update(block)
+        return h.hexdigest()
+    records=[dict(file=str(p.relative_to(output_root)),sha256=checksum(p),bytes=p.stat().st_size) for p in [report,*out.rglob('*.png')]]
+    for row in full_exports:
+        p=Path(row.pop('source'));row.update(file=str(p.relative_to(output_root)),sha256=checksum(p))
+    (output_root/'render-manifest.json').write_text(json.dumps(records,indent=2)+'\n')
+    (output_root/'full-resolution-exports.json').write_text(json.dumps(full_exports,indent=2)+'\n')
+    print(report,flush=True)
+    raise SystemExit(0)
 pub=Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports');dest=pub/out.name;dest.mkdir(exist_ok=True);records=[]
 for p in [report,*out.glob('*.png')]:
     target=pub/p.name if p==report else dest/p.name;shutil.copy2(p,target)

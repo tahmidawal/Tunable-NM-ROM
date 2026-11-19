@@ -1,5 +1,5 @@
 {
-  "status": "recovery_in_progress",
+  "status": "archive_recovered_rendering_offloaded",
   "commands": [
     {
       "command": "reports/final_parent_round.py",
@@ -8,10 +8,31 @@
     {
       "command": "cluster/archive_owned.py --label B7",
       "exit_code": 143
+    },
+    {
+      "command": "serial reports/final_parent_round.py",
+      "exit_code": 143
     }
   ],
   "cause": "Not determined; both local commands received termination before completion",
   "observed": "First pilot directory was moved to its archive before the ledger update; raw output and log directories remain present",
   "repair": "Verify destination against retained local checksum list, atomically update accounting metadata, resume one command at a time",
-  "additional_gpu_allocation": false
+  "additional_gpu_allocation": false,
+  "archive_reverified": true,
+  "local_memory_available_gib_observed": 18,
+  "host_earlyoom_documented_threshold": "15% of memory, about18GiB; termination sender not independently identified",
+  "partial_local_exports": [
+    {
+      "file": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-burgers-tree-embeddings/experiments/burgers-tree-embeddings/results/b7-local-render-interrupted/final-errors.png",
+      "sha256": "d6d2cb6dd7a09ca21f705d89ba4e4209819a190550ef6d782d01338913914c2e"
+    },
+    {
+      "file": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-burgers-tree-embeddings/experiments/burgers-tree-embeddings/results/b7-local-render-interrupted/final-training-curves.png",
+      "sha256": "1bc220825eec1a5ae48293257f1292c52b449a99f2701ae6369dc02b71481c1d"
+    },
+    {
+      "file": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-burgers-tree-embeddings/experiments/burgers-tree-embeddings/results/b7-local-render-interrupted/final-parent-actual4096.png",
+      "sha256": "c326d11c2b7db37d2a879888953490bcc0f6ee7faa405fc280fc210e07f1b0b5"
+    }
+  ]
 }

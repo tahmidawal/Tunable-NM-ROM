@@ -6,7 +6,7 @@ solution or saved development embedding is an input to this implementation.
 """
 from common import *
 import data, local_polynomial as LP, discrete_weak as W, packed_fields as PF
-import cell_catalogue as CC
+import cell_catalogue as CC, compact_fields as CF
 from fixed_tree_pilot import visibility
 
 
@@ -17,14 +17,16 @@ class FixedQuery:
         self.L,self.Q,self.tests,self.dt=L,Q,tests,dt
         self.catalogue,self.nodes,self.depth=catalogue,nodes,depth
         self.output_points,self.reuse_normal=output_points,reuse_normal
+        self.field_kernel=catalogue.get('field_kernel','packed') if catalogue is not None else 'packed'
+        field=PF if self.field_kernel=='packed' else CF
         assert np.isclose(round(.05/dt)*dt,.05) and L%Q==0
         self.x,self.w=data.grid(128,True)
         self.axis=jnp.arange(1,Q)/Q
         self.xy=jnp.stack(jnp.meshgrid(self.axis,self.axis,indexing='ij'),axis=-1)
-        self.fit=W.make_initial_fit(PF.center)
-        self.step,_=W.make_solver(PF.center,L,theta=.5,advection_tests=PF.tested_advection(L,Q),
+        self.fit=W.make_initial_fit(field.center)
+        self.step,_=W.make_solver(field.center,L,theta=.5,advection_tests=field.tested_advection(L,Q),
                                   reuse_linear_normal=reuse_normal)
-        self.output=jax.jit(PF.center)
+        self.output=jax.jit(field.center)
         if catalogue is None:
             weak,_=W.prepare(basis,[],[],rotation,L,tests,jnp.eye(len(basis)))
             self.cache={key:weak[key] for key in ['A','indices','lam','gram']}
@@ -91,6 +93,7 @@ class FixedQuery:
             setup_seconds=setup,initial_fit_seconds=cold,solving_seconds=solving,
             requested_reconstruction_seconds=reconstruction,total_query_seconds=total,
             requested_field_count=outputs,rejected_trials=0,fallback_invocations=0,
+            field_kernel=self.field_kernel,
             output_contract='actual device fields; host transfer reported separately',
             component_instrumentation=components,
             reusable_setup_excluded=True,query_specific_compilation_included=True)

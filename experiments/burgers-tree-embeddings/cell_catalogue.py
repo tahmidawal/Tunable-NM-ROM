@@ -6,6 +6,7 @@ online work. Scientific GPU qualification is separate from this implementation.
 """
 from common import *
 import geometry as geo, tensor_metric as TM, discrete_weak as W, packed_fields as PF
+import compact_fields as CF
 
 
 def make_reducer(root):
@@ -20,8 +21,9 @@ def make_reducer(root):
     return reduce
 
 
-def build(basis, rotation, L, Q, tests, depth=4, output_points=4096, rule=None):
+def build(basis, rotation, L, Q, tests, depth=4, output_points=4096, rule=None,field_kernel='packed'):
     assert 1 <= depth <= 4 and L % Q == 0 and (Q-1)**2 >= 4*tests
+    assert field_kernel in ('packed','compact')
     cells = geo.uniform(depth);geo.valid(cells)
     metric = TM.make_geometry(6)
     physical, transforms, _, _ = metric(jnp.asarray(basis),jnp.asarray(cells),*(TM.rule() if rule is None else rule))
@@ -30,12 +32,16 @@ def build(basis, rotation, L, Q, tests, depth=4, output_points=4096, rule=None):
     # Drop the compact full-grid axes: only the tested matrices and fixed-shape
     # stencil/output tables are used by this candidate implementation.
     cache = {key:weak[key] for key in ['A','indices','lam','gram']}
-    cache['packed'] = PF.prepare_stencil(basis,cells,transforms,rotation,L,Q)
     axis = np.linspace(0,1,output_points)[None]
-    output = PF.prepare(basis,cells,transforms,rotation,axis,axis)
+    if field_kernel=='packed':
+        cache['packed'] = PF.prepare_stencil(basis,cells,transforms,rotation,L,Q)
+        output = PF.prepare(basis,cells,transforms,rotation,axis,axis)
+    else:
+        cache['compact'] = CF.prepare_stencil(basis,cells,transforms,rotation,L,Q,depth)
+        output = CF.prepare(basis,cells,transforms,rotation,axis,axis,depth)
     jax.block_until_ready((cache,output))
     return dict(cells=np.asarray(cells),root=len(basis),rank=np.asarray(rotation).shape[1],
-                depth=depth,L=L,Q=Q,tests=tests,output_points=output_points,
+                depth=depth,L=L,Q=Q,tests=tests,output_points=output_points,field_kernel=field_kernel,
                 arrays=dict(cache=cache,output=output,transforms=jnp.asarray(transforms)),
                 scope='every geometrically admissible cell through the declared depth; no solution fields')
 
@@ -51,6 +57,25 @@ def gather(arrays, nodes, columns):
     return dict(cache=result,output_cache={'packed':fields(arrays['output'])},transforms=arrays['transforms'][nodes])
 
 
+@jax.jit
+def gather_compact(arrays,nodes,columns,selectors):
+    def fields(p):
+        result={k:p[k] for k in ['basis','sine_x','sine_y']}
+        result['transform']=p['transform'][nodes]
+        buckets=[]
+        for source,selection in zip(p['buckets'],selectors):
+            rows=source['inverse'][nodes[selection['slots']]]
+            buckets.append(dict(X=source['X'][:,rows],Y=source['Y'][:,rows],
+                ix=source['ix'][rows],iy=source['iy'][rows],
+                slot_indices=selection['slots'],slot_mask=selection['mask']))
+        result['buckets']=tuple(buckets)
+        return result
+    ca=arrays['cache']
+    result=dict(A=ca['A'][:,columns],indices=ca['indices'],lam=ca['lam'],
+        gram=ca['gram'][columns[:,None],columns[None,:]],compact=fields(ca['compact']))
+    return dict(cache=result,output_cache={'compact':fields(arrays['output'])},transforms=arrays['transforms'][nodes])
+
+
 def select(catalogue, cells):
     """Host policy/lookup and device gathering are both charged to the query."""
     geo.valid(cells)
@@ -58,6 +83,15 @@ def select(catalogue, cells):
     nodes=np.asarray([lookup[tuple(c)] for c in cells],dtype=np.int64)
     root,rank=catalogue['root'],catalogue['rank']
     columns=np.concatenate([np.arange(root),root+(nodes[:,None]*rank+np.arange(rank)).ravel()])
-    result=gather(catalogue['arrays'],jnp.asarray(nodes),jnp.asarray(columns))
+    if catalogue.get('field_kernel','packed')=='packed':
+        result=gather(catalogue['arrays'],jnp.asarray(nodes),jnp.asarray(columns))
+    else:
+        selectors=[]
+        if len(cells):
+            for d in range(1,catalogue['depth']+1):
+                count=min(4**d,len(cells));active=[i for i,c in enumerate(cells) if c[0]==d]
+                slots=np.zeros(count,dtype=np.int32);slots[:len(active)]=active
+                selectors.append(dict(slots=jnp.asarray(slots),mask=jnp.asarray(np.arange(count)<len(active),dtype=jnp.float64)))
+        result=gather_compact(catalogue['arrays'],jnp.asarray(nodes),jnp.asarray(columns),tuple(selectors))
     jax.block_until_ready(result)
     return result

@@ -82,6 +82,7 @@ def main():
     ap.add_argument('--mode',choices=['equivalence','paired'],default='equivalence')
     ap.add_argument('--qualified-implementation',help='retained successful equivalence result for this exact implementation')
     ap.add_argument('--normal-reuse',action='store_true')
+    ap.add_argument('--field-kernel',choices=['packed','compact'],default='packed')
     ap.add_argument('--block-index',type=int,choices=[0,1],default=0,help='paired blocks use distinct owned allocations')
     ap.add_argument('--labels',default='dev000,dev003,align002')
     a=ap.parse_args();out=Path(a.out);out.mkdir(parents=True,exist_ok=True);meta=preflight()
@@ -95,13 +96,14 @@ def main():
     for key,value in identities.items():assert pr[key]==value
     labels=a.labels.split(',');assert labels==['dev000','dev003','align002']
     implementation={name:digest(HERE/name) for name in ['common.py','data.py','geometry.py','local_polynomial.py',
-        'tensor_metric.py','discrete_weak.py','packed_fields.py','cell_catalogue.py','direct_query.py',
+        'tensor_metric.py','discrete_weak.py','packed_fields.py','compact_fields.py','cell_catalogue.py','direct_query.py',
         'fixed_tree_pilot.py','complete_query_diagnostic.py']}
     if a.mode=='paired':
         assert a.qualified_implementation
         qr=json.loads((Path(a.qualified_implementation)/'result.json').read_text())
         assert qr['status']=='complete_query_equivalence_diagnostic' and qr['all_passed']
         assert qr['normal_reuse']==a.normal_reuse
+        assert qr['field_kernel']==a.field_kernel
         assert qr['implementation_sha256']==implementation
         for key,value in identities.items():assert qr[key]==value
     refs={r['case']:(p,r) for p,r in cohort(a.dev)}
@@ -119,7 +121,7 @@ def main():
     else:
         assert (pr['L'],pr['quadrature_intervals'],pr['dt'],pr['time_integrator'])==(config['L'],config['Q'],config['dt'],'cn')
         assert all(c['common_tests']==config['tests'] for c in pr['cases'])
-    t0=time.perf_counter();catalogue=CC.build(root,U,**config_except_dt(config))
+    t0=time.perf_counter();catalogue=CC.build(root,U,**config_except_dt(config),field_kernel=a.field_kernel)
     tree=FixedQuery(root,U,config['L'],config['Q'],config['tests'],config['dt'],catalogue=catalogue,reuse_normal=a.normal_reuse)
     tree_build=time.perf_counter()-t0
     t0=time.perf_counter();global_query=FixedQuery(glob,U,config['L'],config['Q'],config['tests'],config['dt'],reuse_normal=a.normal_reuse)
@@ -135,6 +137,7 @@ def main():
         del r
     repeats,contracts=(5,[1,5]) if a.mode=='paired' else (1,[1])
     result=dict(meta=meta,status='complete_query_diagnostic_running',**identities,mode=a.mode,normal_reuse=a.normal_reuse,
+        field_kernel=a.field_kernel,
         config=config,labels=labels,development_admission_sha256=digest(gatepath),previous_result_sha256=digest(previous/'result.json'),
         reusable_setup=dict(shared_source_verification_and_loading_seconds=loading,
             tree_catalogue_and_constructor_seconds=tree_build,global_constructor_seconds=global_build,

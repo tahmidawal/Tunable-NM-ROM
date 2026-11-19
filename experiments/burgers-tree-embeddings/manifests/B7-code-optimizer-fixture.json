@@ -1,0 +1,11 @@
+{
+  "test": "test_code_optimizer.py",
+  "passed": true,
+  "checks": [
+    "independent per-row optax Adam parity below1e-14",
+    "bitwise preservation of absent rows",
+    "visit counts independent of global updates"
+  ],
+  "device": "CPU",
+  "dtype": "float64"
+}

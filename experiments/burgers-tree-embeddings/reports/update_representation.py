@@ -118,10 +118,13 @@ if (H/'results/b1childallocation/output/result.json').exists():
         for ax,control,title in [(axs[0],directaudit['controls'],'Direct local24'),(axs[1],ac['controls'],'Frozen nonlinear child16')]:
             names=['uniform20','prescribed20','uniform84','prescribed84']
             values=[100*control[n]['projection']['worst'] for n in names]
-            ax.bar(np.arange(4),values,color=['#7899ac','#00877c','#7899ac','#00877c'])
+            bars=ax.bar(np.arange(4),values,color=['#7899ac','#00877c','#7899ac','#00877c'])
+            ax.bar_label(bars,labels=[f'{v:.3f}%' for v in values],padding=3,fontsize=9)
             ax.axhline(.5,color='#b5413c',ls='--',lw=1)
             ax.set(xticks=np.arange(4),xticklabels=[f"{n.replace('20',' 20').replace('84',' 84')}\n{control[n]['active_variables']} variables" for n in names],title=title,yscale='log')
+            ax.set_yticks([.25,.5,1,2,4],labels=['0.25','0.5','1','2','4'])
             ax.tick_params(axis='x',labelsize=8);ax.grid(axis='y',alpha=.15)
+            ax.text(.02,.53,'0.5% representation gate',transform=ax.get_yaxis_transform(),fontsize=8,color='#b5413c')
         axs[0].set_ylabel('Worst all-snapshot projection error (%)')
         fig.suptitle('Uniform versus initial-field prescribed trees: same checkpoint within each panel')
         figure(fig,'b1-allocation-controls')

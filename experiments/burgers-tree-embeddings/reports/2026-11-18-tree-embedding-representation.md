@@ -194,7 +194,7 @@ Original recipes, unsuccessful repairs and the original decision remain in [the 
 
 ## Accounting and provenance
 
-Generated 2026-11-19T01:12:23.578440+00:00. Terminal allocations recorded in the current ledger total 19292 GPU-seconds (5.358889 GPU-hours); nonterminal or not-yet-reconciled names: b1childpdeR1. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
+Generated 2026-11-19T01:14:32.153209+00:00. Terminal allocations recorded in the current ledger total 19292 GPU-seconds (5.358889 GPU-hours); nonterminal or not-yet-reconciled names: b1childpdeR1, b1cnM32. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
 
 ## Glossary
 

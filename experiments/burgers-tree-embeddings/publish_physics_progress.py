@@ -10,6 +10,11 @@ r=read('b1directaudit');g=read('b1globalfull');n=read('b1child8refit')
 stable=read('b1stableglobal');child=read('b1child16');refit=read('b1child16refit');head=read('b1headspan2')
 growth=read('b1childgrowth64');wide=read('b1globalwide128')
 m8=read('b1cnM8');q512=read('b1cnQ512')
+allocation_text='Matched same-head uniform/prescribed controls continue.'
+if (H/'results/b1childallocation/output/result.json').exists():
+    ac=read('b1childallocation')
+    if ac['status']=='complete_frozen_child_allocation_controls':
+        allocation_text=f"At1472 variables the same nonlinear checkpoint gives uniform error{100*ac['controls']['uniform84']['projection']['worst']:.4f}% versus prescribed{100*ac['controls']['prescribed84']['projection']['worst']:.4f}%, with actual4096 worst witnesses. These are best-found, partly underconverged fits; the84-node allocation is not independently admitted to physics."
 pilot_worst=max(max(v['physical_error'][1:]) for c in m8['cases'] for v in c['methods'].values())
 pilots=[]
 for name in ['b1weakpilot1','b1weakL2048','b1weakL4096','b1weakdt125','b1weakdt625','b1cn2048','b1cn2048half','b1cnM8','b1cnM16','b1cnM32','b1cnQ512','b1cnQ1024','b1childpde','b1childpdeR1','b1childpdeR2']:
@@ -21,6 +26,8 @@ active=[v for v in ledger if v.get('state') not in terminal]
 seconds=sum(v.get('elapsed_seconds',0) for v in ledger);stamp=datetime.datetime.now(datetime.timezone.utc).isoformat()
 status=f'''**New Burgers tree-embedding study: B1 ACTIVE, representation passed; fixed-tree numerical qualification continues.** The same child16 head with64 retained nodes reaches {100*growth['actual4096_witness']['error']:.4f}% on actual4096 output at1152 variables; every development snapshot passes the representation screen. Direct24 gives {100*r['dense_witness']['relative_l2']:.4f}% with1376 variables; prescribed global POD-plus-Fourier gives {100*stable['controls']['960']['worst']:.4f}% with960. The direct PDE pilot passes physical accuracy, but the latest test sensitivity is0.10684%, just above0.1%. The first nonlinear PDE pilot also passes physical accuracy but fails stationarity on160/300 steps; a finite solver repair is running. Matched same-head uniform/prescribed controls continue. The wider global128 neural repair remains at{100*wide['worst_projection']:.4f}% projection error. No all-development PDE admission, complete-runtime win or final-test result. [Generated evidence and plots](reports/2026-11-18-tree-embedding-representation.md). Old campaign remains PAUSED; no merge.'''
 title='### 2026-11-18 — Tree-embedding B1 frozen/global audits and physics: '+', '.join(name for name,_ in pilots)
+status=status.replace('Matched same-head uniform/prescribed controls continue.',allocation_text)
+if 'ac' in globals() and ac['status']=='complete_frozen_child_allocation_controls':title+='; frozen child allocation'
 lines=[]
 for name,p in pilots:
     for c in p['cases']:
@@ -51,6 +58,8 @@ Registered common CN time-integration and structured weak-integration diagnostic
 Completed11008-test CN comparison: all three cases and both methods pass physical accuracy and stationarity, worst{100*pilot_worst:.6f}%. The direct tree's largest state change from5504 tests is{100*max(max(c['methods']['tree_direct24']['previous_state_relative_change']) for c in m8['cases']):.6f}%, so the original smaller test set is not numerically admitted. The completed22016-test check changes the tree field by up to0.106838%, narrowly failing the unchanged0.1% sensitivity gate. A finite44032-test review is registered before further integration changes. The independent Q512 integration diagnostic changes the tree states by at most{100*max(max(c['methods']['tree_direct24']['previous_state_relative_change']) for c in q512['cases']):.6f}% versus dense integration at5504 tests, preserving the underlying fine stencil. It inherits that smaller test set's physical failure and is not admission of a combined new rule. Pilot times charge joint setup to both methods and cannot serve as method-specific speed ratios.
 
 The first coupled child16/64-node pilot has physical error below1% on all three exposed cases, but74 dev000 and86 align002 steps fail stationarity1e-8. Smooth dev003 is stationary. All requested-state tangent visibility minima exceed0.35, so the useful child directions remain observed by the tests in this diagnostic. Initial fits are separately underconverged, especially alignment stationarity3.44e-6. The first bounded online-solver repair increases only the common PDE LM cap30 to120; its unchanged cold fits and all costs remain visible. An optional coordinate-scaling implementation passes a sub-minute independent CPU fixture but is not enabled in that repair. Workstation GPU initialization failed before fixture arithmetic; no unrelated process was changed. All scientific experiments use preflight-verified float64 cluster GPUs.
+
+{allocation_text} Uniform20 and prescribed20 also retain identical448-variable budgets. Every allocation uses the same selected child head and resolved physical metric, with encoder, zero and temporal starts; no weights were retrained. Fit stationarity is retained in the generated table, so the comparison is not presented as a certified manifold optimum.
 
 Ledger snapshot: {seconds} elapsed allocated GPU-seconds ({seconds/3600:.6f}h), including active elapsed time. Outstanding full reservations remain charged by the submission guard. Active owned names: {', '.join(v['name'] for v in active) or 'none'}. Old paused namespace and final-test solution fields remain untouched. Source, selected models and generated report are mirrored; raw evidence has local and designated cluster copies. No merge.
 '''

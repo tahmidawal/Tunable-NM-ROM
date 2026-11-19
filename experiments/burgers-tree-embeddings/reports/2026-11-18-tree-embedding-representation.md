@@ -1,6 +1,8 @@
 # Burgers tree embeddings: representation diagnosis and continuation
 
-Current fixed-tree qualification: [B2 numerical checks](2026-11-18-tree-embedding-fixed-tree.md).
+Current PDE development qualification: [all-development checks](2026-11-19-tree-embedding-development-physics.md). The retained [three-case numerical checks](2026-11-18-tree-embedding-fixed-tree.md) precede this panel.
+
+Further decoder diagnosis: [the frozen tangent comparison](2026-11-19-tree-embedding-implementation-tangent.md).
 
 This generated report covers the original bounded failure and the user-authorized continuation. Representation results are development evidence; nonlinear compression, dense audits and fixed-tree physics are still being investigated. No complete PDE-runtime win or final-test result is established.
 

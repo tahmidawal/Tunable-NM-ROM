@@ -1017,6 +1017,10 @@
     "driver": "fixed_tree_pilot.py",
     "args": "--L 16384 --dt .00125 --integrator cn --test-factor 16 --quadrature 512 --stable-global /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1stableglobal/output --cache /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1cache/output --span /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1expanded/output --admission /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1directaudit/output --dev /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/refsdev01/output,/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1refextend/output/dev --packed-fields --labels dev000,dev001,dev002,dev003,dev004,dev005,dev006,dev007,dev008,dev009,dev010,dev011,dev012,dev013,dev014,dev015,dev016,dev017,dev018,dev019,dev020,dev021,dev022,dev023,dev024,dev025,dev026,dev027,dev028,dev029,dev030,dev031,align000,align001,align002,align003,align004,align005,align006,align007,align008,align009,align010,align011 --save-prediction-only",
     "gpu": "a100",
-    "submitted_utc": "2026-11-19T03:21:49.269597+00:00"
+    "submitted_utc": "2026-11-19T03:21:49.269597+00:00",
+    "state": "RUNNING",
+    "elapsed_seconds": 892,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
   }
 ]

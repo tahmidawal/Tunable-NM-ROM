@@ -14,7 +14,7 @@ Every physical decision covers all five evolved output times and the actual4096 
 
 These are physical/numerical qualification runs, not paired speed benchmarks. Query clocks still charge shared comparison setup; no method-specific speed ratio is inferred. The nonlinear PDE checkpoint remains stopped after two failed optimizer repairs; the frozen tangent simplification also failed its representation screen. The cell catalogue has only CPU fixture evidence and is not used here. Native NM-ROM confirmation, deployable adaptation, complete-runtime benchmarking, method freeze and final-test evaluation remain outstanding.
 
-Latest scheduler snapshot: 27476 allocated GPU-seconds (7.632222h); charge including full active reservations 31976, cumulative cap 41876. Active owned jobs: b4base. Generated 2026-11-19T03:21:49.899083+00:00. The old campaign remains paused; no automatic merge or unrelated3D work.
+Latest scheduler snapshot: 28368 allocated GPU-seconds (7.880000h); charge including full active reservations 31976, cumulative cap 41876. Active owned jobs: b4base. Generated 2026-11-19T03:37:18.885006+00:00. The old campaign remains paused; no automatic merge or unrelated3D work.
 
 ## Glossary
 

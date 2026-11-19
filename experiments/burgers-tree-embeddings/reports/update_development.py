@@ -122,6 +122,16 @@ name='2026-11-19-tree-embedding-development-physics.md';(H/'reports'/name).write
 main=Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports');assets=main/'2026-11-18-tree-embedding-representation-assets'
 for p in (H/'reports').glob('b4-all-development-*'):shutil.copy2(p,assets/p.name)
 (main/name).write_text(text.replace('](b4-all-development-','](2026-11-18-tree-embedding-representation-assets/b4-all-development-'))
+for folder in [H/'reports',main]:
+    path=folder/'2026-11-18-tree-embedding-representation.md'
+    lines=path.read_text().splitlines()
+    current=f'Current PDE development qualification: [all-development checks]({name}). The retained [three-case numerical checks](2026-11-18-tree-embedding-fixed-tree.md) precede this panel.'
+    index=next((i for i,line in enumerate(lines) if line.startswith(('Current fixed-tree qualification:','Current PDE development qualification:'))),None)
+    if index is None:lines[2:2]=[current,'']
+    else:lines[index]=current
+    extra='Further decoder diagnosis: [the frozen tangent comparison](2026-11-19-tree-embedding-implementation-tangent.md).'
+    if extra not in lines:lines[4:4]=[extra,'']
+    path.write_text('\n'.join(lines)+'\n')
 status=f'''**New Burgers tree-embedding study: B4 all-development fixed-tree qualification.** {decision} Latest recorded allocation {seconds/3600:.6f}h; active jobs: {', '.join(v['name'] for v in active) or 'none'}. No runtime win, final-test opening or method freeze. [All-development evidence](reports/{name}); [representation plots](reports/2026-11-18-tree-embedding-representation.md). Old campaign remains PAUSED; nonlinear optimizer and tangent ablation remain stopped; no merge.'''
 record=dict(utc=stamp,decision=decision,source_hashes=hashes,records=records,failed=failed,remaining=remaining,
             elapsed_gpu_seconds=seconds,charged_gpu_seconds=charged,active_jobs=[v['name'] for v in active],own_status=status)

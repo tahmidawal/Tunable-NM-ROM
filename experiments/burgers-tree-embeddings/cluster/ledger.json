@@ -934,8 +934,19 @@
     "gpu": "a100",
     "submitted_utc": "2026-11-19T02:34:06.332507+00:00",
     "state": "RUNNING",
-    "elapsed_seconds": 249,
+    "elapsed_seconds": 258,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b2rtime",
+    "id": 7359694,
+    "reserved_minutes": 20,
+    "commit": "9e61f91f2ff1da6a17ab341ad3b655f6d24fad5e",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b2rtime",
+    "driver": "fixed_tree_pilot.py",
+    "args": "--L 16384 --dt .000625 --integrator cn --test-factor 16 --quadrature 512 --stable-global /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1stableglobal/output --cache /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1cache/output --span /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1expanded/output --admission /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1directaudit/output --dev /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/refsdev01/output,/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1refextend/output/dev --compare-previous /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b2space/output",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-19T02:38:35.280569+00:00"
   }
 ]

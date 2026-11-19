@@ -1,6 +1,6 @@
 # Burgers tree embeddings: complete fixed-query cost diagnostic
 
-Complete-query diagnostic remains in progress. Outstanding: b5block0, b5block1.
+The compact tree does not pass the three-case diagnostic cost criterion. This does not establish native NM-ROM superiority or a final-test result; review measured component costs before any finite next batch.
 
 The direct24/52-node tree and stable global960 control use the admitted fine weak PDE, numerical tolerances and training data. Reusable tables cover all340 cells through depth4. Source verification, cache construction/storage and training-only prewarming are recorded separately. Every query charges initial sampling/selection, gathering, visibility, initial fitting, solving and actual requested reconstruction. Repeated timed queries disable internal stopwatches and synchronize all returned work. These fixed trees have no refinement trials or fallback; their zero counts do not predict adaptive cost.
 
@@ -9,10 +9,17 @@ The direct24/52-node tree and stable global960 control use the admitted fine wea
 |b5cache|6|True|6|
 |b5normal|6|True|6|
 |b5compact|9|True|9|
+|b5block0|90|True|120|
+|b5block1|90|True|120|
 
-Paired cost results are not yet admitted.
+|Tree evaluation|Requested fields|Median ratio|Trajectory-bootstrap95% interval|Worst case ratio|Cases faster|
+|---|---:|---:|---|---:|---:|
+|tree_direct24|1|6.360891|[5.834616, 6.540119]|6.540119|0/3|
+|tree_packed_control|1|3.867359|[3.671177, 3.957766]|3.957766|0/3|
+|tree_direct24|5|6.329574|[5.847108, 6.549011]|6.549011|0/3|
+|tree_packed_control|5|3.858854|[3.672655, 3.958187]|3.958187|0/3|
 
-
+![Complete-query cost ratios](b5-complete-query-cost.png)
 
 Instrumented diagnostic components fromb5compact, in seconds. These single invocations locate work; the repeated uninstrumented measurements above determine cost comparisons.
 
@@ -32,7 +39,7 @@ Ratios always compare invocations on the same GPU/allocation. The two allocation
 
 This panel contains only three development trajectories. The exact small-panel bootstrap resamples trajectories, not repetitions; its interval is a diagnostic with limited coverage, not final confirmation. The global control is POD plus prescribed Fourier completion, not a native Tunable/CROM/SNF/masked-autoencoder reproduction. Native competitors, deployable adaptation, method freeze and unopened final-test solutions remain separate requirements. An unqualified timing result is retained but cannot support a speed claim.
 
-Latest scheduler snapshot: 36123 allocated GPU-seconds (10.034167h), with full outstanding reservations charged to41521 seconds against the cumulative cap42296. Active owned jobs: b5block0, b5block1. Generated 2026-11-19T17:11:05.650084+00:00. The old campaign remains paused; no merge or unrelated3D work.
+Latest scheduler snapshot: 40842 allocated GPU-seconds (11.345000h), with full outstanding reservations charged to40842 seconds against the cumulative cap42296. Active owned jobs: none. Generated 2026-11-19T17:59:23.410703+00:00. The old campaign remains paused; no merge or unrelated3D work.
 
 ## Glossary
 

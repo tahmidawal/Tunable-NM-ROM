@@ -1,0 +1,63 @@
+{
+  "run": "b1cnM16Q512",
+  "source_sha256": "f1ef73149c80b1355d572fa5226e47afcb71336f7dbf3850ca53b70670a05a64",
+  "scope": "Three-case direct24/global768 pilot, L2048 CN dt0.0025, 22016 tests",
+  "decision": "First integration check passes; registered Q1024 doubling still required before admission",
+  "rows": [
+    {
+      "case": "dev000",
+      "method": "tree_direct24",
+      "physical_accuracy_pass": true,
+      "max_physical_error": 0.007945182493517848,
+      "max_change_from_dense": 7.320838388738017e-06,
+      "all_steps_converged": true,
+      "nonconverged_steps": 0
+    },
+    {
+      "case": "dev000",
+      "method": "global_POD768",
+      "physical_accuracy_pass": true,
+      "max_physical_error": 0.00794131764181198,
+      "max_change_from_dense": 4.448796916701595e-09,
+      "all_steps_converged": true,
+      "nonconverged_steps": 0
+    },
+    {
+      "case": "dev003",
+      "method": "tree_direct24",
+      "physical_accuracy_pass": true,
+      "max_physical_error": 0.0008221766847610388,
+      "max_change_from_dense": 7.392719799817588e-08,
+      "all_steps_converged": true,
+      "nonconverged_steps": 0
+    },
+    {
+      "case": "dev003",
+      "method": "global_POD768",
+      "physical_accuracy_pass": true,
+      "max_physical_error": 0.0008203312695791791,
+      "max_change_from_dense": 8.210423628322623e-09,
+      "all_steps_converged": true,
+      "nonconverged_steps": 0
+    },
+    {
+      "case": "align002",
+      "method": "tree_direct24",
+      "physical_accuracy_pass": true,
+      "max_physical_error": 0.006474010152895586,
+      "max_change_from_dense": 8.450016584584653e-06,
+      "all_steps_converged": true,
+      "nonconverged_steps": 0
+    },
+    {
+      "case": "align002",
+      "method": "global_POD768",
+      "physical_accuracy_pass": true,
+      "max_physical_error": 0.006480536135400088,
+      "max_change_from_dense": 5.068720144407868e-09,
+      "all_steps_converged": true,
+      "nonconverged_steps": 0
+    }
+  ],
+  "final_test_opened": false
+}

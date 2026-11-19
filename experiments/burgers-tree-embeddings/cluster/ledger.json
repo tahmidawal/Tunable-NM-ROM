@@ -1251,6 +1251,21 @@
     "driver": "train_crom_native.py",
     "args": "--epochs 200",
     "gpu": "a100",
-    "submitted_utc": "2026-11-19T18:54:33.774316+00:00"
+    "submitted_utc": "2026-11-19T18:54:33.774316+00:00",
+    "state": "COMPLETED",
+    "elapsed_seconds": 34,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b6snfcache",
+    "id": 7372129,
+    "reserved_minutes": 6,
+    "commit": "caec446933e97d88f4b46617f69ca41c3aa8f794",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b6snfcache",
+    "driver": "resume_snf_native.py",
+    "args": "",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-19T18:59:05.905761+00:00"
   }
 ]

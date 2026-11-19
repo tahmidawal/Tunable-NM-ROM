@@ -4,7 +4,7 @@ All-development qualification remains incomplete. Outstanding: b4base, b4time, b
 
 The same frozen direct24/52-node tree and stable global960 POD-plus-Fourier control use the initial-field callable, fine L16384 sign-upwind weak operator, Crank–Nicolson time integration,22016 tests and independently admitted packed field evaluation. The baseline uses step0.00125 and Q512; independent refinements halve the step and double Q. References enter only scoring after both solves. Final-test solution fields remain unopened.
 
-Every physical decision covers all five evolved output times and the actual4096 final field, normalized by the reference norm at that same time and including its qualified allowance. Each run saves88 actual4096 float64 predictions, whose headers and full retained hashes are checked; reference coefficients are retained by hash instead of duplicating the same reference grid. Initial-fit error is recorded separately. No incomplete step or trajectory is silently omitted.
+Every physical decision covers all five evolved output times and the actual4096 final field, normalized by the reference norm at that same time and including its qualified allowance. Complete runs must save88 actual4096 float64 predictions, whose headers and full retained hashes are checked; reference coefficients are retained by hash instead of duplicating the same reference grid. Initial-fit error is recorded separately. Missing outputs fail admission. No incomplete step or trajectory is silently omitted.
 
 |Run|Method|Median case error|90th percentile|Worst physical error|Worst error + allowance|Nonconverged steps|Largest refinement change|All gates pass|
 |---|---|---:|---:|---:|---:|---:|---:|---|
@@ -14,7 +14,7 @@ Every physical decision covers all five evolved output times and the actual4096 
 
 These are physical/numerical qualification runs, not paired speed benchmarks. Query clocks still charge shared comparison setup; no method-specific speed ratio is inferred. The nonlinear PDE checkpoint remains stopped after two failed optimizer repairs; the frozen tangent simplification also failed its representation screen. The cell catalogue has only CPU fixture evidence and is not used here. Native NM-ROM confirmation, deployable adaptation, complete-runtime benchmarking, method freeze and final-test evaluation remain outstanding.
 
-Latest scheduler snapshot: 27476 allocated GPU-seconds (7.632222h); charge including full active reservations 27476, cumulative cap 41876. Active owned jobs: none. Generated 2026-11-19T03:20:45.969907+00:00. The old campaign remains paused; no automatic merge or unrelated3D work.
+Latest scheduler snapshot: 27476 allocated GPU-seconds (7.632222h); charge including full active reservations 27476, cumulative cap 41876. Active owned jobs: none. Generated 2026-11-19T03:21:19.374668+00:00. The old campaign remains paused; no automatic merge or unrelated3D work.
 
 ## Glossary
 

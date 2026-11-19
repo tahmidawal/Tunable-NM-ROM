@@ -36,14 +36,16 @@ for name in names:
         assert len(case['reference_coefficients_sha256'])==64
         for method in case['methods']:
             file=f"output/{case['case']}_{method}_4096.npz"
-            assert any(v['file']==file for v in retention['files'])
+            if not any(v['file']==file for v in retention['files']):
+                matched=False
+                continue
             # Read only the saved prediction's header. Retention already verifies
             # every byte; the header verifies actual array shape/precision.
             with zipfile.ZipFile(H/'results'/name/file) as archive:
                 with archive.open('prediction.npy') as f:
                     assert np.lib.format.read_magic(f)==(1,0)
                     shape,order,dtype=np.lib.format.read_array_header_1_0(f)
-                    assert shape==(4096,4096) and dtype==np.dtype('float64')
+                    matched &= shape==(4096,4096) and dtype==np.dtype('float64')
             checked+=1
     audit.update(registered_setting_matches=bool(matched),actual_prediction_headers_checked=checked)
     audit['passed'] &= bool(matched)
@@ -72,7 +74,7 @@ if 'b4base' in raw:
     fig,axes=plt.subplots(2,1,figsize=(10,7),sharex=True,constrained_layout=True)
     for method,color,label in [('tree_direct24','#3679b6','Direct tree (1,376 variables)'),('global_stable960','#d58425','Global (960 variables)')]:
         values=[by[v]['methods'][method] for v in labels]
-        error=[100*(max(max(v['physical_error'][1:]),v['actual4096_final_error'])+v['reference_allowance_max']) for v in values]
+        error=[100*(max(v['physical_error'][1:]+[v.get('actual4096_final_error',np.inf)])+v['reference_allowance_max']) for v in values]
         axes[0].plot(np.arange(44),error,'.-',color=color,label=label)
         axes[1].plot(np.arange(44),[100*max(v['projection_error'][1:]) for v in values],'.-',color=color,label=label+' projection')
         axes[1].plot(np.arange(44),[100*max(v['distance_from_best_projection'][1:]) for v in values],'.--',color=color,label=label+' distance from projection')
@@ -91,7 +93,7 @@ text=f'''# Burgers tree embeddings: all-development fixed-tree qualification
 
 The same frozen direct24/52-node tree and stable global960 POD-plus-Fourier control use the initial-field callable, fine L16384 sign-upwind weak operator, Crank–Nicolson time integration,22016 tests and independently admitted packed field evaluation. The baseline uses step0.00125 and Q512; independent refinements halve the step and double Q. References enter only scoring after both solves. Final-test solution fields remain unopened.
 
-Every physical decision covers all five evolved output times and the actual4096 final field, normalized by the reference norm at that same time and including its qualified allowance. Each run saves88 actual4096 float64 predictions, whose headers and full retained hashes are checked; reference coefficients are retained by hash instead of duplicating the same reference grid. Initial-fit error is recorded separately. No incomplete step or trajectory is silently omitted.
+Every physical decision covers all five evolved output times and the actual4096 final field, normalized by the reference norm at that same time and including its qualified allowance. Complete runs must save88 actual4096 float64 predictions, whose headers and full retained hashes are checked; reference coefficients are retained by hash instead of duplicating the same reference grid. Initial-fit error is recorded separately. Missing outputs fail admission. No incomplete step or trajectory is silently omitted.
 
 |Run|Method|Median case error|90th percentile|Worst physical error|Worst error + allowance|Nonconverged steps|Largest refinement change|All gates pass|
 |---|---|---:|---:|---:|---:|---:|---:|---|

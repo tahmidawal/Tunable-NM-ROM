@@ -23,7 +23,7 @@ def main():
         assert a.warm_job in ('b7parentpilot','b7parentpolish')
         pilot=resolve(ns/(a.warm_job+'/output/result.json'),ns);pr=json.loads(pilot.read_text());assert pr['pilot_pass']
         path=pilot.parent/'stable_parent.pkl';assert digest(path)==pr['selected_sha256'];warm=read_checkpoint(path)
-        network=jax.tree.map(jnp.asarray,warm['network']);codes=jnp.asarray(warm['training_codes'])
+        network=jax.tree.map(jnp.asarray,warm['network']);codes=jnp.asarray(warm['training_codes']);pca=warm['pca']
     netopt=optax.chain(optax.clip_by_global_norm(5.),optax.adam(optax.cosine_decay_schedule(3e-4,a.updates,alpha=.1)))
     codeopt=optax.adam(optax.cosine_decay_schedule(1e-2,a.updates,alpha=.1))
     nsopt=netopt.init(network);csopt=codeopt.init(codes);rng=np.random.default_rng(2026111962)
@@ -64,13 +64,14 @@ def main():
     best=np.inf;stale=0;selection=np.array([11*c+t for c in [0,3,7,13,31,32,34,43] for t in [0,5,10]])
     for it in range(1,a.updates+1):
         si=pilot_indices if a.phase=='pilot' else rng.integers(len(train),size=8)
-        ci=rng.integers(len(w),size=(len(si),512 if a.phase=='pilot' else 1024))
+        ci=(np.broadcast_to(np.arange(len(w)),(len(si),len(w))) if a.phase=='full' and it>50000
+            else rng.integers(len(w),size=(len(si),512 if a.phase=='pilot' else 1024)))
         network,codes,nsopt,csopt,loss=step(network,codes,nsopt,csopt,jnp.asarray(si),jnp.asarray(ci),xy,w,train,norm)
         interval=1000 if a.phase=='pilot' else 5000
         if it%interval:continue
         coarse=np.asarray(score(network,codes[pilot_indices],xy,w,train[pilot_indices],norm[pilot_indices]))
         independent=np.asarray(score(network,codes[pilot_indices],xf,wf,pilot_truth,norm[pilot_indices]))
-        row=dict(update=it,loss=float(loss),pilot_worst=float(independent.max()),pilot_median=float(np.median(independent)),
+        row=dict(update=it,loss=float(loss),full_spatial_quadrature=bool(a.phase=='full' and it>50000),pilot_worst=float(independent.max()),pilot_median=float(np.median(independent)),
             pilot_scoring_change=float(np.max(abs(coarse-independent))))
         ev=None
         if a.phase=='full':
@@ -86,7 +87,7 @@ def main():
         row['checkpoint_sha256']=checkpoint(out/f'parent_{it:05d}.pkl',payload)
         save(out/'result.json',result);print('stable_parent_training',row,flush=True)
         if a.phase=='pilot' and independent.max()<=.005 and row['pilot_scoring_change']<=.0002:break
-        if it>=(6000 if a.phase=='pilot' else 30000) and stale>=5:break
+        if a.phase=='pilot' and it>=6000 and stale>=5:break
     selected=read_checkpoint(out/'stable_parent.pkl');network=selected['network'];codes=jnp.asarray(selected['training_codes'])
     if a.phase=='pilot':
         result.update(status='complete_training_only_pilot',pilot_pass=selected['metrics']['pilot_worst']<=.005 and selected['metrics']['pilot_scoring_change']<=.0002,

@@ -6,7 +6,7 @@ from qualify_native_competitors import command
 
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--out',required=True);a=ap.parse_args()
+    ap=argparse.ArgumentParser();ap.add_argument('--out',required=True);ap.add_argument('--no-compiled-modules',action='store_true');a=ap.parse_args()
     out=Path(a.out);out.mkdir(parents=True,exist_ok=True);metadata=preflight()
     ns=Path(os.environ['STUDY_NAMESPACE']);original=resolve(ns/'b6native/output/result.json',ns)
     r=json.loads(original.read_text());assert r['snf_instantiate']['returncode']==0
@@ -45,7 +45,9 @@ println("native_snf_gpu_import_and_scalar_equivalence_pass ",err)
     result=dict(meta=metadata,status='native_snf_cached_import',source_result_sha256=digest(original),
         resolved_manifest_sha256=r['resolved_manifest_sha256'],final_test_opened=False,trained=False)
     save(out/'result.json',result)
-    result['execution']=command([str(binary),'--startup-file=no','--project='+str(source),str(fixture)],
+    result['compiled_modules_disabled']=a.no_compiled_modules
+    flags=['--compiled-modules=no'] if a.no_compiled_modules else []
+    result['execution']=command([str(binary),'--startup-file=no']+flags+['--project='+str(source),str(fixture)],
                                 out/'native_fixture.log',env,timeout=300)
     log=(out/'native_fixture.log').read_text()
     result.update(status='complete',passed=result['execution']['returncode']==0 and

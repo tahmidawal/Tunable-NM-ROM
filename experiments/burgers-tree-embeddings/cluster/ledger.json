@@ -1296,6 +1296,21 @@
     "driver": "pretrain_local_features.py",
     "args": "--updates 50000",
     "gpu": "a100",
-    "submitted_utc": "2026-11-19T19:13:58.920346+00:00"
+    "submitted_utc": "2026-11-19T19:13:58.920346+00:00",
+    "state": "COMPLETED",
+    "elapsed_seconds": 65,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b6span",
+    "id": 7373268,
+    "reserved_minutes": 30,
+    "commit": "72ea0eaf0a6a96b057110a5c1406aadb46e14ff1",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b6span",
+    "driver": "diagnose_feature_span.py",
+    "args": "",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-19T19:20:30.065224+00:00"
   }
 ]

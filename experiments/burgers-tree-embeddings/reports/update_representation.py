@@ -115,7 +115,7 @@ global_rows+='\n'+'\n'.join(f"| Complete sine {k} per axis | {v['variables']} | 
 global_rows+='\n'+'\n'.join(f"| POD512 + prescribed Fourier completion | {k} | {pct(v['worst'])} | Not a null-tail completion |" for k,v in stable['controls'].items())
 head_rows='\n'.join(f"| {v['latent']} | {v['feature_count']} | {v['affine_span_rank']} | {pct(v['panels']['dev']['worst'])} | {pct(v['head_projection']['worst'])} |" for v in headspan['models'])
 pde_runs=[];incomplete_pde=[]
-for run in ['b1weakpilot1','b1weakL2048','b1weakL4096','b1weakdt125','b1weakdt625','b1cn2048','b1cn2048half','b1cnM8','b1cnM16','b1cnQ512','b1cnQ1024','b1childpde']:
+for run in ['b1weakpilot1','b1weakL2048','b1weakL4096','b1weakdt125','b1weakdt625','b1cn2048','b1cn2048half','b1cnM8','b1cnM16','b1cnM32','b1cnQ512','b1cnQ1024','b1childpde','b1childpdeR1','b1childpdeR2']:
     if (H/'results'/run/'output/result.json').exists():
         r=read(run)
         if r['status'] in ['complete_fixed_tree_diagnostic_pilot','complete_coupled_child_diagnostic_pilot']:pde_runs.append((run,r))
@@ -135,7 +135,7 @@ for run,r in pde_runs:
 axs[0].set_ylabel('Current-time physical error (%)')
 handles,legend=axs[0].get_legend_handles_labels();fig.legend(handles,legend,loc='lower center',bbox_to_anchor=(.5,-.23),ncol=3,fontsize=7)
 figure(fig,'b1-fixed-tree-physics')
-diagnostics={'b1cn2048half':'Time step / 2','b1cnM8':'5504 to11008 tests','b1cnM16':'11008 to22016 tests','b1cnQ512':'Q512 versus dense'}
+diagnostics={'b1cn2048half':'Time step / 2','b1cnM8':'5504 to11008 tests','b1cnM16':'11008 to22016 tests','b1cnM32':'22016 to44032 tests','b1cnQ512':'Q512 versus dense'}
 checks=[(n,r) for n,r in pde_runs if n in diagnostics];fig,ax=plt.subplots(figsize=(8,4),constrained_layout=True)
 for j,prefix in enumerate(['tree','global']):
     changes=[max(max(v['previous_state_relative_change']) for c in r['cases'] for method,v in c['methods'].items() if method.startswith(prefix)) for n,r in checks]
@@ -143,6 +143,12 @@ for j,prefix in enumerate(['tree','global']):
 ax.axhline(.1,color='#b5413c',ls='--',label='0.1% sensitivity threshold')
 ax.set(xticks=np.arange(len(checks)),xticklabels=[diagnostics[n] for n,r in checks],yscale='log',ylabel='Largest returned-field change (%)',title='Independent numerical checks; every requested time and pilot case')
 ax.tick_params(axis='x',labelsize=8);ax.legend(fontsize=8);figure(fig,'b1-numerical-sensitivities')
+coupled_rows=[]
+for run,r in pde_runs:
+    if not run.startswith('b1childpde'):continue
+    for c in r['cases']:
+        v=c['methods']['tree_child16_n64'];s=np.asarray(v['step_status'],dtype=float)
+        coupled_rows.append(f"| {run} | {c['case']} | {pct(max(v['physical_error'][1:]))} | {int(np.sum(s[:,1]>r['stationarity_tolerance']))}/{len(s)} | {np.max(s[:,1]):.3g} | {v['initial_fit_stationarity_or_linear_residual']:.3g} |")
 charged=sum(r.get('elapsed_seconds',0) for r in ledger if r.get('state') in terminal)
 live=[r['name'] for r in ledger if r.get('state') not in terminal]
 stamp=datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -228,7 +234,13 @@ These pilots solve complete trajectories from the shared initial callable with t
 
 ![Independent numerical sensitivities](b1-numerical-sensitivities.png)
 
-Retained incomplete PDE outcomes: {'; '.join(incomplete_pde) or 'none in the collected pilot records'}. The trajectory figure emphasizes the dense BE/CN and test-enrichment comparisons; the table retains every completed pilot setting. A low physical error alone does not establish numerical convergence. In particular, the change from5504 to11008 tests is large for the tree, so the original test rule is not admitted. The independent next test enrichment is required before accepting11008 tests.
+Retained incomplete PDE outcomes: {'; '.join(incomplete_pde) or 'none in the collected pilot records'}. The trajectory figure emphasizes the dense BE/CN and test-enrichment comparisons; the table retains every completed pilot setting. A low physical error alone does not establish numerical convergence. The change from5504 to11008 tests is large for the tree. Its next enrichment to22016 changes the alignment-case field by0.106838%, just above the0.1% sensitivity limit;11008 is therefore still not admitted. A further independently registered enrichment is needed. The global control is much less sensitive to these added tests.
+
+The first nonlinear-child PDE pilot reaches physical errors below1% on all three exposed cases, but160 of300 time steps miss stationarity1e-8. The initial alignment fit is also underconverged. Useful zero-child directions and accurate reconstructions do not guarantee an easy nonlinear online solve. The first bounded repair raises only the PDE LM cap from30 to120, keeping the checkpoint, initial fits, equations, integration and tolerances fixed. Its results, including any failures, are recorded below. Initial-fit stationarity is distinct from time-step stationarity; a passing step alone does not qualify initialization.
+
+| Nonlinear PDE run | Case | Worst evolved physical error | Nonstationary steps | Worst step stationarity | Initial-fit stationarity |
+|---|---|---:|---:|---:|---:|
+{chr(10).join(coupled_rows)}
 
 Pulse errors remain above the physical gate in the initial pilot for both methods despite tightly converged weak solves. Spatial, temporal, test and integration refinements distinguish numerical error from reduced dynamics. The initial pilot omitted explicit burn-in immediately before timing: those original wall times are retained as unqualified diagnostics and support no speed comparison. Follow-ups include burn-in. Pilot clocks also charge the joint comparison setup to each method; they are not valid method-specific speed ratios. Complete timing must measure each method's own initialization, assembly and output. The small pilot is not all-development qualification, deployable adaptation, or a complete-runtime benchmark.
 

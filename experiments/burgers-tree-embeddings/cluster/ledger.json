@@ -719,5 +719,16 @@
     "elapsed_seconds": 730,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b1childpdeR1",
+    "id": 7357733,
+    "reserved_minutes": 60,
+    "commit": "6050b5f5fad1e6b9ddf68a07eaf210e06ec72c87",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1childpdeR1",
+    "driver": "coupled_child_pilot.py",
+    "args": "--L 2048 --dt .0025 --tests 11008 --iterations 120 --compare-previous /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1childpde/output --model /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1child16/output --cache /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1cache/output --admission /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1childgrowth64/output --global-control /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1stableglobal/output --dev /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/refsdev01/output,/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1refextend/output/dev",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-19T00:53:24.002624+00:00"
   }
 ]

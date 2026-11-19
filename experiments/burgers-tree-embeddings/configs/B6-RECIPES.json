@@ -30,6 +30,14 @@
       "driver": "train_coordinate_tree.py --parent-newton",
       "status": "registered",
       "max_minutes": 90
+    },
+    {
+      "id": 2,
+      "reason": "Parent degradation under joint weight training; useful child directions but failed fitting and reconstruction",
+      "source": "neural/factorized.py",
+      "feature_driver": "pretrain_local_features.py",
+      "status": "registered staged final repair",
+      "feature_minutes_max": 60
     }
   ]
 }

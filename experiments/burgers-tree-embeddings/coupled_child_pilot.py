@@ -90,6 +90,14 @@ def main():
                 query_before_output_seconds=wall,finite_trajectory=valid,all_steps_stationary=bool(np.max(np.asarray(statuses)[:,1])<=1e-8),
                 visibility=model['visibility'],step_status=np.asarray(statuses),
                 status_columns=['scaled_tested_residual','scaled_stationarity','relative_update','relative_linear_residual','LM_iterations','accepted_steps'])
+            # This post-solve diagnostic is outside query timing and never alters states.
+            if ischild:
+                audits=[]
+                for code in codes:
+                    zz=jnp.asarray(code);J=C.coefficient_jacobian(zz,ca)
+                    audits.append(visibility(C.tested_mass_jacobian(zz,ca),J.T@ca['gram']@J))
+                method['requested_state_tangent_visibility']=audits
+                method['tangent_visibility_below_safeguard']=any(v['minimum']<1e-6 for v in audits)
             model.update(states=np.asarray(states),codes=np.asarray(codes),cache=ca);row['methods'][name]=method
             save(out/'result.json',dict(result,cases=result['cases']+[row]))
         # Only after both truth-free trajectories: open reference fields and offline fits.

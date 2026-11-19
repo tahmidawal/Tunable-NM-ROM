@@ -166,6 +166,12 @@ These pilots solve complete trajectories from the shared initial callable with t
 | dev003 | global_POD768 | 2048 | CN | 22016 | 512 | 0.0025 | 0.0820% | True | True |
 | align002 | tree_direct24 | 2048 | CN | 22016 | 512 | 0.0025 | 0.6474% | True | True |
 | align002 | global_POD768 | 2048 | CN | 22016 | 512 | 0.0025 | 0.6481% | True | True |
+| dev000 | tree_direct24 | 2048 | CN | 22016 | 1024 | 0.0025 | 0.7946% | True | True |
+| dev000 | global_POD768 | 2048 | CN | 22016 | 1024 | 0.0025 | 0.7941% | True | True |
+| dev003 | tree_direct24 | 2048 | CN | 22016 | 1024 | 0.0025 | 0.0822% | True | True |
+| dev003 | global_POD768 | 2048 | CN | 22016 | 1024 | 0.0025 | 0.0820% | True | True |
+| align002 | tree_direct24 | 2048 | CN | 22016 | 1024 | 0.0025 | 0.6477% | True | True |
+| align002 | global_POD768 | 2048 | CN | 22016 | 1024 | 0.0025 | 0.6481% | True | True |
 | dev000 | tree_child16_n64 | 2048 | CN | 11008 | 2048 | 0.0025 | 0.7887% | False | True |
 | dev000 | global_stable960 | 2048 | CN | 11008 | 2048 | 0.0025 | 0.7941% | True | True |
 | dev003 | tree_child16_n64 | 2048 | CN | 11008 | 2048 | 0.0025 | 0.0825% | True | True |
@@ -211,7 +217,7 @@ The second repair is complete and fails:123 of300 time steps miss1e-8 stationari
 
 The full returned stopping rule also requires finite diagnostics and a small physical update, or stationarity100 times below its primary tolerance. Applying the existing rule to saved diagnostics gives188/300 failed steps for LM30,160/300 for LM120 and151/300 for BFGS120. The123/300 count above denotes stationarity failures alone. All returned steps in the M8/M16/M32 direct/global checks pass the full rule. This audit does not change raw results or weaken a threshold.
 
- At the independently qualified22016-test setting: b1cnM16Q512 changes returned fields by at most0.0008%, with physical accuracy passingTrue. Q512 is compared with dense integration; Q1024 is compared withQ512. These checks retain the fine stencil spacing and do not qualify a different global basis or spatial/time setting.
+ At the independently qualified22016-test setting: b1cnM16Q512 changes returned fields by at most0.0008%, with physical accuracy passingTrue. b1cnM16Q1024 changes returned fields by at most0.0008%, with physical accuracy passingTrue. Q512 is compared with dense integration; Q1024 is compared withQ512. These checks retain the fine stencil spacing and do not qualify a different global basis or spatial/time setting.
 
 Pulse errors remain above the physical gate in the initial pilot for both methods despite tightly converged weak solves. Spatial, temporal, test and integration refinements distinguish numerical error from reduced dynamics. The initial pilot omitted explicit burn-in immediately before timing: those original wall times are retained as unqualified diagnostics and support no speed comparison. Follow-ups include burn-in. Pilot clocks also charge the joint comparison setup to each method; they are not valid method-specific speed ratios. Complete timing must measure each method's own initialization, assembly and output. The small pilot is not all-development qualification, deployable adaptation, or a complete-runtime benchmark.
 
@@ -232,7 +238,7 @@ Original recipes, unsuccessful repairs and the original decision remain in [the 
 
 ## Accounting and provenance
 
-Generated 2026-11-19T01:45:10.499610+00:00. Terminal allocations recorded in the current ledger total 22241 GPU-seconds (6.178056 GPU-hours); nonterminal or not-yet-reconciled names: b1cnM16Q1024. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
+Generated 2026-11-19T01:53:59.546564+00:00. Terminal allocations recorded in the current ledger total 22744 GPU-seconds (6.317778 GPU-hours); nonterminal or not-yet-reconciled names: none. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
 
 ## Glossary
 

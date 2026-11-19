@@ -31,7 +31,7 @@ def main():
     assert 0<a.minutes<=240 and not any(x['name']==a.name for x in rows)
     assert sum('bte_' in line and ns in line for line in q.splitlines())<2
     terminal={'COMPLETED','FAILED','TIMEOUT','CANCELLED','OUT_OF_MEMORY','NODE_FAIL','PREEMPTED'}
-    charged=sum(x.get('elapsed_seconds',0) if x.get('state','').split()[0] in terminal else x['reserved_minutes']*60 for x in rows)
+    charged=sum(x.get('elapsed_seconds',0) if (x.get('state') or 'PENDING').split()[0] in terminal else x['reserved_minutes']*60 for x in rows)
     cap=json.loads((H/'cluster/BATCHES.json').read_text())['cumulative_ceiling_gpu_seconds']
     assert charged+a.minutes*60<=cap,(charged,a.minutes*60,cap)
     dirty=sp.check_output(['git','-c','gc.auto=0','status','--porcelain','--',str(H)],cwd=ROOT,text=True)

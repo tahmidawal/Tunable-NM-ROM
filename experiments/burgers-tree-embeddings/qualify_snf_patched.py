@@ -51,10 +51,10 @@ grad=Zygote.gradient(loss,ps)[1]
 @assert eltype(grad.layer_1.weight)==Float64
 @assert isfinite(maximum(abs.(grad.layer_1.weight)))
 direction=CUDA.ones(Float64,size(ps.layer_1.weight))
-eps=1e-6
-pp=merge(ps,(layer_1=merge(ps.layer_1,(weight=ps.layer_1.weight+eps.*direction,)),))
-pm=merge(ps,(layer_1=merge(ps.layer_1,(weight=ps.layer_1.weight-eps.*direction,)),))
-fd=(loss(pp)-loss(pm))/(2eps);ad=sum(grad.layer_1.weight)
+hstep=1e-6
+pp=merge(ps,(layer_1=merge(ps.layer_1,(weight=ps.layer_1.weight+hstep.*direction,)),))
+pm=merge(ps,(layer_1=merge(ps.layer_1,(weight=ps.layer_1.weight-hstep.*direction,)),))
+fd=(loss(pp)-loss(pm))/(2*hstep);ad=sum(grad.layer_1.weight)
 @assert abs(fd-ad)/(1+abs(fd))<1e-6
 struct ScalarFixture <: NeuralROMs.AbstractNeuralModel end
 function NeuralROMs.dudx2_2D(::ScalarFixture,x::AbstractArray,p::AbstractVector;kwargs...)

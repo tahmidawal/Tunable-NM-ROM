@@ -4,7 +4,8 @@
   "official_links": {
     "CROM": "https://crom-pde.github.io/",
     "SNF_ROM": "https://arxiv.org/html/2405.14890v2",
-    "masked_AE": "https://arxiv.org/abs/2009.11990"
+    "masked_AE": "https://arxiv.org/abs/2009.11990",
+    "CoLoRA_EQ": "https://arxiv.org/html/2402.14646v1"
   },
   "repositories": [
     {
@@ -34,6 +35,13 @@
       "source_url": "https://github.com/llnl/NM-ROM/tree/e53a32ca6a20c6c83be135cba763bfade3a2cd8d",
       "license": "MIT; pinned LICENSE read",
       "execution_status": "not_run"
+    },
+    {
+      "repository": "julesberman/CoLoRA",
+      "commit": "736700464b5e8de2d0a8d79c75f518da29a8a139",
+      "source_url": "https://github.com/julesberman/CoLoRA/tree/736700464b5e8de2d0a8d79c75f518da29a8a139",
+      "license": "No top-level license file in inspected pinned root; deeper/notebook licenses not audited",
+      "execution_status": "not_run"
     }
   ],
   "notes": [
@@ -41,6 +49,58 @@
     "SNF-ROM paper links the pinned CMU-CBML Julia implementation; smooth manifold training and native projection dynamics must be retained for a faithful comparator.",
     "LLNL NM-ROM official repository explicitly identifies the requested shallow masked-autoencoder method and includes hyper-reduction workflow.",
     "No pretrained weights, external solution datasets, or this study's final-test solution fields were opened. No external source has been vendored or executed yet.",
-    "Spectral-feature heads already tested in this study are architecture-inspired controls, not substitutes for these native methods."
+    "Spectral-feature heads already tested in this study are architecture-inspired controls, not substitutes for these native methods.",
+    "All sources are inspection-only. Any faithful competitor must preserve its native online algorithm, train on the same trajectories, receive only the permitted initial-field callable online, and include cold initialization and actual requested reconstruction in timing. Spectral-head ablations do not establish superiority over these methods."
+  ],
+  "inspected_source_files": [
+    {
+      "repository": "dc3042/CROM_offline_training",
+      "path": "cromnet.py",
+      "blob": "2a499936ca260eecec05f6fac295a9f4586d961d",
+      "lines": "1-520",
+      "finding": "Coordinate-plus-latent decoder has five hidden layers with ELU or sine activation; convolutional state encoder initializes latent state. This is distinct from the tested separable spectral-head controls."
+    },
+    {
+      "repository": "CMU-CBML/NeuralROMs.jl",
+      "path": "experiments_SNFROM/burgers_fourier2D/snf.jl",
+      "blob": "607953d5b03b1b34e19cc0228bf1098e23caefbf",
+      "finding": "Commented paper configuration: latent2, width128, E210, smoothing weight gamma0.01. Original problem viscosity0.001 differs from this study; native recipe cannot be run unchanged as a matched-data comparison."
+    },
+    {
+      "repository": "CMU-CBML/NeuralROMs.jl",
+      "path": "experiments_SNFROM/compare.jl",
+      "blob": "33124e6753b021db5c16cd488e3a7a679cf3cc42",
+      "finding": "SNF wrapper defaults five decoder hidden layers, intrinsic-network width8, lambda2 regularization; supports explicit spatial subsampling and native evolution. Caller deletes existing model directory, so any future wrapper must restrict writes to a new owned run directory."
+    },
+    {
+      "repository": "llnl/NM-ROM",
+      "path": "notebooks/2DBurgersEqn/test_predictive/README.txt",
+      "blob": "c5dcca5360ebfe075f6d20b9c8a8b62e3b721e6b",
+      "finding": "Native NM-LSPG-HR workflow includes trained masked AE, separately built residual basis, sample selection and prediction timing."
+    },
+    {
+      "repository": "llnl/NM-ROM",
+      "path": "notebooks/2DBurgersEqn/test_predictive/Measure_wall-clock_time_prediction_NM-ROM_high_Re_v3_Using_full_inter_batch_240.ipynb",
+      "blob": "406a658b0652565bf647e53a41815834bd16a4d1",
+      "finding": "Inspected code cells only, not executed: two-component Burgers, sigmoid shallow decoder, sparse output matrix, DEIM residual sampling, float32 conversions and pretrained pickle loads. Adapt PDE/output/precision/input contract explicitly and retrain on study references; do not reuse supplied solutions or weights."
+    },
+    {
+      "repository": "julesberman/CoLoRA",
+      "path": "README.md",
+      "blob": "e12ea5e464e87e6acbbf8cab30a0209ee8c6ce5e",
+      "finding": "Repository requests JAX/JAXLIB0.4.19; current study environment0.10.2, compatibility untested. No installation or environment modification performed."
+    },
+    {
+      "repository": "julesberman/CoLoRA",
+      "path": "colora/build.py",
+      "blob": "e778c15d98b2d151f68a0e02ea600ce2a40c68a4",
+      "finding": "Separates frozen theta and online phi; hypernetwork predicts phi from parameter/time. A data-driven hypernetwork forecast is not an equation-driven PDE comparator."
+    },
+    {
+      "repository": "julesberman/CoLoRA",
+      "path": "colora/layers.py",
+      "blob": "a33419c77a0faa8883f63fd0ff57f82fb8c2f671",
+      "finding": "Layers use W+(A*alpha)B with one or rank-many scalar alpha variables; default float32. Native equation-driven evolution and cold initial-field fitting still need implementation/qualification for this study."
+    }
   ]
 }

@@ -1125,6 +1125,21 @@
     "driver": "complete_query_diagnostic.py",
     "args": "--cache /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1cache/output --span /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1expanded/output --stable-global /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1stableglobal/output --admission /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1directaudit/output --dev /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/refsdev01/output,/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1refextend/output/dev --development-admission manifests/B4-progress-a12b5ef42ae4.json --compare-previous /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b5compact/output --normal-reuse --field-kernel compact --include-packed-control --mode paired --qualified-implementation /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b5compact/output --block-index 0",
     "gpu": "a100",
-    "submitted_utc": "2026-11-19T17:10:20.285417+00:00"
+    "submitted_utc": "2026-11-19T17:10:20.285417+00:00",
+    "state": "RUNNING",
+    "elapsed_seconds": 2,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b5block1",
+    "id": 7370596,
+    "reserved_minutes": 45,
+    "commit": "80c9042f52bd5a8db19a4d7411a773b86432f145",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b5block1",
+    "driver": "complete_query_diagnostic.py",
+    "args": "--cache /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1cache/output --span /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1expanded/output --stable-global /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1stableglobal/output --admission /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1directaudit/output --dev /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/refsdev01/output,/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1refextend/output/dev --development-admission manifests/B4-progress-a12b5ef42ae4.json --compare-previous /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b5compact/output --normal-reuse --field-kernel compact --include-packed-control --mode paired --qualified-implementation /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b5compact/output --block-index 1",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-19T17:10:54.532707+00:00"
   }
 ]

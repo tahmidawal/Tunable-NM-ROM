@@ -962,6 +962,10 @@
     "driver": "fixed_tree_pilot.py",
     "args": "--L 16384 --dt .00125 --integrator cn --test-factor 16 --quadrature 512 --stable-global /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1stableglobal/output --cache /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1cache/output --span /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1expanded/output --admission /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1directaudit/output --dev /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/refsdev01/output,/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1refextend/output/dev --compare-previous /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b2space/output --stationarity 1e-10 --update-tolerance 1e-12 --cg-relative 1e-8 --cg-absolute 1e-14 --initial-relative 1e-11 --initial-absolute 1e-15",
     "gpu": "a100",
-    "submitted_utc": "2026-11-19T02:51:23.993986+00:00"
+    "submitted_utc": "2026-11-19T02:51:23.993986+00:00",
+    "state": "COMPLETED",
+    "elapsed_seconds": 662,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
   }
 ]

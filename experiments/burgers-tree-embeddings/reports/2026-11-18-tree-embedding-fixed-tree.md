@@ -1,6 +1,6 @@
 # Burgers tree embeddings: common fixed-tree numerical qualification
 
-Pilot qualification is incomplete. Outstanding checks: b2rtight.
+All six registered pilot checks pass. This admits only the three-case numerical setting and supports a separately registered all-development batch.
 
 The original L8192 setting failed spatial sensitivity: its doubling changed fields by 0.101589%, above0.1%. Both methods remained physically accurate and converged. The unchanged b2space arrays are reused as the finer L16384 baseline on physical and solver checks only; the failed coarse comparison remains in [the retained original setting report](B2-original-setting-retained.md). One further spatial check at L32768 is allowed, with no automatic higher-resolution ladder. Original unsubmitted b2tests/b2time/b2tight are superseded by the registered finer-setting checks. The old L8192 integration run is retained separately and is not transferred to the new baseline. The5400-second B2 allowance is unchanged.
 
@@ -40,6 +40,12 @@ All solves use the shared initial-field callable and the original fine-grid sign
 | b2rtime | dev003 | global_stable960 | 0.010265% | 0/400 | 0.000106% | True |
 | b2rtime | align002 | tree_direct24 | 0.302276% | 0/400 | 0.015938% | True |
 | b2rtime | align002 | global_stable960 | 0.351372% | 0/400 | 0.009263% | True |
+| b2rtight | dev000 | tree_direct24 | 0.259661% | 0/200 | 0.000011% | True |
+| b2rtight | dev000 | global_stable960 | 0.100987% | 0/200 | 0.000000% | True |
+| b2rtight | dev003 | tree_direct24 | 0.011622% | 0/200 | 0.000095% | True |
+| b2rtight | dev003 | global_stable960 | 0.010283% | 0/200 | 0.000000% | True |
+| b2rtight | align002 | tree_direct24 | 0.293380% | 0/200 | 0.000022% | True |
+| b2rtight | align002 | global_stable960 | 0.348890% | 0/200 | 0.000000% | True |
 
 ![Independent B2 numerical checks](b2-fixed-tree-qualification.png)
 
@@ -47,7 +53,7 @@ A passing small pilot is not the all44-development-trajectory gate. No deployabl
 
 Pilot clocks charge joint comparison setup to each method and cannot serve as method-specific speed ratios. Initialization, assembly, solving, rejected trials, fallback and requested output remain mandatory components of later complete-query timing. The equivalent packed field implementation has only CPU fixture evidence and is not used in this batch.
 
-Generated 2026-11-19T02:54:51.704238+00:00. The latest scheduler ledger records26527 elapsed GPU-seconds (7.368611h); this is a snapshot when jobs are active. The reservation guard charges27727 seconds, including full reservations for active jobs. Active owned jobs: b2rtight. B2 is capped at5400 additional GPU-seconds from22744, for a cumulative ceiling28144 seconds. Source/configurations, scheduler records and verified retention manifests are in the owned lane. The old campaign remains paused; final-test fields remain unopened.
+Generated 2026-11-19T03:03:49.421372+00:00. The latest scheduler ledger records27189 elapsed GPU-seconds (7.552500h); this is a snapshot when jobs are active. The reservation guard charges27189 seconds, including full reservations for active jobs. Active owned jobs: none. B2 is capped at5400 additional GPU-seconds from22744, for a cumulative ceiling28144 seconds. Source/configurations, scheduler records and verified retention manifests are in the owned lane. The old campaign remains paused; final-test fields remain unopened.
 
 ## Glossary
 

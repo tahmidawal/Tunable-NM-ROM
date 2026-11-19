@@ -1,0 +1,112 @@
+{
+  "records": [
+    {
+      "name": "b2rtight",
+      "source_sha256": "bfca69e1bc7c9cdbb959e3767e962b01aca446b7fd9392a4ddef78482a0fb164",
+      "previous_result_sha256": "1d30ad542e4d49a648e0966e5751922a4f90a2f70179e5b0267e7ddc9b236ca6",
+      "scope": "Only the listed pilot trajectories and frozen representations",
+      "settings": {
+        "L": 16384,
+        "dt": 0.00125,
+        "time_integrator": "cn",
+        "quadrature_intervals": 512,
+        "global_control": "global_stable960",
+        "global_control_sha256": "4c2cd8f1a14103e90ef5d8fb88bb670a9b53ca753b8d88a1455d14f0fef58930",
+        "stationarity_tolerance": 1e-10,
+        "update_tolerance": 1e-12,
+        "cg_relative_tolerance": 1e-08,
+        "cg_absolute_tolerance": 1e-14,
+        "initial_relative_tolerance": 1e-11,
+        "initial_absolute_tolerance": 1e-15
+      },
+      "passed": true,
+      "rows": [
+        {
+          "case": "dev000",
+          "method": "tree_direct24",
+          "steps": 200,
+          "nonconverged_steps": 0,
+          "full_solver_convergence": true,
+          "physical_accuracy_pass": true,
+          "max_physical_error": 0.0025966071085751965,
+          "reference_allowance": 6.68934746585448e-07,
+          "initial_linear_residual": 3.205791361040073e-12,
+          "max_field_change": 1.1379784318928253e-07,
+          "sensitivity_pass": true,
+          "common_tests": 22016
+        },
+        {
+          "case": "dev000",
+          "method": "global_stable960",
+          "steps": 200,
+          "nonconverged_steps": 0,
+          "full_solver_convergence": true,
+          "physical_accuracy_pass": true,
+          "max_physical_error": 0.0010098729236903076,
+          "reference_allowance": 6.68934746585448e-07,
+          "initial_linear_residual": 3.0663508278177903e-15,
+          "max_field_change": 2.3422205990551126e-12,
+          "sensitivity_pass": true,
+          "common_tests": 22016
+        },
+        {
+          "case": "dev003",
+          "method": "tree_direct24",
+          "steps": 200,
+          "nonconverged_steps": 0,
+          "full_solver_convergence": true,
+          "physical_accuracy_pass": true,
+          "max_physical_error": 0.00011621961248473465,
+          "reference_allowance": 1.2345444417596293e-06,
+          "initial_linear_residual": 5.060947774263926e-13,
+          "max_field_change": 9.465088166068173e-07,
+          "sensitivity_pass": true,
+          "common_tests": 22016
+        },
+        {
+          "case": "dev003",
+          "method": "global_stable960",
+          "steps": 200,
+          "nonconverged_steps": 0,
+          "full_solver_convergence": true,
+          "physical_accuracy_pass": true,
+          "max_physical_error": 0.00010282783933459903,
+          "reference_allowance": 1.2345444417596293e-06,
+          "initial_linear_residual": 2.394318329577442e-15,
+          "max_field_change": 5.655571177068585e-12,
+          "sensitivity_pass": true,
+          "common_tests": 22016
+        },
+        {
+          "case": "align002",
+          "method": "tree_direct24",
+          "steps": 200,
+          "nonconverged_steps": 0,
+          "full_solver_convergence": true,
+          "physical_accuracy_pass": true,
+          "max_physical_error": 0.002933799868224209,
+          "reference_allowance": 7.621482989307439e-07,
+          "initial_linear_residual": 9.749357889594024e-14,
+          "max_field_change": 2.1909826268018222e-07,
+          "sensitivity_pass": true,
+          "common_tests": 22016
+        },
+        {
+          "case": "align002",
+          "method": "global_stable960",
+          "steps": 200,
+          "nonconverged_steps": 0,
+          "full_solver_convergence": true,
+          "physical_accuracy_pass": true,
+          "max_physical_error": 0.003488900187447877,
+          "reference_allowance": 7.621482989307439e-07,
+          "initial_linear_residual": 3.065928872022825e-15,
+          "max_field_change": 1.900503126189372e-12,
+          "sensitivity_pass": true,
+          "common_tests": 22016
+        }
+      ]
+    }
+  ],
+  "all_passed": true
+}

@@ -67,6 +67,15 @@ lines.extend(['','The fixed-weight diagnosis showed that training-code optimizat
 for c in named['cases']:lines.append(f'|{c["definition"]["name"]}|{c["nu"]:g}|{100*c["worst_error"]:.6f}%|{c["unfinished"]}/11|')
 lines.extend(['','Named-family solutions were not added to training. Ridge and two-pulse cases test transfer beyond the original pulse/smooth training distribution. All24 primary-viscosity previews below come from actual4096-by4096 reference and reconstruction arrays; the saved errors use the full arrays and current-time reference norm.'])
 for c,p in plots:lines.extend(['',f'![{c["definition"]["name"]}]({out.name}/{p.name})'])
+starts_path=H/'results/b7parentstarts/output/result.json'
+if starts_path.exists():
+    starts=json.loads(starts_path.read_text());assert starts['status']=='complete'
+    lines.extend(['','Closing fixed-weight starting-point diagnosis (six selected worst snapshots only; no revised all-case qualification):','',
+                  '| Snapshot | Registered-fit error | Best diagnostic-start error | Converged |','|---|---:|---:|---|'])
+    for row in starts['rows']:
+        converged=bool(row['statuses'][row['best_start']][-1])
+        lines.append(f'|{row["index"]}|{100*row["original_error"]:.6f}%|{100*row["best_independent_error"]:.6f}%|{converged}|')
+    lines.extend(['','Starts include the retained solution, a training-PCA-projected code and field-nearest codes from12 distinct training trajectories, selected by full physical field distance. Persisting error is evidence against these straightforward starting-point fixes, not a proof of global optimality or an intrinsic architecture limit.'])
 lines.extend(['',f'Native SNF patched-environment qualification passed: **{snf["passed"]}**. The fixture verifies float64 GPU weights and gradients and a scalar-equivalent native Burgers RHS. It is not a trained SNF model. Earlier missing-adapter and precision-port failures are retained. CROM remains an unqualified reproduction with recorded training limitations. No fair complete-PDE-solve timing comparison against CROM or SNF-ROM is available.','',
  'Glossary: parent means the global nonlinear coordinate neural decoder; embedding means its independently fitted field code; reconstruction means fitting a known field offline; PDE rollout means advancing codes using the PDE without future solution fields; unfinished means the original stopping test failed; independent scoring uses256² quadrature instead of128² training quadrature; actual4096 means all4096² field values were produced and scored. The parent prerequisite allows residual-child development but does not replace the stricter assembled representation or PDE requirements.'])
 report.write_text('\n'.join(lines)+'\n')

@@ -729,6 +729,21 @@
     "driver": "coupled_child_pilot.py",
     "args": "--L 2048 --dt .0025 --tests 11008 --iterations 120 --compare-previous /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1childpde/output --model /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1child16/output --cache /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1cache/output --admission /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1childgrowth64/output --global-control /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1stableglobal/output --dev /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/refsdev01/output,/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1refextend/output/dev",
     "gpu": "a100",
-    "submitted_utc": "2026-11-19T00:53:24.002624+00:00"
+    "submitted_utc": "2026-11-19T00:53:24.002624+00:00",
+    "state": "RUNNING",
+    "elapsed_seconds": 59,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b1childallocation",
+    "id": 7357755,
+    "reserved_minutes": 45,
+    "commit": "fde52f158fda365718fee8e63af657d34d19faba",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1childallocation",
+    "driver": "audit_child_allocation.py",
+    "args": "--model /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1child16/output --cache /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1cache/output --admission /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1childgrowth64/output --dev /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/refsdev01/output,/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1refextend/output/dev",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-19T00:55:08.789750+00:00"
   }
 ]

@@ -28,6 +28,17 @@ for ax in axes:ax.axhline(.5,color='black',ls=':');ax.set(ylabel='Relative L2 er
 axes[0].set(xlabel='Development snapshot percentile',title='All 484 independent reconstructions')
 axes[1].set(xlabel='Snapshot time',title='Offline reconstruction errors across time')
 fig.savefig(out/'final-errors.png',dpi=170);plt.close(fig)
+witness=np.load(H/'results/b7parentrepair/output/worst_actual4096.npz')
+ref=witness['reference'];pred=witness['prediction'];difference=pred-ref
+assert ref.shape==pred.shape==(4096,4096)
+vmin=min(ref.min(),pred.min());vmax=max(ref.max(),pred.max());emax=np.abs(difference).max()
+fig,axes=plt.subplots(1,3,figsize=(12,4),constrained_layout=True)
+for j,(field,title) in enumerate(zip([ref,pred,difference],['Reference','Neural parent reconstruction','Signed error'])):
+    im=axes[j].imshow(field[::8,::8].T,origin='lower',extent=[0,1,0,1],vmin=-emax if j==2 else vmin,vmax=emax if j==2 else vmax,cmap='coolwarm' if j==2 else 'viridis')
+    axes[j].set(title=title,xlabel='x',ylabel='y');fig.colorbar(im,ax=axes[j],shrink=.8)
+fig.suptitle(f'Final parent, worst primary case {final["actual4096"]["case"]}; actual4096 arrays, offline reconstruction')
+fig.savefig(out/'final-parent-actual4096.png',dpi=170);plt.close(fig);witness.close()
+del ref,pred,difference
 plots=[];full_exports=[]
 export_dir=H/'results/b7-parent-exports';export_dir.mkdir(exist_ok=True)
 for ci,case in enumerate(named['cases']):
@@ -64,6 +75,7 @@ lines.extend([f'|Actual 4096 × 4096 worst witness|{100*initial["actual4096"]["r
  f'The final actual 4096 witness is {final["actual4096"]["case"]} at time {final["actual4096"]["time"]:g}.','',
  '![Training curves](2026-11-19-neural-parent-assets/final-training-curves.png)','',
  '![All-snapshot and across-time errors](2026-11-19-neural-parent-assets/final-errors.png)','',
+ '![Final worst primary reconstruction](2026-11-19-neural-parent-assets/final-parent-actual4096.png)','',
  f'Parent prerequisite passed: **{final["parent_quality_pass"]}**. Parent-alone 0.5% representation gate passed: **{final["parent_representation_pass"]}**. The original assembled 0.5% representation and 1% PDE thresholds are unchanged.'])
 if not final['parent_quality_pass']:
     lines.extend(['','The two permitted parent/training repairs are exhausted. Stop parent development in this round; do not train children on this unqualified parent or claim an embedding-space PDE result. This is a scoped failure of the tested parent/training recipes, not proof that nonlinear local children cannot work.'])
@@ -93,6 +105,9 @@ if starts_path.exists():
     ratios=[row['tangent_conditioning']['minimum_relative'] for row in starts['rows']]
     lines.extend(['',f'The trained parent retains {min(ranks)}–{max(ranks)} independent code directions out of 32 at these fits (relative singular-value cutoff $10^{{-6}}$). The minimum-to-maximum column-normalized singular-value ratio ranges from {min(ratios):.6f} to {max(ratios):.6f}. These checks do not indicate code-direction collapse at the tested fits.'])
     lines.extend(['','Starts include the retained solution, a training-PCA-projected code and field-nearest codes from 12 distinct training trajectories, selected by full physical field distance. Persisting error is evidence against these straightforward starting-point fixes, not a proof of global optimality or an intrinsic architecture limit.'])
+weak=json.loads((H/'manifests/B7-weak-arithmetic-fixture.json').read_text())
+assert weak['status'][-1]==weak['tight_status'][-1]==1 and weak['tight_field_change']<=1e-10
+lines.extend(['','The embedding-space weak PDE stepper also received an arithmetic correction to avoid cancellation when deciding whether a step improves the residual. Dense operator/residual/Jacobian checks and a 100× tighter stopping check pass. This preserves the PDE and acceptance tolerances; it is a numerical fixture, not an admitted neural PDE trajectory.'])
 lines.extend(['',f'Native SNF patched-environment qualification passed: **{snf["passed"]}**. The fixture verifies float64 GPU weights and gradients and a scalar-equivalent native Burgers RHS. It is not a trained SNF model. Earlier missing-adapter and precision-port failures are retained. CROM remains an unqualified reproduction with recorded training limitations. No fair complete-PDE-solve timing comparison against CROM or SNF-ROM is available.','',
  'Glossary: parent means the global nonlinear coordinate neural decoder; embedding means its independently fitted field code; reconstruction means fitting a known field offline; PDE rollout means advancing codes using the PDE without future solution fields; unfinished means the original stopping test failed; independent scoring uses 256² quadrature instead of 128² training quadrature; actual 4096 means all 4096² field values were produced and scored. The parent prerequisite allows residual-child development but does not replace the stricter assembled representation or PDE requirements.'])
 report.write_text('\n'.join(lines)+'\n')

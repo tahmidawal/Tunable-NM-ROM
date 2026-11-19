@@ -16,4 +16,13 @@ The actual4096 witness error is 7.952585%. The displayed image is a preview of t
 
 No child or PDE advancement follows from these initial full-data results. CROM and SNF-ROM remain unqualified for a fair complete-solve speed comparison. No final-test fields are opened.
 
+
+
+Fixed-weight diagnosis converged all selected training/development fits. Training codes improve, while the worst held-out reconstruction remains poor. This implicates both training-code optimization and the learned decoder; it does not prove an architectural capacity limit.
+
+![Fixed-weight fit diagnosis](2026-11-19-neural-parent-assets/fit-diagnosis.png)
+
+![Offline errors across time](2026-11-19-neural-parent-assets/errors-across-time.png)
+
+
 Glossary: parent is the global nonlinear coordinate neural decoder; embedding is its adjustable field code; stored-code training error uses codes learned with the network; fitted development error separately optimizes codes against held-out known fields; independent scoring uses256² quadrature points rather than the128² training rule; unfinished means the original convergence criterion was not satisfied. All relative errors use the current-time reference norm.

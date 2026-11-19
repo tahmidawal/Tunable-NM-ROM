@@ -50,6 +50,26 @@ No child or PDE advancement follows from these initial full-data results. CROM a
 
 Glossary: parent is the global nonlinear coordinate neural decoder; embedding is its adjustable field code; stored-code training error uses codes learned with the network; fitted development error separately optimizes codes against held-out known fields; independent scoring uses256² quadrature points rather than the128² training rule; unfinished means the original convergence criterion was not satisfied. All relative errors use the current-time reference norm.
 ''')
+# Diagnostic comparisons are generated from converged saved fits.
+diagnostic=H/'results/b7parentdiagnosis/output/result.json'
+if diagnostic.exists():
+    d=json.loads(diagnostic.read_text());rows=d['rows']
+    fig,ax=plt.subplots(figsize=(9,4),constrained_layout=True)
+    xx=np.arange(len(rows));ax.bar(xx-.2,[100*v['stored_error'] for v in rows],.4,label='Before additional fitting')
+    ax.bar(xx+.2,[100*v['newton_status'][0] for v in rows],.4,label='After converged refit')
+    ax.set_xticks(xx,[v['group']+' '+str(v['index']) for v in rows],rotation=60,ha='right');ax.set(ylabel='Relative L2 error (%)',title='Fixed weights: embedding optimization diagnosis');ax.legend()
+    fig.savefig(out/'fit-diagnosis.png',dpi=170);plt.close(fig)
+    report.write_text(report.read_text()+"\nFixed-weight diagnosis converged all selected training/development fits. Training codes improve, while the worst held-out reconstruction remains poor. This implicates both training-code optimization and the learned decoder; it does not prove an architectural capacity limit.\n\n![Fixed-weight fit diagnosis](2026-11-19-neural-parent-assets/fit-diagnosis.png)\n")
+fig,ax=plt.subplots(figsize=(7,4),constrained_layout=True)
+for key,label in [('training_errors','Training'),('independent_errors','Development')]:
+    e=np.array(f[key]).reshape(-1,11)
+    ax.plot(np.arange(11)*.025,100*e.max(0),label=label+' worst')
+    ax.plot(np.arange(11)*.025,100*np.median(e,axis=0),'--',label=label+' median')
+ax.axhline(.5,color='black',ls=':',label='Representation target');ax.set(xlabel='Snapshot time',ylabel='Relative L2 error (%)',title='Offline reconstructions across time — not PDE rollouts');ax.legend();ax.grid(alpha=.2)
+fig.savefig(out/'errors-across-time.png',dpi=170);plt.close(fig)
+report.write_text(report.read_text()+"\n![Offline errors across time](2026-11-19-neural-parent-assets/errors-across-time.png)\n")
+body=report.read_text();start=body.index('Glossary:');end=body.index('\n\n',start)
+glossary=body[start:end];report.write_text(body[:start]+body[end:]+'\n\n'+glossary+'\n')
 publication=Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports');dest=publication/out.name;dest.mkdir(exist_ok=True)
 files=[report,*out.glob('*.png')];records=[]
 for p in files:

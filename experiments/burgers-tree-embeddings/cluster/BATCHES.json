@@ -1,5 +1,5 @@
 {
-  "cumulative_ceiling_gpu_seconds": 41876,
+  "cumulative_ceiling_gpu_seconds": 42296,
   "batches": [
     {
       "id": "B0",
@@ -106,6 +106,30 @@
       "review": "configs/B4-REVIEW.md",
       "accounting": "manifests/allocation-audit-B4.json",
       "archive": "manifests/archive-closeout-B4.json"
+    },
+    {
+      "id": "B5",
+      "baseline_allocated_gpu_seconds": 35096,
+      "max_additional_gpu_seconds": 7200,
+      "cumulative_ceiling_gpu_seconds": 42296,
+      "purpose": "Equivalent full-cell caches, normal reuse, compact patches and paired complete query costs",
+      "recipe_cap": 0,
+      "max_concurrent": 2,
+      "max_seconds_per_job": 2700,
+      "configuration": "configs/B5-COMPLETE-QUERY-DIAGNOSTIC.md",
+      "amendments": [
+        "configs/B5-COMPACT-AMENDMENT.md"
+      ],
+      "registered_utc": "2026-11-19T04:59:19.323381+00:00",
+      "activation_evidence": {
+        "configs/B4-REVIEW.md": "fd34d78cb810969df264db93257e7b26beb6ada1197667c8e971b414a9eeaff2",
+        "configs/B5-COMPLETE-QUERY-DIAGNOSTIC.md": "88b91322764413fcb0fc812dd40d9604070eccceeca7af827a0458413b580f97",
+        "configs/B5-COMPACT-AMENDMENT.md": "0cf84bd530887390a4a0be7965e0ee31a0d845cb063164471eb6b58797441672",
+        "manifests/allocation-audit-B4.json": "74992d5d245b656c591633dd2bc2511a7b9594ed26bfa1635589af7d503f3666",
+        "manifests/archive-closeout-B4.json": "b735a332a548455722427b9f91a4b6dd156993a4a02def44f7750122316620a0",
+        "manifests/B4-progress-a12b5ef42ae4.json": "7a16be5676b9d4f4297544f850cf442a12761003ed7f1a912b043b8c8eeded99"
+      },
+      "development_admission": "manifests/B4-progress-a12b5ef42ae4.json"
     }
   ]
 }

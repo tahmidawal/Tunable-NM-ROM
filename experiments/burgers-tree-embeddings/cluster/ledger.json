@@ -1311,6 +1311,21 @@
     "driver": "diagnose_feature_span.py",
     "args": "",
     "gpu": "a100",
-    "submitted_utc": "2026-11-19T19:20:30.065224+00:00"
+    "submitted_utc": "2026-11-19T19:20:30.065224+00:00",
+    "state": "RUNNING",
+    "elapsed_seconds": 23,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b6namedfd",
+    "id": 7373277,
+    "reserved_minutes": 30,
+    "commit": "8abf2214a9c580191f3d50f692363dee9fe7dbdd",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b6namedfd",
+    "driver": "crosscheck_named.py",
+    "args": "",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-19T19:21:03.721052+00:00"
   }
 ]

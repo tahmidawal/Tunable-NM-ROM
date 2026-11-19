@@ -1,6 +1,6 @@
 """Publish only retained actual-grid trajectory visualizations."""
 from pathlib import Path
-import datetime,hashlib,json,shutil
+import datetime,hashlib,json,shutil,zipfile
 import numpy as np
 from PIL import Image
 H=Path(__file__).resolve().parents[1]
@@ -27,7 +27,16 @@ for p in sorted(source.rglob('*.png')):
 for p in source.rglob('*.npy'):
  a=np.load(p,mmap_mode='r');assert a.shape==(4096,4096) and a.dtype==np.float64
  assert any(v['file']=='output/'+str(p.relative_to(source)) for v in retention['files'])
-z=assets/'full-resolution-images.zip';shutil.copy2(source/z.name,z)
+z=assets/'full-resolution-images.zip'
+with zipfile.ZipFile(z,'w',compression=zipfile.ZIP_STORED) as archive:
+ for p in sorted(source.rglob('*.png')):archive.write(p,p.relative_to(source))
+ archive.write(source/'result.json','metrics-and-provenance.json')
+ archive.writestr('README.txt','Each individual *_4096.png is4096x4096 pixels, x left-to-right, y bottom-to-top.\n'
+  'Time indices0..5 correspond to0,.05,.10,.15,.20,.25.\n'
+  'Evolution overview images provide common field and signed-error color scales.\n'
+  'Reference is numerically qualified, not analytic truth; error is model minus reference.\n'
+  'Direct tree is our qualified PDE model. Global is the POD-Fourier control.\n'
+  'No new solve or snapshot fitting was performed. The arrays were decoded from saved trajectories.\n')
 manifest.append(dict(file=str(z),sha256=sha(z),bytes=z.stat().st_size))
 parts=[f'# Burgers solve evolution and full-resolution spatial errors\n\n'
  'Saved, qualified B4 PDE trajectories decoded on actual 4096 × 4096 grids. '

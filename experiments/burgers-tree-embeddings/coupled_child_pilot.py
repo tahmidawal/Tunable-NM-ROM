@@ -27,10 +27,12 @@ def main():
     head=read_checkpoint(mp/'shared_child.pkl');assert head['latent']==16
     ad=Path(a.admission);ar=json.loads((ad/'result.json').read_text())
     assert ar['representation_gate'] and ar['nodes']==64 and ar['model_sha256']==mr['model_sha256']
-    cp=Path(a.cache);assert digest(cp/'result.json')==head['cache_sha256']
+    cp=Path(a.cache);assert digest(cp/'result.json')==head['cache_sha256'];cache_record=json.loads((cp/'result.json').read_text())
     assert digest(cp/'global_basis.npz')==ar['basis_sha256'];root=np.load(cp/'global_basis.npz')['coefficients'];assert len(root)==128
     gp=Path(a.global_control);gr=json.loads((gp/'result.json').read_text())
     assert gr['status']=='complete_stable_global_controls' and digest(gp/'stable_global_basis.npz')==gr['basis_sha256']
+    assert {r['case']:r['sha256'] for r in gr['training_sources']}=={r['case']:r['reference_sha256'] for r in cache_record['cases']['train']}
+    assert gr['dev_labels']==head['dev_labels']
     global_basis=np.load(gp/'stable_global_basis.npz')['coefficients'][:960]
     refs={r['case']:(p,r) for p,r in cohort(a.dev)};rule=TM.rule();metric=TM.make_geometry(6)
     result=dict(meta=meta,status='coupled_child_pilot_running',L=a.L,dt=a.dt,time_integrator='cn',quadrature_intervals=a.L,
@@ -38,7 +40,7 @@ def main():
         root_basis_sha256=ar['basis_sha256'],global_basis_sha256=gr['basis_sha256'],nodes=64,child_latent=16,
         operator='incumbent scaled tested weak residual; exact fine-grid sign-upwind; discrete sine eigen-diffusion; Crank-Nicolson',
         integration='dense fine-grid tested sum through orthonormal DST',input_contract='shared initial-field callable only',
-        labels=a.labels.split(','),cases=[],final_test_opened=False,
+        labels=a.labels.split(','),cases=[],final_test_opened=False,matched_training_reference_hashes=True,
         timing_claim='diagnostic wall time including compilation; joint comparison setup is charged to each method, so these are not method-specific performance measurements',
         stationarity_tolerance=1e-8,update_tolerance=1e-10,initial_fit_attempts=2,initial_fit_max_iterations=250)
     save(out/'result.json',result)

@@ -25,8 +25,8 @@ def main():
     with open(out/'dependency-install.log','w') as log:
         try:
             installed=subprocess.run([sys.executable,'-m','pip','install','--no-deps','--target',str(packages),
-                'pytorch-lightning==1.9.5','torchmetrics==0.11.4','lightning-utilities==0.8.0','nvidia-ml-py==12.560.30'],
-                stdout=log,stderr=subprocess.STDOUT,timeout=180)
+                'pytorch-lightning==1.9.5','torchmetrics==0.11.4','lightning-utilities==0.8.0','nvidia-ml-py==12.560.30','tqdm==4.67.1'],
+                stdout=log,stderr=subprocess.STDOUT,timeout=120)
             if installed.returncode:raise RuntimeError('Isolated dependency installation failed')
         except Exception as e:
             result.update(status='stopped_dependency_failure',error=repr(e));save(out/'result.json',result);return

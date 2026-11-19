@@ -1267,9 +1267,20 @@
     "args": "",
     "gpu": "a100",
     "submitted_utc": "2026-11-19T18:59:05.905761+00:00",
-    "state": "RUNNING",
-    "elapsed_seconds": 231,
+    "state": "COMPLETED",
+    "elapsed_seconds": 327,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b6cromdeps",
+    "id": 7372231,
+    "reserved_minutes": 60,
+    "commit": "09e097f81931bc518a1f459a79e58a4e181c1633",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b6cromdeps",
+    "driver": "train_crom_native.py",
+    "args": "--epochs 200",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-19T19:05:41.656677+00:00"
   }
 ]

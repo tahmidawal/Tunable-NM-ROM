@@ -10,6 +10,21 @@ import cell_catalogue as CC, compact_fields as CF
 from fixed_tree_pilot import visibility
 
 
+def local_work_shape(cache,cells,kernel):
+    q=cache[kernel]
+    if kernel=='packed':
+        entries=int(q['X'].shape[0]*q['X'].shape[1]*q['Y'].shape[1]*len(cells))
+        return dict(local_field_entries=entries,unused_slot_entries=0,
+            interpretation='full-domain local arithmetic; support zeros remain charged')
+    entries=CF.patch_entries(q);unused=0;slots=[]
+    for d,b in enumerate(q['buckets'],1):
+        count=b['X'].shape[1];active=sum(c[0]==d for c in cells)
+        per=int(b['X'].shape[0]*b['X'].shape[2]*b['Y'].shape[2])
+        unused+=(count-active)*per;slots.append(dict(depth=d,allocated=count,active=active))
+    return dict(local_field_entries=entries,unused_slot_entries=unused,slots=slots,
+        interpretation='compact patch arithmetic including unused slots and boundary padding; not a FLOP count')
+
+
 class FixedQuery:
     def __init__(self,basis,rotation,L,Q,tests,dt,*,catalogue=None,nodes=52,
                  depth=4,output_points=4096,reuse_normal=False):
@@ -94,6 +109,8 @@ class FixedQuery:
             requested_reconstruction_seconds=reconstruction,total_query_seconds=total,
             requested_field_count=outputs,rejected_trials=0,fallback_invocations=0,
             field_kernel=self.field_kernel,
+            field_work_shape=dict(stencil=local_work_shape(ca,cells,self.field_kernel),
+                per_requested_output=local_work_shape(output_cache,cells,self.field_kernel)),
             output_contract='actual device fields; host transfer reported separately',
             component_instrumentation=components,
             reusable_setup_excluded=True,query_specific_compilation_included=True)

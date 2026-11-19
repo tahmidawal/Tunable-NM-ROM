@@ -35,7 +35,7 @@ def score(run,basis,rotation,reference,refrow,old,oldpath,out,label,method,tag,o
         return {k:v for k,v in run.items() if k not in ['fields','coefficients']},False
     C=jnp.asarray(run['coefficients']);bb=jnp.asarray(reference);norm2=jnp.sum(bb*bb,axis=(1,2))*.25
     assert C.shape[0]==6
-    if method=='tree_direct24':
+    if method.startswith('tree_'):
         metric=TM.make_geometry(6);G,tr,mx,my=metric(jnp.asarray(basis),jnp.asarray(run['cells']),*TM.rule())
         T=expand_matrix(jnp.asarray(rotation),len(run['cells']),len(basis));Gram=T.T@G@T
         rhs=TM.rhs(jnp.asarray(basis),bb,mx,my)@T
@@ -83,9 +83,11 @@ def main():
     ap.add_argument('--qualified-implementation',help='retained successful equivalence result for this exact implementation')
     ap.add_argument('--normal-reuse',action='store_true')
     ap.add_argument('--field-kernel',choices=['packed','compact'],default='packed')
+    ap.add_argument('--include-packed-control',action='store_true',help='same-GPU compact and packed kernels, unchanged global comparator')
     ap.add_argument('--block-index',type=int,choices=[0,1],default=0,help='paired blocks use distinct owned allocations')
     ap.add_argument('--labels',default='dev000,dev003,align002')
     a=ap.parse_args();out=Path(a.out);out.mkdir(parents=True,exist_ok=True);meta=preflight()
+    assert not a.include_packed_control or a.field_kernel=='compact'
     gatepath=Path(a.development_admission)
     gate=json.loads(gatepath.read_text());assert not gate['remaining'] and not gate['failed'] and len(gate['records'])==3
     assert all(v['passed'] and len(v['rows'])==88 for v in gate['records'])
@@ -104,6 +106,7 @@ def main():
         assert qr['status']=='complete_query_equivalence_diagnostic' and qr['all_passed']
         assert qr['normal_reuse']==a.normal_reuse
         assert qr['field_kernel']==a.field_kernel
+        assert qr['include_packed_control']==a.include_packed_control
         assert qr['implementation_sha256']==implementation
         for key,value in identities.items():assert qr[key]==value
     refs={r['case']:(p,r) for p,r in cohort(a.dev)}
@@ -127,6 +130,14 @@ def main():
     t0=time.perf_counter();global_query=FixedQuery(glob,U,config['L'],config['Q'],config['tests'],config['dt'],reuse_normal=a.normal_reuse)
     global_build=time.perf_counter()-t0
     queries={'tree_direct24':tree,'global_stable960':global_query};bases={'tree_direct24':root,'global_stable960':glob}
+    packed_setup=None
+    if a.include_packed_control:
+        t0=time.perf_counter();packed_catalogue=CC.build(root,U,**config_except_dt(config),field_kernel='packed')
+        queries['tree_packed_control']=FixedQuery(root,U,config['L'],config['Q'],config['tests'],config['dt'],
+            catalogue=packed_catalogue,reuse_normal=a.normal_reuse)
+        bases['tree_packed_control']=root
+        packed_setup=dict(construction_seconds=time.perf_counter()-t0,
+            catalogue_array_bytes=sum(int(v.nbytes) for v in jax.tree_util.tree_leaves(packed_catalogue['arrays'])))
     # One registered training-only smooth input prewarms all runtime shapes.
     warm_parameter=data.parameters('train',4)[3];warm={}
     for method,query in queries.items():
@@ -137,13 +148,16 @@ def main():
         del r
     repeats,contracts=(5,[1,5]) if a.mode=='paired' else (1,[1])
     result=dict(meta=meta,status='complete_query_diagnostic_running',**identities,mode=a.mode,normal_reuse=a.normal_reuse,
-        field_kernel=a.field_kernel,
+        field_kernel=a.field_kernel,include_packed_control=a.include_packed_control,
         config=config,labels=labels,development_admission_sha256=digest(gatepath),previous_result_sha256=digest(previous/'result.json'),
         reusable_setup=dict(shared_source_verification_and_loading_seconds=loading,
             tree_catalogue_and_constructor_seconds=tree_build,global_constructor_seconds=global_build,
             training_only_prewarm=warm,catalogue_cells=len(catalogue['cells']),
-            catalogue_array_bytes=sum(int(v.nbytes) for v in jax.tree_util.tree_leaves(catalogue['arrays']))),
-        output_contracts=contracts,repetitions=repeats,blocks=1,block_index=a.block_index,order_seed=2026111901+a.block_index,
+            catalogue_array_bytes=sum(int(v.nbytes) for v in jax.tree_util.tree_leaves(catalogue['arrays'])),
+            packed_control=packed_setup,
+            global_array_bytes=sum(int(v.nbytes) for v in jax.tree_util.tree_leaves((global_query.cache,global_query.output_cache)))),
+        output_contracts=contracts,repetitions=repeats,blocks=1,block_index=a.block_index,
+        order_seed=2026111901 if a.include_packed_control else 2026111901+a.block_index,
         implementation_sha256=implementation,
         case_parameters={label:refs[label][1]['parameters'] for label in labels},
         reference_hashes={label:refs[label][1]['levels'][-1]['sha256'] for label in labels},
@@ -157,11 +171,17 @@ def main():
             for contract in contracts:
                 # Across the two separately allocated blocks, each method goes
                 # first exactly five times per case/output contract.
-                orientations=[a.block_index]*3+[1-a.block_index]*2 if repeats==5 else [int(rng.integers(2))]
-                rng.shuffle(orientations)
+                if a.include_packed_control:
+                    # Identical random permutations in both blocks, reversed
+                    # in block1: every pair is ordered both ways five times.
+                    orders=[list(rng.permutation(list(queries))) for _ in range(repeats)]
+                    if a.block_index:orders=[list(reversed(v)) for v in orders]
+                else:
+                    orientations=[a.block_index]*3+[1-a.block_index]*2 if repeats==5 else [int(rng.integers(2))]
+                    rng.shuffle(orientations)
+                    orders=[list(queries) if orientation==0 else list(reversed(queries)) for orientation in orientations]
                 for repeat in range(repeats):
-                    order=list(queries)
-                    if orientations[repeat]:order.reverse()
+                    order=orders[repeat]
                     pair={}
                     for method in order:
                         burn_gpu();tquery=time.perf_counter()
@@ -175,7 +195,9 @@ def main():
                     refpath=folder/row['levels'][-1]['file'];assert digest(refpath)==row['levels'][-1]['sha256']
                     reference=np.load(refpath)['coefficients'][::2]
                     for method in order:
-                        oldpath=previous/f'{label}_{method}_states.pkl';old=read_checkpoint(oldpath)
+                        oldpath=previous/f'{label}_{method}_states.pkl'
+                        if not oldpath.exists() and method=='tree_packed_control':oldpath=previous/f'{label}_tree_direct24_states.pkl'
+                        old=read_checkpoint(oldpath)
                         tag=f'b{block}_r{repeat}_o{contract}'
                         record,good=score(pair[method],bases[method],U,reference,row,old,oldpath,out,label,method,tag,contract)
                         passed.append(good)

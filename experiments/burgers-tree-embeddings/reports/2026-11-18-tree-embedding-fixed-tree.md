@@ -1,6 +1,6 @@
 # Burgers tree embeddings: common fixed-tree numerical qualification
 
-Pilot qualification is incomplete. Outstanding checks: b2rspace, b2rquad, b2rtests, b2rtime, b2rtight.
+Pilot qualification is incomplete. Outstanding checks: b2rquad, b2rtests, b2rtime, b2rtight.
 
 The original L8192 setting failed spatial sensitivity: its doubling changed fields by 0.101589%, above0.1%. Both methods remained physically accurate and converged. The unchanged b2space arrays are reused as the finer L16384 baseline on physical and solver checks only; the failed coarse comparison remains in [the retained original setting report](B2-original-setting-retained.md). One further spatial check at L32768 is allowed, with no automatic higher-resolution ladder. Original unsubmitted b2tests/b2time/b2tight are superseded by the registered finer-setting checks. The old L8192 integration run is retained separately and is not transferred to the new baseline. The5400-second B2 allowance is unchanged.
 
@@ -16,11 +16,17 @@ All solves use the shared initial-field callable and the original fine-grid sign
 | b2space | dev003 | global_stable960 | 0.010283% | 0/200 | baseline | True |
 | b2space | align002 | tree_direct24 | 0.293380% | 0/200 | baseline | True |
 | b2space | align002 | global_stable960 | 0.348890% | 0/200 | baseline | True |
+| b2rspace | dev000 | tree_direct24 | 0.253658% | 0/200 | 0.051045% | True |
+| b2rspace | dev000 | global_stable960 | 0.073161% | 0/200 | 0.051059% | True |
+| b2rspace | dev003 | tree_direct24 | 0.007476% | 0/200 | 0.005129% | True |
+| b2rspace | dev003 | global_stable960 | 0.005155% | 0/200 | 0.005129% | True |
+| b2rspace | align002 | tree_direct24 | 0.287555% | 0/200 | 0.041541% | True |
+| b2rspace | align002 | global_stable960 | 0.346736% | 0/200 | 0.041573% | True |
 
-
+![Independent B2 numerical checks](b2-fixed-tree-qualification.png)
 
 A passing small pilot is not the all44-development-trajectory gate. No deployable adaptation, method freeze, native NM-ROM confirmation, paired runtime win or final-test result is claimed. The nonlinear child16 checkpoint remains stopped after two unsuccessful online solver repairs; its representation result is retained. The original16.5% failure and the improved representation plots remain in [the representation report](2026-11-18-tree-embedding-representation.md).
 
 Pilot clocks charge joint comparison setup to each method and cannot serve as method-specific speed ratios. Initialization, assembly, solving, rejected trials, fallback and requested output remain mandatory components of later complete-query timing. The equivalent packed field implementation has only CPU fixture evidence and is not used in this batch.
 
-Generated 2026-11-19T02:22:25.290375+00:00. Elapsed allocated time is24344 GPU-seconds (6.762222h). The reservation guard currently charges27644 seconds, including full reservations for active jobs. Active owned jobs: b2rspace, b2rquad. B2 is capped at5400 additional GPU-seconds from22744, for a cumulative ceiling28144 seconds. Source/configurations, scheduler records and verified retention manifests are in the owned lane. The old campaign remains paused; final-test fields remain unopened.
+Generated 2026-11-19T02:32:41.188901+00:00. Elapsed allocated time is25353 GPU-seconds (7.042500h). The reservation guard currently charges26666 seconds, including full reservations for active jobs. Active owned jobs: b2rquad. B2 is capped at5400 additional GPU-seconds from22744, for a cumulative ceiling28144 seconds. Source/configurations, scheduler records and verified retention manifests are in the owned lane. The old campaign remains paused; final-test fields remain unopened.

@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-19T02:33:48.488088+00:00",
+  "runs": {
+    "b2rtests": 20,
+    "b2rtime": 20,
+    "b2rtight": 20
+  },
+  "minutes": true,
+  "completed_comparable_allocations_seconds": {
+    "b2base": 504,
+    "b2space": 475,
+    "b2quad": 621,
+    "b2rspace": 522
+  },
+  "rationale": "Completed three-case jobs take at most621 seconds. Reserve1200 seconds each for the remaining independent checks, within their registered per-job maxima and the unchanged aggregate guard. Retain any timeout; no automatic retry.",
+  "batch_ceiling_gpu_seconds": 28144
+}

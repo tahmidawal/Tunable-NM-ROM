@@ -179,7 +179,11 @@ def main():
             print('coupled_result',label,name,m['physical_error'],flush=True)
         result['cases'].append(row);save(out/'result.json',result)
     result['status']='complete_coupled_child_diagnostic_pilot'
-    result['pilot_gate']=all(m['physical_accuracy_pass'] and m['all_steps_stationary'] for r in result['cases'] for m in r['methods'].values())
+    result['pilot_gate']=all(m['physical_accuracy_pass'] and m['all_steps_stationary'] and not m.get('tangent_visibility_below_safeguard',False)
+        for r in result['cases'] for m in r['methods'].values())
+    result['nonlinear_initial_fits_stationary']=all(r['methods']['tree_child16_n64']['initial_fit_stationarity_or_linear_residual']<=a.stationarity for r in result['cases'])
+    result['fixed_tree_admission']=False
+    result['admission_reason']='Small exposed pilot only; initialization, independent numerical refinements and all-development qualification remain separate gates'
     save(out/'result.json',result)
 
 

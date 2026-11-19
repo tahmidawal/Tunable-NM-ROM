@@ -1,0 +1,69 @@
+{
+  "source": "results/b1childpdeR1/output/result.json",
+  "sha256": "ec7c167c4a58f60fd896751382ca2b8a73d019511d1c26e27bc0ed142e6b100b",
+  "status": "complete_coupled_child_diagnostic_pilot",
+  "pilot_gate": false,
+  "rows": [
+    {
+      "case": "dev000",
+      "method": "tree_child16_n64",
+      "nonstationary_steps": 68,
+      "stationarity_max": 2.8825206344507893e-05,
+      "iteration_cap_hits": 76,
+      "max_physical_error": 0.007938103567081956,
+      "max_change_from_original": 0.0014179128851946959,
+      "initial_fit_stationarity": 6.141286095648631e-08
+    },
+    {
+      "case": "dev000",
+      "method": "global_stable960",
+      "nonstationary_steps": 0,
+      "stationarity_max": 4.607782153637611e-13,
+      "iteration_cap_hits": 0,
+      "max_physical_error": 0.007941476591385868,
+      "max_change_from_original": 1.7953677516556987e-12,
+      "initial_fit_stationarity": 3.0888102556717113e-15
+    },
+    {
+      "case": "dev003",
+      "method": "tree_child16_n64",
+      "nonstationary_steps": 0,
+      "stationarity_max": 4.620426647173068e-11,
+      "iteration_cap_hits": 0,
+      "max_physical_error": 0.0008246803658927436,
+      "max_change_from_original": 2.34084154501456e-15,
+      "initial_fit_stationarity": 1.2938146436252448e-08
+    },
+    {
+      "case": "dev003",
+      "method": "global_stable960",
+      "nonstationary_steps": 0,
+      "stationarity_max": 1.0279289265697285e-13,
+      "iteration_cap_hits": 0,
+      "max_physical_error": 0.0008203467379060325,
+      "max_change_from_original": 1.394006858452306e-15,
+      "initial_fit_stationarity": 2.255495828324286e-15
+    },
+    {
+      "case": "align002",
+      "method": "tree_child16_n64",
+      "nonstationary_steps": 76,
+      "stationarity_max": 2.8762773225527304e-05,
+      "iteration_cap_hits": 83,
+      "max_physical_error": 0.006531353748127318,
+      "max_change_from_original": 0.0019751955354603288,
+      "initial_fit_stationarity": 3.439322855408993e-06
+    },
+    {
+      "case": "align002",
+      "method": "global_stable960",
+      "nonstationary_steps": 0,
+      "stationarity_max": 2.924559926976334e-13,
+      "iteration_cap_hits": 0,
+      "max_physical_error": 0.006481443852776757,
+      "max_change_from_original": 1.1456215593126673e-12,
+      "initial_fit_stationarity": 2.9503281344509882e-15
+    }
+  ],
+  "next_repair": "R2 inverse BFGS,39-minute reservation within the prospectively registered45-minute maximum; no further optimizer search if this second repair fails"
+}

@@ -147,6 +147,20 @@ A passing small pilot is not the all44-development-trajectory gate. No deployabl
 Pilot clocks charge joint comparison setup to each method and cannot serve as method-specific speed ratios. Initialization, assembly, solving, rejected trials, fallback and requested output remain mandatory components of later complete-query timing. The equivalent packed field implementation has only CPU fixture evidence and is not used in this batch.
 
 Generated {stamp}. The latest scheduler ledger records{seconds} elapsed GPU-seconds ({seconds/3600:.6f}h); this is a snapshot when jobs are active. The reservation guard charges{charged} seconds, including full reservations for active jobs. Active owned jobs: {', '.join(r['name'] for r in active) or 'none'}. B2 is capped at5400 additional GPU-seconds from22744, for a cumulative ceiling28144 seconds. Source/configurations, scheduler records and verified retention manifests are in the owned lane. The old campaign remains paused; final-test fields remain unopened.
+
+## Glossary
+
+- **Case:** one complete initial-condition trajectory. The three named cases are a pilot, not the entire development panel.
+- **Physical error:** the field difference divided by the reference field's norm at that same time. The reported worst value covers the five evolved times and actual4096 final output.
+- **Reference allowance:** the independently measured uncertainty in the reference solution, added to the error for admission.
+- **Variables:** coefficients adjusted by the online solve; decoder weights remain frozen. POD is a linear basis learned from training snapshots; the global control also uses a prescribed Fourier completion.
+- **L:** the fine spatial operator's interval count per axis. **Q:** the integration interval count per axis; the sampled advection stencil retains the fine spacing1/L.
+- **Weak tests:** smooth functions used to measure the PDE residual. Doubling their number checks that omitted residual directions do not materially change the trajectory.
+- **CN:** Crank–Nicolson time integration. The time-step check halves the interval between successive solves.
+- **Complete convergence:** finite returned diagnostics, small stationarity and either a small field update or a substantially smaller stationarity value. A small update alone does not pass.
+- **Largest field change:** the largest difference from the registered baseline at any evaluated time, normalized by the current reference norm. Its sensitivity limit is0.1%.
+- **Run gate:** physical accuracy, complete convergence, registered configuration/provenance and, for a refinement, the sensitivity check all pass.
+- **Allocated GPU time:** scheduler allocation duration, including setup, compilation, idle portions and failures; it differs from online query runtime.
 '''
 filename = '2026-11-18-tree-embedding-fixed-tree.md'
 (out / filename).write_text(text.replace('2026-11-18-tree-embedding-representation-assets/', ''))

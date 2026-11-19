@@ -1177,8 +1177,8 @@
     "args": "",
     "gpu": "a100",
     "submitted_utc": "2026-11-19T18:11:11.237265+00:00",
-    "state": "RUNNING",
-    "elapsed_seconds": 93,
+    "state": "COMPLETED",
+    "elapsed_seconds": 123,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
   },
@@ -1191,6 +1191,21 @@
     "driver": "qualify_native_competitors.py",
     "args": "",
     "gpu": "a100",
-    "submitted_utc": "2026-11-19T18:20:58.840498+00:00"
+    "submitted_utc": "2026-11-19T18:20:58.840498+00:00",
+    "state": "RUNNING",
+    "elapsed_seconds": 77,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b6tree",
+    "id": 7371554,
+    "reserved_minutes": 90,
+    "commit": "f356a65af89ef923eb4127518f96b020a37b8a3f",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b6tree",
+    "driver": "train_coordinate_tree.py",
+    "args": "--updates 20000 --seed 2026111952",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-19T18:23:17.754578+00:00"
   }
 ]

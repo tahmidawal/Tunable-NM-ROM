@@ -177,13 +177,24 @@ The first nonlinear-child PDE pilot reaches physical errors below1% on all three
 
 Pulse errors remain above the physical gate in the initial pilot for both methods despite tightly converged weak solves. Spatial, temporal, test and integration refinements distinguish numerical error from reduced dynamics. The initial pilot omitted explicit burn-in immediately before timing: those original wall times are retained as unqualified diagnostics and support no speed comparison. Follow-ups include burn-in. Pilot clocks also charge the joint comparison setup to each method; they are not valid method-specific speed ratios. Complete timing must measure each method's own initialization, assembly and output. The small pilot is not all-development qualification, deployable adaptation, or a complete-runtime benchmark.
 
-The focused continuation changes the training allocation mixture for its nonlinear compression pilot; it is explicitly documented in B1-SHARED-CHILD.md. Same-checkpoint uniform/prescribed controls remain required before an allocation-policy claim. No truth-assisted online refinement is allowed. The verified fine-upwind weak operator remains the primary PDE formulation. Initialization, assembly, failed trials, solving, fallback and requested output must all enter later complete-query timing.
+The focused continuation changes the training allocation mixture for its nonlinear compression pilot; it is explicitly documented in B1-SHARED-CHILD.md. No truth-assisted online refinement is allowed. The verified fine-upwind weak operator remains the primary PDE formulation. Initialization, assembly, failed trials, solving, fallback and requested output must all enter later complete-query timing.
+
+The frozen nonlinear head is now compared on identical node budgets. These are best-found reference-assisted fits, not certified manifold minima; stationarity and actual-grid worst witnesses are explicit. No new weights are trained. A newly passing allocation still needs all-snapshot dense scoring before physics admission.
+
+| Allocation | Variables | Worst all | Actual4096 worst witness | Maximum fit stationarity |
+|---|---:|---:|---:|---:|
+| uniform20 | 448 | 3.5037% | 3.5037% | 0.000113 |
+| prescribed20 | 448 | 2.6805% | 2.6805% | 0.000121 |
+| uniform84 | 1472 | 1.2126% | 1.2126% | 0.000106 |
+| prescribed84 | 1472 | 0.3562% | 0.3562% | 2.45e-05 |
+
+![Same-checkpoint allocation controls](b1-allocation-controls.png)
 
 Original recipes, unsuccessful repairs and the original decision remain in [the retained B0 report](B0-retained-representation.md). CROM, SNF-ROM, hyper-reduced masked autoencoders and conditional equation-driven CoLoRA have not yet been reproduced in confirmation; they are not counted as defeated. The older burgers-quadtree campaign remains paused and untouched. No merge or three-dimensional work.
 
 ## Accounting and provenance
 
-Generated 2026-11-19T00:55:45.973624+00:00. Terminal allocations recorded in the current ledger total 18378 GPU-seconds (5.105000 GPU-hours); nonterminal or not-yet-reconciled names: b1childpdeR1, b1childallocation. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
+Generated 2026-11-19T01:12:23.578440+00:00. Terminal allocations recorded in the current ledger total 19292 GPU-seconds (5.358889 GPU-hours); nonterminal or not-yet-reconciled names: b1childpdeR1. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
 
 ## Glossary
 

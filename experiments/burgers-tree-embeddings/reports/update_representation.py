@@ -110,6 +110,28 @@ lines.append(f"| Same child16 head, {growth['nodes']} nodes | {growth['active_va
 ledger=json.loads((H/'cluster/ledger.json').read_text());terminal={'COMPLETED','FAILED','TIMEOUT','CANCELLED','OUT_OF_MEMORY','NODE_FAIL','PREEMPTED'}
 directaudit=read('b1directaudit')
 allocation_rows='\n'.join(f"| {k} | {v['active_variables']} | {pct(v['projection']['worst'])} |" for k,v in directaudit['controls'].items())
+child_allocation_text='Same-checkpoint nonlinear uniform/prescribed allocation controls are still running.'
+if (H/'results/b1childallocation/output/result.json').exists():
+    ac=read('b1childallocation')
+    if ac['status']=='complete_frozen_child_allocation_controls':
+        ar=[];fig,axs=plt.subplots(1,2,figsize=(10,4),constrained_layout=True,sharey=True)
+        for ax,control,title in [(axs[0],directaudit['controls'],'Direct local24'),(axs[1],ac['controls'],'Frozen nonlinear child16')]:
+            names=['uniform20','prescribed20','uniform84','prescribed84']
+            values=[100*control[n]['projection']['worst'] for n in names]
+            ax.bar(np.arange(4),values,color=['#7899ac','#00877c','#7899ac','#00877c'])
+            ax.axhline(.5,color='#b5413c',ls='--',lw=1)
+            ax.set(xticks=np.arange(4),xticklabels=[f"{n.replace('20',' 20').replace('84',' 84')}\n{control[n]['active_variables']} variables" for n in names],title=title,yscale='log')
+            ax.tick_params(axis='x',labelsize=8);ax.grid(axis='y',alpha=.15)
+        axs[0].set_ylabel('Worst all-snapshot projection error (%)')
+        fig.suptitle('Uniform versus initial-field prescribed trees: same checkpoint within each panel')
+        figure(fig,'b1-allocation-controls')
+        for n,v in ac['controls'].items():
+            ar.append(f"| {n} | {v['active_variables']} | {pct(v['projection']['worst'])} | {pct(v['actual4096_witness']['error'])} | {v['max_stationarity']:.3g} |")
+        child_allocation_text='''The frozen nonlinear head is now compared on identical node budgets. These are best-found reference-assisted fits, not certified manifold minima; stationarity and actual-grid worst witnesses are explicit. No new weights are trained. A newly passing allocation still needs all-snapshot dense scoring before physics admission.
+
+| Allocation | Variables | Worst all | Actual4096 worst witness | Maximum fit stationarity |
+|---|---:|---:|---:|---:|
+'''+ '\n'.join(ar)+'\n\n![Same-checkpoint allocation controls](b1-allocation-controls.png)'
 global_rows='\n'.join(f"| Global saved POD prefix {k} | {v['variables']} | {pct(v['projection']['worst'])} | {v['relative_training_singular_value']:.3g} |" for k,v in fullglobal['POD'].items())
 global_rows+='\n'+'\n'.join(f"| Complete sine {k} per axis | {v['variables']} | {pct(v['projection']['worst'])} | Not trained |" for k,v in fullglobal['complete_sine'].items())
 global_rows+='\n'+'\n'.join(f"| POD512 + prescribed Fourier completion | {k} | {pct(v['worst'])} | Not a null-tail completion |" for k,v in stable['controls'].items())
@@ -244,7 +266,9 @@ The first nonlinear-child PDE pilot reaches physical errors below1% on all three
 
 Pulse errors remain above the physical gate in the initial pilot for both methods despite tightly converged weak solves. Spatial, temporal, test and integration refinements distinguish numerical error from reduced dynamics. The initial pilot omitted explicit burn-in immediately before timing: those original wall times are retained as unqualified diagnostics and support no speed comparison. Follow-ups include burn-in. Pilot clocks also charge the joint comparison setup to each method; they are not valid method-specific speed ratios. Complete timing must measure each method's own initialization, assembly and output. The small pilot is not all-development qualification, deployable adaptation, or a complete-runtime benchmark.
 
-The focused continuation changes the training allocation mixture for its nonlinear compression pilot; it is explicitly documented in B1-SHARED-CHILD.md. Same-checkpoint uniform/prescribed controls remain required before an allocation-policy claim. No truth-assisted online refinement is allowed. The verified fine-upwind weak operator remains the primary PDE formulation. Initialization, assembly, failed trials, solving, fallback and requested output must all enter later complete-query timing.
+The focused continuation changes the training allocation mixture for its nonlinear compression pilot; it is explicitly documented in B1-SHARED-CHILD.md. No truth-assisted online refinement is allowed. The verified fine-upwind weak operator remains the primary PDE formulation. Initialization, assembly, failed trials, solving, fallback and requested output must all enter later complete-query timing.
+
+{child_allocation_text}
 
 Original recipes, unsuccessful repairs and the original decision remain in [the retained B0 report](B0-retained-representation.md). CROM, SNF-ROM, hyper-reduced masked autoencoders and conditional equation-driven CoLoRA have not yet been reproduced in confirmation; they are not counted as defeated. The older burgers-quadtree campaign remains paused and untouched. No merge or three-dimensional work.
 

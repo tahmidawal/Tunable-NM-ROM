@@ -12,13 +12,14 @@ def minimize(fun,x0,H0,station,update_norm,iterations,station_tolerance,update_t
     """All coordinates are dimensionless; H0 is a fixed SPD inverse metric."""
     value_gradient=jax.value_and_grad(fun)
     loss,g=value_gradient(x0)
-    initial=(x0,loss,g,H0,jnp.int32(0),jnp.int32(0),jnp.int32(1),jnp.float64(0),jnp.bool_(False))
+    initial=(x0,loss,g,H0,jnp.int32(0),jnp.int32(0),jnp.int32(1),jnp.float64(0),station(g,x0)<station_tolerance*.01)
     def body(_,state):
         def advance(state):
             x,loss,g,H,used,accepted,evaluations,lastupdate,done=state
             p=-H@g
             descent=jnp.isfinite(g@p)&(g@p<0)
             p=jnp.where(descent,p,-H0@g)
+            H=jnp.where(descent,H,H0)
             slope=g@p
             def condition(v):
                 alpha,trial_loss,count,good=v

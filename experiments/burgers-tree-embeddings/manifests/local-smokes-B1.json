@@ -134,6 +134,15 @@
       "result": "PASS independent Rosenbrock minimizer and positive curvature,35 iterations90 objective evaluations including rejected trials; nonlinear CN agrees with verified LM at8.55e-12 physical change and3.17e-12 stationarity",
       "benchmark": false,
       "source_sha256": "52c931100fb5da6b13c0377a5cd4bc02dd206283b016b2611b7dd544cc2fd976"
+    },
+    {
+      "script": "test_quasi_newton.py",
+      "utc": "2026-11-19T01:07:01.483985+00:00",
+      "maximum_seconds": 55,
+      "launcher": "JAX_PLATFORMS=cpu timeout55s jaxrun",
+      "result": "PASS after explicit inverse-metric reset on non-descent direction and immediate stationary-start termination; same known minimizer and CN physical agreement",
+      "benchmark": false,
+      "source_sha256": "3cd93d47145f1f738cf6c59235274cd94f7aaec7d25064a9cad60b708a08d895"
     }
   ]
 }

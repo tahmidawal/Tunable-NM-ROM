@@ -60,7 +60,7 @@ The previous direct-coefficient tree result remains separate and negative on cos
 
 ## Glossary
 
-**Embedding:** small vector of independently adjustable model variables. **Parent:** global neural field covering the domain. **Child:** local neural correction with its own embedding. **Reconstruction:** fitting a known reference field offline; it is not a PDE prediction. **Relative L2 error:** physical squared-error integral, normalized by the current-time reference norm. **Stationarity:** the fitted objective's gradient is sufficiently small. **Allowance:** measured numerical-reference uncertainty. **Ladder:** progressively finer reference space/time settings. **Development:** exposed trajectories used to diagnose and select methods. **Native method:** author implementation with its intended training and evolution algorithm. **Actual resolution:** the model and reference arrays contain all 4096×4096 requested values; the overview image is reduced for display.
+**Embedding:** small vector of independently adjustable model variables. **Parent:** global neural field covering the domain. **Child:** local neural correction with its own embedding. **Reconstruction:** fitting a known reference field offline; it is not a PDE prediction. **Relative L2 error:** physical squared-error integral, normalized by the current-time reference norm. **Stationarity:** the fitted objective's gradient is sufficiently small. **Allowance:** measured numerical-reference uncertainty. **Ladder:** progressively finer reference space/time settings. **Development:** exposed trajectories used to diagnose and select methods. **Native method:** author implementation with its intended training and evolution algorithm. **Feature:** a spatial function produced by the shared coordinate neural network. **Direct-feature control:** an offline fit allowing every feature coefficient to vary, used to test capacity before training smaller nonlinear embeddings. **Quadrature:** weighted spatial points used to approximate physical integrals. **Actual resolution:** the model and reference arrays contain all 4096×4096 requested values; the overview image is reduced for display.
 '''
 refit=json.loads((H/'results/b6refit/output/result.json').read_text())
 feature=json.loads((H/'results/b6features/output/result.json').read_text())
@@ -88,7 +88,7 @@ Curvature-aware parent fitting resolved the unfinished-fit prerequisite without 
 
 The final registered repair freezes the original parent and learns shared local coordinate-network features. Its independent feature-target fit reaches **{100*feature['best_independent_feature_error']:.4f}%**. However, direct projection into those assembled features with fixed original parent embeddings fails the physical capacity prerequisite on all-trajectory scoring:
 
-|Allocation|Maximum depth|Worst independent256² error|Largest128²-to256² change|
+|Allocation|Maximum depth|Worst independent 256² error|Largest128²-to256² change|
 |---|---:|---:|---:|
 {spanrows}
 
@@ -96,7 +96,7 @@ These direct-feature coefficients are a capacity diagnostic, not nonlinear child
 
 ![Training damage and final repair capacity failure](2026-11-19-neural-tree-assets/neural-repair-diagnosis.png)
 
-Native CROM training selected epoch {crom['selected_epoch']}, with worst encoded subset error {100*chosen['encoded_subset_worst']:.4f}%. This is an unfinished reproduction diagnostic, not a fair performance ranking: native nonlinear projection, independent scoring and the2D dynamics adapter remain required. The retained recipe uses a lower learning-rate schedule than the author CLI defaults. SNF-ROM dependency installation succeeded but native import exposed a Lux/ChainRules precompile conflict; the cache-disabled compatibility and corrected-fixture outcomes are recorded below. Neither comparator has an eligible complete solve time.
+Native CROM training selected epoch {crom['selected_epoch']}, with worst encoded subset error {100*chosen['encoded_subset_worst']:.4f}%. This is an unfinished reproduction diagnostic, not a fair performance ranking: the projection diagnostic is reported below; full-panel qualification and a verified 2D dynamics adapter remain required. The retained recipe uses a lower learning-rate schedule than the author CLI defaults. SNF-ROM dependency installation succeeded but native import exposed a Lux/ChainRules precompile conflict; the cache-disabled compatibility and corrected-fixture outcomes are recorded below. Neither comparator has an eligible complete solve time.
 
 """
 doc=doc.replace('## Glossary',extra+'## Glossary')
@@ -106,8 +106,8 @@ if npth.exists():
     nr=json.loads(npth.read_text())
     if nr['status']=='complete':
         names=['Smooth','Compact pulse','Diagonal ridge','Two pulses']
-        table='\n'.join(f"|{v['definition']['name']}, viscosity{v['nu']}|{100*v['worst_parent']:.3f}%|{100*v['worst_tree']:.3f}%|{v['unfinished_tree']}/11|" for v in nr['cases'])
-        supplement+='## Tests on the requested Burgers families\n\nThese are independent256² offline reconstructions using retained failed neural checkpoints, not PDE solves. Reference checks passed for all twelve cases. No named case was added to training. Ridges, two-pulse fields and the additional viscosities test transfer beyond the primary training distribution.\n\n|Case|Worst original-parent error|Worst retained nonlinear-tree error|Unfinished tree fits|\n|---|---:|---:|---:|\n'+table+'\n\n'
+        table='\n'.join(f"|{v['definition']['name']}, viscosity {v['nu']}|{100*v['worst_parent']:.3f}%|{100*v['worst_tree']:.3f}%|{v['unfinished_tree']}/11|" for v in nr['cases'])
+        supplement+='## Tests on the requested Burgers families\n\nThese are independent 256² offline reconstructions using retained failed neural checkpoints, not PDE solves. Reference checks passed for all twelve cases. No named case was added to training. Ridges, two-pulse fields and the additional viscosities test transfer beyond the primary training distribution.\n\n|Case|Worst original-parent error|Worst retained nonlinear-tree error|Unfinished tree fits|\n|---|---:|---:|---:|\n'+table+'\n\n'
         fig,ax=plt.subplots(1,4,figsize=(16,3.8),constrained_layout=True)
         for j,axis in enumerate(ax):
             case=next(v for v in nr['cases'] if v['case']==f'named{j}_nu0.005')
@@ -115,7 +115,7 @@ if npth.exists():
             axis.plot(tt,[100*v['errors'][0] for v in case['rows']],label='Original neural parent')
             axis.plot(tt,[100*v['errors'][1] for v in case['rows']],label='Retained nonlinear tree')
             axis.axhline(.5,c='black',ls='--');axis.set(title=names[j],xlabel='Time',ylabel='Relative L2 error (%)',yscale='log');axis.grid(alpha=.2)
-        ax[0].legend(fontsize=7);fig.suptitle('Named-case reconstruction errors, viscosity0.005 — not PDE trajectories')
+        ax[0].legend(fontsize=7);fig.suptitle('Named-case reconstruction errors, viscosity 0.005 — not PDE trajectories')
         fig.savefig(ASSETS/'named-neural-errors.png',dpi=180);plt.close(fig)
         supplement+='![Named-family neural errors over time](2026-11-19-neural-tree-assets/named-neural-errors.png)\n\n'
         for j in range(4):
@@ -130,22 +130,22 @@ if npth.exists():
                     if rr==0:ax[rr,c].set_title(f't={it*.025:.2f}')
                     if c==0:ax[rr,c].set_ylabel(label)
                     fig.colorbar(im,ax=ax[rr,c],fraction=.046,pad=.02)
-            fig.suptitle(names[j]+' — viscosity0.005; independent256² offline reconstruction, not a PDE solve')
+            fig.suptitle(names[j]+' — viscosity 0.005; independent 256² offline reconstruction, not a PDE solve')
             fn=f'named{j}-neural-reconstruction.png';fig.savefig(ASSETS/fn,dpi=150);plt.close(fig)
             supplement+=f'![{names[j]} reference, nonlinear tree and errors](2026-11-19-neural-tree-assets/{fn})\n\n'
 cpth=H/'results/b6cromprojection/output/result.json'
 if cpth.exists():
     cr=json.loads(cpth.read_text())
     if cr['status']=='complete':
-        supplement+=f"## Native CROM projection diagnosis\n\nWorst independent subset error changes from{100*cr['worst_encoded']:.3f}% encoded to{100*cr['worst_projected']:.3f}% after native nonlinear projection. This retained-checkpoint diagnostic does not establish CROM's best attainable accuracy or a complete PDE runtime.\n\n"
+        supplement+=f"## Native CROM projection diagnosis\n\nWorst independent subset error changes from {100*cr['worst_encoded']:.3f}% encoded to {100*cr['worst_projected']:.3f}% after native nonlinear projection. This retained-checkpoint diagnostic does not establish CROM's best attainable accuracy or a complete PDE runtime.\n\n"
 spth=H/'results/b6snffixture/output/result.json'
 if spth.exists():
     sr=json.loads(spth.read_text())
-    supplement+=f"## Native SNF environment outcome\n\nFinal bounded cache-disabled compatibility fixture passed: **{sr.get('passed',False)}**. No SNF training or complete PDE timing was performed. The pinned source, resolved dependency manifest and all failed attempts are retained. The cache-disabled import succeeded; an ambiguity in our synthetic fixture was corrected explicitly. No trained SNF-ROM comparison is admitted in this batch.\n\n"
+    supplement+=f"## Native SNF environment outcome\n\nFinal bounded cache-disabled compatibility fixture passed: **{sr.get('passed',False)}**. No SNF training or complete PDE timing was performed. The pinned source, resolved dependency manifest and all failed attempts are retained. The cache-disabled import succeeded; an ambiguity in our synthetic fixture was corrected explicitly. The corrected fixture then failed GPU kernel compilation with InvalidIRError in GPUArrays/CUDA/LLVM. Device detection therefore did not establish functional numerical kernels. The bounded environment investigation stops without a trained SNF-ROM comparison.\n\n"
 auditpath=H/'manifests/allocation-audit-B6.json'
 if auditpath.exists():
     au=json.loads(auditpath.read_text());extra_seconds=au['allocated_gpu_seconds']-40842
-    supplement+=f"## Allocation and stop decision\n\nThis bounded round used{extra_seconds} allocated GPU-seconds ({extra_seconds/3600:.6f} hours) of its8-hour allowance, including failed and cancelled attempts. Cumulative study allocation is{au['allocated_gpu_hours']:.6f} GPU-hours. All{len(au['jobs'])} owned jobs are terminal; final-test fields remain sealed. The neural round stops at its failed representation gate, with no automatic continuation or merge.\n\n"
+    supplement+=f"## Allocation and stop decision\n\nThis bounded round used {extra_seconds} allocated GPU-seconds ({extra_seconds/3600:.6f} hours) of its 8-hour allowance, including failed and cancelled attempts. Cumulative study allocation is{au['allocated_gpu_hours']:.6f} GPU-hours. All {len(au['jobs'])} owned jobs are terminal; final-test fields remain sealed. The neural round stops at its failed representation gate, with no automatic continuation or merge.\n\n"
 doc=doc.replace('## Glossary',supplement+'## Glossary')
 name='2026-11-19-neural-tree-development.md' 
 (CAN/name).write_text(doc);(H/'reports'/name).write_text(doc)

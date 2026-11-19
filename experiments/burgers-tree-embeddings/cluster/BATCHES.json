@@ -1,5 +1,5 @@
 {
-  "cumulative_ceiling_gpu_seconds": 25631,
+  "cumulative_ceiling_gpu_seconds": 28144,
   "batches": [
     {
       "id": "B0",
@@ -19,7 +19,32 @@
       "recipe_cap": 8,
       "max_concurrent": 2,
       "max_seconds_per_job": 14400,
-      "configuration": "configs/B1-CONTINUATION.md"
+      "configuration": "configs/B1-CONTINUATION.md",
+      "status": "CLOSED_REVIEWED",
+      "actual_additional_gpu_seconds": 18713,
+      "cumulative_actual_gpu_seconds": 22744,
+      "trained_recipes": 7,
+      "review": "configs/B1-REVIEW.md",
+      "accounting": "manifests/allocation-audit-B1.json",
+      "archive": "manifests/archive-closeout-B1.json"
+    },
+    {
+      "id": "B2",
+      "baseline_allocated_gpu_seconds": 22744,
+      "max_additional_gpu_seconds": 5400,
+      "cumulative_ceiling_gpu_seconds": 28144,
+      "purpose": "Independent common fine-operator/time/integration/test/solver qualification of direct1376 and stable global960 on three pilot cases",
+      "recipe_cap": 0,
+      "max_concurrent": 2,
+      "max_seconds_per_job": 1800,
+      "configuration": "configs/B2-PILOT-NUMERICS.md",
+      "registered_utc": "2026-11-19T01:57:46.816852+00:00",
+      "activation_evidence": {
+        "manifests/B1-integration-doubling.json": "3757c14d7506044c74be4d66ae229111cc7bc066479257cd8d31f980b22202b4",
+        "manifests/allocation-audit-B1.json": "22732a5376c5deb3bef134419e33c7b2a9b5b9e7e9b6a983e156e64eb24ea794",
+        "manifests/archive-closeout-B1.json": "b99d9a7f29f41b320374dad43cdbd9da591cb1c9cc0422bb6778e6fc029ff8ea",
+        "configs/B1-REVIEW.md": "439c17f950fb86d85fa089b48e0fc4356c251a963f3ccfb0ba12e2bd576e0bef"
+      }
     }
   ]
 }

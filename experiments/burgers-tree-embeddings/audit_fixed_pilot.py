@@ -11,6 +11,10 @@ H = Path(__file__).resolve().parent
 
 def inspect(name):
     path = H / 'results' / name / 'output/result.json'
+    retention = json.loads((H / 'manifests' / f'retention-{name}.json').read_text())
+    assert retention['local_and_remote_verified'] and retention['terminal_state'] == 'COMPLETED'
+    retained_hash = next(f['sha256'] for f in retention['files'] if f['file'] == 'output/result.json')
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == retained_hash
     result = json.loads(path.read_text())
     assert result['status'] == 'complete_fixed_tree_diagnostic_pilot'
     station = result.get('stationarity_tolerance', 1e-8)

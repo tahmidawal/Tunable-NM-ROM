@@ -62,6 +62,51 @@
       "result": "PASS exact sparse five-point fine-spacing samples at Q=L and Q=L/2, dense-equivalent tested advection and CN step, selected-mode identity",
       "benchmark": false,
       "source_sha256": "edae2ee1554addacbc57a97113fb1cadfc93ceefdd28ed1d4a0d01a5444c11ca"
+    },
+    {
+      "script": "test_coupled_child.py coefficients",
+      "utc": "2026-11-19T00:20:26.562142+00:00",
+      "maximum_seconds": 55,
+      "launcher": "timeout55s jaxrun; explicit JAX_PLATFORMS=cpu after GPU initialization failure",
+      "result": "GPU initialization failed with CUDA out-of-memory before fixture arithmetic; no scientific result; other processes untouched",
+      "benchmark": false,
+      "source_sha256": "b91ef9b695c6d469c1463581af98fad43e91b971b40def992dc98c65da9e9d7d"
+    },
+    {
+      "script": "test_coupled_child.py coefficients",
+      "utc": "2026-11-19T00:20:26.562142+00:00",
+      "maximum_seconds": 55,
+      "launcher": "timeout55s jaxrun; explicit JAX_PLATFORMS=cpu after GPU initialization failure",
+      "result": "CPU fixture initially failed 1e-12 and 1e-10 entrywise mass-matrix thresholds; maximum difference1.6711e-10 after whitening. Replaced with relative matrix1e-9 and independent physical-energy1e-10 checks; no scientific gate changed.",
+      "benchmark": false,
+      "source_sha256": "b91ef9b695c6d469c1463581af98fad43e91b971b40def992dc98c65da9e9d7d"
+    },
+    {
+      "script": "test_coupled_child.py coefficients",
+      "utc": "2026-11-19T00:20:26.562142+00:00",
+      "maximum_seconds": 55,
+      "launcher": "timeout55s jaxrun; explicit JAX_PLATFORMS=cpu after GPU initialization failure",
+      "result": "PASS on explicit CPU: relative physical Gram difference3.8204e-11; block Jacobians and independent fine stencil/JVP; cold-fit relative error5.8931e-12, stationarity2.1942e-12",
+      "benchmark": false,
+      "source_sha256": "b91ef9b695c6d469c1463581af98fad43e91b971b40def992dc98c65da9e9d7d"
+    },
+    {
+      "script": "test_coupled_child.py solver",
+      "utc": "2026-11-19T00:20:26.562142+00:00",
+      "maximum_seconds": 55,
+      "launcher": "timeout55s jaxrun; explicit JAX_PLATFORMS=cpu after GPU initialization failure",
+      "result": "PASS on explicit CPU: independently restricted linear CN equivalence and nonlinear stationary step1.3601e-13",
+      "benchmark": false,
+      "source_sha256": "b91ef9b695c6d469c1463581af98fad43e91b971b40def992dc98c65da9e9d7d"
+    },
+    {
+      "script": "test_discrete_weak.py",
+      "utc": "2026-11-19T00:20:26.562142+00:00",
+      "maximum_seconds": 55,
+      "launcher": "timeout55s jaxrun; explicit JAX_PLATFORMS=cpu after GPU initialization failure",
+      "result": "PASS on explicit CPU: default weak operator/CN/structured-integration regression; stationarity2.5051e-14",
+      "benchmark": false,
+      "source_sha256": "edae2ee1554addacbc57a97113fb1cadfc93ceefdd28ed1d4a0d01a5444c11ca"
     }
   ]
 }

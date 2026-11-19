@@ -102,7 +102,7 @@ for k,v in cache['direct_controls'].items():
     e=v['projection']['per_snapshot'];lines.append(f"| Direct local {k} | {v['active_variables']} | {pct(panel(e,labels,'original'))} | {pct(panel(e,labels,'new'))} | {pct(panel(e,labels,'alignment'))} | {pct(v['projection']['worst'])} |")
 for n,r in trained:
     chosen=next(c for c in r['checkpoints'] if c['update']==r['selected_update']);e=chosen['projection']['per_snapshot']
-    lines.append(f"| {'Global' if 'global' in n else 'Child'} nonlinear {r['latent']} | {r.get('active_variables',r['latent'])} | {pct(panel(e,r['dev_labels'],'original'))} | {pct(panel(e,r['dev_labels'],'new'))} | {pct(panel(e,r['dev_labels'],'alignment'))} | {pct(r['worst_projection'])} |")
+    lines.append(f"| {'Global' if 'global' in n else 'Child'} nonlinear {r['latent']} {'wide' if 'wide' in n else ''} | {r.get('active_variables',r['latent'])} | {pct(panel(e,r['dev_labels'],'original'))} | {pct(panel(e,r['dev_labels'],'new'))} | {pct(panel(e,r['dev_labels'],'alignment'))} | {pct(r['worst_projection'])} |")
 e=growth['projection']['per_snapshot'];gl=[v['case'] for v in growth['cases']]
 lines.append(f"| Same child16 head, {growth['nodes']} nodes | {growth['active_variables']} | {pct(panel(e,gl,'original'))} | {pct(panel(e,gl,'new'))} | {pct(panel(e,gl,'alignment'))} | {pct(growth['projection']['worst'])} |")
 ledger=json.loads((H/'cluster/ledger.json').read_text());terminal={'COMPLETED','FAILED','TIMEOUT','CANCELLED','OUT_OF_MEMORY','NODE_FAIL','PREEMPTED'}
@@ -113,7 +113,7 @@ global_rows+='\n'+'\n'.join(f"| Complete sine {k} per axis | {v['variables']} | 
 global_rows+='\n'+'\n'.join(f"| POD512 + prescribed Fourier completion | {k} | {pct(v['worst'])} | Not a null-tail completion |" for k,v in stable['controls'].items())
 head_rows='\n'.join(f"| {v['latent']} | {v['feature_count']} | {v['affine_span_rank']} | {pct(v['panels']['dev']['worst'])} | {pct(v['head_projection']['worst'])} |" for v in headspan['models'])
 pde_runs=[]
-for run in ['b1weakpilot1','b1weakL2048','b1weakL4096','b1weakdt125','b1weakdt625','b1cn2048','b1cn2048half','b1cnQ512','b1cnQ1024']:
+for run in ['b1weakpilot1','b1weakL2048','b1weakL4096','b1weakdt125','b1weakdt625','b1cn2048','b1cn2048half','b1cnM8','b1cnQ512','b1cnQ1024']:
     if (H/'results'/run/'output/result.json').exists():
         r=read(run)
         if r['status']=='complete_fixed_tree_diagnostic_pilot':pde_runs.append((run,r))
@@ -162,6 +162,8 @@ Training uses the registered prefix expansion to 128 trajectories. Development h
 {chr(10).join(lines)}
 
 The direct local entries use resolved physical Gram integration; actual-grid audits are separate. Spectral-feature nonlinear controls are architecture-inspired NM-ROMs, not faithful native coordinate-MLP Tunable reproductions.
+
+The wider global128 repair uses960 stable features and hidden widths256,256,960. Its selected projection error remains {pct(read('b1globalwide128')['worst_projection'])}, versus {pct(read('b1global128')['worst_projection'])} before the combined feature/output-width change. The selected fits have maximum stationarity below1e-9. Widening this recipe did not solve its generalization/coding limitation; the unsuccessful checkpoint and full training history remain. This repair is not an isolated attribution test because both feature span and hidden widths change.
 
 The extended global control reaches {pct(fullglobal['POD']['1280']['projection']['worst'])} with {fullglobal['POD']['1280']['variables']} variables, better than the admitted direct tree at its larger variable count. Retain that result, with an essential qualification: its trailing training singular value is only {fullglobal['POD']['1280']['relative_training_singular_value']:.3g} of the largest. These are valid saved orthonormal spaces extended into numerically null training directions, not reliably learned variance directions. Their stability under retraining is unqualified. The complete data-independent sine space provides a separate control without this ambiguity. Neither variable counts nor projection errors establish PDE cost.
 

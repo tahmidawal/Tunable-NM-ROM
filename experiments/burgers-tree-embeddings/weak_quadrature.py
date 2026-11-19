@@ -49,3 +49,23 @@ def make_tested(fields,L,Q):
         coeff=W.dst2(adv)/Q
         return coeff[cache['indices'][0],cache['indices'][1]]
     return advection
+
+
+def make_gram(slices):
+    """Exact mass matrix for the chosen composite integration rule and frozen windows."""
+    @jax.jit
+    def gram(q):
+        n=q['sine_x'].shape[1];Q=n+1;P=len(slices);assert Q>q['basis'].shape[-1]
+        X=jnp.zeros((n,P,6));Y=jnp.zeros_like(X)
+        for i,((x0,x1),(y0,y1)) in enumerate(slices):
+            X=X.at[x0:x1,i,:].set(q['axes'][i][0][0]);Y=Y.at[y0:y1,i,:].set(q['axes'][i][1][0])
+        gx=jnp.einsum('npa,nqb->paqb',X,X)/Q;gy=jnp.einsum('npa,nqb->paqb',Y,Y)/Q
+        raw=jnp.einsum('paqb,pcqd->pacqbd',gx,gy).reshape(P,36,P,36);T=jnp.stack(q['transform'])
+        local=jnp.einsum('par,paqb,qbs->prqs',T,raw,T).reshape(P*T.shape[-1],P*T.shape[-1])
+        mx=jnp.einsum('ni,npa->pia',q['sine_x'][0],X)/Q;my=jnp.einsum('ni,npa->pia',q['sine_y'][0],Y)/Q
+        cross=jnp.einsum('gij,pia,pjb->gpab',q['basis'],mx,my).reshape(len(q['basis']),P,36)
+        cross=jnp.einsum('gpr,prk->gpk',cross,T).reshape(len(q['basis']),-1)
+        root=.25*jnp.einsum('gij,hij->gh',q['basis'],q['basis'])
+        G=jnp.block([[root,cross],[cross.T,local]])
+        return (G+G.T)*.5
+    return gram

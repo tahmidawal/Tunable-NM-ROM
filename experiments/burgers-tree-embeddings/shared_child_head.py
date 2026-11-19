@@ -1,6 +1,7 @@
 """Geometry-conditioned, zero-preserving shared child coefficients and physical LM."""
 from common import *
 import decoder as dec
+from functools import partial
 
 
 def geometry(cells):
@@ -39,9 +40,8 @@ def initialize(local,h,norm,k,key,width=128):
     return dict(head=hp,encoder=ep),scale
 
 
-@jax.jit
-def schur(gram,rhs,norm2):
-    root=128
+@partial(jax.jit,static_argnames=('root',))
+def schur(gram,rhs,norm2,root=128):
     A=gram[:root,:root];B=gram[:root,root:]
     AinvB=jnp.linalg.solve(A,B);Ainvb=jnp.linalg.solve(A,rhs[:,:root].T).T
     S=gram[root:,root:]-B.T@AinvB;S=(S+S.T)*.5

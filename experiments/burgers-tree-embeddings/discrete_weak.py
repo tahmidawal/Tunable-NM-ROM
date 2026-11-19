@@ -77,38 +77,49 @@ def make_field(slices,rank):
     return field
 
 
-def make_solver(field,L,iterations=30,cg_iterations=80,theta=1.,advection_tests=None):
+def make_solver(field,L,iterations=30,cg_iterations=80,theta=1.,advection_tests=None,
+                coefficient_map=None,tested_mass_jacobian=None):
     assert theta in (1.,.5)
+    assert (coefficient_map is None)==(tested_mass_jacobian is None)
+    coefficients=(lambda z,cache:z) if coefficient_map is None else coefficient_map
     def tested_advection(c,cache):
         if advection_tests is not None:return advection_tests(c,cache)
         adv,_=operators.spatial(field(c,cache),L)
         return dst2(adv.reshape(L-1,L-1))[cache['indices'][0],cache['indices'][1]]/L
     def residual(c,previous,cache,dt,nu,norm):
+        c=coefficients(c,cache)
         advtests=tested_advection(c,cache)
         denom=1+theta*dt*nu*cache['lam']
         return (cache['A']@c-previous/denom+theta*dt*advtests/denom)/norm
     @jax.jit
     def step(c0,cache,dt,nu,station_tolerance,update_tolerance):
-        previous=cache['A']@c0;norm=jnp.sqrt(jnp.maximum(c0@cache['gram']@c0,1e-30))
+        previous_coefficients=coefficients(c0,cache)
+        previous=cache['A']@previous_coefficients;norm=jnp.sqrt(jnp.maximum(previous_coefficients@cache['gram']@previous_coefficients,1e-30))
         if theta!=1.:
-            old_tested=tested_advection(c0,cache)
+            old_tested=tested_advection(previous_coefficients,cache)
             previous=previous*(1-(1-theta)*dt*nu*cache['lam'])-(1-theta)*dt*old_tested
         func=lambda c:residual(c,previous,cache,dt,nu,norm)
-        H0=(cache['A'].T@cache['A'])/norm**2;diag=jnp.maximum(jnp.diag(H0),1e-12)
+        A0=cache['A'] if tested_mass_jacobian is None else tested_mass_jacobian(c0,cache)
+        H0=(A0.T@A0)/norm**2;diag=jnp.maximum(jnp.diag(H0),1e-12)
         def body(_,state):
             c,loss,damp,accepted,done,lastupdate,lastlinear,used=state
             def advance(state):
                 c,loss,damp,accepted,done,lastupdate,lastlinear,used=state
+                local_H=H0;local_diag=diag
+                if tested_mass_jacobian is not None:
+                    AJ=tested_mass_jacobian(c,cache);local_H=(AJ.T@AJ)/norm**2
+                    local_diag=jnp.maximum(jnp.diag(local_H),1e-12)
                 r,jv=jax.linearize(func,c);_,vjp=jax.vjp(func,c)
                 grad=vjp(r)[0]
-                def action(v):return vjp(jv(v))[0]+(damp*diag+1e-12)*v
-                C=jnp.linalg.cholesky(H0+jnp.diag(damp*diag+1e-12))
+                def action(v):return vjp(jv(v))[0]+(damp*local_diag+1e-12)*v
+                C=jnp.linalg.cholesky(local_H+jnp.diag(damp*local_diag+1e-12))
                 def precondition(v):return jax.scipy.linalg.cho_solve((C,True),v)
                 delta,_=jax.scipy.sparse.linalg.cg(action,-grad,M=precondition,tol=1e-6,atol=1e-12,maxiter=cg_iterations)
                 linear=jnp.linalg.norm(action(delta)+grad)/jnp.maximum(jnp.linalg.norm(grad),1e-30)
-                update=jnp.sqrt(jnp.maximum(delta@cache['gram']@delta,0))/norm
+                dc=delta if coefficient_map is None else coefficients(c+delta,cache)-coefficients(c,cache)
+                update=jnp.sqrt(jnp.maximum(dc@cache['gram']@dc,0))/norm
                 trial=c+delta;rr=func(trial);newloss=rr@rr
-                station=jnp.max(jnp.abs(grad)/jnp.sqrt(diag))
+                station=jnp.max(jnp.abs(grad)/jnp.sqrt(local_diag))
                 good=(newloss<loss)&jnp.isfinite(newloss)
                 # A small step alone is not convergence; preserve the stationarity test.
                 finished=(station<station_tolerance)&((update<update_tolerance)|(station<station_tolerance*.01))
@@ -118,7 +129,10 @@ def make_solver(field,L,iterations=30,cg_iterations=80,theta=1.,advection_tests=
             return jax.lax.cond(done,lambda s:s,advance,state)
         r=func(c0);initial=(c0,r@r,jnp.float64(1e-3),jnp.int32(0),jnp.bool_(False),jnp.float64(0),jnp.float64(0),jnp.int32(0))
         c,loss,damp,accepted,done,update,linear,used=jax.lax.fori_loop(0,iterations,body,initial)
-        rr=func(c);_,vjp=jax.vjp(func,c);grad=vjp(rr)[0];station=jnp.max(jnp.abs(grad)/jnp.sqrt(diag))
+        rr=func(c);_,vjp=jax.vjp(func,c);grad=vjp(rr)[0]
+        if tested_mass_jacobian is not None:
+            AJ=tested_mass_jacobian(c,cache);diag=jnp.maximum(jnp.sum(AJ*AJ,axis=0)/norm**2,1e-12)
+        station=jnp.max(jnp.abs(grad)/jnp.sqrt(diag))
         return c,jnp.array([jnp.sqrt(loss),station,update,linear,used,accepted],dtype=jnp.float64)
     return step,residual
 

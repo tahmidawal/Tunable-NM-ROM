@@ -33,13 +33,16 @@ Training uses the registered prefix expansion to 128 trajectories. Development h
 | Direct local 16 | 960 | 0.5889% | 0.3635% | 0.8908% | 0.8908% |
 | Direct local 24 | 1376 | 0.3792% | 0.2173% | 0.4229% | 0.4229% |
 | Direct local 36 | 2000 | 0.2150% | 0.1327% | 0.2156% | 0.2156% |
-| Global nonlinear 64 | 64 | 7.1775% | 10.3528% | 16.7303% | 16.7303% |
-| Global nonlinear 128 | 128 | 2.9436% | 6.2896% | 7.8825% | 7.8825% |
-| Child nonlinear 8 | 544 | 0.8083% | 0.5119% | 1.5059% | 1.5059% |
-| Child nonlinear 16 | 960 | 0.4634% | 0.2687% | 0.6520% | 0.6520% |
+| Global nonlinear 64  | 64 | 7.1775% | 10.3528% | 16.7303% | 16.7303% |
+| Global nonlinear 128  | 128 | 2.9436% | 6.2896% | 7.8825% | 7.8825% |
+| Global nonlinear 128 wide | 128 | 3.6511% | 6.7567% | 8.2982% | 8.2982% |
+| Child nonlinear 8  | 544 | 0.8083% | 0.5119% | 1.5059% | 1.5059% |
+| Child nonlinear 16  | 960 | 0.4634% | 0.2687% | 0.6520% | 0.6520% |
 | Same child16 head, 64 nodes | 1152 | 0.4238% | 0.2573% | 0.4044% | 0.4238% |
 
 The direct local entries use resolved physical Gram integration; actual-grid audits are separate. Spectral-feature nonlinear controls are architecture-inspired NM-ROMs, not faithful native coordinate-MLP Tunable reproductions.
+
+The wider global128 repair uses960 stable features and hidden widths256,256,960. Its selected projection error remains 8.2982%, versus 7.8825% before the combined feature/output-width change. The selected fits have maximum stationarity below1e-9. Widening this recipe did not solve its generalization/coding limitation; the unsuccessful checkpoint and full training history remain. This repair is not an isolated attribution test because both feature span and hidden widths change.
 
 The extended global control reaches 0.3227% with 1280 variables, better than the admitted direct tree at its larger variable count. Retain that result, with an essential qualification: its trailing training singular value is only 3.01e-18 of the largest. These are valid saved orthonormal spaces extended into numerically null training directions, not reliably learned variance directions. Their stability under retraining is unqualified. The complete data-independent sine space provides a separate control without this ambiguity. Neither variable counts nor projection errors establish PDE cost.
 
@@ -127,6 +130,12 @@ These pilots solve complete trajectories from the shared initial callable with t
 | dev003 | global_POD768 | 2048 | CN | 2048 | 0.0025 | 0.0820% | True | True |
 | align002 | tree_direct24 | 2048 | CN | 2048 | 0.0025 | 1.4331% | True | False |
 | align002 | global_POD768 | 2048 | CN | 2048 | 0.0025 | 0.6482% | True | True |
+| dev000 | tree_direct24 | 2048 | CN | 2048 | 0.00125 | 1.4715% | True | False |
+| dev000 | global_POD768 | 2048 | CN | 2048 | 0.00125 | 0.7978% | True | True |
+| dev003 | tree_direct24 | 2048 | CN | 2048 | 0.00125 | 0.0824% | True | True |
+| dev003 | global_POD768 | 2048 | CN | 2048 | 0.00125 | 0.0820% | True | True |
+| align002 | tree_direct24 | 2048 | CN | 2048 | 0.00125 | 1.4210% | True | False |
+| align002 | global_POD768 | 2048 | CN | 2048 | 0.00125 | 0.6518% | True | True |
 
 ![Fixed-tree physics diagnosis](b1-fixed-tree-physics.png)
 
@@ -138,7 +147,7 @@ Original recipes, unsuccessful repairs and the original decision remain in [the 
 
 ## Accounting and provenance
 
-Generated 2026-11-19T00:06:53.663299+00:00. Terminal allocations recorded in the current ledger total 14736 GPU-seconds (4.093333 GPU-hours); nonterminal or not-yet-reconciled names: b1cn2048half. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
+Generated 2026-11-19T00:20:36.278430+00:00. Terminal allocations recorded in the current ledger total 15776 GPU-seconds (4.382222 GPU-hours); nonterminal or not-yet-reconciled names: none. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
 
 ## Glossary
 

@@ -38,6 +38,13 @@ if coupled:
     if changes:coupled_text+=f" Largest returned-field change from its preceding setting is{100*max(changes):.6f}%."
     status=status.replace('The first nonlinear PDE pilot also passes physical accuracy but fails stationarity on160/300 steps; a finite solver repair is running.',coupled_text)
 if 'ac' in globals() and ac['status']=='complete_frozen_child_allocation_controls':title+='; frozen child allocation'
+test_admission_text='Further test-enrichment qualification is pending.'
+for name,p in pilots:
+    if name=='b1cnM32':
+        change=max(max(v['previous_state_relative_change']) for c in p['cases'] for v in c['methods'].values())
+        passed=all(v['physical_accuracy_pass'] and v['all_steps_stationary'] and max(v['previous_state_relative_change'])<=.001 for c in p['cases'] for v in c['methods'].values())
+        test_admission_text=f'The completed44032-test check changes returned fields by at most{100*change:.6f}%; its stationary/physical/sensitivity gate passes{passed}. This qualifies22016 tests for the three-case direct24/global768 pilot only. Independent integration and remaining numerical checks continue.'
+        status=status.replace('The direct PDE pilot passes physical accuracy, but the latest test sensitivity is0.10684%, just above0.1%.',test_admission_text)
 lines=[]
 for name,p in pilots:
     for c in p['cases']:
@@ -72,6 +79,8 @@ The first coupled child16/64-node pilot has physical error below1% on all three 
 {allocation_text} Uniform20 and prescribed20 also retain identical448-variable budgets. Every allocation uses the same selected child head and resolved physical metric, with encoder, zero and temporal starts; no weights were retrained. Fit stationarity is retained in the generated table, so the comparison is not presented as a certified manifold optimum.
 
 {coupled_text} The completed iteration-limit repair is retained even though it fails. Its successor, safeguarded inverse BFGS with Armijo line search, is a separately registered second repair of the same online solver bottleneck; it uses the identical physical objective and tolerance. All rejected trials count. If it also fails, no further optimizer search occurs without a written scoped decision or specific amendment. The unchanged initial fits remain a separate qualification issue.
+
+{test_admission_text} Earlier small-rule passes and failures remain in the ledger; a quadrature result at5504 tests is not automatically a result at22016 tests.
 
 Ledger snapshot: {seconds} elapsed allocated GPU-seconds ({seconds/3600:.6f}h), including active elapsed time. Outstanding full reservations remain charged by the submission guard. Active owned names: {', '.join(v['name'] for v in active) or 'none'}. Old paused namespace and final-test solution fields remain untouched. Source, selected models and generated report are mirrored; raw evidence has local and designated cluster copies. No merge.
 '''

@@ -1,0 +1,64 @@
+{
+  "status": "passed_pilot_test_enrichment",
+  "source_sha256": "2c565c3f175fb4fb4a4f41ff8a26658a8e8831eba166061e06e049ba31e6e22f",
+  "qualified_setting_sha256": "6d2fc0ac35ac7c3e87f94763cfdfdd65544ab24de38b3efc5e4c6688a06cc768",
+  "qualified_tests": 22016,
+  "verification_tests": 44032,
+  "scope": "Three exposed direct24/globalPOD768 trajectories at L2048,CN dt0.0025,dense integration; not nonlinear or all-development admission",
+  "rows": [
+    {
+      "case": "dev000",
+      "method": "tree_direct24",
+      "physical_pass": true,
+      "stationary": true,
+      "change": 9.413036976965674e-05,
+      "worst_physical_error": 0.007946414271597632,
+      "reference_allowance": 6.68934746585448e-07
+    },
+    {
+      "case": "dev000",
+      "method": "global_POD768",
+      "physical_pass": true,
+      "stationary": true,
+      "change": 7.810970996719425e-11,
+      "worst_physical_error": 0.007941317640713107,
+      "reference_allowance": 6.68934746585448e-07
+    },
+    {
+      "case": "dev003",
+      "method": "tree_direct24",
+      "physical_pass": true,
+      "stationary": true,
+      "change": 4.943858708080989e-07,
+      "worst_physical_error": 0.0008221624721474534,
+      "reference_allowance": 1.2345444417596293e-06
+    },
+    {
+      "case": "dev003",
+      "method": "global_POD768",
+      "physical_pass": true,
+      "stationary": true,
+      "change": 4.000472421869061e-12,
+      "worst_physical_error": 0.0008203312638943741,
+      "reference_allowance": 1.2345444417596293e-06
+    },
+    {
+      "case": "align002",
+      "method": "tree_direct24",
+      "physical_pass": true,
+      "stationary": true,
+      "change": 0.00011461410512027168,
+      "worst_physical_error": 0.006477917085207384,
+      "reference_allowance": 7.621482989307439e-07
+    },
+    {
+      "case": "align002",
+      "method": "global_POD768",
+      "physical_pass": true,
+      "stationary": true,
+      "change": 6.912079263171499e-10,
+      "worst_physical_error": 0.006480536134930469,
+      "reference_allowance": 7.621482989307439e-07
+    }
+  ]
+}

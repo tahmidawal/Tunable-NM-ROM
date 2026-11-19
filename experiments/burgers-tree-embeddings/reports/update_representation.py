@@ -145,6 +145,12 @@ for run in ['b1weakpilot1','b1weakL2048','b1weakL4096','b1weakdt125','b1weakdt62
         r=read(run)
         if r['status'] in ['complete_fixed_tree_diagnostic_pilot','complete_coupled_child_diagnostic_pilot']:pde_runs.append((run,r))
         else:incomplete_pde.append(f"{run}: {r['status']}; retained as incomplete/failed, not a passing pilot")
+test_admission_text='The further independently registered enrichment is still needed.'
+for run,r in pde_runs:
+    if run=='b1cnM32':
+        change=max(max(v['previous_state_relative_change']) for c in r['cases'] for v in c['methods'].values())
+        admitted=all(v['physical_accuracy_pass'] and v['all_steps_stationary'] and max(v['previous_state_relative_change'])<=.001 for c in r['cases'] for v in c['methods'].values())
+        test_admission_text=f'The subsequent44032-test check has maximum field change{pct(change)}; its pilot admission check is{admitted}. This admits22016 tests only for these three direct24/global768 trajectories at the tested setting, pending independent integration, time, spatial and solver-precision checks. It does not admit the nonlinear arm or the full development panel.'
 pde_rows=[]
 fig,axs=plt.subplots(1,3,figsize=(12,3.7),constrained_layout=True,sharey=True)
 for run,r in pde_runs:
@@ -259,7 +265,7 @@ These pilots solve complete trajectories from the shared initial callable with t
 
 ![Independent numerical sensitivities](b1-numerical-sensitivities.png)
 
-Retained incomplete PDE outcomes: {'; '.join(incomplete_pde) or 'none in the collected pilot records'}. The trajectory figure emphasizes the dense BE/CN and test-enrichment comparisons; the table retains every completed pilot setting. A low physical error alone does not establish numerical convergence. The change from5504 to11008 tests is large for the tree. Its next enrichment to22016 changes the alignment-case field by0.106838%, just above the0.1% sensitivity limit;11008 is therefore still not admitted. A further independently registered enrichment is needed. The global control is much less sensitive to these added tests.
+Retained incomplete PDE outcomes: {'; '.join(incomplete_pde) or 'none in the collected pilot records'}. The trajectory figure emphasizes the dense BE/CN and test-enrichment comparisons; the table retains every completed pilot setting. A low physical error alone does not establish numerical convergence. The change from5504 to11008 tests is large for the tree. Its next enrichment to22016 changes the alignment-case field by0.106838%, just above the0.1% sensitivity limit;11008 is therefore still not admitted. The global control is much less sensitive to these added tests. {test_admission_text}
 
 The first nonlinear-child PDE pilot reaches physical errors below1% on all three exposed cases, but160 of300 time steps miss stationarity1e-8. The initial alignment fit is also underconverged. Useful zero-child directions and accurate reconstructions do not guarantee an easy nonlinear online solve. The first bounded repair raises only the PDE LM cap from30 to120, keeping the checkpoint, initial fits, equations, integration and tolerances fixed. Its results, including any failures, are recorded below. Initial-fit stationarity is distinct from time-step stationarity; a passing step alone does not qualify initialization.
 

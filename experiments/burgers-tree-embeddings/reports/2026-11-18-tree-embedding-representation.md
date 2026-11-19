@@ -148,6 +148,12 @@ These pilots solve complete trajectories from the shared initial callable with t
 | dev003 | global_POD768 | 2048 | CN | 22016 | 2048 | 0.0025 | 0.0820% | True | True |
 | align002 | tree_direct24 | 2048 | CN | 22016 | 2048 | 0.0025 | 0.6478% | True | True |
 | align002 | global_POD768 | 2048 | CN | 22016 | 2048 | 0.0025 | 0.6481% | True | True |
+| dev000 | tree_direct24 | 2048 | CN | 44032 | 2048 | 0.0025 | 0.7946% | True | True |
+| dev000 | global_POD768 | 2048 | CN | 44032 | 2048 | 0.0025 | 0.7941% | True | True |
+| dev003 | tree_direct24 | 2048 | CN | 44032 | 2048 | 0.0025 | 0.0822% | True | True |
+| dev003 | global_POD768 | 2048 | CN | 44032 | 2048 | 0.0025 | 0.0820% | True | True |
+| align002 | tree_direct24 | 2048 | CN | 44032 | 2048 | 0.0025 | 0.6478% | True | True |
+| align002 | global_POD768 | 2048 | CN | 44032 | 2048 | 0.0025 | 0.6481% | True | True |
 | dev000 | tree_direct24 | 2048 | CN | 5504 | 512 | 0.0025 | 1.4733% | True | False |
 | dev000 | global_POD768 | 2048 | CN | 5504 | 512 | 0.0025 | 0.7941% | True | True |
 | dev003 | tree_direct24 | 2048 | CN | 5504 | 512 | 0.0025 | 0.0825% | True | True |
@@ -171,7 +177,7 @@ These pilots solve complete trajectories from the shared initial callable with t
 
 ![Independent numerical sensitivities](b1-numerical-sensitivities.png)
 
-Retained incomplete PDE outcomes: none in the collected pilot records. The trajectory figure emphasizes the dense BE/CN and test-enrichment comparisons; the table retains every completed pilot setting. A low physical error alone does not establish numerical convergence. The change from5504 to11008 tests is large for the tree. Its next enrichment to22016 changes the alignment-case field by0.106838%, just above the0.1% sensitivity limit;11008 is therefore still not admitted. A further independently registered enrichment is needed. The global control is much less sensitive to these added tests.
+Retained incomplete PDE outcomes: none in the collected pilot records. The trajectory figure emphasizes the dense BE/CN and test-enrichment comparisons; the table retains every completed pilot setting. A low physical error alone does not establish numerical convergence. The change from5504 to11008 tests is large for the tree. Its next enrichment to22016 changes the alignment-case field by0.106838%, just above the0.1% sensitivity limit;11008 is therefore still not admitted. The global control is much less sensitive to these added tests. The subsequent44032-test check has maximum field change0.0115%; its pilot admission check isTrue. This admits22016 tests only for these three direct24/global768 trajectories at the tested setting, pending independent integration, time, spatial and solver-precision checks. It does not admit the nonlinear arm or the full development panel.
 
 The first nonlinear-child PDE pilot reaches physical errors below1% on all three exposed cases, but160 of300 time steps miss stationarity1e-8. The initial alignment fit is also underconverged. Useful zero-child directions and accurate reconstructions do not guarantee an easy nonlinear online solve. The first bounded repair raises only the PDE LM cap from30 to120, keeping the checkpoint, initial fits, equations, integration and tolerances fixed. Its results, including any failures, are recorded below. Initial-fit stationarity is distinct from time-step stationarity; a passing step alone does not qualify initialization.
 
@@ -203,7 +209,7 @@ Original recipes, unsuccessful repairs and the original decision remain in [the 
 
 ## Accounting and provenance
 
-Generated 2026-11-19T01:22:26.146596+00:00. Terminal allocations recorded in the current ledger total 20551 GPU-seconds (5.708611 GPU-hours); nonterminal or not-yet-reconciled names: b1cnM32, b1childpdeR2. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
+Generated 2026-11-19T01:27:52.582299+00:00. Terminal allocations recorded in the current ledger total 21197 GPU-seconds (5.888056 GPU-hours); nonterminal or not-yet-reconciled names: b1childpdeR2. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
 
 ## Glossary
 

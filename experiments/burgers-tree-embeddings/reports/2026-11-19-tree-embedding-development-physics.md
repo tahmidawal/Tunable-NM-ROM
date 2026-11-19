@@ -16,10 +16,11 @@ Every physical decision covers all five evolved output times and the actual4096 
 |b4quad|global_stable960|0.103902%|0.202287%|0.348890%|0.348966%|0|0.000001%|True|
 
 ![All-development physical and projection errors](b4-all-development-physics.png)
+![All-development numerical sensitivity](b4-all-development-sensitivity.png)
 
-These are physical/numerical qualification runs, not paired speed benchmarks. Query clocks still charge shared comparison setup; no method-specific speed ratio is inferred. The nonlinear PDE checkpoint remains stopped after two failed optimizer repairs; the frozen tangent simplification also failed its representation screen. The cell catalogue has only CPU fixture evidence and is not used here. Native NM-ROM confirmation, deployable adaptation, complete-runtime benchmarking, method freeze and final-test evaluation remain outstanding.
+These are physical/numerical qualification runs, not paired speed benchmarks. Query clocks still charge shared comparison setup; no method-specific speed ratio is inferred. The nonlinear PDE checkpoint remains stopped after two failed optimizer repairs; the frozen tangent simplification also failed its representation screen. This batch uses per-query assembly; [complete-query cache and cost diagnostics](2026-11-19-tree-embedding-complete-query.md) are separate. Native NM-ROM confirmation, deployable adaptation, method freeze and final-test evaluation remain outstanding. The preceding spatial, weak-test and100x solver-tolerance checks cover the three-case B2 pilot; the physical, time-step and integration checks here cover all44 trajectories.
 
-Latest scheduler snapshot: 35096 allocated GPU-seconds (9.748889h); charge including full active reservations 35096, cumulative cap 41876. Active owned jobs: none. Generated 2026-11-19T04:59:19.202210+00:00. The old campaign remains paused; no automatic merge or unrelated3D work.
+B4 closeout scheduler snapshot: 35096 allocated GPU-seconds (9.748889h); charge including full active reservations 35096, B4 cumulative cap 41876. Active owned jobs in that snapshot: none. Generated 2026-11-19T05:00:59.912943+00:00. The old campaign remains paused; no automatic merge or unrelated3D work.
 
 ## Glossary
 

@@ -7,6 +7,8 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 H=Path(__file__).resolve().parents[1];sys.path.insert(0,str(H))
 from audit_fixed_pilot import inspect
+report_only='--report-only' in sys.argv
+assert report_only or not (H/'manifests/B5-registration.json').exists(),'B4 is historical; use --report-only to preserve active study status and its frozen admission manifest'
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 reg=json.loads((H/'manifests/B4-registration.json').read_text())
 labels=[f'dev{i:03d}' for i in range(32)]+[f'align{i:03d}' for i in range(12)]
@@ -56,6 +58,10 @@ terminal={'COMPLETED','FAILED','TIMEOUT','CANCELLED','OUT_OF_MEMORY','NODE_FAIL'
 active=[r for r in ledger if (r.get('state') or 'PENDING').split()[0] not in terminal]
 seconds=sum(r.get('elapsed_seconds',0) for r in ledger)
 charged=sum(r.get('elapsed_seconds',0) if (r.get('state') or 'PENDING').split()[0] in terminal else r['reserved_minutes']*60 for r in ledger)
+snapshot_label='Latest scheduler snapshot'
+if report_only and (H/'manifests/allocation-audit-B4.json').exists():
+    closing=json.loads((H/'manifests/allocation-audit-B4.json').read_text())
+    seconds=charged=closing['allocated_gpu_seconds'];active=[];snapshot_label='B4 closeout scheduler snapshot'
 failed=[r['name'] for r in records if not r['passed']]+failed_jobs
 remaining=[n for n in names if n not in {r['name'] for r in records} and n not in failed_jobs]
 if failed:decision='All-development qualification fails or is incomplete for '+', '.join(failed)+'. Diagnose the retained evidence before advancement.'
@@ -87,6 +93,23 @@ if 'b4base' in raw:
         p=H/'reports'/f'b4-all-development-physics.{ext}';fig.savefig(p,dpi=180,bbox_inches='tight',**({'metadata':{'Date':None}} if ext=='svg' else {}))
         if ext=='svg':p.write_text('\n'.join(s.rstrip() for s in p.read_text().splitlines())+'\n')
     plt.close(fig);figures.append('![All-development physical and projection errors](b4-all-development-physics.png)')
+if all(name in raw for name in ['b4time','b4quad']):
+    fig,axes=plt.subplots(2,1,figsize=(10,6),sharex=True,constrained_layout=True)
+    for ax,name,title in zip(axes,['b4time','b4quad'],['Halved time step','Doubled integration resolution']):
+        by={c['case']:c for c in raw[name]['cases']}
+        for method,color,label in [('tree_direct24','#3679b6','Direct tree'),('global_stable960','#d58425','Global control')]:
+            changes=[100*max(by[case]['methods'][method]['previous_state_relative_change']) for case in labels]
+            ax.plot(np.arange(44),np.maximum(changes,1e-12),'.-',color=color,label=label)
+        ax.axhline(.1,color='#b5413c',ls='--',label='0.1% change limit')
+        ax.axvline(31.5,color='#999999',lw=.7)
+        ax.set(title=title,ylabel='Worst field change (%)',yscale='log')
+        ax.legend(fontsize=8,loc='upper left',bbox_to_anchor=(1.01,1))
+    axes[1].set_xlabel('Trajectory index:32 random development, then12 alignment')
+    for ext in ['png','svg']:
+        p=H/'reports'/f'b4-all-development-sensitivity.{ext}'
+        fig.savefig(p,dpi=180,bbox_inches='tight',**({'metadata':{'Date':None}} if ext=='svg' else {}))
+        if ext=='svg':p.write_text('\n'.join(s.rstrip() for s in p.read_text().splitlines())+'\n')
+    plt.close(fig);figures.append('![All-development numerical sensitivity](b4-all-development-sensitivity.png)')
 stamp=datetime.datetime.now(datetime.timezone.utc).isoformat()
 text=f'''# Burgers tree embeddings: all-development fixed-tree qualification
 
@@ -102,9 +125,9 @@ Every physical decision covers all five evolved output times and the actual4096 
 
 {chr(10).join(figures)}
 
-These are physical/numerical qualification runs, not paired speed benchmarks. Query clocks still charge shared comparison setup; no method-specific speed ratio is inferred. The nonlinear PDE checkpoint remains stopped after two failed optimizer repairs; the frozen tangent simplification also failed its representation screen. The cell catalogue has only CPU fixture evidence and is not used here. Native NM-ROM confirmation, deployable adaptation, complete-runtime benchmarking, method freeze and final-test evaluation remain outstanding.
+These are physical/numerical qualification runs, not paired speed benchmarks. Query clocks still charge shared comparison setup; no method-specific speed ratio is inferred. The nonlinear PDE checkpoint remains stopped after two failed optimizer repairs; the frozen tangent simplification also failed its representation screen. This batch uses per-query assembly; [complete-query cache and cost diagnostics](2026-11-19-tree-embedding-complete-query.md) are separate. Native NM-ROM confirmation, deployable adaptation, method freeze and final-test evaluation remain outstanding. The preceding spatial, weak-test and100x solver-tolerance checks cover the three-case B2 pilot; the physical, time-step and integration checks here cover all44 trajectories.
 
-Latest scheduler snapshot: {seconds} allocated GPU-seconds ({seconds/3600:.6f}h); charge including full active reservations {charged}, cumulative cap {reg['cumulative_ceiling_gpu_seconds']}. Active owned jobs: {', '.join(v['name'] for v in active) or 'none'}. Generated {stamp}. The old campaign remains paused; no automatic merge or unrelated3D work.
+{snapshot_label}: {seconds} allocated GPU-seconds ({seconds/3600:.6f}h); charge including full active reservations {charged}, B4 cumulative cap {reg['cumulative_ceiling_gpu_seconds']}. Active owned jobs in that snapshot: {', '.join(v['name'] for v in active) or 'none'}. Generated {stamp}. The old campaign remains paused; no automatic merge or unrelated3D work.
 
 ## Glossary
 
@@ -132,6 +155,9 @@ for folder in [H/'reports',main]:
     extra='Further decoder diagnosis: [the frozen tangent comparison](2026-11-19-tree-embedding-implementation-tangent.md).'
     if extra not in lines:lines[4:4]=[extra,'']
     path.write_text('\n'.join(lines)+'\n')
+if report_only:
+    print('Historical B4 report refreshed; active status and admission manifest preserved')
+    raise SystemExit(0)
 status=f'''**New Burgers tree-embedding study: B4 all-development fixed-tree qualification.** {decision} Latest recorded allocation {seconds/3600:.6f}h; active jobs: {', '.join(v['name'] for v in active) or 'none'}. No runtime win, final-test opening or method freeze. [All-development evidence](reports/{name}); [representation plots](reports/2026-11-18-tree-embedding-representation.md). Old campaign remains PAUSED; nonlinear optimizer and tangent ablation remain stopped; no merge.'''
 record=dict(utc=stamp,decision=decision,source_hashes=hashes,records=records,failed=failed,remaining=remaining,
             elapsed_gpu_seconds=seconds,charged_gpu_seconds=charged,active_jobs=[v['name'] for v in active],own_status=status)

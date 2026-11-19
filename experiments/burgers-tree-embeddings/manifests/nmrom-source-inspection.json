@@ -1,0 +1,46 @@
+{
+  "status": "source_inspection_only_no_competitor_training_or_benchmark",
+  "inspected_date": "2026-11-18",
+  "official_links": {
+    "CROM": "https://crom-pde.github.io/",
+    "SNF_ROM": "https://arxiv.org/html/2405.14890v2",
+    "masked_AE": "https://arxiv.org/abs/2009.11990"
+  },
+  "repositories": [
+    {
+      "repository": "dc3042/CROM_offline_training",
+      "commit": "39333f76ccf878dacc9ae425c185b76ed4e72c5c",
+      "source_url": "https://github.com/dc3042/CROM_offline_training/tree/39333f76ccf878dacc9ae425c185b76ed4e72c5c",
+      "license": "No top-level license file in inspected pinned root; deeper files not audited",
+      "execution_status": "not_run"
+    },
+    {
+      "repository": "peterchencyc/CROM_online_deployment",
+      "commit": "ccb8a6603318492442e32f9d254d420b63c86419",
+      "source_url": "https://github.com/peterchencyc/CROM_online_deployment/tree/ccb8a6603318492442e32f9d254d420b63c86419",
+      "license": "No top-level license file in inspected pinned root; deeper files not audited",
+      "execution_status": "not_run"
+    },
+    {
+      "repository": "CMU-CBML/NeuralROMs.jl",
+      "commit": "35c55e44cdcc7eb902c6c0b6311fb6c524271f91",
+      "source_url": "https://github.com/CMU-CBML/NeuralROMs.jl/tree/35c55e44cdcc7eb902c6c0b6311fb6c524271f91",
+      "license": "MIT; pinned LICENSE read",
+      "execution_status": "not_run"
+    },
+    {
+      "repository": "llnl/NM-ROM",
+      "commit": "e53a32ca6a20c6c83be135cba763bfade3a2cd8d",
+      "source_url": "https://github.com/llnl/NM-ROM/tree/e53a32ca6a20c6c83be135cba763bfade3a2cd8d",
+      "license": "MIT; pinned LICENSE read",
+      "execution_status": "not_run"
+    }
+  ],
+  "notes": [
+    "CROM official project links separate offline training and online dynamics repositories; preserve their distinction.",
+    "SNF-ROM paper links the pinned CMU-CBML Julia implementation; smooth manifold training and native projection dynamics must be retained for a faithful comparator.",
+    "LLNL NM-ROM official repository explicitly identifies the requested shallow masked-autoencoder method and includes hyper-reduction workflow.",
+    "No pretrained weights, external solution datasets, or this study's final-test solution fields were opened. No external source has been vendored or executed yet.",
+    "Spectral-feature heads already tested in this study are architecture-inspired controls, not substitutes for these native methods."
+  ]
+}

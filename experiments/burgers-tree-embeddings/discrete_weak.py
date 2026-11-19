@@ -78,7 +78,7 @@ def make_field(slices,rank):
 
 
 def make_solver(field,L,iterations=30,cg_iterations=80,theta=1.,advection_tests=None,
-                coefficient_map=None,tested_mass_jacobian=None):
+                coefficient_map=None,tested_mass_jacobian=None,scale_linear_coordinates=False):
     assert theta in (1.,.5)
     assert (coefficient_map is None)==(tested_mass_jacobian is None)
     coefficients=(lambda z,cache:z) if coefficient_map is None else coefficient_map
@@ -112,10 +112,15 @@ def make_solver(field,L,iterations=30,cg_iterations=80,theta=1.,advection_tests=
                 r,jv=jax.linearize(func,c);_,vjp=jax.vjp(func,c)
                 grad=vjp(r)[0]
                 def action(v):return vjp(jv(v))[0]+(damp*local_diag+1e-12)*v
-                C=jnp.linalg.cholesky(local_H+jnp.diag(damp*local_diag+1e-12))
+                scale=jax.lax.rsqrt(local_diag) if scale_linear_coordinates else jnp.ones_like(local_diag)
+                # Algebraically identical LM equation; CG's residual norm now
+                # respects the same column scaling as the stationarity criterion.
+                C=jnp.linalg.cholesky(local_H*scale[:,None]*scale[None,:]+jnp.diag((damp*local_diag+1e-12)*scale**2))
                 def precondition(v):return jax.scipy.linalg.cho_solve((C,True),v)
-                delta,_=jax.scipy.sparse.linalg.cg(action,-grad,M=precondition,tol=1e-6,atol=1e-12,maxiter=cg_iterations)
-                linear=jnp.linalg.norm(action(delta)+grad)/jnp.maximum(jnp.linalg.norm(grad),1e-30)
+                transformed=lambda v:scale*action(scale*v)
+                scaled_delta,_=jax.scipy.sparse.linalg.cg(transformed,-scale*grad,M=precondition,tol=1e-6,atol=1e-12,maxiter=cg_iterations)
+                delta=scale*scaled_delta
+                linear=jnp.linalg.norm(scale*(action(delta)+grad))/jnp.maximum(jnp.linalg.norm(scale*grad),1e-30)
                 dc=delta if coefficient_map is None else coefficients(c+delta,cache)-coefficients(c,cache)
                 update=jnp.sqrt(jnp.maximum(dc@cache['gram']@dc,0))/norm
                 trial=c+delta;rr=func(trial);newloss=rr@rr

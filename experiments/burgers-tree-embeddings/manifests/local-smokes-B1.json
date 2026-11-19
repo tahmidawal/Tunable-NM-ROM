@@ -107,6 +107,24 @@
       "result": "PASS on explicit CPU: default weak operator/CN/structured-integration regression; stationarity2.5051e-14",
       "benchmark": false,
       "source_sha256": "edae2ee1554addacbc57a97113fb1cadfc93ceefdd28ed1d4a0d01a5444c11ca"
+    },
+    {
+      "script": "test_coupled_child.py solver",
+      "utc": "2026-11-19T00:46:47.264598+00:00",
+      "maximum_seconds": 55,
+      "launcher": "JAX_PLATFORMS=cpu timeout55s jaxrun",
+      "result": "PASS unchanged linear-equivalence and nonlinear stationary solve; optional mass-diagonal CG coordinate scaling returns same physical state within1e-8",
+      "benchmark": false,
+      "source_sha256": "5c7afc2b5c4803768753a3672f5042fd0d0c5b5de86d4ae988b705d7bbf67bd5"
+    },
+    {
+      "script": "test_discrete_weak.py",
+      "utc": "2026-11-19T00:51:26.051426+00:00",
+      "maximum_seconds": 55,
+      "launcher": "JAX_PLATFORMS=cpu timeout55s jaxrun",
+      "result": "PASS default weak operator, CN, structured integration and cold fit after optional coordinate scaling; stationarity2.5051e-14",
+      "benchmark": false,
+      "source_sha256": "3b1494e93d777718907e6ed085ae76c54e0b1e794bccee1399034db7c1dcf0d1"
     }
   ]
 }

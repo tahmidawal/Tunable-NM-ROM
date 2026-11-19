@@ -22,6 +22,10 @@ def main():
     for key in ['model','cache','admission','global-control','dev']:ap.add_argument('--'+key,required=True)
     ap.add_argument('--L',type=int,default=2048);ap.add_argument('--dt',type=float,default=.0025)
     ap.add_argument('--tests',type=int,default=11008);ap.add_argument('--labels',default='dev000,dev003,align002')
+    ap.add_argument('--scale-linear-coordinates',action='store_true')
+    ap.add_argument('--iterations',type=int,default=30);ap.add_argument('--cg-iterations',type=int,default=80)
+    ap.add_argument('--stationarity',type=float,default=1e-8);ap.add_argument('--update-tolerance',type=float,default=1e-10)
+    ap.add_argument('--compare-previous')
     a=ap.parse_args();out=Path(a.out);out.mkdir(parents=True,exist_ok=True);meta=preflight()
     mp=Path(a.model);mr=json.loads((mp/'result.json').read_text());assert digest(mp/'shared_child.pkl')==mr['model_sha256']
     head=read_checkpoint(mp/'shared_child.pkl');assert head['latent']==16
@@ -42,7 +46,21 @@ def main():
         integration='dense fine-grid tested sum through orthonormal DST',input_contract='shared initial-field callable only',
         labels=a.labels.split(','),cases=[],final_test_opened=False,matched_training_reference_hashes=True,
         timing_claim='diagnostic wall time including compilation; joint comparison setup is charged to each method, so these are not method-specific performance measurements',
-        stationarity_tolerance=1e-8,update_tolerance=1e-10,initial_fit_attempts=2,initial_fit_max_iterations=250)
+        stationarity_tolerance=a.stationarity,update_tolerance=a.update_tolerance,LM_iteration_cap=a.iterations,CG_iteration_cap=a.cg_iterations,
+        initial_fit_attempts=2,initial_fit_max_iterations=250,
+        linear_coordinates='tested_mass_diagonal_scaled' if a.scale_linear_coordinates else 'original',
+        linear_residual_metric='tested_mass_diagonal_scaled' if a.scale_linear_coordinates else 'original')
+    if a.compare_previous:
+        previous_path=Path(a.compare_previous)
+        assert str(previous_path).startswith(os.environ['STUDY_NAMESPACE']+'/')
+        previous_result=json.loads((previous_path/'result.json').read_text())
+        assert previous_result['status']=='complete_coupled_child_diagnostic_pilot'
+        for key in ('operator','L','dt','quadrature_intervals','requested_initial_tests',
+                    'model_sha256','admission_sha256','root_basis_sha256','global_basis_sha256',
+                    'nodes','child_latent','labels'):
+            assert previous_result[key]==result[key],key
+        result['previous_result_sha256']=digest(previous_path/'result.json')
+        result['comparison_kind']='same_model_and_equations_solver_repair'
     save(out/'result.json',result)
     for label in result['labels']:
         folder,ref=refs[label];p=ref['parameters'];initial=lambda xy:data.initial(xy,p)
@@ -73,8 +91,9 @@ def main():
         for name,model in models.items():
             ischild=name.startswith('tree');ca=model['cache'];ca=dict(ca,A=ca['A'][:commonM],indices=ca['indices'][:,:commonM],lam=ca['lam'][:commonM])
             field=model['field'];decode=C.coefficients if ischild else lambda z,ca:z
-            step,_=W.make_solver(field,a.L,theta=.5,coefficient_map=C.coefficients if ischild else None,
-                                 tested_mass_jacobian=C.tested_mass_jacobian if ischild else None)
+            step,_=W.make_solver(field,a.L,iterations=a.iterations,cg_iterations=a.cg_iterations,theta=.5,coefficient_map=C.coefficients if ischild else None,
+                                 tested_mass_jacobian=C.tested_mass_jacobian if ischild else None,
+                                 scale_linear_coordinates=a.scale_linear_coordinates)
             initialfit=C.make_initial_fit(field) if ischild else W.make_initial_fit(field)
             burn_gpu();start=time.perf_counter();axis=jnp.arange(1,a.L)/a.L;xy=jnp.stack(jnp.meshgrid(axis,axis,indexing='ij'),axis=-1)
             u0=initial(xy);fit=initialfit(u0,ca);z,e0,fitstation=fit[:3];jax.block_until_ready(z)
@@ -84,7 +103,7 @@ def main():
                 save(out/'result.json',result);return
             cold=time.perf_counter()-start;states=[np.asarray(decode(z,ca))];codes=[np.asarray(z)];statuses=[];valid=True
             for it in range(1,round(.25/a.dt)+1):
-                z,status=step(z,ca,a.dt,data.NU,1e-8,1e-10);jax.block_until_ready(z);statuses.append(np.asarray(status));coef=decode(z,ca)
+                z,status=step(z,ca,a.dt,data.NU,a.stationarity,a.update_tolerance);jax.block_until_ready(z);statuses.append(np.asarray(status));coef=decode(z,ca)
                 if not bool(jnp.all(jnp.isfinite(coef))) or float(jnp.sqrt(jnp.maximum(coef@ca['gram']@coef,0)))>10*float(jnp.linalg.norm(u0)/a.L):
                     valid=False;break
                 if it%round(.05/a.dt)==0:
@@ -94,7 +113,7 @@ def main():
             wall=time.perf_counter()-start+row['shared_setup_seconds']
             method=dict(active_variables=len(z),initial_fit_error=float(e0),initial_fit_stationarity_or_linear_residual=float(fitstation),
                 initial_fit_accepted=np.asarray(fit[3]) if ischild else None,cold_start_including_compilation_seconds=cold,
-                query_before_output_seconds=wall,finite_trajectory=valid,all_steps_stationary=bool(np.max(np.asarray(statuses)[:,1])<=1e-8),
+                query_before_output_seconds=wall,finite_trajectory=valid,all_steps_stationary=bool(np.max(np.asarray(statuses)[:,1])<=a.stationarity),
                 visibility=model['visibility'],step_status=np.where(np.isfinite(statuses),np.asarray(statuses,dtype=object),None).tolist(),
                 status_columns=['scaled_tested_residual','scaled_stationarity','relative_update','relative_linear_residual','LM_iterations','accepted_steps'])
             # This post-solve diagnostic is outside query timing and never alters states.
@@ -125,6 +144,16 @@ def main():
             m.update(physical_error=np.asarray(jnp.sqrt(jnp.maximum(err2,0)/norm2[:count])),full_trajectory_returned=count==6,
                 offline_projection_error=np.asarray(jnp.sqrt(jnp.maximum(proj2,0)/norm2[:count])),projection_label=projection_label,
                 distance_from_offline_fit=np.asarray(jnp.sqrt(jnp.maximum(distance2,0)/norm2[:count])))
+            if a.compare_previous:
+                oldrow=next(v for v in previous_result['cases'] if v['case']==label)
+                assert np.array_equal(oldrow['parameters'],p) and oldrow['common_tests']==commonM
+                oldfile=previous_path/f'{label}_{name}_states.pkl';oldstate=read_checkpoint(oldfile)
+                assert np.array_equal(oldstate['cells'],cells if name.startswith('tree') else [])
+                assert np.allclose(oldstate['transforms'],np.asarray(transforms) if name.startswith('tree') else [],atol=1e-12,rtol=0)
+                count_common=min(count,len(oldstate['coefficients']))
+                change=c[:count_common]-jnp.asarray(oldstate['coefficients'][:count_common])
+                m['previous_state_relative_change']=np.asarray(jnp.sqrt(jnp.maximum(jnp.einsum('ti,ij,tj->t',change,G,change),0)/norm2[:count_common]))
+                m['previous_state_file_sha256']=digest(oldfile)
             if count==6:
                 burn_gpu();t0=time.perf_counter();axis=np.linspace(0,1,4096)
                 pred=LP.field_grid(basis,c[-1],cells,transforms,6,axis)[0] if name.startswith('tree') else data.synth_grid(jnp.einsum('k,kij->ij',c[-1],basis),axis)

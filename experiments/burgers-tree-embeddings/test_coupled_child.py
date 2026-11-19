@@ -62,6 +62,11 @@ def main():
         # Then restore a genuinely nonlinear head and require a stationary step.
         _,nonlinear_cache,_,_=setup();n,ns=joint(z,nonlinear_cache,.0025,.005,1e-8,1e-10)
         assert bool(jnp.all(jnp.isfinite(n))) and float(ns[1])<1e-8,ns
+        scaled,_=W.make_solver(field,L,theta=.5,coefficient_map=C.coefficients,tested_mass_jacobian=C.tested_mass_jacobian,scale_linear_coordinates=True)
+        s,ss=scaled(z,nonlinear_cache,.0025,.005,1e-8,1e-10)
+        dc=C.coefficients(s,nonlinear_cache)-C.coefficients(n,nonlinear_cache)
+        assert float(jnp.linalg.norm(field(dc,nonlinear_cache))/jnp.linalg.norm(field(C.coefficients(n,nonlinear_cache),nonlinear_cache)))<1e-8
+        assert float(ss[1])<1e-8,ss
         print('PASS restricted-linear CN equivalence and nonlinear stationary step',np.asarray(ns),flush=True)
 
 

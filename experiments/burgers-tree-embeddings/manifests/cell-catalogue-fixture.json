@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-19T03:12:15.187105+00:00",
+  "status": "passed",
+  "backend": "cpu",
+  "timeout_seconds": 55,
+  "source_sha256": {
+    "cell_catalogue.py": "4ba1f3731d43465f14070959dfd06c5b7c12a035c6485594595f3b5b2ecf1b50",
+    "test_cell_catalogue.py": "4d175a1de5347bcf2bee7d83a58b6771d40f0d59f5f78bd80277c9822f0dbc26"
+  },
+  "max_absolute_defects": {
+    "gram": 0.0,
+    "tested_mass": 0.0,
+    "field": 0.0,
+    "field_jvp": 0.0,
+    "advection": 0.0,
+    "output": 0.0
+  },
+  "zero_child_field_change": 0.0,
+  "all_depth2_cells": 20,
+  "different_geometries": 3,
+  "scope": "Sub-minute CPU fixture only; no scientific GPU or runtime admission",
+  "invocation": "source /etc/profile.d/jax-mem.sh; JAX_PLATFORMS=cpu JAX_DEFAULT_MATMUL_PRECISION=highest timeout 55s jaxrun /home/tahmid/Dev/.venv/bin/python test_cell_catalogue.py"
+}

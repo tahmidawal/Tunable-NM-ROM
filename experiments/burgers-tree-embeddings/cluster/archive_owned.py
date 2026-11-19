@@ -1,7 +1,11 @@
 """Archive verified raw outputs, remove only owned reproducible staging/cache copies."""
 from pathlib import Path
-import json,subprocess as sp,shlex,hashlib,datetime
+import argparse,json,subprocess as sp,shlex,hashlib,datetime
 H=Path(__file__).resolve().parents[1]
+ap=argparse.ArgumentParser();ap.add_argument('--label',required=True);args=ap.parse_args()
+assert args.label.replace('-','').isalnum()
+proof_path=H/f'manifests/archive-closeout-{args.label}.json'
+assert not proof_path.exists(),'Retain prior archive evidence; choose a new explicit label'
 owner=json.loads((H/'OWNER.json').read_text());ns=owner['namespace']
 rows=json.loads((H/'cluster/ledger.json').read_text())
 def ssh(s):return sp.check_output(['ssh','tufts-login',s],text=True)
@@ -10,6 +14,9 @@ assert ns not in q,'Finish all owned jobs before moving registered input caches'
 assert all(r.get('state','').split()[0] in {'COMPLETED','FAILED','TIMEOUT','CANCELLED','OUT_OF_MEMORY','NODE_FAIL','PREEMPTED'} for r in rows)
 proof=[]
 for row in rows:
+    # Prior archives and their manifests are immutable history. In particular,
+    # a later batch must not rewrite B0 retention or its archive proof.
+    if row.get('archived_remote'):continue
     name=row['name'];assert name.replace('-','').isalnum()
     old=ns+'/'+name;dest=ns+'/archive/'+name
     manifest=H/'manifests'/f'retention-{name}.json';m=json.loads(manifest.read_text())
@@ -33,4 +40,4 @@ for row in rows:
                                                files=len(m['files']),raw_bytes=sum(x['bytes'] for x in m['files'])))
     (H/'cluster/ledger.json').write_text(json.dumps(rows,indent=2)+'\n')
     print(name,'archived and verified',flush=True)
-(H/'manifests/archive-closeout.json').write_text(json.dumps(proof,indent=2)+'\n')
+proof_path.write_text(json.dumps(proof,indent=2)+'\n')

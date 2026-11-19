@@ -12,7 +12,9 @@ def read(name):
     p=H/'results'/name/'output/result.json';sources[str(p.relative_to(H))]=hashlib.sha256(p.read_bytes()).hexdigest()
     return json.loads(p.read_text())
 def figure(fig,name):
-    fig.savefig(OUT/(name+'.png'),dpi=180,bbox_inches='tight');fig.savefig(OUT/(name+'.svg'),bbox_inches='tight');plt.close(fig)
+    fig.savefig(OUT/(name+'.png'),dpi=180,bbox_inches='tight')
+    svg=OUT/(name+'.svg');fig.savefig(svg,bbox_inches='tight',metadata={'Date':None});plt.close(fig)
+    svg.write_text('\n'.join(line.rstrip() for line in svg.read_text().splitlines())+'\n')
 def pct(x):return f'{100*x:.4f}%'
 def panel(err,labels,prefix):
     ix=[i for i,n in enumerate(labels) if (n.startswith('align') if prefix=='alignment' else n.startswith('dev') and ((int(n[3:])<16)==(prefix=='original')))]
@@ -25,7 +27,7 @@ headspan=read('b1headspan2')
 stable=read('b1stableglobal');refit16=read('b1child16refit')
 growth=read('b1childgrowth64')
 labels=[r['case'] for r in cache['cases']['dev']]
-plt.rcParams.update({'font.size':10,'axes.spines.top':False,'axes.spines.right':False})
+plt.rcParams.update({'font.size':10,'axes.spines.top':False,'axes.spines.right':False,'svg.hashsalt':'burgers-tree-embeddings'})
 
 fig,ax=plt.subplots(figsize=(8.3,4.8))
 xx=[int(k) for k in span['controls']];yy=[100*v['worst'] for v in span['controls'].values()]
@@ -112,22 +114,35 @@ global_rows='\n'.join(f"| Global saved POD prefix {k} | {v['variables']} | {pct(
 global_rows+='\n'+'\n'.join(f"| Complete sine {k} per axis | {v['variables']} | {pct(v['projection']['worst'])} | Not trained |" for k,v in fullglobal['complete_sine'].items())
 global_rows+='\n'+'\n'.join(f"| POD512 + prescribed Fourier completion | {k} | {pct(v['worst'])} | Not a null-tail completion |" for k,v in stable['controls'].items())
 head_rows='\n'.join(f"| {v['latent']} | {v['feature_count']} | {v['affine_span_rank']} | {pct(v['panels']['dev']['worst'])} | {pct(v['head_projection']['worst'])} |" for v in headspan['models'])
-pde_runs=[]
-for run in ['b1weakpilot1','b1weakL2048','b1weakL4096','b1weakdt125','b1weakdt625','b1cn2048','b1cn2048half','b1cnM8','b1cnQ512','b1cnQ1024']:
+pde_runs=[];incomplete_pde=[]
+for run in ['b1weakpilot1','b1weakL2048','b1weakL4096','b1weakdt125','b1weakdt625','b1cn2048','b1cn2048half','b1cnM8','b1cnM16','b1cnQ512','b1cnQ1024','b1childpde']:
     if (H/'results'/run/'output/result.json').exists():
         r=read(run)
-        if r['status']=='complete_fixed_tree_diagnostic_pilot':pde_runs.append((run,r))
+        if r['status'] in ['complete_fixed_tree_diagnostic_pilot','complete_coupled_child_diagnostic_pilot']:pde_runs.append((run,r))
+        else:incomplete_pde.append(f"{run}: {r['status']}; retained as incomplete/failed, not a passing pilot")
 pde_rows=[]
 fig,axs=plt.subplots(1,3,figsize=(12,3.7),constrained_layout=True,sharey=True)
 for run,r in pde_runs:
     for i,c in enumerate(r['cases']):
         for method,v in c['methods'].items():
-            pde_rows.append(f"| {c['case']} | {method} | {r['L']} | {r.get('time_integrator','be').upper()} | {r.get('quadrature_intervals',r['L'])} | {r['dt']:g} | {pct(max(v['physical_error'][1:]))} | {v['all_steps_stationary']} | {v['physical_accuracy_pass']} |")
-            axs[i].plot(np.arange(6)*.05,np.array(v['physical_error'])*100,
-                '--' if method.startswith('global') else '-',label=f"{'Global' if method.startswith('global') else 'Tree'} {r.get('time_integrator','be').upper()} L{r['L']} Q{r.get('quadrature_intervals',r['L'])}, dt{r['dt']:g}")
+            evolved=pct(max(v['physical_error'][1:])) if len(v['physical_error'])>1 else 'no evolved output'
+            pde_rows.append(f"| {c['case']} | {method} | {r['L']} | {r.get('time_integrator','be').upper()} | {c['common_tests']} | {r.get('quadrature_intervals',r['L'])} | {r['dt']:g} | {evolved} | {v['all_steps_stationary']} | {v['physical_accuracy_pass']} |")
+            if run in ['b1weakL4096','b1cn2048','b1cnM8','b1cnM16','b1childpde']:
+                model='Global960' if method=='global_stable960' else ('Global768' if method.startswith('global') else ('Child16' if 'child' in method else 'Direct24'))
+                axs[i].plot(np.arange(len(v['physical_error']))*.05,np.array(v['physical_error'])*100,
+                    '--' if method.startswith('global') else '-',label=f"{model} {r.get('time_integrator','be').upper()}, L{r['L']}, M{c['common_tests']}")
             axs[i].set(title=c['case'],xlabel='Time');axs[i].axhline(1,color='gray',ls=':',lw=.7);axs[i].grid(alpha=.15)
-axs[0].set_ylabel('Current-time physical error (%)');axs[-1].legend(fontsize=7)
+axs[0].set_ylabel('Current-time physical error (%)')
+handles,legend=axs[0].get_legend_handles_labels();fig.legend(handles,legend,loc='lower center',bbox_to_anchor=(.5,-.23),ncol=3,fontsize=7)
 figure(fig,'b1-fixed-tree-physics')
+diagnostics={'b1cn2048half':'Time step / 2','b1cnM8':'5504 to11008 tests','b1cnM16':'11008 to22016 tests','b1cnQ512':'Q512 versus dense'}
+checks=[(n,r) for n,r in pde_runs if n in diagnostics];fig,ax=plt.subplots(figsize=(8,4),constrained_layout=True)
+for j,prefix in enumerate(['tree','global']):
+    changes=[max(max(v['previous_state_relative_change']) for c in r['cases'] for method,v in c['methods'].items() if method.startswith(prefix)) for n,r in checks]
+    ax.bar(np.arange(len(checks))+(j-.5)*.34,np.array(changes)*100,.34,label=prefix.capitalize())
+ax.axhline(.1,color='#b5413c',ls='--',label='0.1% sensitivity threshold')
+ax.set(xticks=np.arange(len(checks)),xticklabels=[diagnostics[n] for n,r in checks],yscale='log',ylabel='Largest returned-field change (%)',title='Independent numerical checks; every requested time and pilot case')
+ax.tick_params(axis='x',labelsize=8);ax.legend(fontsize=8);figure(fig,'b1-numerical-sensitivities')
 charged=sum(r.get('elapsed_seconds',0) for r in ledger if r.get('state') in terminal)
 live=[r['name'] for r in ledger if r.get('state') not in terminal]
 stamp=datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -205,13 +220,17 @@ That frozen-head growth diagnostic now passes: {growth['nodes']} retained nodes 
 
 These pilots solve complete trajectories from the shared initial callable with the frozen prescribed tree and global POD768 control. Within each pilot, both use the same exact fine-grid upwind weak operator, time integrator, common test set and integration rule. BE is backward Euler; the registered CN repair is Crank–Nicolson. Q denotes integration intervals; Q=L is dense integration. Smaller Q retains fine stencil spacing1/L and requires independent returned-state refinement. Reference fields are opened for scoring only after both methods finish each case. The table reports all requested evolved times, not only the final output.
 
-| Case | Method | Spatial intervals | Integrator | Integration Q | Time step | Worst evolved error | Every step stationary | Physical accuracy pass |
-|---|---|---:|---|---:|---:|---:|---|---|
+| Case | Method | Spatial intervals | Integrator | Tests M | Integration Q | Time step | Worst evolved error | Every step stationary | Physical accuracy pass |
+|---|---|---:|---|---:|---:|---:|---:|---|---|
 {chr(10).join(pde_rows)}
 
 ![Fixed-tree physics diagnosis](b1-fixed-tree-physics.png)
 
-Pulse errors remain above the physical gate in the initial pilot for both methods despite tightly converged weak solves. Spatial, temporal, test and integration refinements must distinguish numerical error from reduced dynamics. The initial pilot omitted explicit burn-in immediately before timing: those original wall times are retained as unqualified diagnostics and support no speed comparison. Follow-ups include burn-in. The small pilot is not all-development qualification, deployable adaptation, or a complete-runtime benchmark.
+![Independent numerical sensitivities](b1-numerical-sensitivities.png)
+
+Retained incomplete PDE outcomes: {'; '.join(incomplete_pde) or 'none in the collected pilot records'}. The trajectory figure emphasizes the dense BE/CN and test-enrichment comparisons; the table retains every completed pilot setting. A low physical error alone does not establish numerical convergence. In particular, the change from5504 to11008 tests is large for the tree, so the original test rule is not admitted. The independent next test enrichment is required before accepting11008 tests.
+
+Pulse errors remain above the physical gate in the initial pilot for both methods despite tightly converged weak solves. Spatial, temporal, test and integration refinements distinguish numerical error from reduced dynamics. The initial pilot omitted explicit burn-in immediately before timing: those original wall times are retained as unqualified diagnostics and support no speed comparison. Follow-ups include burn-in. Pilot clocks also charge the joint comparison setup to each method; they are not valid method-specific speed ratios. Complete timing must measure each method's own initialization, assembly and output. The small pilot is not all-development qualification, deployable adaptation, or a complete-runtime benchmark.
 
 The focused continuation changes the training allocation mixture for its nonlinear compression pilot; it is explicitly documented in B1-SHARED-CHILD.md. Same-checkpoint uniform/prescribed controls remain required before an allocation-policy claim. No truth-assisted online refinement is allowed. The verified fine-upwind weak operator remains the primary PDE formulation. Initialization, assembly, failed trials, solving, fallback and requested output must all enter later complete-query timing.
 

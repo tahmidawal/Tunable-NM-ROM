@@ -104,42 +104,58 @@ That frozen-head growth diagnostic now passes: 64 retained nodes give 1152 total
 
 These pilots solve complete trajectories from the shared initial callable with the frozen prescribed tree and global POD768 control. Within each pilot, both use the same exact fine-grid upwind weak operator, time integrator, common test set and integration rule. BE is backward Euler; the registered CN repair is Crank–Nicolson. Q denotes integration intervals; Q=L is dense integration. Smaller Q retains fine stencil spacing1/L and requires independent returned-state refinement. Reference fields are opened for scoring only after both methods finish each case. The table reports all requested evolved times, not only the final output.
 
-| Case | Method | Spatial intervals | Integrator | Integration Q | Time step | Worst evolved error | Every step stationary | Physical accuracy pass |
-|---|---|---:|---|---:|---:|---:|---|---|
-| dev000 | tree_direct24 | 1024 | BE | 1024 | 0.0025 | 2.5373% | True | False |
-| dev000 | global_POD768 | 1024 | BE | 1024 | 0.0025 | 2.4895% | True | False |
-| dev003 | tree_direct24 | 1024 | BE | 1024 | 0.0025 | 0.2945% | True | True |
-| dev003 | global_POD768 | 1024 | BE | 1024 | 0.0025 | 0.2944% | True | True |
-| align002 | tree_direct24 | 1024 | BE | 1024 | 0.0025 | 2.2570% | True | False |
-| align002 | global_POD768 | 1024 | BE | 1024 | 0.0025 | 2.0991% | True | False |
-| dev000 | tree_direct24 | 2048 | BE | 2048 | 0.0025 | 2.0921% | True | False |
-| dev000 | global_POD768 | 2048 | BE | 2048 | 0.0025 | 1.9700% | True | False |
-| dev003 | tree_direct24 | 2048 | BE | 2048 | 0.0025 | 0.2248% | True | True |
-| dev003 | global_POD768 | 2048 | BE | 2048 | 0.0025 | 0.2246% | True | True |
-| align002 | tree_direct24 | 2048 | BE | 2048 | 0.0025 | 1.9630% | True | False |
-| align002 | global_POD768 | 2048 | BE | 2048 | 0.0025 | 1.6391% | True | False |
-| dev000 | tree_direct24 | 4096 | BE | 4096 | 0.0025 | 1.9597% | True | False |
-| dev000 | global_POD768 | 4096 | BE | 4096 | 0.0025 | 1.7218% | True | False |
-| dev003 | tree_direct24 | 4096 | BE | 4096 | 0.0025 | 0.1932% | True | True |
-| dev003 | global_POD768 | 4096 | BE | 4096 | 0.0025 | 0.1930% | True | True |
-| align002 | tree_direct24 | 4096 | BE | 4096 | 0.0025 | 1.8448% | True | False |
-| align002 | global_POD768 | 4096 | BE | 4096 | 0.0025 | 1.4849% | True | False |
-| dev000 | tree_direct24 | 2048 | CN | 2048 | 0.0025 | 1.4724% | True | False |
-| dev000 | global_POD768 | 2048 | CN | 2048 | 0.0025 | 0.7941% | True | True |
-| dev003 | tree_direct24 | 2048 | CN | 2048 | 0.0025 | 0.0824% | True | True |
-| dev003 | global_POD768 | 2048 | CN | 2048 | 0.0025 | 0.0820% | True | True |
-| align002 | tree_direct24 | 2048 | CN | 2048 | 0.0025 | 1.4331% | True | False |
-| align002 | global_POD768 | 2048 | CN | 2048 | 0.0025 | 0.6482% | True | True |
-| dev000 | tree_direct24 | 2048 | CN | 2048 | 0.00125 | 1.4715% | True | False |
-| dev000 | global_POD768 | 2048 | CN | 2048 | 0.00125 | 0.7978% | True | True |
-| dev003 | tree_direct24 | 2048 | CN | 2048 | 0.00125 | 0.0824% | True | True |
-| dev003 | global_POD768 | 2048 | CN | 2048 | 0.00125 | 0.0820% | True | True |
-| align002 | tree_direct24 | 2048 | CN | 2048 | 0.00125 | 1.4210% | True | False |
-| align002 | global_POD768 | 2048 | CN | 2048 | 0.00125 | 0.6518% | True | True |
+| Case | Method | Spatial intervals | Integrator | Tests M | Integration Q | Time step | Worst evolved error | Every step stationary | Physical accuracy pass |
+|---|---|---:|---|---:|---:|---:|---:|---|---|
+| dev000 | tree_direct24 | 1024 | BE | 5504 | 1024 | 0.0025 | 2.5373% | True | False |
+| dev000 | global_POD768 | 1024 | BE | 5504 | 1024 | 0.0025 | 2.4895% | True | False |
+| dev003 | tree_direct24 | 1024 | BE | 5504 | 1024 | 0.0025 | 0.2945% | True | True |
+| dev003 | global_POD768 | 1024 | BE | 5504 | 1024 | 0.0025 | 0.2944% | True | True |
+| align002 | tree_direct24 | 1024 | BE | 5504 | 1024 | 0.0025 | 2.2570% | True | False |
+| align002 | global_POD768 | 1024 | BE | 5504 | 1024 | 0.0025 | 2.0991% | True | False |
+| dev000 | tree_direct24 | 2048 | BE | 5504 | 2048 | 0.0025 | 2.0921% | True | False |
+| dev000 | global_POD768 | 2048 | BE | 5504 | 2048 | 0.0025 | 1.9700% | True | False |
+| dev003 | tree_direct24 | 2048 | BE | 5504 | 2048 | 0.0025 | 0.2248% | True | True |
+| dev003 | global_POD768 | 2048 | BE | 5504 | 2048 | 0.0025 | 0.2246% | True | True |
+| align002 | tree_direct24 | 2048 | BE | 5504 | 2048 | 0.0025 | 1.9630% | True | False |
+| align002 | global_POD768 | 2048 | BE | 5504 | 2048 | 0.0025 | 1.6391% | True | False |
+| dev000 | tree_direct24 | 4096 | BE | 5504 | 4096 | 0.0025 | 1.9597% | True | False |
+| dev000 | global_POD768 | 4096 | BE | 5504 | 4096 | 0.0025 | 1.7218% | True | False |
+| dev003 | tree_direct24 | 4096 | BE | 5504 | 4096 | 0.0025 | 0.1932% | True | True |
+| dev003 | global_POD768 | 4096 | BE | 5504 | 4096 | 0.0025 | 0.1930% | True | True |
+| align002 | tree_direct24 | 4096 | BE | 5504 | 4096 | 0.0025 | 1.8448% | True | False |
+| align002 | global_POD768 | 4096 | BE | 5504 | 4096 | 0.0025 | 1.4849% | True | False |
+| dev000 | tree_direct24 | 2048 | CN | 5504 | 2048 | 0.0025 | 1.4724% | True | False |
+| dev000 | global_POD768 | 2048 | CN | 5504 | 2048 | 0.0025 | 0.7941% | True | True |
+| dev003 | tree_direct24 | 2048 | CN | 5504 | 2048 | 0.0025 | 0.0824% | True | True |
+| dev003 | global_POD768 | 2048 | CN | 5504 | 2048 | 0.0025 | 0.0820% | True | True |
+| align002 | tree_direct24 | 2048 | CN | 5504 | 2048 | 0.0025 | 1.4331% | True | False |
+| align002 | global_POD768 | 2048 | CN | 5504 | 2048 | 0.0025 | 0.6482% | True | True |
+| dev000 | tree_direct24 | 2048 | CN | 5504 | 2048 | 0.00125 | 1.4715% | True | False |
+| dev000 | global_POD768 | 2048 | CN | 5504 | 2048 | 0.00125 | 0.7978% | True | True |
+| dev003 | tree_direct24 | 2048 | CN | 5504 | 2048 | 0.00125 | 0.0824% | True | True |
+| dev003 | global_POD768 | 2048 | CN | 5504 | 2048 | 0.00125 | 0.0820% | True | True |
+| align002 | tree_direct24 | 2048 | CN | 5504 | 2048 | 0.00125 | 1.4210% | True | False |
+| align002 | global_POD768 | 2048 | CN | 5504 | 2048 | 0.00125 | 0.6518% | True | True |
+| dev000 | tree_direct24 | 2048 | CN | 11008 | 2048 | 0.0025 | 0.7950% | True | True |
+| dev000 | global_POD768 | 2048 | CN | 11008 | 2048 | 0.0025 | 0.7941% | True | True |
+| dev003 | tree_direct24 | 2048 | CN | 11008 | 2048 | 0.0025 | 0.0822% | True | True |
+| dev003 | global_POD768 | 2048 | CN | 11008 | 2048 | 0.0025 | 0.0820% | True | True |
+| align002 | tree_direct24 | 2048 | CN | 11008 | 2048 | 0.0025 | 0.6483% | True | True |
+| align002 | global_POD768 | 2048 | CN | 11008 | 2048 | 0.0025 | 0.6481% | True | True |
+| dev000 | tree_direct24 | 2048 | CN | 5504 | 512 | 0.0025 | 1.4733% | True | False |
+| dev000 | global_POD768 | 2048 | CN | 5504 | 512 | 0.0025 | 0.7941% | True | True |
+| dev003 | tree_direct24 | 2048 | CN | 5504 | 512 | 0.0025 | 0.0825% | True | True |
+| dev003 | global_POD768 | 2048 | CN | 5504 | 512 | 0.0025 | 0.0820% | True | True |
+| align002 | tree_direct24 | 2048 | CN | 5504 | 512 | 0.0025 | 1.4328% | True | False |
+| align002 | global_POD768 | 2048 | CN | 5504 | 512 | 0.0025 | 0.6482% | True | True |
 
 ![Fixed-tree physics diagnosis](b1-fixed-tree-physics.png)
 
-Pulse errors remain above the physical gate in the initial pilot for both methods despite tightly converged weak solves. Spatial, temporal, test and integration refinements must distinguish numerical error from reduced dynamics. The initial pilot omitted explicit burn-in immediately before timing: those original wall times are retained as unqualified diagnostics and support no speed comparison. Follow-ups include burn-in. The small pilot is not all-development qualification, deployable adaptation, or a complete-runtime benchmark.
+![Independent numerical sensitivities](b1-numerical-sensitivities.png)
+
+Retained incomplete PDE outcomes: none in the collected pilot records. The trajectory figure emphasizes the dense BE/CN and test-enrichment comparisons; the table retains every completed pilot setting. A low physical error alone does not establish numerical convergence. In particular, the change from5504 to11008 tests is large for the tree, so the original test rule is not admitted. The independent next test enrichment is required before accepting11008 tests.
+
+Pulse errors remain above the physical gate in the initial pilot for both methods despite tightly converged weak solves. Spatial, temporal, test and integration refinements distinguish numerical error from reduced dynamics. The initial pilot omitted explicit burn-in immediately before timing: those original wall times are retained as unqualified diagnostics and support no speed comparison. Follow-ups include burn-in. Pilot clocks also charge the joint comparison setup to each method; they are not valid method-specific speed ratios. Complete timing must measure each method's own initialization, assembly and output. The small pilot is not all-development qualification, deployable adaptation, or a complete-runtime benchmark.
 
 The focused continuation changes the training allocation mixture for its nonlinear compression pilot; it is explicitly documented in B1-SHARED-CHILD.md. Same-checkpoint uniform/prescribed controls remain required before an allocation-policy claim. No truth-assisted online refinement is allowed. The verified fine-upwind weak operator remains the primary PDE formulation. Initialization, assembly, failed trials, solving, fallback and requested output must all enter later complete-query timing.
 
@@ -147,7 +163,7 @@ Original recipes, unsuccessful repairs and the original decision remain in [the 
 
 ## Accounting and provenance
 
-Generated 2026-11-19T00:20:36.278430+00:00. Terminal allocations recorded in the current ledger total 15776 GPU-seconds (4.382222 GPU-hours); nonterminal or not-yet-reconciled names: none. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
+Generated 2026-11-19T00:36:21.976233+00:00. Terminal allocations recorded in the current ledger total 16899 GPU-seconds (4.694167 GPU-hours); nonterminal or not-yet-reconciled names: none. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
 
 ## Glossary
 

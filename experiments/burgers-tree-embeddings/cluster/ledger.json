@@ -1312,8 +1312,8 @@
     "args": "",
     "gpu": "a100",
     "submitted_utc": "2026-11-19T19:20:30.065224+00:00",
-    "state": "RUNNING",
-    "elapsed_seconds": 23,
+    "state": "COMPLETED",
+    "elapsed_seconds": 50,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
   },
@@ -1326,6 +1326,21 @@
     "driver": "crosscheck_named.py",
     "args": "",
     "gpu": "a100",
-    "submitted_utc": "2026-11-19T19:21:03.721052+00:00"
+    "submitted_utc": "2026-11-19T19:21:03.721052+00:00",
+    "state": "COMPLETED",
+    "elapsed_seconds": 106,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b6namedneural",
+    "id": 7373329,
+    "reserved_minutes": 30,
+    "commit": "ef1dd069396175fa3032e17e22858b37f9b790be",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b6namedneural",
+    "driver": "diagnose_named_neural.py",
+    "args": "",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-19T19:24:34.605472+00:00"
   }
 ]

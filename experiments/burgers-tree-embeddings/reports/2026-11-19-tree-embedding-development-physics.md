@@ -1,6 +1,6 @@
 # Burgers tree embeddings: all-development fixed-tree qualification
 
-All-development qualification remains incomplete. Outstanding: b4base, b4time, b4quad.
+All-development qualification remains incomplete. Outstanding: b4time, b4quad.
 
 The same frozen direct24/52-node tree and stable global960 POD-plus-Fourier control use the initial-field callable, fine L16384 sign-upwind weak operator, Crank–Nicolson time integration,22016 tests and independently admitted packed field evaluation. The baseline uses step0.00125 and Q512; independent refinements halve the step and double Q. References enter only scoring after both solves. Final-test solution fields remain unopened.
 
@@ -8,13 +8,14 @@ Every physical decision covers all five evolved output times and the actual4096 
 
 |Run|Method|Median case error|90th percentile|Worst physical error|Worst error + allowance|Nonconverged steps|Largest refinement change|All gates pass|
 |---|---|---:|---:|---:|---:|---:|---:|---|
-|No completed retained run yet|||||||||
+|b4base|tree_direct24|0.147669%|0.301255%|0.455470%|0.455525%|0|0.000000%|True|
+|b4base|global_stable960|0.103902%|0.202287%|0.348890%|0.348966%|0|0.000000%|True|
 
-
+![All-development physical and projection errors](b4-all-development-physics.png)
 
 These are physical/numerical qualification runs, not paired speed benchmarks. Query clocks still charge shared comparison setup; no method-specific speed ratio is inferred. The nonlinear PDE checkpoint remains stopped after two failed optimizer repairs; the frozen tangent simplification also failed its representation screen. The cell catalogue has only CPU fixture evidence and is not used here. Native NM-ROM confirmation, deployable adaptation, complete-runtime benchmarking, method freeze and final-test evaluation remain outstanding.
 
-Latest scheduler snapshot: 28368 allocated GPU-seconds (7.880000h); charge including full active reservations 31976, cumulative cap 41876. Active owned jobs: b4base. Generated 2026-11-19T03:37:18.885006+00:00. The old campaign remains paused; no automatic merge or unrelated3D work.
+Latest scheduler snapshot: 29489 allocated GPU-seconds (8.191389h); charge including full active reservations 29489, cumulative cap 41876. Active owned jobs: none. Generated 2026-11-19T04:02:14.141657+00:00. The old campaign remains paused; no automatic merge or unrelated3D work.
 
 ## Glossary
 

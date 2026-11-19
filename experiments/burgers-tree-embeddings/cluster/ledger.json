@@ -1610,5 +1610,16 @@
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1",
     "archived_remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b7parentstarts",
     "archive_label": "B7"
+  },
+  {
+    "name": "b7render",
+    "id": 7380094,
+    "reserved_minutes": 10,
+    "commit": "fece0bc4c5511b42e88af7820571e5a5322d569a",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b7render",
+    "driver": "render_parent_round.py",
+    "args": "",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-19T22:01:44.430412+00:00"
   }
 ]

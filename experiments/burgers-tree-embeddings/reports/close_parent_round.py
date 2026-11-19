@@ -7,7 +7,10 @@ r=read(H/'results/b7parentrepair/output/result.json');named=read(H/'results/b7na
 starts=read(H/'results/b7parentstarts/output/result.json');snf=read(H/'results/b7snff64/output/result.json')
 assert r['status']=='complete_stable_parent' and not r['parent_quality_pass']
 assert named['status']==starts['status']=='complete' and snf['status']=='complete'
-audit=read(H/'manifests/allocation-audit-B7.json');archive=read(H/'manifests/archive-closeout-B7.json')
+audit=read(H/'manifests/allocation-audit-B7-FINAL.json')
+archive=read(H/'manifests/archive-closeout-B7.json')+read(H/'manifests/archive-closeout-B7-FINAL.json')
+assert len(archive)==len({x['name'] for x in archive})==len([x for x in audit['jobs'] if x['name'].startswith('b7')])
+(H/'manifests/archive-closeout-B7-ALL.json').write_text(json.dumps(dict(sources=['archive-closeout-B7.json','archive-closeout-B7-FINAL.json'],records=archive),indent=2)+'\n')
 assert audit['status']=='passed_scheduler_allocation_audit' and not audit['owned_jobs_still_queued_or_running'] and archive
 exports=read(H/'manifests/B7-parent-full-resolution-backup.json');assert exports['local_and_remote_verified']
 batches=read(H/'cluster/BATCHES.json');batch=next(x for x in batches['batches'] if x['id']=='B7')
@@ -32,10 +35,14 @@ Native SNF float64 GPU gradients and scalar-equivalent RHS qualification passed:
 
 This batch consumed {used} allocated GPU-seconds ({used/3600:.9f} hours); cumulative {audit['allocated_gpu_seconds']} seconds ({audit['allocated_gpu_hours']:.9f} hours). At most {audit['max_pending_or_running_owned_jobs']} owned jobs were pending/running simultaneously. All attempts are terminal and backed up with verified hashes. Final tests remain sealed, old campaign paused/read-only, no branch merge or background continuation.
 
-Evidence: manifests/allocation-audit-B7.json, manifests/archive-closeout-B7.json, manifests/B7-parent-full-resolution-backup.json and the generated reports/2026-11-19-neural-parent-training.md.
+Evidence: manifests/allocation-audit-B7-FINAL.json, manifests/archive-closeout-B7-ALL.json, manifests/B7-parent-full-resolution-backup.json and the generated reports/2026-11-19-neural-parent-training.md.
 '''
+recovery=read(H/'manifests/B7-postprocess-recovery.json')
+recovery.update(status='complete',archive_reverified=True,rendered_on_cluster=True,rendering_job=read(H/'results/b7render/output/result.json')['meta']['job'],full_resolution_exports_verified=True)
+(H/'manifests/B7-postprocess-recovery.json').write_text(json.dumps(recovery,indent=2)+'\n')
+text+='\nLocal archive/render commands terminated before completion. The interrupted archive move was recovered by checking the destination against the retained local checksums. Repeated local rendering termination coincided with low memory headroom; the exact signal sender was not identified. A prospectively bounded cluster publication job rendered the same verified fields, with its allocation included above. No scientific fits or training were rerun.\n'
 (H/'configs/B7-REVIEW.md').write_text(text)
-batch.update(status='CLOSED_SCOPED_NEGATIVE',actual_additional_gpu_seconds=used,cumulative_actual_gpu_seconds=audit['allocated_gpu_seconds'],review='configs/B7-REVIEW.md',accounting='manifests/allocation-audit-B7.json',archive='manifests/archive-closeout-B7.json')
+batch.update(status='CLOSED_SCOPED_NEGATIVE',actual_additional_gpu_seconds=used,cumulative_actual_gpu_seconds=audit['allocated_gpu_seconds'],review='configs/B7-REVIEW.md',accounting='manifests/allocation-audit-B7-FINAL.json',archive='manifests/archive-closeout-B7-ALL.json')
 (H/'cluster/BATCHES.json').write_text(json.dumps(batches,indent=2)+'\n')
 owner=read(H/'OWNER.json');owner.update(status='B7_CLOSED_SCOPED_NEGATIVE',updated_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),active_jobs=0,
     terminal_jobs=len(audit['jobs']),completed_jobs=sum(x['terminal_state']=='COMPLETED' for x in audit['jobs']),allocated_gpu_seconds=audit['allocated_gpu_seconds'],allocated_gpu_hours=audit['allocated_gpu_hours'],

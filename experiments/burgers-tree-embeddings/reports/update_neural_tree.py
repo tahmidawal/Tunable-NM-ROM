@@ -48,7 +48,7 @@ The parent fails the 0.5% representation gate. {r['unfinished_full_fits']} of 48
 
 The initial assembled-child recipe checks parent-fit stability first, initializes children from missing reference fields, and jointly trains embeddings and shared networks across tree depths. Uniform and prescribed allocations use the same checkpoint. Full independent scoring and useful independent child-direction checks are required before embedding-space PDE trajectories. The implemented nonlinear weak solver passes dense arithmetic and derivative fixtures; this is not an accuracy qualification of a trained model.
 
-All twelve named development extensions have completed spectral space/time ladders. Independent finite-difference checks are still pending, so these references are not yet admitted for method claims.
+All twelve named development extensions passed spectral space/time ladders and independent finite-difference checks. They are qualified development references; this does not qualify any neural model.
 
 |Named development case|Largest spectral reference allowance|Ladder result|
 |---|---:|---|
@@ -76,7 +76,7 @@ fh=feature['history'];ax[1].plot([v['update'] for v in fh],[100*v['worst_indepen
 ax[1].axhline(.5,c='black',ls='--');ax[1].set(xlabel='Feature training updates',ylabel='Feature-target error (%)',title='Final repair: neural features learned')
 ss=span['allocations'];ax[2].bar(range(len(ss)),[100*v['worst_independent_error'] for v in ss],color=['steelblue','seagreen','darkorange'])
 ax[2].set_xticks(range(len(ss)),[v['kind']+' depth'+str(v['max_depth']) for v in ss],rotation=15)
-ax[2].axhline(.5,c='black',ls='--');ax[2].set(ylabel='Worst full-field error (%)',title='But assembled capacity gate fails')
+ax[2].patches[-1].set_hatch('//');ax[2].text(2,100*ss[-1]['worst_independent_error']+.1,'Unresolved scoring',ha='center',fontsize=8);ax[2].set_ylim(0,10);ax[2].axhline(.5,c='black',ls='--');ax[2].set(ylabel='Worst full-field error (%)',title='But assembled capacity gate fails')
 for a in ax:a.grid(axis='y',alpha=.2)
 fig.suptitle('Reconstruction diagnostics only — no admitted neural PDE solve')
 fig.savefig(ASSETS/'neural-repair-diagnosis.png',dpi=180);plt.close(fig)
@@ -100,9 +100,52 @@ Native CROM training selected epoch {crom['selected_epoch']}, with worst encoded
 
 """
 doc=doc.replace('## Glossary',extra+'## Glossary')
-name='2026-11-19-neural-tree-development.md'
+supplement=''
+npth=H/'results/b6namedneural/output/result.json'
+if npth.exists():
+    nr=json.loads(npth.read_text())
+    if nr['status']=='complete':
+        names=['Smooth','Compact pulse','Diagonal ridge','Two pulses']
+        table='\n'.join(f"|{v['case']}|{100*v['worst_parent']:.3f}%|{100*v['worst_tree']:.3f}%|{v['unfinished_tree']}/11|" for v in nr['cases'])
+        supplement+='## Tests on the requested Burgers families\n\nThese are independent256² offline reconstructions using retained failed neural checkpoints, not PDE solves. Reference checks passed for all twelve cases. No named case was added to training.\n\n|Case|Worst original-parent error|Worst retained nonlinear-tree error|Unfinished tree fits|\n|---|---:|---:|---:|\n'+table+'\n\n'
+        fig,ax=plt.subplots(1,4,figsize=(16,3.8),constrained_layout=True)
+        for j,axis in enumerate(ax):
+            case=next(v for v in nr['cases'] if v['case']==f'named{j}_nu0.005')
+            tt=[v['time'] for v in case['rows']]
+            axis.plot(tt,[100*v['errors'][0] for v in case['rows']],label='Original neural parent')
+            axis.plot(tt,[100*v['errors'][1] for v in case['rows']],label='Retained nonlinear tree')
+            axis.axhline(.5,c='black',ls='--');axis.set(title=names[j],xlabel='Time',ylabel='Relative L2 error (%)',yscale='log');axis.grid(alpha=.2)
+        ax[0].legend(fontsize=7);fig.suptitle('Named-case reconstruction errors, viscosity0.005 — not PDE trajectories')
+        fig.savefig(ASSETS/'named-neural-errors.png',dpi=180);plt.close(fig)
+        supplement+='![Named-family neural errors over time](2026-11-19-neural-tree-assets/named-neural-errors.png)\n\n'
+        for j in range(4):
+            fig,ax=plt.subplots(3,6,figsize=(15,7),constrained_layout=True)
+            for c,it in enumerate(range(0,11,2)):
+                v=np.load(npth.parent/f'named{j}_nu0.005_time{it:02d}_independent256.npz')
+                xy=v['xy'];truth=v['reference'].reshape(256,256);pred=v['tree'].reshape(256,256);error=pred-truth
+                for rr,(field,label) in enumerate([(truth,'Reference'),(pred,'Neural tree'),(error,'Signed error')]):
+                    limit=max(float(truth.max()),float(pred.max()));el=max(float(abs(error).max()),1e-12)
+                    im=ax[rr,c].pcolormesh(xy[:,0].reshape(256,256),xy[:,1].reshape(256,256),field,cmap='RdBu_r' if rr==2 else 'viridis',vmin=-el if rr==2 else 0,vmax=el if rr==2 else limit,shading='auto',rasterized=True)
+                    ax[rr,c].set_aspect('equal');ax[rr,c].set_xticks([]);ax[rr,c].set_yticks([])
+                    if rr==0:ax[rr,c].set_title(f't={it*.025:.2f}')
+                    if c==0:ax[rr,c].set_ylabel(label)
+                    fig.colorbar(im,ax=ax[rr,c],fraction=.046,pad=.02)
+            fig.suptitle(names[j]+' — viscosity0.005; independent256² offline reconstruction, not a PDE solve')
+            fn=f'named{j}-neural-reconstruction.png';fig.savefig(ASSETS/fn,dpi=150);plt.close(fig)
+            supplement+=f'![{names[j]} reference, nonlinear tree and errors](2026-11-19-neural-tree-assets/{fn})\n\n'
+cpth=H/'results/b6cromprojection/output/result.json'
+if cpth.exists():
+    cr=json.loads(cpth.read_text())
+    if cr['status']=='complete':
+        supplement+=f"## Native CROM projection diagnosis\n\nWorst independent subset error changes from{100*cr['worst_encoded']:.3f}% encoded to{100*cr['worst_projected']:.3f}% after native nonlinear projection. This retained-checkpoint diagnostic does not establish CROM's best attainable accuracy or a complete PDE runtime.\n\n"
+spth=H/'results/b6snfnocache/output/result.json'
+if spth.exists():
+    sr=json.loads(spth.read_text())
+    supplement+=f"## Native SNF environment outcome\n\nFinal bounded cache-disabled compatibility fixture passed: **{sr.get('passed',False)}**. No SNF training or complete PDE timing was performed. The pinned source, resolved dependency manifest and failure logs are retained; SNF-ROM is unavailable as an eligible comparator in this batch.\n\n"
+doc=doc.replace('## Glossary',supplement+'## Glossary')
+name='2026-11-19-neural-tree-development.md' 
 (CAN/name).write_text(doc);(H/'reports'/name).write_text(doc)
 shutil.copytree(ASSETS,H/'reports'/ASSETS.name,dirs_exist_ok=True)
-manifest={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in [R/'result.json',R/'all_development_fits.pkl',R/'worst_actual4096.npz',CAN/name,*ASSETS.glob('*.png')]}
+manifest={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in [R/'result.json',R/'all_development_fits.pkl',R/'worst_actual4096.npz',*[H/('results/'+v+'/output/result.json') for v in ['b6refit','b6features','b6span','b6namedfd','b6cromdeps']],*[p for p in [npth,cpth,spth] if p.exists()],CAN/name,*ASSETS.glob('*.png')]}
 (H/'manifests/B6-neural-publication.json').write_text(json.dumps(manifest,indent=2)+'\n')
 print(CAN/name)

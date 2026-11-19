@@ -1162,10 +1162,10 @@
     "args": "--updates 20000 --seed 2026111951",
     "gpu": "a100",
     "submitted_utc": "2026-11-19T18:10:35.229361+00:00",
-    "state": "PENDING",
-    "elapsed_seconds": 0,
-    "allocated_cpus": 0,
-    "allocated_tres": ""
+    "state": "COMPLETED",
+    "elapsed_seconds": 219,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
   },
   {
     "name": "b6namedrefs",
@@ -1176,6 +1176,21 @@
     "driver": "named_reference_driver.py",
     "args": "",
     "gpu": "a100",
-    "submitted_utc": "2026-11-19T18:11:11.237265+00:00"
+    "submitted_utc": "2026-11-19T18:11:11.237265+00:00",
+    "state": "RUNNING",
+    "elapsed_seconds": 93,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b6native",
+    "id": 7371487,
+    "reserved_minutes": 30,
+    "commit": "7bf1869223a1d752546355e36903e80facf5413a",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b6native",
+    "driver": "qualify_native_competitors.py",
+    "args": "",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-19T18:20:58.840498+00:00"
   }
 ]

@@ -6,7 +6,7 @@ The preceding three-case B2 setting passes physical accuracy and independent spa
 
 
 
-Latest scheduler-ledger snapshot: 27189 elapsed GPU-seconds (7.552500h); full outstanding reservations bring the charge to28389 seconds against a cumulative ceiling of30789. Active owned jobs: b3packed. Generated 2026-11-19T03:06:56.189975+00:00. Raw outputs and logs are retained with verified hashes before admission. Final-test solution fields remain unopened and the earlier campaign remains paused.
+Latest scheduler-ledger snapshot: 27189 elapsed GPU-seconds (7.552500h); full outstanding reservations bring the charge to29589 seconds against a cumulative ceiling of30789. Active owned jobs: b3packed, b3tangent. Generated 2026-11-19T03:07:29.408363+00:00. Raw outputs and logs are retained with verified hashes before admission. Final-test solution fields remain unopened and the earlier campaign remains paused.
 
 ## Glossary
 

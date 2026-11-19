@@ -985,6 +985,21 @@
     "driver": "fixed_tree_pilot.py",
     "args": "--L 16384 --dt .00125 --integrator cn --test-factor 16 --quadrature 512 --stable-global /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1stableglobal/output --cache /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1cache/output --span /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1expanded/output --admission /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1directaudit/output --dev /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/refsdev01/output,/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1refextend/output/dev --compare-previous /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b2space/output --packed-fields",
     "gpu": "a100",
-    "submitted_utc": "2026-11-19T03:06:55.575751+00:00"
+    "submitted_utc": "2026-11-19T03:06:55.575751+00:00",
+    "state": "PENDING",
+    "elapsed_seconds": 0,
+    "allocated_cpus": 0,
+    "allocated_tres": ""
+  },
+  {
+    "name": "b3tangent",
+    "id": 7360071,
+    "reserved_minutes": 20,
+    "commit": "c0c9cb5b53317646cf202a4469c8ff103dbf49cc",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b3tangent",
+    "driver": "audit_frozen_tangent.py",
+    "args": "--dev /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/refsdev01/output,/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1refextend/output/dev --model /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1child16/output --cache /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1cache/output --growth /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b1childgrowth64/output",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-19T03:07:28.756151+00:00"
   }
 ]

@@ -699,6 +699,21 @@
     "driver": "coupled_child_pilot.py",
     "args": "--L 2048 --dt .0025 --tests 11008 --model /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1child16/output --cache /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1cache/output --admission /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1childgrowth64/output --global-control /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1stableglobal/output --dev /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/refsdev01/output,/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1refextend/output/dev",
     "gpu": "a100",
-    "submitted_utc": "2026-11-19T00:36:52.106634+00:00"
+    "submitted_utc": "2026-11-19T00:36:52.106634+00:00",
+    "state": "RUNNING",
+    "elapsed_seconds": 119,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b1cnM16",
+    "id": 7357525,
+    "reserved_minutes": 45,
+    "commit": "865be8d9f86570b5cfa7e71c351b156dbb867816",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1cnM16",
+    "driver": "fixed_tree_pilot.py",
+    "args": "--L 2048 --dt .0025 --integrator cn --test-factor 16 --compare-previous /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1cnM8/output --cache /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1cache/output --span /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1expanded/output --admission /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1directaudit/output --dev /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/refsdev01/output,/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1refextend/output/dev",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-19T00:39:01.626621+00:00"
   }
 ]

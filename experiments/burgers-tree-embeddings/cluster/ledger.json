@@ -1236,6 +1236,21 @@
     "driver": "diagnose_tree_fits.py",
     "args": "",
     "gpu": "a100",
-    "submitted_utc": "2026-11-19T18:43:03.607669+00:00"
+    "submitted_utc": "2026-11-19T18:43:03.607669+00:00",
+    "state": "COMPLETED",
+    "elapsed_seconds": 236,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b6crom",
+    "id": 7372044,
+    "reserved_minutes": 60,
+    "commit": "79ae9161b4022a04b019cba8fafac3cb8cec4512",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b6crom",
+    "driver": "train_crom_native.py",
+    "args": "--epochs 200",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-19T18:54:33.774316+00:00"
   }
 ]

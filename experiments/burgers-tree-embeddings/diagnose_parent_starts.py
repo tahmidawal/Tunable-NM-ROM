@@ -15,14 +15,14 @@ def main():
     fits=rp.parent/'development_fits.pkl';assert digest(fits)==r['all_fits_sha256'];old=read_checkpoint(fits)
     dp=resolve(ns/'b6parent/output/coordinate_data.npz',ns);assert digest(dp)==p['data_sha256'];d=np.load(dp)
     network=jax.tree.map(jnp.asarray,p['network']);codes=jnp.asarray(p['training_codes']);enc=jnp.asarray(p['training_encoder'])
-    xy,w=jnp.asarray(d['xy']),jnp.asarray(d['w']);xf,wf=data.grid(256,True);xf,wf=jnp.asarray(xf),jnp.asarray(wf)
+    xy,w=jnp.asarray(d['xy']),jnp.asarray(d['w']);training_fields=jnp.asarray(d['train_y']);xf,wf=data.grid(256,True);xf,wf=jnp.asarray(xf),jnp.asarray(wf)
     fit=F.make_fit(S.apply,60);curv=F.make_fit(S.apply,120,newton=True);decode=jax.jit(S.apply)
     result=dict(meta=meta,status='running',checkpoint_sha256=digest(cp),source_sha256=digest(rp),rows=[],weights_changed=False,
         classification='Closing fixed-weight starting-point diagnosis only; not a third parent repair or method admission',final_test_opened=False)
     saved=[]
     for i in np.argsort(r['independent_errors'])[-6:][::-1]:
         target=jnp.asarray(d['dev_y'][i]);norm=jnp.asarray(d['dev_norm'][i]);field=jnp.asarray(d['dev_encoder'][i])
-        distances=np.asarray(jnp.mean((enc-field)**2,axis=1));ids=[];cases=set()
+        distances=np.asarray(jnp.sum(w[None]*(training_fields-target)**2,axis=1));ids=[];cases=set()
         for k in np.argsort(distances):
             if int(k)//11 in cases:continue
             ids.append(int(k));cases.add(int(k)//11)

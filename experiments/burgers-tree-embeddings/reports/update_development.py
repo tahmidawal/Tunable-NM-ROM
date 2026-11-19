@@ -25,6 +25,7 @@ for name in names:
     matched=all(r[k]==v for k,v in setting.items())
     matched &= (r['labels']==labels and r['global_control']=='global_stable960' and r['time_integrator']=='cn'
         and r['field_implementation']=='packed full-axis separable contractions'
+        and r.get('normal_matrix_implementation','formed inside each step')=='formed inside each step'
         and r['saved_grid_fields']=='prediction only; qualified reference coefficients retained by hash'
         and len(r['cases'])==44 and {c['case'] for c in r['cases']}==set(labels)
         and all(c['common_tests']==22016 for c in r['cases']))

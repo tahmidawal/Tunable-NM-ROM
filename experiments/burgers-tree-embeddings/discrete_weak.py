@@ -79,9 +79,10 @@ def make_field(slices,rank):
 
 def make_solver(field,L,iterations=30,cg_iterations=80,theta=1.,advection_tests=None,
                 coefficient_map=None,tested_mass_jacobian=None,scale_linear_coordinates=False,
-                cg_tolerance=1e-6,cg_absolute_tolerance=1e-12):
+                cg_tolerance=1e-6,cg_absolute_tolerance=1e-12,reuse_linear_normal=False):
     assert theta in (1.,.5)
     assert (coefficient_map is None)==(tested_mass_jacobian is None)
+    assert not reuse_linear_normal or coefficient_map is None
     coefficients=(lambda z,cache:z) if coefficient_map is None else coefficient_map
     def tested_advection(c,cache):
         if advection_tests is not None:return advection_tests(c,cache)
@@ -101,7 +102,8 @@ def make_solver(field,L,iterations=30,cg_iterations=80,theta=1.,advection_tests=
             previous=previous*(1-(1-theta)*dt*nu*cache['lam'])-(1-theta)*dt*old_tested
         func=lambda c:residual(c,previous,cache,dt,nu,norm)
         A0=cache['A'] if tested_mass_jacobian is None else tested_mass_jacobian(c0,cache)
-        H0=(A0.T@A0)/norm**2;diag=jnp.maximum(jnp.diag(H0),1e-12)
+        normal=cache['linear_normal'] if reuse_linear_normal else A0.T@A0
+        H0=normal/norm**2;diag=jnp.maximum(jnp.diag(H0),1e-12)
         def body(_,state):
             c,loss,damp,accepted,done,lastupdate,lastlinear,used=state
             def advance(state):

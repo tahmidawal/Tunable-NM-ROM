@@ -28,12 +28,14 @@ def main():
     ap.add_argument('--initial-relative',type=float,default=1e-9);ap.add_argument('--initial-absolute',type=float,default=1e-13)
     ap.add_argument('--packed-fields',action='store_true',help='separately qualified equivalent padded-axis field contractions')
     ap.add_argument('--save-prediction-only',action='store_true',help='retain actual4096 predictions and hash-addressed qualified reference coefficients without duplicate reference grids')
+    ap.add_argument('--reuse-linear-normal',action='store_true',help='separate equivalent implementation: form the selected tested normal matrix once per query')
     a=ap.parse_args();out=Path(a.out);out.mkdir(parents=True,exist_ok=True);meta=preflight()
     assert not a.packed_fields or a.quadrature>0
     if a.packed_fields:
         packed_initial=W.make_initial_fit(PF.center,a.initial_relative,a.initial_absolute)
         packed_step,_=W.make_solver(PF.center,a.L,theta=1. if a.integrator=='be' else .5,
-            advection_tests=PF.tested_advection(a.L,a.quadrature),cg_tolerance=a.cg_relative,cg_absolute_tolerance=a.cg_absolute)
+            advection_tests=PF.tested_advection(a.L,a.quadrature),cg_tolerance=a.cg_relative,cg_absolute_tolerance=a.cg_absolute,
+            reuse_linear_normal=a.reuse_linear_normal)
         packed_output=jax.jit(PF.center)
     admission=json.loads((Path(a.admission)/'result.json').read_text());assert admission['representation_gate']
     cachepath=Path(a.cache);cache_rec=json.loads((cachepath/'result.json').read_text())
@@ -68,6 +70,7 @@ def main():
                   initial_relative_tolerance=a.initial_relative,initial_absolute_tolerance=a.initial_absolute,
                   field_implementation='packed full-axis separable contractions' if a.packed_fields else 'compact local patch slices',
                   saved_grid_fields='prediction only; qualified reference coefficients retained by hash' if a.save_prediction_only else 'prediction and reference',
+                  normal_matrix_implementation='formed once per query' if a.reuse_linear_normal else 'formed inside each step',
                   matched_training_reference_hashes=True,local_parent_basis_verified=True)
     if a.compare_previous:
         previous_path=Path(a.compare_previous);assert str(previous_path).startswith(os.environ['STUDY_NAMESPACE']+'/')
@@ -84,6 +87,8 @@ def main():
         else:
             result['comparison_kind']=('equivalent_field_implementation' if
                 previous_result.get('field_implementation','compact local patch slices')!=result['field_implementation']
+                else 'equivalent_linear_normal_reuse' if
+                previous_result.get('normal_matrix_implementation','formed inside each step')!=result['normal_matrix_implementation']
                 else 'same_integrator_numerical_refinement')
         result['previous_result_sha256']=digest(previous_path/'result.json')
     save(out/'result.json',result)
@@ -121,9 +126,18 @@ def main():
                     model['cache']=dict(model['cache'],quadrature=qc);model['quadrature_slices']=qs
                 assert int(jnp.max(model['cache']['indices'][:,:commonM]))<a.quadrature-1
             setup=time.perf_counter()-query_start
+        if a.reuse_linear_normal:
+            tnormal=time.perf_counter()
+            for model in models.values():
+                A=model['cache']['A'][:commonM]
+                model['cache']['linear_normal']=A.T@A
+                jax.block_until_ready(model['cache']['linear_normal'])
+            normal_setup=time.perf_counter()-tnormal
+            setup=time.perf_counter()-query_start
         rowout=dict(case=label,parameters=p,common_tests=commonM,fine_interior_nodes=(a.L-1)**2,
             integration_points=((a.quadrature or a.L)-1)**2,dense_points=(a.L-1)**2 if not a.quadrature else None,
             shared_allocation_setup_seconds=setup,methods={})
+        if a.reuse_linear_normal:rowout['joint_normal_matrix_setup_seconds']=normal_setup
         # Reference files are opened only below, after both truth-free solves finish.
         for name,model in models.items():
             ca=model['cache'];ca=dict(ca,A=ca['A'][:commonM],indices=ca['indices'][:,:commonM],lam=ca['lam'][:commonM])
@@ -136,7 +150,7 @@ def main():
                 initial_fit=packed_initial;step=packed_step;fitN=a.quadrature
             else:
                 initial_fit=W.make_initial_fit(fitfield,a.initial_relative,a.initial_absolute);step,residual=W.make_solver(field,a.L,theta=1. if a.integrator=='be' else .5,advection_tests=advection,
-                    cg_tolerance=a.cg_relative,cg_absolute_tolerance=a.cg_absolute)
+                    cg_tolerance=a.cg_relative,cg_absolute_tolerance=a.cg_absolute,reuse_linear_normal=a.reuse_linear_normal)
             burn_gpu();start=time.perf_counter();axis=jnp.arange(1,fitN)/fitN;xy=jnp.stack(jnp.meshgrid(axis,axis,indexing='ij'),axis=-1)
             u0=initial(xy);c,e0,lin=initial_fit(u0,ca);jax.block_until_ready(c)
             cold=time.perf_counter()-start;states=[np.asarray(c)];statuses=[];valid=True

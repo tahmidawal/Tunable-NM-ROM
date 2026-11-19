@@ -1,0 +1,5 @@
+# Fixed normal-matrix reuse: implementation preparation only
+
+For a frozen direct decoder and fixed weak tests, the matrix product used by the LM preconditioner is constant throughout a trajectory. The current implementation forms it again inside every time step. Prepare an opt-in path that forms the exact selected-row product once per query, passes it as a runtime array, and retains the same normalization, damping, residual, stopping criteria, tolerances and iteration caps. Do not apply this reuse to the state-dependent nonlinear decoder Jacobian.
+
+Charge construction and any query-specific compilation to setup, for both tree and global methods. This is a potential cost optimization, not a convergence repair. CPU fixtures require equivalent returned fields and complete convergence. A later finite GPU batch must verify equivalence and measure complete query timing before deployment. No GPU allocation is activated here; B4 retains the ordinary per-step implementation and its publisher checks that identity explicitly.

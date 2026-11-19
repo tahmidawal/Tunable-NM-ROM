@@ -13,6 +13,9 @@ p=dict(root=F.init_mlp(keys[0],[10,12,12,1],True),child=F.init_mlp(keys[1],[13,1
 cells=jnp.asarray(layouts['prescribed'][:4]);xy=jnp.asarray(xy);weight=jnp.ones(len(xy))/len(xy)
 root=jnp.zeros(8);wanted=jnp.concatenate([root,.02*jax.random.normal(keys[1],(32,),dtype=jnp.float64)])
 target=F.tree(p,wanted,xy,cells);norm=jnp.linalg.norm(target)/jnp.sqrt(len(target))
+block=F.tree_jacobian(p,wanted,xy,cells)
+full=jax.jacfwd(lambda zz:F.tree(p,zz,xy,cells))(wanted)
+assert jnp.max(abs(block-full))<1e-12
 base=jnp.sum(weight*(F.root(p['root'],root,xy)-target)**2)/norm**2
 z,loss=missing_field(p,root,cells,xy,target,weight,norm)
 assert jnp.all(jnp.diff(jnp.concatenate([base[None],loss]))<=1e-12)

@@ -45,22 +45,31 @@ def tree(params,z,xy,cells,root_k=8,child_k=8):
     return u+jnp.sum(jax.vmap(child,in_axes=(None,0,0,None))(params['child'],local,cells,xy),axis=0)
 
 
+def tree_jacobian(params,z,xy,cells,root_k=8,child_k=8):
+    """Exact independent-code blocks avoid propagating every code through every node."""
+    parent=jax.jacfwd(root,argnums=1)(params['root'],z[:root_k],xy)
+    local=z[root_k:].reshape(len(cells),child_k)
+    children=jax.vmap(jax.jacfwd(child,argnums=1),in_axes=(None,0,0,None))(params['child'],local,cells,xy)
+    return jnp.concatenate([parent,children.transpose(1,0,2).reshape(len(xy),-1)],axis=1)
+
+
 def intrinsic(params,features,k=8):
     skip=jnp.pad(features,[(0,0)]*(features.ndim-1)+[(0,k-features.shape[-1])])
     return skip+.1*mlp(params,features)
 
 
-def make_fit(apply,maxiter=60,station_tolerance=1e-8,update_tolerance=1e-10):
+def make_fit(apply,maxiter=60,station_tolerance=1e-8,update_tolerance=1e-10,jacobian=None):
     """Residual-based LM in physical tangent-scaled coordinates; no target subtraction loss."""
     @jax.jit
     def fit(params,z0,xy,target,weight,norm):
         scale=jnp.sqrt(weight)/norm
         fun=lambda z:(apply(params,z,xy)-target)*scale
+        jac=(lambda z:jacobian(params,z,xy)*scale[:,None]) if jacobian is not None else jax.jacfwd(fun)
         def body(_,state):
             z,loss,damping,accepted,done,lastupdate,used=state
             def advance(state):
                 z,loss,damping,accepted,done,lastupdate,used=state
-                r=fun(z);J=jax.jacfwd(fun)(z);g=J.T@r
+                r=fun(z);J=jac(z);g=J.T@r
                 H=J.T@J;diag=jnp.maximum(jnp.diag(H),1e-14);inv=jax.lax.rsqrt(diag)
                 scaled=H*inv[:,None]*inv[None,:]+jnp.eye(len(z))*damping
                 delta=inv*jnp.linalg.solve(scaled,-inv*g)
@@ -77,7 +86,7 @@ def make_fit(apply,maxiter=60,station_tolerance=1e-8,update_tolerance=1e-10):
             return jax.lax.cond(done,lambda s:s,advance,state)
         r=fun(z0);initial=(z0,r@r,jnp.float64(1e-3),jnp.int32(0),jnp.bool_(False),jnp.float64(0),jnp.int32(0))
         z,loss,damping,accepted,done,update,used=jax.lax.fori_loop(0,maxiter,body,initial)
-        r=fun(z);J=jax.jacfwd(fun)(z);diag=jnp.maximum(jnp.sum(J*J,axis=0),1e-14)
+        r=fun(z);J=jac(z);diag=jnp.maximum(jnp.sum(J*J,axis=0),1e-14)
         station=jnp.max(jnp.abs(J.T@r)/jnp.sqrt(diag))
         converged=(station<=station_tolerance)&((update<=update_tolerance)|(station<=station_tolerance*.01))
         return z,jnp.array([jnp.linalg.norm(r),station,update,accepted,used,converged],dtype=jnp.float64)

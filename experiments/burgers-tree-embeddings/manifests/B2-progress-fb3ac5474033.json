@@ -1,0 +1,129 @@
+{
+  "utc": "2026-11-19T02:07:38.337039+00:00",
+  "decision": "Pilot qualification is incomplete. Outstanding checks: b2space, b2quad, b2tests, b2time, b2tight.",
+  "source_hashes": {
+    "b2base": "e142ea74aa69863e0cf4654e9bda9f4b5e5eb519fa28e98f1523ecf45e60397a"
+  },
+  "records": [
+    {
+      "name": "b2base",
+      "source_sha256": "e142ea74aa69863e0cf4654e9bda9f4b5e5eb519fa28e98f1523ecf45e60397a",
+      "previous_result_sha256": null,
+      "scope": "Only the listed pilot trajectories and frozen representations",
+      "settings": {
+        "L": 8192,
+        "dt": 0.00125,
+        "time_integrator": "cn",
+        "quadrature_intervals": 512,
+        "global_control": "global_stable960",
+        "global_control_sha256": "4c2cd8f1a14103e90ef5d8fb88bb670a9b53ca753b8d88a1455d14f0fef58930",
+        "stationarity_tolerance": 1e-08,
+        "update_tolerance": 1e-10,
+        "cg_relative_tolerance": 1e-06,
+        "cg_absolute_tolerance": 1e-12,
+        "initial_relative_tolerance": 1e-09,
+        "initial_absolute_tolerance": 1e-13
+      },
+      "passed": true,
+      "rows": [
+        {
+          "case": "dev000",
+          "method": "tree_direct24",
+          "steps": 200,
+          "nonconverged_steps": 0,
+          "full_solver_convergence": true,
+          "physical_accuracy_pass": true,
+          "max_physical_error": 0.0028117848565251905,
+          "reference_allowance": 6.68934746585448e-07,
+          "initial_linear_residual": 5.695490121829069e-10,
+          "max_field_change": null,
+          "sensitivity_pass": null,
+          "common_tests": 22016
+        },
+        {
+          "case": "dev000",
+          "method": "global_stable960",
+          "steps": 200,
+          "nonconverged_steps": 0,
+          "full_solver_convergence": true,
+          "physical_accuracy_pass": true,
+          "max_physical_error": 0.0020256619453402273,
+          "reference_allowance": 6.68934746585448e-07,
+          "initial_linear_residual": 3.1031830262876244e-15,
+          "max_field_change": null,
+          "sensitivity_pass": null,
+          "common_tests": 22016
+        },
+        {
+          "case": "dev003",
+          "method": "tree_direct24",
+          "steps": 200,
+          "nonconverged_steps": 0,
+          "full_solver_convergence": true,
+          "physical_accuracy_pass": true,
+          "max_physical_error": 0.00021248732402818758,
+          "reference_allowance": 1.2345444417596293e-06,
+          "initial_linear_residual": 9.096593207728771e-11,
+          "max_field_change": null,
+          "sensitivity_pass": null,
+          "common_tests": 22016
+        },
+        {
+          "case": "dev003",
+          "method": "global_stable960",
+          "steps": 200,
+          "nonconverged_steps": 0,
+          "full_solver_convergence": true,
+          "physical_accuracy_pass": true,
+          "max_physical_error": 0.00020536796419253606,
+          "reference_allowance": 1.2345444417596293e-06,
+          "initial_linear_residual": 2.348862592430783e-15,
+          "max_field_change": null,
+          "sensitivity_pass": null,
+          "common_tests": 22016
+        },
+        {
+          "case": "align002",
+          "method": "tree_direct24",
+          "steps": 200,
+          "nonconverged_steps": 0,
+          "full_solver_convergence": true,
+          "physical_accuracy_pass": true,
+          "max_physical_error": 0.0031284466903826885,
+          "reference_allowance": 7.621482989307439e-07,
+          "initial_linear_residual": 2.5836163509171556e-11,
+          "max_field_change": null,
+          "sensitivity_pass": null,
+          "common_tests": 22016
+        },
+        {
+          "case": "align002",
+          "method": "global_stable960",
+          "steps": 200,
+          "nonconverged_steps": 0,
+          "full_solver_convergence": true,
+          "physical_accuracy_pass": true,
+          "max_physical_error": 0.003603171009130561,
+          "reference_allowance": 7.621482989307439e-07,
+          "initial_linear_residual": 3.065928872022825e-15,
+          "max_field_change": null,
+          "sensitivity_pass": null,
+          "common_tests": 22016
+        }
+      ],
+      "registered_setting_matches": true
+    }
+  ],
+  "remaining": [
+    "b2space",
+    "b2quad",
+    "b2tests",
+    "b2time",
+    "b2tight"
+  ],
+  "failed": [],
+  "elapsed_gpu_seconds": 23248,
+  "charged_gpu_seconds": 23248,
+  "active_jobs": [],
+  "own_status": "**New Burgers tree-embedding study: B2 fixed-tree numerical qualification.** Nonlinear tree representation0.4238% at1152 variables and direct tree0.4229% at1376 pass every development snapshot; the global960 control remains better at0.3304%. B1 used6.317778 cumulative allocated GPU-hours. Its direct pilot passes physical accuracy, weak-test enrichment and integration checks. The nonlinear PDE checkpoint is stopped after two failed optimizer repairs:123/300 stationarity failures and151/300 complete-convergence failures. Pilot qualification is incomplete. Outstanding checks: b2space, b2quad, b2tests, b2time, b2tight. Current elapsed allocation6.457778h; active owned jobs: none. No all-development PDE admission, runtime win or final-test opening. [Representation evidence](reports/2026-11-18-tree-embedding-representation.md); [fixed-tree checks](reports/2026-11-18-tree-embedding-fixed-tree.md). Old campaign remains PAUSED; no merge."
+}

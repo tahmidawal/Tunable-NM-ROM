@@ -27,6 +27,7 @@ def main():
     ap.add_argument('--cg-relative',type=float,default=1e-6);ap.add_argument('--cg-absolute',type=float,default=1e-12)
     ap.add_argument('--initial-relative',type=float,default=1e-9);ap.add_argument('--initial-absolute',type=float,default=1e-13)
     ap.add_argument('--packed-fields',action='store_true',help='separately qualified equivalent padded-axis field contractions')
+    ap.add_argument('--save-prediction-only',action='store_true',help='retain actual4096 predictions and hash-addressed qualified reference coefficients without duplicate reference grids')
     a=ap.parse_args();out=Path(a.out);out.mkdir(parents=True,exist_ok=True);meta=preflight()
     assert not a.packed_fields or a.quadrature>0
     if a.packed_fields:
@@ -66,6 +67,7 @@ def main():
                   cg_relative_tolerance=a.cg_relative,cg_absolute_tolerance=a.cg_absolute,
                   initial_relative_tolerance=a.initial_relative,initial_absolute_tolerance=a.initial_absolute,
                   field_implementation='packed full-axis separable contractions' if a.packed_fields else 'compact local patch slices',
+                  saved_grid_fields='prediction only; qualified reference coefficients retained by hash' if a.save_prediction_only else 'prediction and reference',
                   matched_training_reference_hashes=True,local_parent_basis_verified=True)
     if a.compare_previous:
         previous_path=Path(a.compare_previous);assert str(previous_path).startswith(os.environ['STUDY_NAMESPACE']+'/')
@@ -163,6 +165,8 @@ def main():
             save(out/'result.json',dict(result,cases=result['cases']+[rowout]))
         # Independent physical scoring; it never feeds the solver or policy.
         refpath=folder/row['levels'][-1]['file'];assert digest(refpath)==row['levels'][-1]['sha256']
+        rowout['reference_coefficients_sha256']=row['levels'][-1]['sha256']
+        rowout['reference_coefficients_path']=str(refpath)
         b=jnp.asarray(np.load(refpath)['coefficients'][::2]);norm2=jnp.sum(b*b,axis=(1,2))*.25
         for name,model in models.items():
             method=rowout['methods'][name];C=jnp.asarray(model['states']);count=len(C);basis=jnp.asarray(model['basis'])
@@ -200,7 +204,10 @@ def main():
                 method['diagnostic_total_query_seconds']=method['query_before_output_seconds']+method['requested4096_reconstruction_including_compilation_seconds']
                 truth=data.synth_grid(b[-1],axis);method['actual4096_final_error']=float(jnp.linalg.norm(pred-truth)/jnp.linalg.norm(truth))
                 method['output_shape']=list(pred.shape)
-                np.savez_compressed(out/f'{label}_{name}_4096.npz',prediction=np.asarray(pred),reference=np.asarray(truth),case=label,time=.25)
+                saved_field=dict(prediction=np.asarray(pred),case=label,time=.25,
+                                 reference_coefficients_sha256=row['levels'][-1]['sha256'])
+                if not a.save_prediction_only:saved_field['reference']=np.asarray(truth)
+                np.savez_compressed(out/f'{label}_{name}_4096.npz',**saved_field)
             method['reference_allowance_max']=float(max(row['allowance'])) if 'allowance' in row else float(max(row['reference_allowance']))
             method['physical_accuracy_pass']=count==6 and method['finite_trajectory'] and bool(
                 max(np.max(method['physical_error'][1:]),method['actual4096_final_error'])+method['reference_allowance_max']<=.01)

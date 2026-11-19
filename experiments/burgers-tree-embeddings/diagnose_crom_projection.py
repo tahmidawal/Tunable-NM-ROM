@@ -28,7 +28,7 @@ def main():
         def getJacobianSample(self,z,decoder,points):
             inp=torch.cat([z.reshape(1,32).expand(len(points),-1),points],1)
             J,_=model.decoder.computeJacobianFullAnalytical(inp);return J[:,0,:32]
-    problem=Problem();solver=NonlinearSolver(problem,None,1e-10,1e-10)
+    problem=Problem();solver=NonlinearSolver(problem,None,1e-15,1e-15)
     indices=[11*c+j for c in [0,3,13,43] for j in [0,5,10]]
     parent=json.loads(resolve(ns/'b6parent/output/coordinate_data.json',ns).read_text())
     xf,wf=data.grid(256,True);points=torch.as_tensor(xf,device='cuda');wf=torch.as_tensor(wf,device='cuda')

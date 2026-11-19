@@ -26,6 +26,9 @@ def main():
     fd=(residual(c+eps*direction,prior,cache,dt,nu,norm)-residual(c-eps*direction,prior,cache,dt,nu,norm))/(2*eps)
     assert float(jnp.linalg.norm(jv-fd)/jnp.linalg.norm(fd))<1e-7
     ci,ei,li=W.make_initial_fit(field)(u,cache)
+    ci_tight,_,li_tight=W.make_initial_fit(field,1e-11,1e-15)(u,cache)
+    assert float(li_tight)<1e-10,li_tight
+    assert float(jnp.linalg.norm(field(ci_tight,cache)-field(ci,cache))/jnp.linalg.norm(u))<1e-8
     assert float(ei)<1e-7 and float(li)<1e-7,(ei,li)
     assert float(jnp.linalg.norm(field(ci,cache)-u)/jnp.linalg.norm(u))<1e-7
     out,status=step(c,cache,dt,nu,1e-8,1e-10)

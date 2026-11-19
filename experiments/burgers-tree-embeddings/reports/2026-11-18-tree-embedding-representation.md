@@ -160,6 +160,12 @@ These pilots solve complete trajectories from the shared initial callable with t
 | dev003 | global_POD768 | 2048 | CN | 5504 | 512 | 0.0025 | 0.0820% | True | True |
 | align002 | tree_direct24 | 2048 | CN | 5504 | 512 | 0.0025 | 1.4328% | True | False |
 | align002 | global_POD768 | 2048 | CN | 5504 | 512 | 0.0025 | 0.6482% | True | True |
+| dev000 | tree_direct24 | 2048 | CN | 22016 | 512 | 0.0025 | 0.7945% | True | True |
+| dev000 | global_POD768 | 2048 | CN | 22016 | 512 | 0.0025 | 0.7941% | True | True |
+| dev003 | tree_direct24 | 2048 | CN | 22016 | 512 | 0.0025 | 0.0822% | True | True |
+| dev003 | global_POD768 | 2048 | CN | 22016 | 512 | 0.0025 | 0.0820% | True | True |
+| align002 | tree_direct24 | 2048 | CN | 22016 | 512 | 0.0025 | 0.6474% | True | True |
+| align002 | global_POD768 | 2048 | CN | 22016 | 512 | 0.0025 | 0.6481% | True | True |
 | dev000 | tree_child16_n64 | 2048 | CN | 11008 | 2048 | 0.0025 | 0.7887% | False | True |
 | dev000 | global_stable960 | 2048 | CN | 11008 | 2048 | 0.0025 | 0.7941% | True | True |
 | dev003 | tree_child16_n64 | 2048 | CN | 11008 | 2048 | 0.0025 | 0.0825% | True | True |
@@ -187,21 +193,25 @@ Retained incomplete PDE outcomes: none in the collected pilot records. The traje
 
 The first nonlinear-child PDE pilot reaches physical errors below1% on all three exposed cases, but160 of300 time steps miss stationarity1e-8. The initial alignment fit is also underconverged. Useful zero-child directions and accurate reconstructions do not guarantee an easy nonlinear online solve. The first bounded repair raises only the PDE LM cap from30 to120, keeping the checkpoint, initial fits, equations, integration and tolerances fixed. Its results, including any failures, are recorded below. Initial-fit stationarity is distinct from time-step stationarity; a passing step alone does not qualify initialization.
 
-| Nonlinear PDE run | Case | Worst evolved physical error | Nonstationary steps | Worst step stationarity | Initial-fit stationarity |
-|---|---|---:|---:|---:|---:|
-| b1childpde | dev000 | 0.7887% | 74/100 | 3.09e-05 | 6.14e-08 |
-| b1childpde | dev003 | 0.0825% | 0/100 | 4.62e-11 | 1.29e-08 |
-| b1childpde | align002 | 0.6479% | 86/100 | 5.13e-05 | 3.44e-06 |
-| b1childpdeR1 | dev000 | 0.7938% | 68/100 | 2.88e-05 | 6.14e-08 |
-| b1childpdeR1 | dev003 | 0.0825% | 0/100 | 4.62e-11 | 1.29e-08 |
-| b1childpdeR1 | align002 | 0.6531% | 76/100 | 2.88e-05 | 3.44e-06 |
-| b1childpdeR2 | dev000 | 0.7945% | 63/100 | 9.81e-06 | 6.14e-08 |
-| b1childpdeR2 | dev003 | 0.0825% | 0/100 | 1.97e-09 | 1.29e-08 |
-| b1childpdeR2 | align002 | 0.6524% | 60/100 | 1.01e-05 | 3.44e-06 |
+| Nonlinear PDE run | Case | Worst evolved physical error | Nonstationary steps | Steps missing full convergence | Worst step stationarity | Initial-fit stationarity |
+|---|---|---:|---:|---:|---:|---:|
+| b1childpde | dev000 | 0.7887% | 74/100 | 88/100 | 3.09e-05 | 6.14e-08 |
+| b1childpde | dev003 | 0.0825% | 0/100 | 0/100 | 4.62e-11 | 1.29e-08 |
+| b1childpde | align002 | 0.6479% | 86/100 | 100/100 | 5.13e-05 | 3.44e-06 |
+| b1childpdeR1 | dev000 | 0.7938% | 68/100 | 76/100 | 2.88e-05 | 6.14e-08 |
+| b1childpdeR1 | dev003 | 0.0825% | 0/100 | 0/100 | 4.62e-11 | 1.29e-08 |
+| b1childpdeR1 | align002 | 0.6531% | 76/100 | 84/100 | 2.88e-05 | 3.44e-06 |
+| b1childpdeR2 | dev000 | 0.7945% | 63/100 | 79/100 | 9.81e-06 | 6.14e-08 |
+| b1childpdeR2 | dev003 | 0.0825% | 0/100 | 2/100 | 1.97e-09 | 1.29e-08 |
+| b1childpdeR2 | align002 | 0.6524% | 60/100 | 70/100 | 1.01e-05 | 3.44e-06 |
 
 ![Nonlinear online solver convergence](b1-nonlinear-solver-diagnostics.png)
 
 The second repair is complete and fails:123 of300 time steps miss1e-8 stationarity, and the largest returned-field change from LM120 is0.226685%. Stop further online optimizer tuning for this frozen checkpoint under the two-repair rule. Initial fits also remain underconverged. The representation admission remains valid; this candidate does not advance to adaptation or timing confirmation. Continue the separate direct-coefficient branch through its numerical gates. This is a scoped failure of the tested checkpoint/optimizers, not a universal limitation of local nonlinear decoders.
+
+The full returned stopping rule also requires finite diagnostics and a small physical update, or stationarity100 times below its primary tolerance. Applying the existing rule to saved diagnostics gives188/300 failed steps for LM30,160/300 for LM120 and151/300 for BFGS120. The123/300 count above denotes stationarity failures alone. All returned steps in the M8/M16/M32 direct/global checks pass the full rule. This audit does not change raw results or weaken a threshold.
+
+ At the independently qualified22016-test setting: b1cnM16Q512 changes returned fields by at most0.0008%, with physical accuracy passingTrue. Q512 is compared with dense integration; Q1024 is compared withQ512. These checks retain the fine stencil spacing and do not qualify a different global basis or spatial/time setting.
 
 Pulse errors remain above the physical gate in the initial pilot for both methods despite tightly converged weak solves. Spatial, temporal, test and integration refinements distinguish numerical error from reduced dynamics. The initial pilot omitted explicit burn-in immediately before timing: those original wall times are retained as unqualified diagnostics and support no speed comparison. Follow-ups include burn-in. Pilot clocks also charge the joint comparison setup to each method; they are not valid method-specific speed ratios. Complete timing must measure each method's own initialization, assembly and output. The small pilot is not all-development qualification, deployable adaptation, or a complete-runtime benchmark.
 
@@ -222,7 +232,7 @@ Original recipes, unsuccessful repairs and the original decision remain in [the 
 
 ## Accounting and provenance
 
-Generated 2026-11-19T01:34:21.275495+00:00. Terminal allocations recorded in the current ledger total 21819 GPU-seconds (6.060833 GPU-hours); nonterminal or not-yet-reconciled names: b1cnM16Q512. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
+Generated 2026-11-19T01:45:10.499610+00:00. Terminal allocations recorded in the current ledger total 22241 GPU-seconds (6.178056 GPU-hours); nonterminal or not-yet-reconciled names: b1cnM16Q1024. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
 
 ## Glossary
 

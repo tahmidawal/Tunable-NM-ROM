@@ -143,7 +143,7 @@ def make_solver(field,L,iterations=30,cg_iterations=80,theta=1.,advection_tests=
     return step,residual
 
 
-def make_initial_fit(field):
+def make_initial_fit(field,relative_tolerance=1e-9,absolute_tolerance=1e-13):
     @jax.jit
     def fit(u0,cache):
         L=u0.shape[0]+1;K=cache['A'].shape[1];z=jnp.zeros(K)
@@ -151,7 +151,7 @@ def make_initial_fit(field):
         rhs=adj(u0)[0]/L**2
         def action(c):return adj(field(c,cache))[0]/L**2+1e-10*c
         C=jnp.linalg.cholesky(cache['gram']+1e-8*jnp.eye(K))
-        c,_=jax.scipy.sparse.linalg.cg(action,rhs,tol=1e-9,atol=1e-13,maxiter=200,
+        c,_=jax.scipy.sparse.linalg.cg(action,rhs,tol=relative_tolerance,atol=absolute_tolerance,maxiter=200,
                                       M=lambda v:jax.scipy.linalg.cho_solve((C,True),v))
         error=jnp.linalg.norm(field(c,cache)-u0)/jnp.linalg.norm(u0)
         linear=jnp.linalg.norm(action(c)-rhs)/jnp.linalg.norm(rhs)

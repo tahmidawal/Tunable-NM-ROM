@@ -17,7 +17,7 @@ if (H/'results/b1childallocation/output/result.json').exists():
         allocation_text=f"At1472 variables the same nonlinear checkpoint gives uniform error{100*ac['controls']['uniform84']['projection']['worst']:.4f}% versus prescribed{100*ac['controls']['prescribed84']['projection']['worst']:.4f}%, with actual4096 worst witnesses. These are best-found, partly underconverged fits; the84-node allocation is not independently admitted to physics."
 pilot_worst=max(max(v['physical_error'][1:]) for c in m8['cases'] for v in c['methods'].values())
 pilots=[]
-for name in ['b1weakpilot1','b1weakL2048','b1weakL4096','b1weakdt125','b1weakdt625','b1cn2048','b1cn2048half','b1cnM8','b1cnM16','b1cnM32','b1cnQ512','b1cnQ1024','b1childpde','b1childpdeR1','b1childpdeR2']:
+for name in ['b1weakpilot1','b1weakL2048','b1weakL4096','b1weakdt125','b1weakdt625','b1cn2048','b1cn2048half','b1cnM8','b1cnM16','b1cnM32','b1cnQ512','b1cnQ1024','b1cnM16Q512','b1cnM16Q1024','b1childpde','b1childpdeR1','b1childpdeR2']:
     if (H/'results'/name/'output/result.json').exists():
         p=read(name)
         if p['status'] in ['complete_fixed_tree_diagnostic_pilot','complete_coupled_child_diagnostic_pilot']:pilots.append((name,p))
@@ -37,7 +37,7 @@ if coupled:
     coupled_text=f"Latest nonlinear PDE diagnostic {latest_name}: {failures}/{count} steps miss stationarity; evolved physical accuracy passes {all(v['physical_accuracy_pass'] for v in tree_methods)}."
     if changes:coupled_text+=f" Largest returned-field change from its preceding setting is{100*max(changes):.6f}%."
     if latest_name=='b1childpdeR2' and not latest['pilot_gate']:
-        coupled_text+=' Two distinct online solver repairs failed; stop optimizer tuning for this checkpoint. Its representation remains admitted, while the direct-coefficient branch continues numerical qualification. No nonlinear adaptation or timing confirmation is admitted.'
+        coupled_text+=' Two distinct online solver repairs failed; stop optimizer tuning for this checkpoint. The full returned stopping rule fails151/300 steps;123/300 counts stationarity alone. Its representation remains admitted, while the direct-coefficient branch continues numerical qualification. No nonlinear adaptation or timing confirmation is admitted.'
     status=status.replace('The first nonlinear PDE pilot also passes physical accuracy but fails stationarity on160/300 steps; a finite solver repair is running.',coupled_text)
 if 'ac' in globals() and ac['status']=='complete_frozen_child_allocation_controls':title+='; frozen child allocation'
 test_admission_text='Further test-enrichment qualification is pending.'
@@ -47,6 +47,12 @@ for name,p in pilots:
         passed=all(v['physical_accuracy_pass'] and v['all_steps_stationary'] and max(v['previous_state_relative_change'])<=.001 for c in p['cases'] for v in c['methods'].values())
         test_admission_text=f'The completed44032-test check changes returned fields by at most{100*change:.6f}%; its stationary/physical/sensitivity gate passes{passed}. This qualifies22016 tests for the three-case direct24/global768 pilot only. Independent integration and remaining numerical checks continue.'
         status=status.replace('The direct PDE pilot passes physical accuracy, but the latest test sensitivity is0.10684%, just above0.1%.',test_admission_text)
+integration_text=''
+for name,p in pilots:
+    if name in ['b1cnM16Q512','b1cnM16Q1024']:
+        change=max(max(v['previous_state_relative_change']) for c in p['cases'] for v in c['methods'].values())
+        integration_text+=f' {name}: maximum integration state change{100*change:.6f}%, with all physical checks passing{all(v["physical_accuracy_pass"] for c in p["cases"] for v in c["methods"].values())}.'
+if integration_text:status+=integration_text
 lines=[]
 for name,p in pilots:
     for c in p['cases']:
@@ -81,6 +87,8 @@ The first coupled child16/64-node pilot has physical error below1% on all three 
 {allocation_text} Uniform20 and prescribed20 also retain identical448-variable budgets. Every allocation uses the same selected child head and resolved physical metric, with encoder, zero and temporal starts; no weights were retrained. Fit stationarity is retained in the generated table, so the comparison is not presented as a certified manifold optimum.
 
 {coupled_text} The completed iteration-limit repair is retained even though it fails. Its successor, safeguarded inverse BFGS with Armijo line search, is a separately registered second repair of the same online solver bottleneck; it uses the identical physical objective and tolerance. All rejected trials count. If it also fails, no further optimizer search occurs without a written scoped decision or specific amendment. The unchanged initial fits remain a separate qualification issue.
+
+{integration_text}
 
 {test_admission_text} Earlier small-rule passes and failures remain in the ledger; a quadrature result at5504 tests is not automatically a result at22016 tests.
 

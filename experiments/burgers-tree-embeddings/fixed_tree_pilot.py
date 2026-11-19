@@ -25,6 +25,7 @@ def main():
     ap.add_argument('--stable-global',help='qualified construction record for the prescribed global960 control')
     ap.add_argument('--stationarity',type=float,default=1e-8);ap.add_argument('--update-tolerance',type=float,default=1e-10)
     ap.add_argument('--cg-relative',type=float,default=1e-6);ap.add_argument('--cg-absolute',type=float,default=1e-12)
+    ap.add_argument('--initial-relative',type=float,default=1e-9);ap.add_argument('--initial-absolute',type=float,default=1e-13)
     a=ap.parse_args();out=Path(a.out);out.mkdir(parents=True,exist_ok=True);meta=preflight()
     admission=json.loads((Path(a.admission)/'result.json').read_text());assert admission['representation_gate']
     cachepath=Path(a.cache);cache_rec=json.loads((cachepath/'result.json').read_text())
@@ -56,11 +57,17 @@ def main():
     result.update(global_control=global_name,global_control_sha256=global_hash,
                   stationarity_tolerance=a.stationarity,update_tolerance=a.update_tolerance,
                   cg_relative_tolerance=a.cg_relative,cg_absolute_tolerance=a.cg_absolute,
+                  initial_relative_tolerance=a.initial_relative,initial_absolute_tolerance=a.initial_absolute,
                   matched_training_reference_hashes=True,local_parent_basis_verified=True)
     if a.compare_previous:
         previous_path=Path(a.compare_previous);assert str(previous_path).startswith(os.environ['STUDY_NAMESPACE']+'/')
         previous_result=json.loads((previous_path/'result.json').read_text())
         assert previous_result['status']=='complete_fixed_tree_diagnostic_pilot'
+        for key in ['admission_sha256','global_basis_sha256','local_rotation_sha256']:
+            assert previous_result[key]==result[key],('Changed representation in numerical comparison',key)
+        assert previous_result.get('global_control','global_POD768')==global_name
+        assert previous_result.get('global_control_sha256',previous_result['global_basis_sha256'])==global_hash
+        assert set(result['labels'])<=set(previous_result['labels'])
         if previous_result['operator']!=result['operator']:
             assert a.allow_integrator_comparison and previous_result['operator'].rsplit(';',1)[0]==result['operator'].rsplit(';',1)[0]
             result['comparison_kind']='different_integrator_diagnostic_not_a_step_convergence_check'
@@ -101,7 +108,7 @@ def main():
             if a.quadrature:
                 qfields=QW.make_fields(model['quadrature_slices'],24 if name.startswith('tree') else 0)
                 advection=QW.make_tested(qfields,a.L,a.quadrature);fitfield=lambda c,ca:qfields(c,ca)[0];fitN=a.quadrature
-            initial_fit=W.make_initial_fit(fitfield);step,residual=W.make_solver(field,a.L,theta=1. if a.integrator=='be' else .5,advection_tests=advection,
+            initial_fit=W.make_initial_fit(fitfield,a.initial_relative,a.initial_absolute);step,residual=W.make_solver(field,a.L,theta=1. if a.integrator=='be' else .5,advection_tests=advection,
                 cg_tolerance=a.cg_relative,cg_absolute_tolerance=a.cg_absolute)
             burn_gpu();start=time.perf_counter();axis=jnp.arange(1,fitN)/fitN;xy=jnp.stack(jnp.meshgrid(axis,axis,indexing='ij'),axis=-1)
             u0=initial(xy);c,e0,lin=initial_fit(u0,ca);jax.block_until_ready(c)
@@ -163,7 +170,8 @@ def main():
                 method['output_shape']=list(pred.shape)
                 np.savez_compressed(out/f'{label}_{name}_4096.npz',prediction=np.asarray(pred),reference=np.asarray(truth),case=label,time=.25)
             method['reference_allowance_max']=float(max(row['allowance'])) if 'allowance' in row else float(max(row['reference_allowance']))
-            method['physical_accuracy_pass']=count==6 and bool(np.max(method['physical_error'][1:])+method['reference_allowance_max']<=.01)
+            method['physical_accuracy_pass']=count==6 and method['finite_trajectory'] and bool(
+                max(np.max(method['physical_error'][1:]),method['actual4096_final_error'])+method['reference_allowance_max']<=.01)
             checkpoint(out/f'{label}_{name}_states.pkl',dict(coefficients=np.asarray(C),cells=cells if name.startswith('tree') else [],
                 transforms=np.asarray(tr) if name.startswith('tree') else [],method=method))
             print('weak_result',label,name,method['physical_error'],flush=True)

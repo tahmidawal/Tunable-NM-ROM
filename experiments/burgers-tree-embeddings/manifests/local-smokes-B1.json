@@ -152,6 +152,20 @@
       "result": "PASS independent fine weak operator, field, CN, integration and initial fit, plus100x tighter outer/inner tolerances with stationary solution and physical agreement below1e-8",
       "benchmark": false,
       "source_sha256": "8fd25dfbf35dc48b3395c195142f4f24def52c15fbc98f3628e1a07acafec6a1"
+    },
+    {
+      "utc": "2026-11-19T01:45:01.170097+00:00",
+      "test": "test_discrete_weak.py",
+      "scope": "Independent fine weak stencil, field/Jacobian, full CN step and100x tighter initial/inner/outer tolerance fixture",
+      "status": "PASS",
+      "backend": "cpu",
+      "command": "source /etc/profile.d/jax-mem.sh; JAX_PLATFORMS=cpu timeout55s jaxrun /home/tahmid/Dev/.venv/bin/python test_discrete_weak.py",
+      "scientific_experiment": false,
+      "files": {
+        "test_discrete_weak.py": "f855290c2578a5fd839bea42905cb99f68f94b99c2d0b8dff57638d680c94297",
+        "discrete_weak.py": "fc0759a9349e81e95e25d64a062fc6edd3529f2209a3ab2a34022c8db92bde76",
+        "fixed_tree_pilot.py": "52b52e23e99041727d821101c82f94201b35c10c411058794dc60b420e8fb471"
+      }
     }
   ]
 }

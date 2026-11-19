@@ -140,7 +140,7 @@ global_rows+='\n'+'\n'.join(f"| Complete sine {k} per axis | {v['variables']} | 
 global_rows+='\n'+'\n'.join(f"| POD512 + prescribed Fourier completion | {k} | {pct(v['worst'])} | Not a null-tail completion |" for k,v in stable['controls'].items())
 head_rows='\n'.join(f"| {v['latent']} | {v['feature_count']} | {v['affine_span_rank']} | {pct(v['panels']['dev']['worst'])} | {pct(v['head_projection']['worst'])} |" for v in headspan['models'])
 pde_runs=[];incomplete_pde=[]
-for run in ['b1weakpilot1','b1weakL2048','b1weakL4096','b1weakdt125','b1weakdt625','b1cn2048','b1cn2048half','b1cnM8','b1cnM16','b1cnM32','b1cnQ512','b1cnQ1024','b1childpde','b1childpdeR1','b1childpdeR2']:
+for run in ['b1weakpilot1','b1weakL2048','b1weakL4096','b1weakdt125','b1weakdt625','b1cn2048','b1cn2048half','b1cnM8','b1cnM16','b1cnM32','b1cnQ512','b1cnQ1024','b1cnM16Q512','b1cnM16Q1024','b1childpde','b1childpdeR1','b1childpdeR2']:
     if (H/'results'/run/'output/result.json').exists():
         r=read(run)
         if r['status'] in ['complete_fixed_tree_diagnostic_pilot','complete_coupled_child_diagnostic_pilot']:pde_runs.append((run,r))
@@ -151,6 +151,14 @@ for run,r in pde_runs:
         change=max(max(v['previous_state_relative_change']) for c in r['cases'] for v in c['methods'].values())
         admitted=all(v['physical_accuracy_pass'] and v['all_steps_stationary'] and max(v['previous_state_relative_change'])<=.001 for c in r['cases'] for v in c['methods'].values())
         test_admission_text=f'The subsequent44032-test check has maximum field change{pct(change)}; its pilot admission check is{admitted}. This admits22016 tests only for these three direct24/global768 trajectories at the tested setting, pending independent integration, time, spatial and solver-precision checks. It does not admit the nonlinear arm or the full development panel.'
+integration_text='Independent integration at the admitted test count is not yet complete.'
+qualified_integration=[(run,r) for run,r in pde_runs if run in ['b1cnM16Q512','b1cnM16Q1024']]
+if qualified_integration:
+    integration_text=' At the independently qualified22016-test setting: '
+    for run,r in qualified_integration:
+        change=max(max(v['previous_state_relative_change']) for c in r['cases'] for v in c['methods'].values())
+        integration_text+=f"{run} changes returned fields by at most{pct(change)}, with physical accuracy passing{all(v['physical_accuracy_pass'] for c in r['cases'] for v in c['methods'].values())}. "
+    integration_text+='Q512 is compared with dense integration; Q1024 is compared withQ512. These checks retain the fine stencil spacing and do not qualify a different global basis or spatial/time setting.'
 pde_rows=[]
 fig,axs=plt.subplots(1,3,figsize=(12,3.7),constrained_layout=True,sharey=True)
 for run,r in pde_runs:
@@ -166,8 +174,8 @@ for run,r in pde_runs:
 axs[0].set_ylabel('Current-time physical error (%)')
 handles,legend=axs[0].get_legend_handles_labels();fig.legend(handles,legend,loc='lower center',bbox_to_anchor=(.5,-.23),ncol=3,fontsize=7)
 figure(fig,'b1-fixed-tree-physics')
-diagnostics={'b1cn2048half':'Time step / 2','b1cnM8':'5504 to11008 tests','b1cnM16':'11008 to22016 tests','b1cnM32':'22016 to44032 tests','b1cnQ512':'Q512 versus dense'}
-checks=[(n,r) for n,r in pde_runs if n in diagnostics];fig,ax=plt.subplots(figsize=(8,4),constrained_layout=True)
+diagnostics={'b1cn2048half':'Time step / 2','b1cnM8':'5504 to11008 tests','b1cnM16':'11008 to22016 tests','b1cnM32':'22016 to44032 tests','b1cnQ512':'Q512 / dense\n5504 tests','b1cnM16Q512':'Q512 / dense\n22016 tests','b1cnM16Q1024':'Q1024 / Q512\n22016 tests'}
+checks=[(n,r) for n,r in pde_runs if n in diagnostics];fig,ax=plt.subplots(figsize=(10,4),constrained_layout=True)
 for j,prefix in enumerate(['tree','global']):
     changes=[max(max(v['previous_state_relative_change']) for c in r['cases'] for method,v in c['methods'].items() if method.startswith(prefix)) for n,r in checks]
     ax.bar(np.arange(len(checks))+(j-.5)*.34,np.array(changes)*100,.34,label=prefix.capitalize())
@@ -197,7 +205,8 @@ for run,r in pde_runs:
     if not run.startswith('b1childpde'):continue
     for c in r['cases']:
         v=c['methods']['tree_child16_n64'];s=np.asarray(v['step_status'],dtype=float)
-        coupled_rows.append(f"| {run} | {c['case']} | {pct(max(v['physical_error'][1:]))} | {int(np.sum(s[:,1]>r['stationarity_tolerance']))}/{len(s)} | {np.max(s[:,1]):.3g} | {v['initial_fit_stationarity_or_linear_residual']:.3g} |")
+        full_converged=np.all(np.isfinite(s),axis=1)&(s[:,1]<=r['stationarity_tolerance'])&((s[:,2]<=r['update_tolerance'])|(s[:,1]<=r['stationarity_tolerance']*.01))
+        coupled_rows.append(f"| {run} | {c['case']} | {pct(max(v['physical_error'][1:]))} | {int(np.sum(s[:,1]>r['stationarity_tolerance']))}/{len(s)} | {int(np.sum(~full_converged))}/{len(s)} | {np.max(s[:,1]):.3g} | {v['initial_fit_stationarity_or_linear_residual']:.3g} |")
 charged=sum(r.get('elapsed_seconds',0) for r in ledger if r.get('state') in terminal)
 live=[r['name'] for r in ledger if r.get('state') not in terminal]
 stamp=datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -287,13 +296,17 @@ Retained incomplete PDE outcomes: {'; '.join(incomplete_pde) or 'none in the col
 
 The first nonlinear-child PDE pilot reaches physical errors below1% on all three exposed cases, but160 of300 time steps miss stationarity1e-8. The initial alignment fit is also underconverged. Useful zero-child directions and accurate reconstructions do not guarantee an easy nonlinear online solve. The first bounded repair raises only the PDE LM cap from30 to120, keeping the checkpoint, initial fits, equations, integration and tolerances fixed. Its results, including any failures, are recorded below. Initial-fit stationarity is distinct from time-step stationarity; a passing step alone does not qualify initialization.
 
-| Nonlinear PDE run | Case | Worst evolved physical error | Nonstationary steps | Worst step stationarity | Initial-fit stationarity |
-|---|---|---:|---:|---:|---:|
+| Nonlinear PDE run | Case | Worst evolved physical error | Nonstationary steps | Steps missing full convergence | Worst step stationarity | Initial-fit stationarity |
+|---|---|---:|---:|---:|---:|---:|
 {chr(10).join(coupled_rows)}
 
 ![Nonlinear online solver convergence](b1-nonlinear-solver-diagnostics.png)
 
 {nonlinear_decision}
+
+The full returned stopping rule also requires finite diagnostics and a small physical update, or stationarity100 times below its primary tolerance. Applying the existing rule to saved diagnostics gives188/300 failed steps for LM30,160/300 for LM120 and151/300 for BFGS120. The123/300 count above denotes stationarity failures alone. All returned steps in the M8/M16/M32 direct/global checks pass the full rule. This audit does not change raw results or weaken a threshold.
+
+{integration_text}
 
 Pulse errors remain above the physical gate in the initial pilot for both methods despite tightly converged weak solves. Spatial, temporal, test and integration refinements distinguish numerical error from reduced dynamics. The initial pilot omitted explicit burn-in immediately before timing: those original wall times are retained as unqualified diagnostics and support no speed comparison. Follow-ups include burn-in. Pilot clocks also charge the joint comparison setup to each method; they are not valid method-specific speed ratios. Complete timing must measure each method's own initialization, assembly and output. The small pilot is not all-development qualification, deployable adaptation, or a complete-runtime benchmark.
 

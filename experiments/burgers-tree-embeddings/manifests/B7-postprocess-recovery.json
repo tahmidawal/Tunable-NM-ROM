@@ -1,0 +1,17 @@
+{
+  "status": "recovery_in_progress",
+  "commands": [
+    {
+      "command": "reports/final_parent_round.py",
+      "exit_code": 143
+    },
+    {
+      "command": "cluster/archive_owned.py --label B7",
+      "exit_code": 143
+    }
+  ],
+  "cause": "Not determined; both local commands received termination before completion",
+  "observed": "First pilot directory was moved to its archive before the ledger update; raw output and log directories remain present",
+  "repair": "Verify destination against retained local checksum list, atomically update accounting metadata, resume one command at a time",
+  "additional_gpu_allocation": false
+}

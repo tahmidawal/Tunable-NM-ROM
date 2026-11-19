@@ -14,6 +14,7 @@ def jac(p,z,xy):return F.tree_jacobian(p,z,xy,p['cells'])
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--out',required=True)
     ap.add_argument('--updates',type=int,default=20000);ap.add_argument('--seed',type=int,default=2026111952)
+    ap.add_argument('--parent-newton',action='store_true')
     a=ap.parse_args();out=Path(a.out);out.mkdir(parents=True,exist_ok=True);metadata=preflight()
     ns=Path(os.environ['STUDY_NAMESPACE']);parent=resolve(ns/'b6parent/output/neural_parent.pkl',ns)
     folder=parent.parent;report=json.loads((folder/'result.json').read_text());assert report['status']=='complete_coordinate_parent_diagnostic'
@@ -23,10 +24,11 @@ def main():
     result=dict(meta=metadata,status='parent_stability_audit',parent_sha256=digest(parent),seed=a.seed,
         layouts=['uniform','prescribed','random','oracle'],nodes=20,max_depth=3,root_k=8,child_k=8,
         final_test_opened=False,history=[],representation_admitted=False,
-        parent_stability_protocol='Resume unfinished parent fits at fixed checkpoint for120 additional diagnostic iterations; no PDE solver setting changed')
+        parent_stability_protocol='Resume unfinished parent fits at fixed checkpoint for120 additional diagnostic iterations; no PDE solver setting changed',
+        parent_newton=a.parent_newton)
     rootparams=saved['params']['decoder'];parentfits=read_checkpoint(folder/'all_development_fits.pkl')
     parent_codes=np.array(parentfits['codes']);parent_status=np.array(parentfits['status'])
-    fitparent=F.make_fit(F.root,120)
+    fitparent=F.make_fit(F.root,120,newton=a.parent_newton)
     # This is a fixed-checkpoint qualification diagnostic, not another training recipe.
     for i in np.where(parent_status[:,-1]==0)[0]:
         code,status=fitparent(rootparams,jnp.asarray(parent_codes[i]),d['xy'],d['dev_y'][i],d['w'],d['dev_norm'][i])

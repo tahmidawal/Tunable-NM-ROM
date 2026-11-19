@@ -58,7 +58,7 @@ def intrinsic(params,features,k=8):
     return skip+.1*mlp(params,features)
 
 
-def make_fit(apply,maxiter=60,station_tolerance=1e-8,update_tolerance=1e-10,jacobian=None):
+def make_fit(apply,maxiter=60,station_tolerance=1e-8,update_tolerance=1e-10,jacobian=None,newton=False):
     """Residual-based LM in physical tangent-scaled coordinates; no target subtraction loss."""
     @jax.jit
     def fit(params,z0,xy,target,weight,norm):
@@ -71,13 +71,19 @@ def make_fit(apply,maxiter=60,station_tolerance=1e-8,update_tolerance=1e-10,jaco
                 z,loss,damping,accepted,done,lastupdate,used=state
                 r=fun(z);J=jac(z);g=J.T@r
                 H=J.T@J;diag=jnp.maximum(jnp.diag(H),1e-14);inv=jax.lax.rsqrt(diag)
-                scaled=H*inv[:,None]*inv[None,:]+jnp.eye(len(z))*damping
+                if newton:
+                    H=jax.hessian(lambda zz:.5*jnp.sum(fun(zz)**2))(z)
+                scaled=H*inv[:,None]*inv[None,:]
+                shift=jnp.maximum(0.,1e-6-jnp.linalg.eigvalsh(scaled)[0]) if newton else 0.
+                scaled=scaled+jnp.eye(len(z))*(damping+shift)
                 delta=inv*jnp.linalg.solve(scaled,-inv*g)
                 update=jnp.linalg.norm(J@delta)
                 rr=fun(z+delta);newloss=rr@rr
                 predicted=-2*g@delta-delta@H@delta
-                rho=(loss-newloss)/jnp.maximum(predicted,1e-30)
-                good=jnp.isfinite(newloss)&(newloss<loss)&(predicted>0)
+                difference=rr-r
+                reduction=-2*r@difference-difference@difference
+                rho=reduction/jnp.maximum(predicted,1e-30)
+                good=jnp.isfinite(newloss)&(reduction>0)&(predicted>0)
                 station=jnp.max(jnp.abs(g)*inv)
                 done=(station<=station_tolerance)&((update<=update_tolerance)|(station<=station_tolerance*.01))
                 damp=jnp.where(good,jnp.where(rho>.75,damping/3,jnp.where(rho<.25,damping*2,damping)),damping*5)

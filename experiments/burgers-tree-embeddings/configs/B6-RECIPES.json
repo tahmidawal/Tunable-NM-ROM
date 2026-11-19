@@ -21,5 +21,15 @@
       "id": "SNF-ROM",
       "status": "native source/dependency qualification pending"
     }
+  ],
+  "diagnosed_repairs": [
+    {
+      "id": 1,
+      "reason": "One parent fit fails full stopping rule after fixed-checkpoint continuation",
+      "source": "neural/fields.py:newton=True",
+      "driver": "train_coordinate_tree.py --parent-newton",
+      "status": "registered",
+      "max_minutes": 90
+    }
   ]
 }

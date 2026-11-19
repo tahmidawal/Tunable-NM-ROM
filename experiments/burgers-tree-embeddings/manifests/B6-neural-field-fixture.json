@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "source_sha256": "5aff0cea1431e19b605b748a1981db3c83aac0b9c0f3957ac84e1c08b6099c20",
+  "source": "test_neural_fields.py",
+  "checks": [
+    "exact zero-child field preservation",
+    "four independent child directions after parent removal",
+    "JVP agreement with centered differences",
+    "exact homogeneous boundary values",
+    "converged known curved-manifold fit"
+  ],
+  "execution": "sub-minute CPU jaxrun, float64/highest",
+  "observed_utc": "2026-11-19T18:08:40.778002+00:00"
+}

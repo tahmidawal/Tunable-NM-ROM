@@ -1,0 +1,97 @@
+{
+  "source": "/home/tahmid/Dev/QuadtreeNMROM/discussion/2026-11-18-case-selection/case_specification.json",
+  "source_sha256": "0c52bb8a0d22d107da715d92c30460cc0f3d2ef15be57259999b430cb07ae661",
+  "authorization": "User November19 explicitly requested the previously discussed Burgers case types within the new neural-tree study",
+  "role": "named development extensions, never training or sealed final-test fields",
+  "burgers": {
+    "equation": "u_t + u*(u_x+u_y) = nu*(u_xx+u_yy)",
+    "domain": "[0,1]^2",
+    "boundary": "u=0 on the entire boundary",
+    "proposed_end_time": 0.25,
+    "proposed_output_times": [
+      0.05,
+      0.1,
+      0.15,
+      0.2,
+      0.25
+    ],
+    "proposed_viscosities": [
+      0.02,
+      0.01,
+      0.005
+    ],
+    "formula": "u0=B*(background+sum(amplitude*g)); B=sin(pi*x)^2*sin(pi*y)^2",
+    "gaussian": "g=exp(-0.5*((t/sigma_t)^2+(n/sigma_n)^2)); t,n are centered rotated coordinates",
+    "angle": "Tangent angle counterclockwise from positive x; normal is tangent rotated +90 degrees",
+    "note": "Amplitudes multiply Gaussians before the boundary envelope; they are not peak values of u0.",
+    "cases": [
+      {
+        "name": "A \u00b7 Broad smooth field",
+        "purpose": "Control: does localization add unnecessary cost?",
+        "background": 0.8,
+        "gaussians": []
+      },
+      {
+        "name": "B \u00b7 Compact pulse",
+        "purpose": "Localized structure: a plausible use for small patches",
+        "background": 0.15,
+        "gaussians": [
+          {
+            "amplitude": 1.2,
+            "center": [
+              0.35,
+              0.35
+            ],
+            "sigma_t": 0.045,
+            "sigma_n": 0.045,
+            "angle_degrees": 0.0
+          }
+        ]
+      },
+      {
+        "name": "C \u00b7 Thin diagonal ridge",
+        "purpose": "Elongated structure: can square patches remain efficient?",
+        "background": 0.15,
+        "gaussians": [
+          {
+            "amplitude": 1.2,
+            "center": [
+              0.42,
+              0.42
+            ],
+            "sigma_t": 0.23,
+            "sigma_n": 0.025,
+            "angle_degrees": -45.0
+          }
+        ]
+      },
+      {
+        "name": "D \u00b7 Two unequal pulses",
+        "purpose": "Multiple structures: one moving frame may be insufficient",
+        "background": 0.15,
+        "gaussians": [
+          {
+            "amplitude": 1.4,
+            "center": [
+              0.35,
+              0.35
+            ],
+            "sigma_t": 0.05,
+            "sigma_n": 0.05,
+            "angle_degrees": 0.0
+          },
+          {
+            "amplitude": 0.7,
+            "center": [
+              0.58,
+              0.58
+            ],
+            "sigma_t": 0.07,
+            "sigma_n": 0.07,
+            "angle_degrees": 0.0
+          }
+        ]
+      }
+    ]
+  }
+}

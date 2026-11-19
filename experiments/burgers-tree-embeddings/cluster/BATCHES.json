@@ -1,5 +1,5 @@
 {
-  "cumulative_ceiling_gpu_seconds": 69642,
+  "cumulative_ceiling_gpu_seconds": 74003,
   "batches": [
     {
       "id": "B0",
@@ -163,6 +163,24 @@
       "review": "configs/B6-REVIEW.md",
       "accounting": "manifests/allocation-audit-B6.json",
       "archive": "manifests/archive-closeout-B6.json"
+    },
+    {
+      "id": "B7",
+      "baseline_allocated_gpu_seconds": 45203,
+      "max_additional_gpu_seconds": 28800,
+      "cumulative_ceiling_gpu_seconds": 74003,
+      "purpose": "Parent-first stable nonlinear neural decoder training, then gated neural children/PDE and fair native comparators",
+      "max_concurrent": 2,
+      "max_seconds_per_job": 7200,
+      "configuration": "configs/B7-PARENT-FIRST.md",
+      "registered_utc": "2026-11-19T20:25:15.894374+00:00",
+      "status": "ACTIVE",
+      "activation_evidence": {
+        "configs/B7-PARENT-FIRST.md": "753407994749ab8430ccbb6de5389eea40e2534e16a9c0372a582fdae0fd56ae",
+        "configs/B6-REVIEW.md": "93bb3f5a14ed8146eb9b7fa6281ca1e5e385b7796329f2fb171575592c4bf13f",
+        "manifests/allocation-audit-B6.json": "c041804d5ab84013f19eaf75b241ead809756b7e3bbcddbef7bc357ed063ca7a",
+        "manifests/archive-closeout-B6.json": "47258a14fd9b5233800f0cddcb1c7a7a4a31dd0647753c39237c7205405fc49f"
+      }
     }
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "cumulative_ceiling_gpu_seconds": 28144,
+  "cumulative_ceiling_gpu_seconds": 30789,
   "batches": [
     {
       "id": "B0",
@@ -47,7 +47,33 @@
       },
       "amendments": [
         "configs/B2-SPATIAL-REPAIR.md"
-      ]
+      ],
+      "status": "CLOSED_REVIEWED",
+      "actual_additional_gpu_seconds": 4445,
+      "cumulative_actual_gpu_seconds": 27189,
+      "review": "configs/B2-REVIEW.md",
+      "accounting": "manifests/allocation-audit-B2.json",
+      "archive": "manifests/archive-closeout-B2.json"
+    },
+    {
+      "id": "B3",
+      "baseline_allocated_gpu_seconds": 27189,
+      "max_additional_gpu_seconds": 3600,
+      "cumulative_ceiling_gpu_seconds": 30789,
+      "recipe_cap": 0,
+      "max_concurrent": 2,
+      "max_seconds_per_job": 1200,
+      "purpose": "Equivalent packed direct-tree PDE pilot and one frozen tangent representation screen",
+      "configuration": "configs/B3-IMPLEMENTATION-AND-TANGENT.md",
+      "registered_utc": "2026-11-19T03:05:47.676311+00:00",
+      "activation_evidence": {
+        "configs/B2-REVIEW.md": "1a391d8b75c0525501428e5f761427848236170c7669d06604a32466edbab31c",
+        "configs/B3-IMPLEMENTATION-AND-TANGENT.md": "0a6b04292a28b0407fc57986deb5104d8c657f32b437d46268fe661cb9da0478",
+        "manifests/allocation-audit-B2.json": "70ee0b445a0ec30e89a29a1d6840470b0c671aef2681d4a6067deca77f8fef71",
+        "manifests/archive-closeout-B2.json": "01f88bfad8c2ac221d229709d7698d9fa42bb9af1b7b3f44fc047c5213c44644",
+        "manifests/B2-progress-5b8f4912f1d4.json": "1260be1b755545b6f56b1e23cb33c99208339a29babd13e80e1e4a625bd0a598"
+      },
+      "eight_hour_review": "configs/B2-REVIEW.md"
     }
   ]
 }

@@ -37,6 +37,7 @@ Training uses the registered prefix expansion to 128 trajectories. Development h
 | Global nonlinear 128 | 128 | 2.9436% | 6.2896% | 7.8825% | 7.8825% |
 | Child nonlinear 8 | 544 | 0.8083% | 0.5119% | 1.5059% | 1.5059% |
 | Child nonlinear 16 | 960 | 0.4634% | 0.2687% | 0.6520% | 0.6520% |
+| Same child16 head, 64 nodes | 1152 | 0.4238% | 0.2573% | 0.4044% | 0.4238% |
 
 The direct local entries use resolved physical Gram integration; actual-grid audits are separate. Spectral-feature nonlinear controls are architecture-inspired NM-ROMs, not faithful native coordinate-MLP Tunable reproductions.
 
@@ -68,7 +69,7 @@ Reordering the identical training rows in two prescribed permutations gives glob
 
 ![Actual-grid witnesses](b1-actual-field-witnesses.png)
 
-The image display is subsampled for readability from saved actual-grid arrays. Errors use the complete arrays. The two rows are different worst cases and are not a matched-case attribution test.
+The image display is subsampled for readability from saved actual-grid arrays. Errors use the complete arrays. The rows show different worst cases and are not a matched-case attribution test.
 
 Independent fixed-code scoring confirms local POD24 on every snapshot at the denser grid: worst 0.4229%, with largest change from the resolved physical metric 1.3e-09. The actual-output witness is 0.4229%. All 1248 of 1248 child directions remain numerically independent after removing the parent; their squared singular-value ratio is 1.38e-07.
 
@@ -94,6 +95,8 @@ The direct local POD24 model passes representation and its independent dense aud
 
 Child16 also finishes its registered training and frozen-weight fitting audit. Longer fitting reaches 0.6492%, with maximum stationarity 1.61e-05. Every random development trajectory clears the representation threshold, but alignment cases still fail. A finite same-checkpoint prescribed-tree growth diagnostic is registered to test that specific allocation/compression bottleneck while preserving parents and windows; it is not yet a qualified online adaptive method.
 
+That frozen-head growth diagnostic now passes: 64 retained nodes give 1152 total variables, worst physical projection 0.4238% and actual4096 witness 0.4238%. Fixed-code2048 scoring covers every snapshot; its largest change from the resolved metric is 1.34e-09. Zero-extension preserves the previous field with maximum relative change 0; every audited geometry retains all 1024 independent child directions after root removal. The head weights did not change. This achieves approximately the direct24 model's reconstruction accuracy with fewer variables, while the global960 control remains more accurate at a smaller count. A coupled nonlinear PDE solve, same-checkpoint allocation controls and complete costs remain required. This is initial-callable prescribed growth, not online residual-driven adaptation.
+
 ## Fixed-tree PDE diagnosis
 
 These pilots solve complete trajectories from the shared initial callable with the frozen prescribed tree and global POD768 control. Within each pilot, both use the same exact fine-grid upwind weak operator, time integrator, common test set and integration rule. BE is backward Euler; the registered CN repair is Crank–Nicolson. Q denotes integration intervals; Q=L is dense integration. Smaller Q retains fine stencil spacing1/L and requires independent returned-state refinement. Reference fields are opened for scoring only after both methods finish each case. The table reports all requested evolved times, not only the final output.
@@ -112,6 +115,18 @@ These pilots solve complete trajectories from the shared initial callable with t
 | dev003 | global_POD768 | 2048 | BE | 2048 | 0.0025 | 0.2246% | True | True |
 | align002 | tree_direct24 | 2048 | BE | 2048 | 0.0025 | 1.9630% | True | False |
 | align002 | global_POD768 | 2048 | BE | 2048 | 0.0025 | 1.6391% | True | False |
+| dev000 | tree_direct24 | 4096 | BE | 4096 | 0.0025 | 1.9597% | True | False |
+| dev000 | global_POD768 | 4096 | BE | 4096 | 0.0025 | 1.7218% | True | False |
+| dev003 | tree_direct24 | 4096 | BE | 4096 | 0.0025 | 0.1932% | True | True |
+| dev003 | global_POD768 | 4096 | BE | 4096 | 0.0025 | 0.1930% | True | True |
+| align002 | tree_direct24 | 4096 | BE | 4096 | 0.0025 | 1.8448% | True | False |
+| align002 | global_POD768 | 4096 | BE | 4096 | 0.0025 | 1.4849% | True | False |
+| dev000 | tree_direct24 | 2048 | CN | 2048 | 0.0025 | 1.4724% | True | False |
+| dev000 | global_POD768 | 2048 | CN | 2048 | 0.0025 | 0.7941% | True | True |
+| dev003 | tree_direct24 | 2048 | CN | 2048 | 0.0025 | 0.0824% | True | True |
+| dev003 | global_POD768 | 2048 | CN | 2048 | 0.0025 | 0.0820% | True | True |
+| align002 | tree_direct24 | 2048 | CN | 2048 | 0.0025 | 1.4331% | True | False |
+| align002 | global_POD768 | 2048 | CN | 2048 | 0.0025 | 0.6482% | True | True |
 
 ![Fixed-tree physics diagnosis](b1-fixed-tree-physics.png)
 
@@ -123,7 +138,7 @@ Original recipes, unsuccessful repairs and the original decision remain in [the 
 
 ## Accounting and provenance
 
-Generated 2026-11-18T23:44:05.514697+00:00. Terminal allocations recorded in the current ledger total 12074 GPU-seconds (3.353889 GPU-hours); nonterminal or not-yet-reconciled names: b1weakL4096, b1cn2048. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
+Generated 2026-11-19T00:06:53.663299+00:00. Terminal allocations recorded in the current ledger total 14736 GPU-seconds (4.093333 GPU-hours); nonterminal or not-yet-reconciled names: b1cn2048half. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
 
 ## Glossary
 

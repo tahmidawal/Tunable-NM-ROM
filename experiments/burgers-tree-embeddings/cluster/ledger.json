@@ -625,8 +625,23 @@
     "args": "--nodes 64 --model /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1child16/output --fits /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1child16refit/output --cache /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1cache/output --dev /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/refsdev01/output,/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1refextend/output/dev",
     "gpu": "a100",
     "submitted_utc": "2026-11-18T23:49:57.050537+00:00",
+    "state": "COMPLETED",
+    "elapsed_seconds": 644,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b1cn2048half",
+    "id": 7356901,
+    "reserved_minutes": 60,
+    "commit": "73437310aeb4f3e5a49838850ca0ada8c655187b",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1cn2048half",
+    "driver": "fixed_tree_pilot.py",
+    "args": "--L 2048 --dt .00125 --integrator cn --compare-previous /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1cn2048/output --cache /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1cache/output --span /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1expanded/output --admission /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1directaudit/output --dev /cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/refsdev01/output,/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b1refextend/output/dev",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-19T00:01:08.795253+00:00",
     "state": "RUNNING",
-    "elapsed_seconds": 572,
+    "elapsed_seconds": 334,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
   }

@@ -23,6 +23,7 @@ alias=read('b1spanaudit');span=read('b1expanded');cache=read('b1cache')
 fullglobal=read('b1globalfull');refit8=read('b1child8refit')
 headspan=read('b1headspan2')
 stable=read('b1stableglobal');refit16=read('b1child16refit')
+growth=read('b1childgrowth64')
 labels=[r['case'] for r in cache['cases']['dev']]
 plt.rcParams.update({'font.size':10,'axes.spines.top':False,'axes.spines.right':False})
 
@@ -44,20 +45,21 @@ xx=[v['active_variables'] for v in cache['direct_controls'].values()];yy=[100*v[
 ax.loglog(xx,yy,'o-',color='#00877c',label='Shared local POD + global parent')
 for k,v in cache['direct_controls'].items():ax.annotate(f'{k}/node',(v['active_variables'],100*v['projection']['worst']),xytext=(4,7),textcoords='offset points',fontsize=8)
 trained=[]
-for name in ['b1global64','b1global128','b1child8','b1child16']:
+for name in ['b1global64','b1global128','b1globalwide128','b1child8','b1child16']:
     if not (H/'results'/name/'output/result.json').exists():continue
     r=read(name)
     if not r['status'].startswith('complete_'):continue
     trained.append((name,r))
-    if 'global' in name:ax.scatter([r['latent']],[100*r['worst_projection']],marker='s',s=50,color='#8f54a0',label=f'Global nonlinear {r["latent"]}')
+    if 'global' in name:ax.scatter([r['latent']],[100*r['worst_projection']],marker='s',s=50,color='#8f54a0',label=f'Global nonlinear {r["latent"]}'+(' (wide)' if 'wide' in name else ''))
     else:ax.scatter([r['active_variables']],[100*r['worst_projection']],marker='D',s=50,label=f'Nonlinear child {r["latent"]}')
+ax.scatter([growth['active_variables']],[100*growth['projection']['worst']],marker='*',s=120,color='#e36a0c',label='Same child16 head, 64 retained nodes')
 ax.axhline(.5,color='#b5413c',ls='--',lw=1,label='Representation gate (every snapshot)')
 ax.set(xlabel='Total adjustable variables, including retained parents',ylabel='Worst current-time relative L2 error (%)',
        title='Expanded panel: shared local corrections versus global variables')
 ax.grid(alpha=.17,which='both');ax.legend(fontsize=8,loc='lower left');figure(fig,'b1-representation-capacity')
 
-fig,axs=plt.subplots(2,3,figsize=(10,6),constrained_layout=True)
-for row,name,title in [(0,'auditr1','Original learned local model'),(1,'b1directaudit','Shared local POD24')]:
+fig,axs=plt.subplots(3,3,figsize=(10,9),constrained_layout=True)
+for row,name,title in [(0,'auditr1','Original learned local model'),(1,'b1directaudit','Shared local POD24'),(2,'b1childgrowth64','Nonlinear child16, 64 nodes')]:
     f=H/'results'/name/'output/actual4096.npz';sources[str(f.relative_to(H))]=hashlib.sha256(f.read_bytes()).hexdigest()
     d=np.load(f);ref=d['reference'];pred=d['prediction'];error=pred-ref
     e=float(np.linalg.norm(error)/np.linalg.norm(ref));peak=max(abs(error.min()),abs(error.max()))
@@ -101,6 +103,8 @@ for k,v in cache['direct_controls'].items():
 for n,r in trained:
     chosen=next(c for c in r['checkpoints'] if c['update']==r['selected_update']);e=chosen['projection']['per_snapshot']
     lines.append(f"| {'Global' if 'global' in n else 'Child'} nonlinear {r['latent']} | {r.get('active_variables',r['latent'])} | {pct(panel(e,r['dev_labels'],'original'))} | {pct(panel(e,r['dev_labels'],'new'))} | {pct(panel(e,r['dev_labels'],'alignment'))} | {pct(r['worst_projection'])} |")
+e=growth['projection']['per_snapshot'];gl=[v['case'] for v in growth['cases']]
+lines.append(f"| Same child16 head, {growth['nodes']} nodes | {growth['active_variables']} | {pct(panel(e,gl,'original'))} | {pct(panel(e,gl,'new'))} | {pct(panel(e,gl,'alignment'))} | {pct(growth['projection']['worst'])} |")
 ledger=json.loads((H/'cluster/ledger.json').read_text());terminal={'COMPLETED','FAILED','TIMEOUT','CANCELLED','OUT_OF_MEMORY','NODE_FAIL','PREEMPTED'}
 directaudit=read('b1directaudit')
 allocation_rows='\n'.join(f"| {k} | {v['active_variables']} | {pct(v['projection']['worst'])} |" for k,v in directaudit['controls'].items())
@@ -171,7 +175,7 @@ Reordering the identical training rows in two prescribed permutations gives glob
 
 ![Actual-grid witnesses](b1-actual-field-witnesses.png)
 
-The image display is subsampled for readability from saved actual-grid arrays. Errors use the complete arrays. The two rows are different worst cases and are not a matched-case attribution test.
+The image display is subsampled for readability from saved actual-grid arrays. Errors use the complete arrays. The rows show different worst cases and are not a matched-case attribution test.
 
 Independent fixed-code scoring confirms local POD24 on every snapshot at the denser grid: worst {pct(directaudit['dense_scoring']['2048']['worst'])}, with largest change from the resolved physical metric {directaudit['max_metric_2048_change']:.3g}. The actual-output witness is {pct(directaudit['dense_witness']['relative_l2'])}. All {directaudit['zero_child_jacobian']['independent_directions']} of {directaudit['zero_child_jacobian']['child_variables']} child directions remain numerically independent after removing the parent; their squared singular-value ratio is {directaudit['zero_child_jacobian']['smallest_to_largest']:.3g}.
 
@@ -192,6 +196,8 @@ The historical attribution JSON accidentally calls a selected update number `old
 The direct local POD24 model passes representation and its independent dense audit, so fixed-tree physics has begun. Frozen-weight, longer dense fitting of child8 reduces its worst error to {pct(refit8['worst_projection'])}; maximum stationarity remains {refit8['max_stationarity']:.3g}. The small change weakens the explanation that its entire remaining error is a short code fit, but it is not a proof of a global minimum. Shared nonlinear children train against the assembled physical metric, with jointly refitted parent and child variables at multiple depths.
 
 Child16 also finishes its registered training and frozen-weight fitting audit. Longer fitting reaches {pct(refit16['worst_projection'])}, with maximum stationarity {refit16['max_stationarity']:.3g}. Every random development trajectory clears the representation threshold, but alignment cases still fail. A finite same-checkpoint prescribed-tree growth diagnostic is registered to test that specific allocation/compression bottleneck while preserving parents and windows; it is not yet a qualified online adaptive method.
+
+That frozen-head growth diagnostic now passes: {growth['nodes']} retained nodes give {growth['active_variables']} total variables, worst physical projection {pct(growth['projection']['worst'])} and actual4096 witness {pct(growth['actual4096_witness']['error'])}. Fixed-code2048 scoring covers every snapshot; its largest change from the resolved metric is {growth['max_scoring_change']:.3g}. Zero-extension preserves the previous field with maximum relative change {growth['max_zero_child_transfer']:.3g}; every audited geometry retains all {growth['nodes']*growth['latent']} independent child directions after root removal. The head weights did not change. This achieves approximately the direct24 model's reconstruction accuracy with fewer variables, while the global960 control remains more accurate at a smaller count. A coupled nonlinear PDE solve, same-checkpoint allocation controls and complete costs remain required. This is initial-callable prescribed growth, not online residual-driven adaptation.
 
 ## Fixed-tree PDE diagnosis
 

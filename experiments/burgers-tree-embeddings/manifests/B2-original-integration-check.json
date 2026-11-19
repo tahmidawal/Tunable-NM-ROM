@@ -1,0 +1,112 @@
+{
+  "records": [
+    {
+      "name": "b2quad",
+      "source_sha256": "a96b60441dddd2ffba22671393000e1362a74bcb8c0d4b34e2107853bd88e6a4",
+      "previous_result_sha256": "e142ea74aa69863e0cf4654e9bda9f4b5e5eb519fa28e98f1523ecf45e60397a",
+      "scope": "Only the listed pilot trajectories and frozen representations",
+      "settings": {
+        "L": 8192,
+        "dt": 0.00125,
+        "time_integrator": "cn",
+        "quadrature_intervals": 1024,
+        "global_control": "global_stable960",
+        "global_control_sha256": "4c2cd8f1a14103e90ef5d8fb88bb670a9b53ca753b8d88a1455d14f0fef58930",
+        "stationarity_tolerance": 1e-08,
+        "update_tolerance": 1e-10,
+        "cg_relative_tolerance": 1e-06,
+        "cg_absolute_tolerance": 1e-12,
+        "initial_relative_tolerance": 1e-09,
+        "initial_absolute_tolerance": 1e-13
+      },
+      "passed": true,
+      "rows": [
+        {
+          "case": "dev000",
+          "method": "tree_direct24",
+          "steps": 200,
+          "nonconverged_steps": 0,
+          "full_solver_convergence": true,
+          "physical_accuracy_pass": true,
+          "max_physical_error": 0.002812486446629313,
+          "reference_allowance": 6.68934746585448e-07,
+          "initial_linear_residual": 4.376544406713595e-11,
+          "max_field_change": 4.224672026027272e-06,
+          "sensitivity_pass": true,
+          "common_tests": 22016
+        },
+        {
+          "case": "dev000",
+          "method": "global_stable960",
+          "steps": 200,
+          "nonconverged_steps": 0,
+          "full_solver_convergence": true,
+          "physical_accuracy_pass": true,
+          "max_physical_error": 0.0020256619451594735,
+          "reference_allowance": 6.68934746585448e-07,
+          "initial_linear_residual": 3.196498652389283e-15,
+          "max_field_change": 4.083583966277905e-09,
+          "sensitivity_pass": true,
+          "common_tests": 22016
+        },
+        {
+          "case": "dev003",
+          "method": "tree_direct24",
+          "steps": 200,
+          "nonconverged_steps": 0,
+          "full_solver_convergence": true,
+          "physical_accuracy_pass": true,
+          "max_physical_error": 0.00021247745767424554,
+          "reference_allowance": 1.2345444417596293e-06,
+          "initial_linear_residual": 7.154500881884214e-10,
+          "max_field_change": 4.035453435332457e-08,
+          "sensitivity_pass": true,
+          "common_tests": 22016
+        },
+        {
+          "case": "dev003",
+          "method": "global_stable960",
+          "steps": 200,
+          "nonconverged_steps": 0,
+          "full_solver_convergence": true,
+          "physical_accuracy_pass": true,
+          "max_physical_error": 0.00020536795884164953,
+          "reference_allowance": 1.2345444417596293e-06,
+          "initial_linear_residual": 2.3471607360863497e-15,
+          "max_field_change": 7.536409174719771e-09,
+          "sensitivity_pass": true,
+          "common_tests": 22016
+        },
+        {
+          "case": "align002",
+          "method": "tree_direct24",
+          "steps": 200,
+          "nonconverged_steps": 0,
+          "full_solver_convergence": true,
+          "physical_accuracy_pass": true,
+          "max_physical_error": 0.003129694519036762,
+          "reference_allowance": 7.621482989307439e-07,
+          "initial_linear_residual": 8.832974372654632e-11,
+          "max_field_change": 4.341962381051983e-06,
+          "sensitivity_pass": true,
+          "common_tests": 22016
+        },
+        {
+          "case": "align002",
+          "method": "global_stable960",
+          "steps": 200,
+          "nonconverged_steps": 0,
+          "full_solver_convergence": true,
+          "physical_accuracy_pass": true,
+          "max_physical_error": 0.00360317100959921,
+          "reference_allowance": 7.621482989307439e-07,
+          "initial_linear_residual": 2.9617444322422877e-15,
+          "max_field_change": 4.6526161110130475e-09,
+          "sensitivity_pass": true,
+          "common_tests": 22016
+        }
+      ]
+    }
+  ],
+  "all_passed": true
+}

@@ -69,7 +69,7 @@ for name in names:
             seconds=seconds,passed=bool(converged and physical and equivalent and output_ok and timed),
             solver_pass=bool(converged),physical_pass=bool(physical),equivalence_pass=bool(equivalent),
             actual_output_pass=bool(output_ok),timing_boundary_pass=bool(timed),
-            max_error_with_allowance=max(errors[1:]+actual)+rec['reference_allowance_max'] if physical else None,
+            max_error_with_allowance=max(errors[1:]+actual)+rec['reference_allowance_max'] if len(errors)>1 and actual else None,
             max_equivalence_change=max(changes) if changes else None))
     passed=bool(complete and settings and all(v['passed'] for v in rows) and r['all_passed'])
     audits[name]=dict(passed=passed,registered_setting_matches=bool(settings),complete=complete,rows=rows,
@@ -143,6 +143,17 @@ for name,a in audits.items():table.append(f"|{name}|{len(a['rows'])}|{a['passed'
 cost=['|Tree evaluation|Requested fields|Median ratio|Trajectory-bootstrap95% interval|Worst case ratio|Cases faster|',
       '|---|---:|---:|---|---:|---:|']
 for s in summary:cost.append(f"|{s['method']}|{s['outputs']}|{s['median']:.6f}|[{s['bootstrap95'][0]:.6f}, {s['bootstrap95'][1]:.6f}]|{s['worst']:.6f}|{s['faster_cases']}/{len(labels)}|")
+components=[]
+instrumented=next((n for n in ['b5compact','b5normal','b5cache'] if n in raw),None)
+if instrumented:
+    components=[f'Instrumented diagnostic components from{instrumented}, in seconds. These single invocations locate work; the repeated uninstrumented measurements above determine cost comparisons.',
+        '', '|Case|Method|Selection/assembly|Initial fit|PDE stepping|Requested output|Whole query|',
+        '|---|---|---:|---:|---:|---:|---:|']
+    for v in raw[instrumented]['invocations']:
+        rec=v['record']
+        if not rec.get('complete'):continue
+        values=[rec[k] for k in ['setup_seconds','initial_fit_seconds','solving_seconds','requested_reconstruction_seconds','total_query_seconds']]
+        components.append('|'+v['case']+'|'+v['method']+'|'+'|'.join(f'{x:.6f}' for x in values)+'|')
 ledger=json.loads((H/'cluster/ledger.json').read_text());terminal={'COMPLETED','FAILED','TIMEOUT','CANCELLED','OUT_OF_MEMORY','NODE_FAIL','PREEMPTED'}
 active=[v for v in ledger if (v.get('state') or 'PENDING').split()[0] not in terminal]
 seconds=sum(v.get('elapsed_seconds',0) for v in ledger)
@@ -159,6 +170,8 @@ The direct24/52-node tree and stable global960 control use the admitted fine wea
 {chr(10).join(cost) if summary else 'Paired cost results are not yet admitted.'}
 
 {chr(10).join(figures)}
+
+{chr(10).join(components)}
 
 Ratios always compare invocations on the same GPU/allocation. The two allocations use opposite randomized method orders, with five repetitions per case and output contract. Accuracy and cost use the same returned states. One final4096-square device field is the primary contract; five4096-square fields use separate complete invocations. Host transfer is recorded separately. Each distinct float64 output is retained by raw-byte hash; exact repeats map to that retained array. No coefficient-only output substitutes for a requested field.
 

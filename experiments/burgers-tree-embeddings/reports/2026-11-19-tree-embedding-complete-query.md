@@ -32,7 +32,7 @@ Ratios always compare invocations on the same GPU/allocation. The two allocation
 
 This panel contains only three development trajectories. The exact small-panel bootstrap resamples trajectories, not repetitions; its interval is a diagnostic with limited coverage, not final confirmation. The global control is POD plus prescribed Fourier completion, not a native Tunable/CROM/SNF/masked-autoencoder reproduction. Native competitors, deployable adaptation, method freeze and unopened final-test solutions remain separate requirements. An unqualified timing result is retained but cannot support a speed claim.
 
-Latest scheduler snapshot: 36121 allocated GPU-seconds (10.033611h), with full outstanding reservations charged to36121 seconds against the cumulative cap42296. Active owned jobs: none. Generated 2026-11-19T17:09:56.843544+00:00. The old campaign remains paused; no merge or unrelated3D work.
+Latest scheduler snapshot: 36121 allocated GPU-seconds (10.033611h), with full outstanding reservations charged to38821 seconds against the cumulative cap42296. Active owned jobs: b5block0. Generated 2026-11-19T17:10:31.034791+00:00. The old campaign remains paused; no merge or unrelated3D work.
 
 ## Glossary
 

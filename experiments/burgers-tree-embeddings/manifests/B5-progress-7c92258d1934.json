@@ -1,0 +1,121 @@
+{
+  "utc": "2026-11-19T05:15:21.829157+00:00",
+  "decision": "Complete-query diagnostic remains in progress. Outstanding: b5normal, b5compact, b5block0, b5block1.",
+  "source_hashes": {
+    "b5cache": "56530fca550781033e56aed401bcbeed7acc314985e31db7fd959113060590d4"
+  },
+  "audits": {
+    "b5cache": {
+      "passed": true,
+      "registered_setting_matches": true,
+      "complete": true,
+      "rows": [
+        {
+          "case": "dev000",
+          "method": "global_stable960",
+          "repetition": 0,
+          "outputs": 1,
+          "seconds": 4.917817815206945,
+          "passed": true,
+          "solver_pass": true,
+          "physical_pass": true,
+          "equivalence_pass": true,
+          "actual_output_pass": true,
+          "timing_boundary_pass": true,
+          "max_error_with_allowance": 0.001010541858436893,
+          "max_equivalence_change": 3.0690789420562076e-12
+        },
+        {
+          "case": "dev000",
+          "method": "tree_direct24",
+          "repetition": 0,
+          "outputs": 1,
+          "seconds": 18.20296062203124,
+          "passed": true,
+          "solver_pass": true,
+          "physical_pass": true,
+          "equivalence_pass": true,
+          "actual_output_pass": true,
+          "timing_boundary_pass": true,
+          "max_error_with_allowance": 0.002597275604600678,
+          "max_equivalence_change": 2.7147218296735918e-11
+        },
+        {
+          "case": "dev003",
+          "method": "global_stable960",
+          "repetition": 0,
+          "outputs": 1,
+          "seconds": 4.37520801788196,
+          "passed": true,
+          "solver_pass": true,
+          "physical_pass": true,
+          "equivalence_pass": true,
+          "actual_output_pass": true,
+          "timing_boundary_pass": true,
+          "max_error_with_allowance": 0.00010406238460702398,
+          "max_equivalence_change": 7.420893861831787e-15
+        },
+        {
+          "case": "dev003",
+          "method": "tree_direct24",
+          "repetition": 0,
+          "outputs": 1,
+          "seconds": 14.917049509007484,
+          "passed": true,
+          "solver_pass": true,
+          "physical_pass": true,
+          "equivalence_pass": true,
+          "actual_output_pass": true,
+          "timing_boundary_pass": true,
+          "max_error_with_allowance": 0.00011750952332717852,
+          "max_equivalence_change": 8.469378694971285e-11
+        },
+        {
+          "case": "align002",
+          "method": "tree_direct24",
+          "repetition": 0,
+          "outputs": 1,
+          "seconds": 17.78992920089513,
+          "passed": true,
+          "solver_pass": true,
+          "physical_pass": true,
+          "equivalence_pass": true,
+          "actual_output_pass": true,
+          "timing_boundary_pass": true,
+          "max_error_with_allowance": 0.002934561927267941,
+          "max_equivalence_change": 6.647407182995912e-12
+        },
+        {
+          "case": "align002",
+          "method": "global_stable960",
+          "repetition": 0,
+          "outputs": 1,
+          "seconds": 4.8575763129629195,
+          "passed": true,
+          "solver_pass": true,
+          "physical_pass": true,
+          "equivalence_pass": true,
+          "actual_output_pass": true,
+          "timing_boundary_pass": true,
+          "max_error_with_allowance": 0.003489662335798665,
+          "max_equivalence_change": 1.1087266931663077e-12
+        }
+      ],
+      "prediction_headers_checked": 6,
+      "result_sha256": "62fdc6cb85602ddb34ffaf248ee3bd305f4f7eefa3d4b9cf3ebc47e1625cbfba"
+    }
+  },
+  "paired_rows": [],
+  "summary": [],
+  "order_reversal_pass": null,
+  "failed": [],
+  "remaining": [
+    "b5normal",
+    "b5compact",
+    "b5block0",
+    "b5block1"
+  ],
+  "elapsed_gpu_seconds": 35303,
+  "charged_gpu_seconds": 35303,
+  "own_status": "**New Burgers tree-embedding study: B5 complete-query diagnostic.** Complete-query diagnostic remains in progress. Outstanding: b5normal, b5compact, b5block0, b5block1. Latest recorded allocation9.806389h; active jobs: none. [Complete costs](reports/2026-11-19-tree-embedding-complete-query.md); [representation plots](reports/2026-11-18-tree-embedding-representation.md). Final tests remain unopened and the old campaign paused; no merge."
+}

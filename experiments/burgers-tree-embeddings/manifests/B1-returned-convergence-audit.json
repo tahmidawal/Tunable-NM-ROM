@@ -1,0 +1,306 @@
+{
+  "scope": "Post-hoc audit of existing returned diagnostics; no raw result edited or new scientific experiment",
+  "rule": "finite diagnostics and stationarity<=tol and (relative_update<=update_tol or stationarity<=tol/100)",
+  "records": [
+    {
+      "name": "b1cnM8",
+      "source_sha256": "bb456a83becd9e87e28710080bce9354145c86a0028747d3a240897dd203ead8",
+      "stationarity": 1e-08,
+      "update_tolerance": 1e-10,
+      "rows": [
+        {
+          "case": "dev000",
+          "method": "tree_direct24",
+          "steps": 100,
+          "nonstationary": 0,
+          "nonconverged_returned_steps": 0
+        },
+        {
+          "case": "dev000",
+          "method": "global_POD768",
+          "steps": 100,
+          "nonstationary": 0,
+          "nonconverged_returned_steps": 0
+        },
+        {
+          "case": "dev003",
+          "method": "tree_direct24",
+          "steps": 100,
+          "nonstationary": 0,
+          "nonconverged_returned_steps": 0
+        },
+        {
+          "case": "dev003",
+          "method": "global_POD768",
+          "steps": 100,
+          "nonstationary": 0,
+          "nonconverged_returned_steps": 0
+        },
+        {
+          "case": "align002",
+          "method": "tree_direct24",
+          "steps": 100,
+          "nonstationary": 0,
+          "nonconverged_returned_steps": 0
+        },
+        {
+          "case": "align002",
+          "method": "global_POD768",
+          "steps": 100,
+          "nonstationary": 0,
+          "nonconverged_returned_steps": 0
+        }
+      ]
+    },
+    {
+      "name": "b1cnM16",
+      "source_sha256": "6d2fc0ac35ac7c3e87f94763cfdfdd65544ab24de38b3efc5e4c6688a06cc768",
+      "stationarity": 1e-08,
+      "update_tolerance": 1e-10,
+      "rows": [
+        {
+          "case": "dev000",
+          "method": "tree_direct24",
+          "steps": 100,
+          "nonstationary": 0,
+          "nonconverged_returned_steps": 0
+        },
+        {
+          "case": "dev000",
+          "method": "global_POD768",
+          "steps": 100,
+          "nonstationary": 0,
+          "nonconverged_returned_steps": 0
+        },
+        {
+          "case": "dev003",
+          "method": "tree_direct24",
+          "steps": 100,
+          "nonstationary": 0,
+          "nonconverged_returned_steps": 0
+        },
+        {
+          "case": "dev003",
+          "method": "global_POD768",
+          "steps": 100,
+          "nonstationary": 0,
+          "nonconverged_returned_steps": 0
+        },
+        {
+          "case": "align002",
+          "method": "tree_direct24",
+          "steps": 100,
+          "nonstationary": 0,
+          "nonconverged_returned_steps": 0
+        },
+        {
+          "case": "align002",
+          "method": "global_POD768",
+          "steps": 100,
+          "nonstationary": 0,
+          "nonconverged_returned_steps": 0
+        }
+      ]
+    },
+    {
+      "name": "b1cnM32",
+      "source_sha256": "2c565c3f175fb4fb4a4f41ff8a26658a8e8831eba166061e06e049ba31e6e22f",
+      "stationarity": 1e-08,
+      "update_tolerance": 1e-10,
+      "rows": [
+        {
+          "case": "dev000",
+          "method": "tree_direct24",
+          "steps": 100,
+          "nonstationary": 0,
+          "nonconverged_returned_steps": 0
+        },
+        {
+          "case": "dev000",
+          "method": "global_POD768",
+          "steps": 100,
+          "nonstationary": 0,
+          "nonconverged_returned_steps": 0
+        },
+        {
+          "case": "dev003",
+          "method": "tree_direct24",
+          "steps": 100,
+          "nonstationary": 0,
+          "nonconverged_returned_steps": 0
+        },
+        {
+          "case": "dev003",
+          "method": "global_POD768",
+          "steps": 100,
+          "nonstationary": 0,
+          "nonconverged_returned_steps": 0
+        },
+        {
+          "case": "align002",
+          "method": "tree_direct24",
+          "steps": 100,
+          "nonstationary": 0,
+          "nonconverged_returned_steps": 0
+        },
+        {
+          "case": "align002",
+          "method": "global_POD768",
+          "steps": 100,
+          "nonstationary": 0,
+          "nonconverged_returned_steps": 0
+        }
+      ]
+    },
+    {
+      "name": "b1childpde",
+      "source_sha256": "3d7631aa281e842fe2a964ca281432f23d10ce5fc13398f931e9751a4797b39c",
+      "stationarity": 1e-08,
+      "update_tolerance": 1e-10,
+      "rows": [
+        {
+          "case": "dev000",
+          "method": "tree_child16_n64",
+          "steps": 100,
+          "nonstationary": 74,
+          "nonconverged_returned_steps": 88
+        },
+        {
+          "case": "dev000",
+          "method": "global_stable960",
+          "steps": 100,
+          "nonstationary": 0,
+          "nonconverged_returned_steps": 0
+        },
+        {
+          "case": "dev003",
+          "method": "tree_child16_n64",
+          "steps": 100,
+          "nonstationary": 0,
+          "nonconverged_returned_steps": 0
+        },
+        {
+          "case": "dev003",
+          "method": "global_stable960",
+          "steps": 100,
+          "nonstationary": 0,
+          "nonconverged_returned_steps": 0
+        },
+        {
+          "case": "align002",
+          "method": "tree_child16_n64",
+          "steps": 100,
+          "nonstationary": 86,
+          "nonconverged_returned_steps": 100
+        },
+        {
+          "case": "align002",
+          "method": "global_stable960",
+          "steps": 100,
+          "nonstationary": 0,
+          "nonconverged_returned_steps": 0
+        }
+      ]
+    },
+    {
+      "name": "b1childpdeR1",
+      "source_sha256": "ec7c167c4a58f60fd896751382ca2b8a73d019511d1c26e27bc0ed142e6b100b",
+      "stationarity": 1e-08,
+      "update_tolerance": 1e-10,
+      "rows": [
+        {
+          "case": "dev000",
+          "method": "tree_child16_n64",
+          "steps": 100,
+          "nonstationary": 68,
+          "nonconverged_returned_steps": 76
+        },
+        {
+          "case": "dev000",
+          "method": "global_stable960",
+          "steps": 100,
+          "nonstationary": 0,
+          "nonconverged_returned_steps": 0
+        },
+        {
+          "case": "dev003",
+          "method": "tree_child16_n64",
+          "steps": 100,
+          "nonstationary": 0,
+          "nonconverged_returned_steps": 0
+        },
+        {
+          "case": "dev003",
+          "method": "global_stable960",
+          "steps": 100,
+          "nonstationary": 0,
+          "nonconverged_returned_steps": 0
+        },
+        {
+          "case": "align002",
+          "method": "tree_child16_n64",
+          "steps": 100,
+          "nonstationary": 76,
+          "nonconverged_returned_steps": 84
+        },
+        {
+          "case": "align002",
+          "method": "global_stable960",
+          "steps": 100,
+          "nonstationary": 0,
+          "nonconverged_returned_steps": 0
+        }
+      ]
+    },
+    {
+      "name": "b1childpdeR2",
+      "source_sha256": "5082bd0e1ffa71a2615b321df2cfa2fef5a0d25c885702252ce6a577b1e0c854",
+      "stationarity": 1e-08,
+      "update_tolerance": 1e-10,
+      "rows": [
+        {
+          "case": "dev000",
+          "method": "tree_child16_n64",
+          "steps": 100,
+          "nonstationary": 63,
+          "nonconverged_returned_steps": 79
+        },
+        {
+          "case": "dev000",
+          "method": "global_stable960",
+          "steps": 100,
+          "nonstationary": 0,
+          "nonconverged_returned_steps": 0
+        },
+        {
+          "case": "dev003",
+          "method": "tree_child16_n64",
+          "steps": 100,
+          "nonstationary": 0,
+          "nonconverged_returned_steps": 2
+        },
+        {
+          "case": "dev003",
+          "method": "global_stable960",
+          "steps": 100,
+          "nonstationary": 0,
+          "nonconverged_returned_steps": 0
+        },
+        {
+          "case": "align002",
+          "method": "tree_child16_n64",
+          "steps": 100,
+          "nonstationary": 60,
+          "nonconverged_returned_steps": 70
+        },
+        {
+          "case": "align002",
+          "method": "global_stable960",
+          "steps": 100,
+          "nonstationary": 0,
+          "nonconverged_returned_steps": 0
+        }
+      ]
+    }
+  ]
+}

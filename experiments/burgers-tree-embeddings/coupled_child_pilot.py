@@ -128,6 +128,10 @@ def main():
                 status_columns=['scaled_tested_residual','scaled_stationarity','relative_update','relative_linear_residual','LM_iterations','accepted_steps'])
             if a.optimizer=='bfgs':
                 method['status_columns']=['scaled_tested_residual','scaled_stationarity','relative_update','objective_evaluations_including_rejected_trials','BFGS_iterations','accepted_steps']
+            st=np.asarray(statuses)
+            returned=np.all(np.isfinite(st),axis=1)&(st[:,1]<=a.stationarity)&((st[:,2]<=a.update_tolerance)|(st[:,1]<=a.stationarity*.01))
+            method.update(all_steps_converged=bool(np.all(returned)),nonconverged_steps=int(np.sum(~returned)),
+                convergence_rule='stationarity and (small physical update or100x smaller stationarity); finite returned diagnostics')
             # This post-solve diagnostic is outside query timing and never alters states.
             if ischild:
                 audits=[]
@@ -179,7 +183,7 @@ def main():
             print('coupled_result',label,name,m['physical_error'],flush=True)
         result['cases'].append(row);save(out/'result.json',result)
     result['status']='complete_coupled_child_diagnostic_pilot'
-    result['pilot_gate']=all(m['physical_accuracy_pass'] and m['all_steps_stationary'] and not m.get('tangent_visibility_below_safeguard',False)
+    result['pilot_gate']=all(m['physical_accuracy_pass'] and m['all_steps_converged'] and not m.get('tangent_visibility_below_safeguard',False)
         for r in result['cases'] for m in r['methods'].values())
     result['nonlinear_initial_fits_stationary']=all(r['methods']['tree_child16_n64']['initial_fit_stationarity_or_linear_residual']<=a.stationarity for r in result['cases'])
     result['fixed_tree_admission']=False

@@ -119,6 +119,10 @@ def main():
                 cold_start_including_compilation_seconds=cold,query_before_output_seconds=query,visibility=model['visibility'],
                 finite_trajectory=valid,step_status=np.asarray(statuses),status_columns=['scaled_tested_residual','scaled_stationarity','relative_update','relative_linear_residual','LM_iterations','accepted_steps'],
                 all_steps_stationary=bool(np.max(np.asarray(statuses)[:,1])<=a.stationarity))
+            st=np.asarray(statuses)
+            returned=np.all(np.isfinite(st),axis=1)&(st[:,1]<=a.stationarity)&((st[:,2]<=a.update_tolerance)|(st[:,1]<=a.stationarity*.01))
+            method.update(all_steps_converged=bool(np.all(returned)),nonconverged_steps=int(np.sum(~returned)),
+                convergence_rule='stationarity and (small physical update or100x smaller stationarity); finite returned diagnostics')
             model['states']=np.asarray(states);rowout['methods'][name]=method
             save(out/'result.json',dict(result,cases=result['cases']+[rowout]))
         # Independent physical scoring; it never feeds the solver or policy.

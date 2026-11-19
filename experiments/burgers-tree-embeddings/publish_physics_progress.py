@@ -27,6 +27,16 @@ seconds=sum(v.get('elapsed_seconds',0) for v in ledger);stamp=datetime.datetime.
 status=f'''**New Burgers tree-embedding study: B1 ACTIVE, representation passed; fixed-tree numerical qualification continues.** The same child16 head with64 retained nodes reaches {100*growth['actual4096_witness']['error']:.4f}% on actual4096 output at1152 variables; every development snapshot passes the representation screen. Direct24 gives {100*r['dense_witness']['relative_l2']:.4f}% with1376 variables; prescribed global POD-plus-Fourier gives {100*stable['controls']['960']['worst']:.4f}% with960. The direct PDE pilot passes physical accuracy, but the latest test sensitivity is0.10684%, just above0.1%. The first nonlinear PDE pilot also passes physical accuracy but fails stationarity on160/300 steps; a finite solver repair is running. Matched same-head uniform/prescribed controls continue. The wider global128 neural repair remains at{100*wide['worst_projection']:.4f}% projection error. No all-development PDE admission, complete-runtime win or final-test result. [Generated evidence and plots](reports/2026-11-18-tree-embedding-representation.md). Old campaign remains PAUSED; no merge.'''
 title='### 2026-11-18 — Tree-embedding B1 frozen/global audits and physics: '+', '.join(name for name,_ in pilots)
 status=status.replace('Matched same-head uniform/prescribed controls continue.',allocation_text)
+coupled=[(name,p) for name,p in pilots if name.startswith('b1childpde')]
+coupled_text=''
+if coupled:
+    latest_name,latest=coupled[-1];tree_methods=[c['methods']['tree_child16_n64'] for c in latest['cases']]
+    failures=sum(sum(s[1] is None or s[1]>latest['stationarity_tolerance'] for s in v['step_status']) for v in tree_methods)
+    count=sum(len(v['step_status']) for v in tree_methods)
+    changes=[max(v['previous_state_relative_change']) for v in tree_methods if 'previous_state_relative_change' in v]
+    coupled_text=f"Latest nonlinear PDE diagnostic {latest_name}: {failures}/{count} steps miss stationarity; evolved physical accuracy passes {all(v['physical_accuracy_pass'] for v in tree_methods)}."
+    if changes:coupled_text+=f" Largest returned-field change from its preceding setting is{100*max(changes):.6f}%."
+    status=status.replace('The first nonlinear PDE pilot also passes physical accuracy but fails stationarity on160/300 steps; a finite solver repair is running.',coupled_text)
 if 'ac' in globals() and ac['status']=='complete_frozen_child_allocation_controls':title+='; frozen child allocation'
 lines=[]
 for name,p in pilots:
@@ -60,6 +70,8 @@ Completed11008-test CN comparison: all three cases and both methods pass physica
 The first coupled child16/64-node pilot has physical error below1% on all three exposed cases, but74 dev000 and86 align002 steps fail stationarity1e-8. Smooth dev003 is stationary. All requested-state tangent visibility minima exceed0.35, so the useful child directions remain observed by the tests in this diagnostic. Initial fits are separately underconverged, especially alignment stationarity3.44e-6. The first bounded online-solver repair increases only the common PDE LM cap30 to120; its unchanged cold fits and all costs remain visible. An optional coordinate-scaling implementation passes a sub-minute independent CPU fixture but is not enabled in that repair. Workstation GPU initialization failed before fixture arithmetic; no unrelated process was changed. All scientific experiments use preflight-verified float64 cluster GPUs.
 
 {allocation_text} Uniform20 and prescribed20 also retain identical448-variable budgets. Every allocation uses the same selected child head and resolved physical metric, with encoder, zero and temporal starts; no weights were retrained. Fit stationarity is retained in the generated table, so the comparison is not presented as a certified manifold optimum.
+
+{coupled_text} The completed iteration-limit repair is retained even though it fails. Its successor, safeguarded inverse BFGS with Armijo line search, is a separately registered second repair of the same online solver bottleneck; it uses the identical physical objective and tolerance. All rejected trials count. If it also fails, no further optimizer search occurs without a written scoped decision or specific amendment. The unchanged initial fits remain a separate qualification issue.
 
 Ledger snapshot: {seconds} elapsed allocated GPU-seconds ({seconds/3600:.6f}h), including active elapsed time. Outstanding full reservations remain charged by the submission guard. Active owned names: {', '.join(v['name'] for v in active) or 'none'}. Old paused namespace and final-test solution fields remain untouched. Source, selected models and generated report are mirrored; raw evidence has local and designated cluster copies. No merge.
 '''

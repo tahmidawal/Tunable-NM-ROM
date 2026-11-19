@@ -160,6 +160,12 @@ These pilots solve complete trajectories from the shared initial callable with t
 | dev003 | global_stable960 | 2048 | CN | 11008 | 2048 | 0.0025 | 0.0820% | True | True |
 | align002 | tree_child16_n64 | 2048 | CN | 11008 | 2048 | 0.0025 | 0.6479% | False | True |
 | align002 | global_stable960 | 2048 | CN | 11008 | 2048 | 0.0025 | 0.6481% | True | True |
+| dev000 | tree_child16_n64 | 2048 | CN | 11008 | 2048 | 0.0025 | 0.7938% | False | True |
+| dev000 | global_stable960 | 2048 | CN | 11008 | 2048 | 0.0025 | 0.7941% | True | True |
+| dev003 | tree_child16_n64 | 2048 | CN | 11008 | 2048 | 0.0025 | 0.0825% | True | True |
+| dev003 | global_stable960 | 2048 | CN | 11008 | 2048 | 0.0025 | 0.0820% | True | True |
+| align002 | tree_child16_n64 | 2048 | CN | 11008 | 2048 | 0.0025 | 0.6531% | False | True |
+| align002 | global_stable960 | 2048 | CN | 11008 | 2048 | 0.0025 | 0.6481% | True | True |
 
 ![Fixed-tree physics diagnosis](b1-fixed-tree-physics.png)
 
@@ -174,6 +180,9 @@ The first nonlinear-child PDE pilot reaches physical errors below1% on all three
 | b1childpde | dev000 | 0.7887% | 74/100 | 3.09e-05 | 6.14e-08 |
 | b1childpde | dev003 | 0.0825% | 0/100 | 4.62e-11 | 1.29e-08 |
 | b1childpde | align002 | 0.6479% | 86/100 | 5.13e-05 | 3.44e-06 |
+| b1childpdeR1 | dev000 | 0.7938% | 68/100 | 2.88e-05 | 6.14e-08 |
+| b1childpdeR1 | dev003 | 0.0825% | 0/100 | 4.62e-11 | 1.29e-08 |
+| b1childpdeR1 | align002 | 0.6531% | 76/100 | 2.88e-05 | 3.44e-06 |
 
 Pulse errors remain above the physical gate in the initial pilot for both methods despite tightly converged weak solves. Spatial, temporal, test and integration refinements distinguish numerical error from reduced dynamics. The initial pilot omitted explicit burn-in immediately before timing: those original wall times are retained as unqualified diagnostics and support no speed comparison. Follow-ups include burn-in. Pilot clocks also charge the joint comparison setup to each method; they are not valid method-specific speed ratios. Complete timing must measure each method's own initialization, assembly and output. The small pilot is not all-development qualification, deployable adaptation, or a complete-runtime benchmark.
 
@@ -194,7 +203,7 @@ Original recipes, unsuccessful repairs and the original decision remain in [the 
 
 ## Accounting and provenance
 
-Generated 2026-11-19T01:14:32.153209+00:00. Terminal allocations recorded in the current ledger total 19292 GPU-seconds (5.358889 GPU-hours); nonterminal or not-yet-reconciled names: b1childpdeR1, b1cnM32. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
+Generated 2026-11-19T01:22:26.146596+00:00. Terminal allocations recorded in the current ledger total 20551 GPU-seconds (5.708611 GPU-hours); nonterminal or not-yet-reconciled names: b1cnM32, b1childpdeR2. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
 
 ## Glossary
 

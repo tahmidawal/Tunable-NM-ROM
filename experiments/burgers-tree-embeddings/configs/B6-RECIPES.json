@@ -5,21 +5,21 @@
   "recipes": [
     {
       "id": "neural_parent",
-      "status": "complete: weak parent, stable-fit follow-up required",
+      "status": "complete: weak parent reconstruction, full fitting convergence achieved by repair1",
       "source": "train_coordinate_parent.py"
     },
     {
       "id": "neural_tree",
-      "status": "registered initial recipe with fail-closed parent stability audit",
+      "status": "failed initial recipe and bounded repairs; named-family evaluation only",
       "source": "train_coordinate_tree.py"
     },
     {
       "id": "CROM",
-      "status": "native source/dependency qualification pending"
+      "status": "native-network diagnostic trained; native projection diagnostic pending; no PDE admission"
     },
     {
       "id": "SNF-ROM",
-      "status": "native source/dependency qualification pending"
+      "status": "native dependency compatibility final retry in progress; no training or PDE admission"
     }
   ],
   "diagnosed_repairs": [
@@ -28,7 +28,7 @@
       "reason": "One parent fit fails full stopping rule after fixed-checkpoint continuation",
       "source": "neural/fields.py:newton=True",
       "driver": "train_coordinate_tree.py --parent-newton",
-      "status": "registered",
+      "status": "complete: all parent fits meet full criterion; initial child training failed",
       "max_minutes": 90
     },
     {
@@ -36,7 +36,7 @@
       "reason": "Parent degradation under joint weight training; useful child directions but failed fitting and reconstruction",
       "source": "neural/factorized.py",
       "feature_driver": "pretrain_local_features.py",
-      "status": "registered staged final repair",
+      "status": "stopped: assembled learned-feature capacity prerequisite fails; no nonlinear-head or PDE admission",
       "feature_minutes_max": 60
     }
   ]

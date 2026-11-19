@@ -1,0 +1,7 @@
+# Independent enrichment after the8K weak-test repair
+
+The first exposed pulse in the unchanged direct24 tree improves from1.4724% to0.7950% worst evolved error when the common weak-test count increases from5504 to11008. Time halving had changed the returned field by at most0.0576% and had not removed the early failure. This identifies test truncation as a concrete numerical issue, without attributing every case or error component prematurely.
+
+Conditioned on completion of the current three-case8K diagnostic, reserve45 GPU-minutes within B1 for test-factor16 (22016 starting tests), with exactly the same direct24 tree and globalPOD768, L2048, dense integration and CN dt0.0025. Compare all requested returned fields against the completed8K run. Preserve the visibility ladder and common test count for both methods. This is an independent one-factor check; no decoder, fitting, time step, integration rule or spatial spacing changes.
+
+Require every case physically accurate and stationary, and at most0.1% physical state change from8K before admitting8K as numerically insensitive. A larger change blocks that admission and triggers a written finite review. The nonlinear coupled pilot remains a separate candidate and needs its own checks. Its first11008-test run is diagnostic, not inheriting qualification automatically from this direct control. Complete-runtime timing must separately measure each method's own setup; pilot times that charge shared comparison setup to both are not a valid speed ratio.

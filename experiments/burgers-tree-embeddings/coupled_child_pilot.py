@@ -38,7 +38,8 @@ def main():
         root_basis_sha256=ar['basis_sha256'],global_basis_sha256=gr['basis_sha256'],nodes=64,child_latent=16,
         operator='incumbent scaled tested weak residual; exact fine-grid sign-upwind; discrete sine eigen-diffusion; Crank-Nicolson',
         integration='dense fine-grid tested sum through orthonormal DST',input_contract='shared initial-field callable only',
-        labels=a.labels.split(','),cases=[],final_test_opened=False,timing_claim='diagnostic complete query including compilation; no performance inference',
+        labels=a.labels.split(','),cases=[],final_test_opened=False,
+        timing_claim='diagnostic wall time including compilation; joint comparison setup is charged to each method, so these are not method-specific performance measurements',
         stationarity_tolerance=1e-8,update_tolerance=1e-10,initial_fit_attempts=2,initial_fit_max_iterations=250)
     save(out/'result.json',result)
     for label in result['labels']:
@@ -75,6 +76,10 @@ def main():
             initialfit=C.make_initial_fit(field) if ischild else W.make_initial_fit(field)
             burn_gpu();start=time.perf_counter();axis=jnp.arange(1,a.L)/a.L;xy=jnp.stack(jnp.meshgrid(axis,axis,indexing='ij'),axis=-1)
             u0=initial(xy);fit=initialfit(u0,ca);z,e0,fitstation=fit[:3];jax.block_until_ready(z)
+            if not bool(jnp.all(jnp.isfinite(z))) or not bool(jnp.isfinite(e0)) or not bool(jnp.isfinite(fitstation)):
+                failure=checkpoint(out/f'{label}_{name}_failed_initial.pkl',dict(fit=jax.device_get(fit)))
+                result.update(status='failed_coupled_initial_fit',failure=dict(case=label,method=name,checkpoint_sha256=failure))
+                save(out/'result.json',result);return
             cold=time.perf_counter()-start;states=[np.asarray(decode(z,ca))];codes=[np.asarray(z)];statuses=[];valid=True
             for it in range(1,round(.25/a.dt)+1):
                 z,status=step(z,ca,a.dt,data.NU,1e-8,1e-10);jax.block_until_ready(z);statuses.append(np.asarray(status));coef=decode(z,ca)
@@ -88,7 +93,7 @@ def main():
             method=dict(active_variables=len(z),initial_fit_error=float(e0),initial_fit_stationarity_or_linear_residual=float(fitstation),
                 initial_fit_accepted=np.asarray(fit[3]) if ischild else None,cold_start_including_compilation_seconds=cold,
                 query_before_output_seconds=wall,finite_trajectory=valid,all_steps_stationary=bool(np.max(np.asarray(statuses)[:,1])<=1e-8),
-                visibility=model['visibility'],step_status=np.asarray(statuses),
+                visibility=model['visibility'],step_status=np.where(np.isfinite(statuses),np.asarray(statuses,dtype=object),None).tolist(),
                 status_columns=['scaled_tested_residual','scaled_stationarity','relative_update','relative_linear_residual','LM_iterations','accepted_steps'])
             # This post-solve diagnostic is outside query timing and never alters states.
             if ischild:

@@ -146,7 +146,7 @@ A passing small pilot is not the all44-development-trajectory gate. No deployabl
 
 Pilot clocks charge joint comparison setup to each method and cannot serve as method-specific speed ratios. Initialization, assembly, solving, rejected trials, fallback and requested output remain mandatory components of later complete-query timing. The equivalent packed field implementation has only CPU fixture evidence and is not used in this batch.
 
-Generated {stamp}. Elapsed allocated time is{seconds} GPU-seconds ({seconds/3600:.6f}h). The reservation guard currently charges{charged} seconds, including full reservations for active jobs. Active owned jobs: {', '.join(r['name'] for r in active) or 'none'}. B2 is capped at5400 additional GPU-seconds from22744, for a cumulative ceiling28144 seconds. Source/configurations, scheduler records and verified retention manifests are in the owned lane. The old campaign remains paused; final-test fields remain unopened.
+Generated {stamp}. The latest scheduler ledger records{seconds} elapsed GPU-seconds ({seconds/3600:.6f}h); this is a snapshot when jobs are active. The reservation guard charges{charged} seconds, including full reservations for active jobs. Active owned jobs: {', '.join(r['name'] for r in active) or 'none'}. B2 is capped at5400 additional GPU-seconds from22744, for a cumulative ceiling28144 seconds. Source/configurations, scheduler records and verified retention manifests are in the owned lane. The old campaign remains paused; final-test fields remain unopened.
 '''
 filename = '2026-11-18-tree-embedding-fixed-tree.md'
 (out / filename).write_text(text.replace('2026-11-18-tree-embedding-representation-assets/', ''))

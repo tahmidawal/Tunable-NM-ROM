@@ -32,8 +32,10 @@ def inspect(name):
                                    values['full_trajectory_returned'] and
                                    len(status) == expected_steps and
                                    len(values['physical_error']) == 6)
-            physical = max(values['physical_error'][1:] + [values['actual4096_final_error']])
-            accuracy_pass = (trajectory_complete and values['output_shape'] == [4096, 4096]
+            # An aborted trajectory is a retained failure, not a missing-key
+            # exception that prevents publishing its failed admission.
+            physical = max(values['physical_error'][1:] + [values.get('actual4096_final_error', math.inf)])
+            accuracy_pass = (trajectory_complete and values.get('output_shape') == [4096, 4096]
                              and physical + values['reference_allowance_max'] <= .01)
             change = values.get('previous_state_relative_change')
             rows.append(dict(case=case['case'], method=method,

@@ -39,9 +39,9 @@ class FixedQuery:
             assert (catalogue['L'],catalogue['Q'],catalogue['tests'],catalogue['output_points'])==(L,Q,tests,output_points)
             assert catalogue['root']==len(basis) and catalogue['rank']==rotation.shape[1]
 
-    def __call__(self,initial,outputs=1):
+    def __call__(self,initial,outputs=1,components=True):
         assert outputs in (1,5)
-        start=time.perf_counter()
+        start=time.perf_counter() if components else 0.
         if self.catalogue is None:
             ca,output_cache=self.cache,self.output_cache
             cells=[];vis=self.visibility
@@ -52,18 +52,18 @@ class FixedQuery:
             vis=visibility(ca,self.tests)
             if vis['minimum']<1e-6:
                 return dict(complete=False,failure='insufficient tested visibility',
-                            total_query_seconds=time.perf_counter()-start,visibility=vis)
+                            total_query_seconds=time.perf_counter()-start if components else None,visibility=vis)
             if self.reuse_normal:
                 ca=dict(ca,linear_normal=ca['A'].T@ca['A']);jax.block_until_ready(ca['linear_normal'])
-        setup=time.perf_counter()-start
-        tfit=time.perf_counter();u0=initial(self.xy)
+        setup=time.perf_counter()-start if components else None
+        tfit=time.perf_counter() if components else 0.;u0=initial(self.xy)
         c,fit_error,linear_residual=self.fit(u0,ca);jax.block_until_ready((c,fit_error,linear_residual))
         # The fixed initial norm is evaluated once; its value is the same as
         # evaluating it again inside every step's runaway guard.
         initial_norm=float(jnp.linalg.norm(u0)/self.Q)
-        cold=time.perf_counter()-tfit
+        cold=time.perf_counter()-tfit if components else None
         states=[c];statuses=[];complete=True;failure=None
-        tsolve=time.perf_counter()
+        tsolve=time.perf_counter() if components else 0.
         for it in range(1,round(.25/self.dt)+1):
             c,status=self.step(c,ca,self.dt,data.NU,1e-8,1e-10)
             jax.block_until_ready((c,status));s=np.asarray(status);statuses.append(s)
@@ -73,15 +73,15 @@ class FixedQuery:
             if not (converged and finite and bounded):
                 complete=False;failure='returned step convergence or finite-field guard';break
             if it%round(.05/self.dt)==0:states.append(c)
-        solving=time.perf_counter()-tsolve
+        solving=time.perf_counter()-tsolve if components else None
         fields=()
-        tout=time.perf_counter()
+        tout=time.perf_counter() if components else 0.
         if complete:
             chosen=states[-1:] if outputs==1 else states[1:]
             fields=tuple(self.output(v,output_cache) for v in chosen)
             jax.block_until_ready(fields)
-        reconstruction=time.perf_counter()-tout
-        total=time.perf_counter()-start
+        reconstruction=time.perf_counter()-tout if components else None
+        total=time.perf_counter()-start if components else None
         # Host transfers of the requested fields, physical scoring and storage
         # are deliberately outside this device-output contract. A caller must
         # time/report any requested host transfer separately.
@@ -92,4 +92,5 @@ class FixedQuery:
             requested_reconstruction_seconds=reconstruction,total_query_seconds=total,
             requested_field_count=outputs,rejected_trials=0,fallback_invocations=0,
             output_contract='actual device fields; host transfer reported separately',
+            component_instrumentation=components,
             reusable_setup_excluded=True,query_specific_compilation_included=True)

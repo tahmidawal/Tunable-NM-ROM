@@ -5,6 +5,7 @@ from training_io import read_checkpoint,checkpoint
 from build_local_cache import cohort
 import data,local_polynomial as LP,tensor_metric as TM,shared_child_head as H
 import discrete_weak as W,weak_quadrature as QW,coupled_child as C
+import quasi_newton as B
 
 
 def visibility(A,G):
@@ -26,6 +27,7 @@ def main():
     ap.add_argument('--iterations',type=int,default=30);ap.add_argument('--cg-iterations',type=int,default=80)
     ap.add_argument('--stationarity',type=float,default=1e-8);ap.add_argument('--update-tolerance',type=float,default=1e-10)
     ap.add_argument('--compare-previous')
+    ap.add_argument('--optimizer',choices=['lm','bfgs'],default='lm')
     a=ap.parse_args();out=Path(a.out);out.mkdir(parents=True,exist_ok=True);meta=preflight()
     mp=Path(a.model);mr=json.loads((mp/'result.json').read_text());assert digest(mp/'shared_child.pkl')==mr['model_sha256']
     head=read_checkpoint(mp/'shared_child.pkl');assert head['latent']==16
@@ -50,6 +52,13 @@ def main():
         initial_fit_attempts=2,initial_fit_max_iterations=250,
         linear_coordinates='tested_mass_diagonal_scaled' if a.scale_linear_coordinates else 'original',
         linear_residual_metric='tested_mass_diagonal_scaled' if a.scale_linear_coordinates else 'original')
+    result['optimizer']=a.optimizer
+    if a.optimizer=='bfgs':
+        assert not a.scale_linear_coordinates,'BFGS already uses fixed mass-diagonal coordinates'
+        result.update(linear_coordinates='fixed_initial_tested_mass_diagonal',linear_residual_metric=None,
+            optimizer_iteration_cap=a.iterations,LM_iteration_cap=None,CG_iteration_cap=None,
+            line_search='Armijo c1=1e-4, at most20 halvings, all trials counted',
+            inverse_metric_initial_regularization=1e-4)
     if a.compare_previous:
         previous_path=Path(a.compare_previous)
         assert str(previous_path).startswith(os.environ['STUDY_NAMESPACE']+'/')
@@ -91,9 +100,10 @@ def main():
         for name,model in models.items():
             ischild=name.startswith('tree');ca=model['cache'];ca=dict(ca,A=ca['A'][:commonM],indices=ca['indices'][:,:commonM],lam=ca['lam'][:commonM])
             field=model['field'];decode=C.coefficients if ischild else lambda z,ca:z
-            step,_=W.make_solver(field,a.L,iterations=a.iterations,cg_iterations=a.cg_iterations,theta=.5,coefficient_map=C.coefficients if ischild else None,
-                                 tested_mass_jacobian=C.tested_mass_jacobian if ischild else None,
-                                 scale_linear_coordinates=a.scale_linear_coordinates)
+            kw=dict(iterations=a.iterations,theta=.5,coefficient_map=C.coefficients if ischild else None,
+                    tested_mass_jacobian=C.tested_mass_jacobian if ischild else None)
+            if a.optimizer=='lm':step,_=W.make_solver(field,a.L,cg_iterations=a.cg_iterations,scale_linear_coordinates=a.scale_linear_coordinates,**kw)
+            else:step,_=B.make_solver(field,a.L,**kw)
             initialfit=C.make_initial_fit(field) if ischild else W.make_initial_fit(field)
             burn_gpu();start=time.perf_counter();axis=jnp.arange(1,a.L)/a.L;xy=jnp.stack(jnp.meshgrid(axis,axis,indexing='ij'),axis=-1)
             u0=initial(xy);fit=initialfit(u0,ca);z,e0,fitstation=fit[:3];jax.block_until_ready(z)
@@ -116,6 +126,8 @@ def main():
                 query_before_output_seconds=wall,finite_trajectory=valid,all_steps_stationary=bool(np.max(np.asarray(statuses)[:,1])<=a.stationarity),
                 visibility=model['visibility'],step_status=np.where(np.isfinite(statuses),np.asarray(statuses,dtype=object),None).tolist(),
                 status_columns=['scaled_tested_residual','scaled_stationarity','relative_update','relative_linear_residual','LM_iterations','accepted_steps'])
+            if a.optimizer=='bfgs':
+                method['status_columns']=['scaled_tested_residual','scaled_stationarity','relative_update','objective_evaluations_including_rejected_trials','BFGS_iterations','accepted_steps']
             # This post-solve diagnostic is outside query timing and never alters states.
             if ischild:
                 audits=[]

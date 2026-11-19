@@ -125,6 +125,15 @@
       "result": "PASS default weak operator, CN, structured integration and cold fit after optional coordinate scaling; stationarity2.5051e-14",
       "benchmark": false,
       "source_sha256": "3b1494e93d777718907e6ed085ae76c54e0b1e794bccee1399034db7c1dcf0d1"
+    },
+    {
+      "script": "test_quasi_newton.py",
+      "utc": "2026-11-19T01:05:00.506200+00:00",
+      "maximum_seconds": 55,
+      "launcher": "JAX_PLATFORMS=cpu timeout55s jaxrun",
+      "result": "PASS independent Rosenbrock minimizer and positive curvature,35 iterations90 objective evaluations including rejected trials; nonlinear CN agrees with verified LM at8.55e-12 physical change and3.17e-12 stationarity",
+      "benchmark": false,
+      "source_sha256": "52c931100fb5da6b13c0377a5cd4bc02dd206283b016b2611b7dd544cc2fd976"
     }
   ]
 }

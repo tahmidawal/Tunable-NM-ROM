@@ -37,15 +37,15 @@ for ci,case in enumerate(named['cases']):
         a=np.load(H/'results/b7namedparent/output'/row['actual4096']['file'])
         assert a['reference'].shape==(4096,4096) and a['prediction'].shape==(4096,4096)
         frames.append((a['reference'],a['prediction']));a.close()
-    vmax=max(v[0].max() for v in frames);emax=max(np.abs(v[1]-v[0]).max() for v in frames)
+    vmin=min(min(v[0].min(),v[1].min()) for v in frames);vmax=max(max(v[0].max(),v[1].max()) for v in frames);emax=max(np.abs(v[1]-v[0]).max() for v in frames)
     fig,axes=plt.subplots(3,len(frames),figsize=(17,8),constrained_layout=True)
     for k,((ref,pred),row) in enumerate(zip(frames,rows)):
         for j,field in enumerate([ref,pred,np.abs(pred-ref)]):
             kind=['reference','reconstruction','error'][j]
             export=export_dir/f'{case["case"]}_t{row["time"]:.2f}_{kind}.png'
-            plt.imsave(export,field.T,origin='lower',vmin=0,vmax=emax if j==2 else vmax,cmap='magma' if j==2 else 'viridis')
-            full_exports.append(dict(source=str(export),case=case['case'],time=row['time'],kind=kind,shape=[4096,4096],color_min=0,color_max=float(emax if j==2 else vmax)))
-            im=axes[j,k].imshow(field[::8,::8].T,origin='lower',extent=[0,1,0,1],vmin=0,vmax=emax if j==2 else vmax,cmap='magma' if j==2 else 'viridis')
+            plt.imsave(export,field.T,origin='lower',vmin=0 if j==2 else vmin,vmax=emax if j==2 else vmax,cmap='magma' if j==2 else 'viridis')
+            full_exports.append(dict(source=str(export),case=case['case'],time=row['time'],kind=kind,shape=[4096,4096],color_min=float(0 if j==2 else vmin),color_max=float(emax if j==2 else vmax)))
+            im=axes[j,k].imshow(field[::8,::8].T,origin='lower',extent=[0,1,0,1],vmin=0 if j==2 else vmin,vmax=emax if j==2 else vmax,cmap='magma' if j==2 else 'viridis')
             axes[j,k].set_xticks([0,.5,1]);axes[j,k].set_yticks([0,.5,1])
             if j==0:axes[j,k].set_title(f't={row["time"]:.2f}')
             if j==1:axes[j,k].set_xlabel(f'L2 error {100*row["actual4096"]["relative_error"]:.3f}%')

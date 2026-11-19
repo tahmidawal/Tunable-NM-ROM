@@ -1,5 +1,5 @@
 """Bounded native-source/environment qualification, without pretrained/data downloads."""
-import argparse,urllib.request,subprocess,tarfile,importlib.util,sys
+import argparse,urllib.request,subprocess,tarfile,importlib.util,sys,signal
 from common import *
 
 SOURCES={'crom_offline':('dc3042/CROM_offline_training','39333f76ccf878dacc9ae425c185b76ed4e72c5c'),
@@ -29,10 +29,13 @@ def source(out,key,repo,rev):
 
 def command(args,out,env=None,timeout=120):
     with open(out,'w') as f:
+        p=subprocess.Popen(args,stdout=f,stderr=subprocess.STDOUT,env=env,start_new_session=True)
         try:
-            p=subprocess.run(args,stdout=f,stderr=subprocess.STDOUT,timeout=timeout,env=env)
+            p.wait(timeout=timeout)
             return dict(returncode=p.returncode,log=Path(out).name)
-        except subprocess.TimeoutExpired:return dict(returncode=None,timed_out=True,log=Path(out).name)
+        except subprocess.TimeoutExpired:
+            os.killpg(p.pid,signal.SIGKILL);p.wait()
+            return dict(returncode=None,timed_out=True,log=Path(out).name)
 
 
 def main():

@@ -16,7 +16,7 @@ def main():
     dp=resolve(ns/'b6parent/output/coordinate_data.npz',ns);assert digest(dp)==p['data_sha256'];d=np.load(dp)
     network=jax.tree.map(jnp.asarray,p['network']);codes=jnp.asarray(p['training_codes']);enc=jnp.asarray(p['training_encoder'])
     xy,w=jnp.asarray(d['xy']),jnp.asarray(d['w']);training_fields=jnp.asarray(d['train_y']);xf,wf=data.grid(256,True);xf,wf=jnp.asarray(xf),jnp.asarray(wf)
-    fit=F.make_fit(S.apply,60);curv=F.make_fit(S.apply,120,newton=True);decode=jax.jit(S.apply)
+    fit=F.make_fit(S.apply,60);curv=F.make_fit(S.apply,120,newton=True);decode=jax.jit(S.apply);jacobian=jax.jit(jax.jacfwd(S.apply,argnums=1))
     result=dict(meta=meta,status='running',checkpoint_sha256=digest(cp),source_sha256=digest(rp),rows=[],weights_changed=False,
         classification='Closing fixed-weight starting-point diagnosis only; not a third parent repair or method admission',final_test_opened=False)
     saved=[]
@@ -37,7 +37,10 @@ def main():
         src=p['data_record']['groups']['dev']['sources'][int(i)//11];path=resolve(src['file'],ns);assert digest(path)==src['sha256']
         b=jnp.asarray(np.load(path)['coefficients'][int(i)%11]);truth=data.synth_grid(b,jnp.unique(xf[:,0])).reshape(-1)
         error=float(jnp.sqrt(jnp.sum(wf*(decode(network,z,xf)-truth)**2))/norm)
-        row=dict(index=int(i),original_error=r['independent_errors'][int(i)],best_independent_error=error,best_start=k,training_start_indices=ids,statuses=statuses)
+        tangent=jacobian(network,z,xy)*jnp.sqrt(w)[:,None]/norm
+        scales=jnp.linalg.norm(tangent,axis=0);singular=jnp.linalg.svd(tangent/jnp.maximum(scales,1e-14),compute_uv=False)
+        conditioning=dict(column_norms=np.asarray(scales),normalized_singular_values=np.asarray(singular),rank_at_relative_1e6=int(jnp.sum(singular>singular[0]*1e-6)),minimum_relative=float(singular[-1]/singular[0]))
+        row=dict(tangent_conditioning=conditioning,index=int(i),original_error=r['independent_errors'][int(i)],best_independent_error=error,best_start=k,training_start_indices=ids,statuses=statuses)
         result['rows'].append(row);saved.append(np.asarray(z));save(out/'result.json',result);print('starting_point_diagnosis',int(i),row['original_error'],error,k,flush=True)
     result['codes_sha256']=checkpoint(out/'codes.pkl',saved);result.update(status='complete',representation_admitted=False,pde_admitted=False)
     save(out/'result.json',result)

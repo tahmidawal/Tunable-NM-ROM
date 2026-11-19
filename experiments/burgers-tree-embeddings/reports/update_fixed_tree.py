@@ -31,7 +31,9 @@ for name in names:
     audit = inspect(name)
     setting = dict(expected, **changes[name])
     identities = (r['global_control'] == 'global_stable960' and
-                  r['labels'] == ['dev000', 'dev003', 'align002'])
+                  r['labels'] == ['dev000', 'dev003', 'align002'] and
+                  r['time_integrator'] == 'cn' and
+                  r.get('field_implementation','compact local patch slices') == 'compact local patch slices')
     setting_matches = all(r[k] == v for k, v in setting.items() if k != 'common_tests')
     setting_matches &= all(c['common_tests'] == setting['common_tests'] for c in r['cases'])
     if name != 'b2base':

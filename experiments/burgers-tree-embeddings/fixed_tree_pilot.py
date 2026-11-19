@@ -3,7 +3,7 @@ import argparse
 from common import *
 from training_io import read_checkpoint,checkpoint
 from build_local_cache import cohort,expand_matrix
-import data,local_polynomial as LP,tensor_metric as TM,discrete_weak as W,weak_quadrature as QW
+import data,local_polynomial as LP,tensor_metric as TM,discrete_weak as W,weak_quadrature as QW,packed_fields as PF
 
 
 def visibility(cache,M):
@@ -26,7 +26,14 @@ def main():
     ap.add_argument('--stationarity',type=float,default=1e-8);ap.add_argument('--update-tolerance',type=float,default=1e-10)
     ap.add_argument('--cg-relative',type=float,default=1e-6);ap.add_argument('--cg-absolute',type=float,default=1e-12)
     ap.add_argument('--initial-relative',type=float,default=1e-9);ap.add_argument('--initial-absolute',type=float,default=1e-13)
+    ap.add_argument('--packed-fields',action='store_true',help='separately qualified equivalent padded-axis field contractions')
     a=ap.parse_args();out=Path(a.out);out.mkdir(parents=True,exist_ok=True);meta=preflight()
+    assert not a.packed_fields or a.quadrature>0
+    if a.packed_fields:
+        packed_initial=W.make_initial_fit(PF.center,a.initial_relative,a.initial_absolute)
+        packed_step,_=W.make_solver(PF.center,a.L,theta=1. if a.integrator=='be' else .5,
+            advection_tests=PF.tested_advection(a.L,a.quadrature),cg_tolerance=a.cg_relative,cg_absolute_tolerance=a.cg_absolute)
+        packed_output=jax.jit(PF.center)
     admission=json.loads((Path(a.admission)/'result.json').read_text());assert admission['representation_gate']
     cachepath=Path(a.cache);cache_rec=json.loads((cachepath/'result.json').read_text())
     assert digest(cachepath/'result.json')==admission['cache_sha256']
@@ -58,6 +65,7 @@ def main():
                   stationarity_tolerance=a.stationarity,update_tolerance=a.update_tolerance,
                   cg_relative_tolerance=a.cg_relative,cg_absolute_tolerance=a.cg_absolute,
                   initial_relative_tolerance=a.initial_relative,initial_absolute_tolerance=a.initial_absolute,
+                  field_implementation='packed full-axis separable contractions' if a.packed_fields else 'compact local patch slices',
                   matched_training_reference_hashes=True,local_parent_basis_verified=True)
     if a.compare_previous:
         previous_path=Path(a.compare_previous);assert str(previous_path).startswith(os.environ['STUDY_NAMESPACE']+'/')
@@ -71,7 +79,10 @@ def main():
         if previous_result['operator']!=result['operator']:
             assert a.allow_integrator_comparison and previous_result['operator'].rsplit(';',1)[0]==result['operator'].rsplit(';',1)[0]
             result['comparison_kind']='different_integrator_diagnostic_not_a_step_convergence_check'
-        else:result['comparison_kind']='same_integrator_numerical_refinement'
+        else:
+            result['comparison_kind']=('equivalent_field_implementation' if
+                previous_result.get('field_implementation','compact local patch slices')!=result['field_implementation']
+                else 'same_integrator_numerical_refinement')
         result['previous_result_sha256']=digest(previous_path/'result.json')
     save(out/'result.json',result)
     for label in result['labels']:
@@ -93,8 +104,19 @@ def main():
         if a.quadrature:
             assert a.L%a.quadrature==0 and (a.quadrature-1)**2>=4*commonM
             for name,model in models.items():
-                qc,qs=QW.prepare(model['basis'],cells if name.startswith('tree') else [],tr if name.startswith('tree') else [],rotation,a.L,a.quadrature)
-                model['cache']=dict(model['cache'],quadrature=qc);model['quadrature_slices']=qs
+                local_cells=cells if name.startswith('tree') else []
+                local_transforms=tr if name.startswith('tree') else []
+                if a.packed_fields:
+                    pc=PF.prepare_stencil(model['basis'],local_cells,local_transforms,rotation,a.L,a.quadrature)
+                    # Unused variable-shaped compact axes must not enter the JIT
+                    # signature, even when the arithmetic does not access them.
+                    model['cache']={key:model['cache'][key] for key in ['A','indices','lam','gram']}
+                    model['cache']['packed']=pc
+                    model['packed_axis_entries']=int(pc['X'].size+pc['Y'].size)
+                    model['packed_field_cache_bytes']=sum(int(v.nbytes) for v in jax.tree_util.tree_leaves(pc))
+                else:
+                    qc,qs=QW.prepare(model['basis'],local_cells,local_transforms,rotation,a.L,a.quadrature)
+                    model['cache']=dict(model['cache'],quadrature=qc);model['quadrature_slices']=qs
                 assert int(jnp.max(model['cache']['indices'][:,:commonM]))<a.quadrature-1
             setup=time.perf_counter()-query_start
         rowout=dict(case=label,parameters=p,common_tests=commonM,fine_interior_nodes=(a.L-1)**2,
@@ -105,11 +127,14 @@ def main():
             ca=model['cache'];ca=dict(ca,A=ca['A'][:commonM],indices=ca['indices'][:,:commonM],lam=ca['lam'][:commonM])
             field=W.make_field(model['slices'],24 if name.startswith('tree') else 0)
             advection=None;fitfield=field;fitN=a.L
-            if a.quadrature:
+            if a.quadrature and not a.packed_fields:
                 qfields=QW.make_fields(model['quadrature_slices'],24 if name.startswith('tree') else 0)
                 advection=QW.make_tested(qfields,a.L,a.quadrature);fitfield=lambda c,ca:qfields(c,ca)[0];fitN=a.quadrature
-            initial_fit=W.make_initial_fit(fitfield,a.initial_relative,a.initial_absolute);step,residual=W.make_solver(field,a.L,theta=1. if a.integrator=='be' else .5,advection_tests=advection,
-                cg_tolerance=a.cg_relative,cg_absolute_tolerance=a.cg_absolute)
+            if a.packed_fields:
+                initial_fit=packed_initial;step=packed_step;fitN=a.quadrature
+            else:
+                initial_fit=W.make_initial_fit(fitfield,a.initial_relative,a.initial_absolute);step,residual=W.make_solver(field,a.L,theta=1. if a.integrator=='be' else .5,advection_tests=advection,
+                    cg_tolerance=a.cg_relative,cg_absolute_tolerance=a.cg_absolute)
             burn_gpu();start=time.perf_counter();axis=jnp.arange(1,fitN)/fitN;xy=jnp.stack(jnp.meshgrid(axis,axis,indexing='ij'),axis=-1)
             u0=initial(xy);c,e0,lin=initial_fit(u0,ca);jax.block_until_ready(c)
             cold=time.perf_counter()-start;states=[np.asarray(c)];statuses=[];valid=True
@@ -130,6 +155,10 @@ def main():
             returned=np.all(np.isfinite(st),axis=1)&(st[:,1]<=a.stationarity)&((st[:,2]<=a.update_tolerance)|(st[:,1]<=a.stationarity*.01))
             method.update(all_steps_converged=bool(np.all(returned)),nonconverged_steps=int(np.sum(~returned)),
                 convergence_rule='stationarity and (small physical update or100x smaller stationarity); finite returned diagnostics')
+            if a.packed_fields:
+                method.update(packed_axis_entries=model['packed_axis_entries'],packed_field_cache_bytes=model['packed_field_cache_bytes'],
+                              local_contraction_width=6*(52 if name.startswith('tree') else 0),
+                              implementation_cost_note='Full-axis padded contraction; zero windows retain mathematical support but padded arithmetic is charged')
             model['states']=np.asarray(states);rowout['methods'][name]=method
             save(out/'result.json',dict(result,cases=result['cases']+[rowout]))
         # Independent physical scoring; it never feeds the solver or policy.
@@ -162,7 +191,10 @@ def main():
                 method['previous_state_file_sha256']=digest(oldfile)
             if count==6:
                 burn_gpu();t0=time.perf_counter();axis=np.linspace(0,1,4096)
-                if name.startswith('tree'):pred=LP.field_grid(basis,full[-1],cells,tr,6,axis)[0]
+                if a.packed_fields:
+                    output_cache=PF.prepare(basis,cells if name.startswith('tree') else [],tr if name.startswith('tree') else [],rotation,axis[None],axis[None])
+                    pred=packed_output(C[-1],{'packed':output_cache})
+                elif name.startswith('tree'):pred=LP.field_grid(basis,full[-1],cells,tr,6,axis)[0]
                 else:pred=data.synth_grid(jnp.einsum('k,kij->ij',C[-1],basis),axis)
                 jax.block_until_ready(pred);method['requested4096_reconstruction_including_compilation_seconds']=time.perf_counter()-t0
                 method['diagnostic_total_query_seconds']=method['query_before_output_seconds']+method['requested4096_reconstruction_including_compilation_seconds']

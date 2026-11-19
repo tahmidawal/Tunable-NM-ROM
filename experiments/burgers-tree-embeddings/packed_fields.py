@@ -13,6 +13,7 @@ def prepare(basis, cells, transforms, rotation, x, y):
     """x/y have shape (number of stencils, axis points), including boundaries."""
     x, y, basis = np.asarray(x), np.asarray(y), np.asarray(basis)
     assert x.ndim == y.ndim == 2 and len(x) == len(y)
+    assert len(cells) == len(transforms)
     N = basis.shape[-1]
     k = np.arange(1, N + 1)
     sine_x = np.sin(np.pi * x[..., None] * k) * ((x > 0) & (x < 1))[..., None]

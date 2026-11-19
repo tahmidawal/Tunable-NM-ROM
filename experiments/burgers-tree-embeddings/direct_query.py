@@ -79,9 +79,14 @@ class FixedQuery:
         # evaluating it again inside every step's runaway guard.
         initial_norm=float(jnp.linalg.norm(u0)/self.Q)
         cold=time.perf_counter()-tfit if components else None
-        states=[c];statuses=[];complete=True;failure=None
+        states=[c];statuses=[]
+        # This study's nonzero initial fields satisfy the stricter relative
+        # criterion; do not silently carry an unfinished initial CG fit online.
+        complete=bool(jnp.isfinite(linear_residual)) and float(linear_residual)<=1e-9
+        failure=None if complete else 'initial fit relative residual'
         tsolve=time.perf_counter() if components else 0.
         for it in range(1,round(.25/self.dt)+1):
+            if not complete:break
             c,status=self.step(c,ca,self.dt,data.NU,1e-8,1e-10)
             jax.block_until_ready((c,status));s=np.asarray(status);statuses.append(s)
             converged=np.all(np.isfinite(s)) and s[1]<=1e-8 and (s[2]<=1e-10 or s[1]<=1e-10)
@@ -105,6 +110,7 @@ class FixedQuery:
         return dict(complete=complete,failure=failure,fields=fields,coefficients=jnp.stack(states),
             cells=cells,step_status=np.asarray(statuses),visibility=vis,initial_fit_error=float(fit_error),
             initial_linear_residual=float(linear_residual),active_variables=len(c),
+            initial_fit_relative_gate=1e-9,
             setup_seconds=setup,initial_fit_seconds=cold,solving_seconds=solving,
             requested_reconstruction_seconds=reconstruction,total_query_seconds=total,
             requested_field_count=outputs,rejected_trials=0,fallback_invocations=0,

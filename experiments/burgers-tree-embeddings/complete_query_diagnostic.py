@@ -157,7 +157,7 @@ def main():
             packed_control=packed_setup,
             global_array_bytes=sum(int(v.nbytes) for v in jax.tree_util.tree_leaves((global_query.cache,global_query.output_cache)))),
         output_contracts=contracts,repetitions=repeats,blocks=1,block_index=a.block_index,
-        order_seed=2026111901 if a.include_packed_control else 2026111901+a.block_index,
+        order_seed=2026111805 if a.include_packed_control else 2026111805+a.block_index,
         implementation_sha256=implementation,
         case_parameters={label:refs[label][1]['parameters'] for label in labels},
         reference_hashes={label:refs[label][1]['levels'][-1]['sha256'] for label in labels},

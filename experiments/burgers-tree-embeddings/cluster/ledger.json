@@ -1161,6 +1161,21 @@
     "driver": "train_coordinate_parent.py",
     "args": "--updates 20000 --seed 2026111951",
     "gpu": "a100",
-    "submitted_utc": "2026-11-19T18:10:35.229361+00:00"
+    "submitted_utc": "2026-11-19T18:10:35.229361+00:00",
+    "state": "PENDING",
+    "elapsed_seconds": 0,
+    "allocated_cpus": 0,
+    "allocated_tres": ""
+  },
+  {
+    "name": "b6namedrefs",
+    "id": 7371340,
+    "reserved_minutes": 30,
+    "commit": "bdb4856175d7f9a9be3766814a6ecd965b855c67",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b6namedrefs",
+    "driver": "named_reference_driver.py",
+    "args": "",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-19T18:11:11.237265+00:00"
   }
 ]

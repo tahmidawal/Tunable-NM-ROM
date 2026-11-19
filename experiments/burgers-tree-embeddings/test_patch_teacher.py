@@ -1,6 +1,6 @@
 from common import *
 from neural import fields as F,factorized as S
-from pretrain_local_features import quadrature,patches
+from pretrain_local_features import quadrature,patches,project_readout
 import data
 
 key=jax.random.PRNGKey(83);root=F.init_mlp(key,[10,12,12,1],True)
@@ -15,4 +15,15 @@ for cell in cells:
     expected.append((truth-prediction)/F.boundary(xy)[None]/norm[:,None]*q['window'][None]/window_sum[None])
 error=float(jnp.max(abs(actual-jnp.concatenate(expected))))
 assert jnp.all(valid) and error<1e-12
-print(json.dumps(dict(passed=True,separable_vs_direct_reference_error=error)))
+hidden=F.init_mlp(key,[2,8,8,2],True)[:-1]
+target=jnp.stack([jnp.sin(q['xy'][:,0]),jnp.cos(q['xy'][:,1])],1)*(jnp.sqrt(q['w'])*q['window'])[:,None]
+def objective(t,stop):
+    p=[dict(v) for v in hidden];p[0]['w']=p[0]['w'].at[0,0].add(t)
+    last,_=project_readout(p,q['xy'],q['w'],q['window'],target)
+    if stop:last=jax.tree.map(jax.lax.stop_gradient,last)
+    prediction=F.mlp(p+[last],q['xy']/.75,True)*(jnp.sqrt(q['w'])*q['window'])[:,None]
+    return jnp.sum((prediction-target)**2)+1e-10*sum(jnp.sum(v*v) for v in last.values())
+exact=jax.grad(lambda t:objective(t,False))(0.)
+envelope=jax.grad(lambda t:objective(t,True))(0.)
+assert abs(exact-envelope)<1e-9
+print(json.dumps(dict(passed=True,separable_vs_direct_reference_error=error,projected_readout_gradient_difference=float(abs(exact-envelope)))))

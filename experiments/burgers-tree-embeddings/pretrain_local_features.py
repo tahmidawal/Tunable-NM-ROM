@@ -17,6 +17,14 @@ def quadrature(n):
     return dict(axis=jnp.asarray(x),xy=jnp.asarray(xy),w=jnp.asarray(np.outer(w,w).ravel()),window=jnp.asarray(window))
 
 
+def project_readout(hidden,xy,w,window,target,ridge=1e-10):
+    h=xy/.75
+    for layer in hidden:h=jnp.sin(30*(h@layer['w']+layer['b']))
+    Z=jnp.concatenate([h,jnp.ones((len(h),1))],axis=1)*(jnp.sqrt(w)*window)[:,None]
+    c=jnp.linalg.solve(Z.T@Z+ridge*jnp.eye(Z.shape[1]),Z.T@target)
+    return dict(w=c[:-1],b=c[-1]),Z@c
+
+
 @jax.jit
 def patches(root,codes,b,cells,norm,q):
     h=2.**(-cells[:,0]);centers=(cells[:,1:]+.5)*h[:,None]
@@ -78,24 +86,28 @@ def main():
         teacher_physical_gram_change=float(jnp.max(abs(weighted_fine.T@weighted_fine-jnp.eye(32)))),history=[])
     result['teacher_sha256']=checkpoint(out/'feature_teacher.pkl',teacher)
     del raw,X,covariance,vectors,scores
-    feature=F.init_mlp(jax.random.PRNGKey(2026111954),[2,128,128,128,32],True)
+    hidden=F.init_mlp(jax.random.PRNGKey(2026111954),[2,128,128,128,32],True)[:-1]
     opt=optax.chain(optax.clip_by_global_norm(10.),optax.adam(optax.cosine_decay_schedule(1e-3,a.updates,alpha=.02)))
-    state=opt.init(feature)
+    state=opt.init(hidden)
     @jax.jit
-    def step(feature,state,xy,w,window,target):
+    def step(hidden,state,xy,w,window,target):
         def loss(p):
-            prediction=F.mlp(p,xy/.75,True)*(jnp.sqrt(w)*window)[:,None]
-            return jnp.sum((prediction-target)**2)/target.shape[1]
-        value,grad=jax.value_and_grad(loss)(feature);updates,state=opt.update(grad,state,feature)
-        return optax.apply_updates(feature,updates),state,value
+            last,_=project_readout(p,xy,w,window,target)
+            last=jax.tree.map(jax.lax.stop_gradient,last)
+            prediction=F.mlp(p+[last],xy/.75,True)*(jnp.sqrt(w)*window)[:,None]
+            penalty=sum(jnp.sum(v*v) for v in last.values())*1e-10
+            return (jnp.sum((prediction-target)**2)+penalty)/target.shape[1]
+        value,grad=jax.value_and_grad(loss)(hidden);updates,state=opt.update(grad,state,hidden)
+        return optax.apply_updates(hidden,updates),state,value
     @jax.jit
     def score(feature,xy,w,window,target):
         pred=F.mlp(feature,xy/.75,True)*(jnp.sqrt(w)*window)[:,None]
         return jnp.linalg.norm(pred-target,axis=0)/jnp.linalg.norm(target,axis=0)
     best=np.inf;stale=0
     for it in range(1,a.updates+1):
-        feature,state,loss=step(feature,state,q['xy'],q['w'],q['window'],V)
+        hidden,state,loss=step(hidden,state,q['xy'],q['w'],q['window'],V)
         if it%1000:continue
+        last,_=project_readout(hidden,q['xy'],q['w'],q['window'],V);feature=hidden+[last]
         coarse=np.asarray(score(feature,q['xy'],q['w'],q['window'],V))
         errors=np.asarray(score(feature,fine['xy'],fine['w'],fine['window'],weighted_fine));worst=float(errors.max())
         row=dict(update=it,loss=float(loss),worst_independent_feature_error=worst,

@@ -42,6 +42,14 @@ def main():
             adv = QW.make_tested(compact, L, Q)
             padv = P.tested_advection(L, Q)
             assert float(jnp.max(jnp.abs(adv(c, original)-padv(c, packed)))) < 1e-12
+            # Explicitly exercise both upwind branches away from switching zeros.
+            signed = c.at[0].set(.031).at[1].set(.173).at[2].set(-.071)
+            signed_field = P.center(signed, packed)
+            assert float(signed_field.min()) < -.01 and float(signed_field.max()) > .01
+            assert float(jnp.max(jnp.abs(adv(signed, original)-padv(signed, packed)))) < 1e-12
+            ajp = jax.jvp(lambda z:padv(z, packed), (signed,), (direction,))[1]
+            ajc = jax.jvp(lambda z:adv(z, original), (signed,), (direction,))[1]
+            assert float(jnp.max(jnp.abs(ajp-ajc))) < 1e-10
             compact_center = lambda z, cache:compact(z, cache)[0]
             cp, ep, _ = W.make_initial_fit(P.center)(expected[0], packed)
             cc, ec, _ = W.make_initial_fit(compact_center)(expected[0], original)

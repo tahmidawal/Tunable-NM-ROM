@@ -11,6 +11,7 @@ sys.path.insert(0, str(H))
 from audit_fixed_pilot import inspect
 
 names = ['b2base', 'b2space', 'b2quad', 'b2tests', 'b2time', 'b2tight']
+baseline_name = 'b2base'
 expected = dict(L=8192, dt=.00125, quadrature_intervals=512, common_tests=22016,
                 stationarity_tolerance=1e-8, update_tolerance=1e-10,
                 cg_relative_tolerance=1e-6, cg_absolute_tolerance=1e-12,
@@ -20,6 +21,28 @@ changes = dict(b2base={}, b2space=dict(L=16384), b2quad=dict(quadrature_interval
                b2tight=dict(stationarity_tolerance=1e-10, update_tolerance=1e-12,
                             cg_relative_tolerance=1e-8, cg_absolute_tolerance=1e-14,
                             initial_relative_tolerance=1e-11, initial_absolute_tolerance=1e-15))
+history_text = ''
+spatial_verification = 16384
+repair_path = H / 'manifests/B2-spatial-repair-registration.json'
+if repair_path.exists():
+    repair = json.loads(repair_path.read_text())
+    assert repair['status'] == 'REGISTERED_WITHIN_EXISTING_BATCH'
+    baseline_name = 'b2space'
+    names = ['b2space', 'b2rspace', 'b2rquad', 'b2rtests', 'b2rtime', 'b2rtight']
+    expected['L'] = 16384
+    changes = dict(b2space={}, b2rspace=dict(L=32768), b2rquad=dict(quadrature_intervals=1024),
+                   b2rtests=dict(common_tests=44032), b2rtime=dict(dt=.000625),
+                   b2rtight=changes['b2tight'])
+    spatial_verification = 32768
+    history_text = ('The original L8192 setting failed spatial sensitivity: its doubling changed fields by'
+                    f" {100*repair['failed_spatial_max_change']:.6f}%, above0.1%. Both methods remained physically accurate and converged. "
+                    'The unchanged b2space arrays are reused as the finer L16384 baseline on physical and solver checks only; '
+                    'the failed coarse comparison remains in [the retained original setting report]'
+                    '(2026-11-18-tree-embedding-representation-assets/B2-original-setting-retained.md). '
+                    'One further spatial check at L32768 is allowed, with no automatic higher-resolution ladder. '
+                    'Original unsubmitted b2tests/b2time/b2tight are superseded by the registered finer-setting checks. '
+                    'The old L8192 integration run is retained separately and is not transferred to the new baseline. '
+                    'The5400-second B2 allowance is unchanged.')
 records, raw, source_hashes = [], {}, {}
 for name in names:
     p = H / 'results' / name / 'output/result.json'
@@ -29,6 +52,14 @@ for name in names:
     if r['status'] != 'complete_fixed_tree_diagnostic_pilot':
         continue
     audit = inspect(name)
+    if baseline_name == 'b2space' and name == baseline_name:
+        audit['original_coarser_comparison_passed'] = audit['passed']
+        audit['qualification_role'] = 'Finer baseline only; the failed comparison to L8192 is retained separately'
+        for row in audit['rows']:
+            row['coarser_comparison_field_change'] = row['max_field_change']
+            row['max_field_change'] = None
+            row['sensitivity_pass'] = None
+        audit['passed'] = all(v['full_solver_convergence'] and v['physical_accuracy_pass'] for v in audit['rows'])
     setting = dict(expected, **changes[name])
     identities = (r['global_control'] == 'global_stable960' and
                   r['labels'] == ['dev000', 'dev003', 'align002'] and
@@ -36,8 +67,8 @@ for name in names:
                   r.get('field_implementation','compact local patch slices') == 'compact local patch slices')
     setting_matches = all(r[k] == v for k, v in setting.items() if k != 'common_tests')
     setting_matches &= all(c['common_tests'] == setting['common_tests'] for c in r['cases'])
-    if name != 'b2base':
-        baseline = H / 'results/b2base/output/result.json'
+    if name != baseline_name:
+        baseline = H / 'results' / baseline_name / 'output/result.json'
         setting_matches &= r['previous_result_sha256'] == hashlib.sha256(baseline.read_bytes()).hexdigest()
     audit.update(registered_setting_matches=bool(identities and setting_matches))
     audit['passed'] &= audit['registered_setting_matches']
@@ -70,12 +101,13 @@ for record in records:
 out = H / 'reports'
 plt.rcParams.update({'font.size':10, 'axes.spines.top':False, 'axes.spines.right':False,
                      'svg.hashsalt':'burgers-tree-embeddings'})
-refinements = [r for r in records if r['name'] != 'b2base']
+refinements = [r for r in records if r['name'] != baseline_name]
 plot = ''
 if refinements:
     fig, ax = plt.subplots(figsize=(8, 4), constrained_layout=True)
     labels = dict(b2space='Spatial operator', b2quad='Integration', b2tests='Weak tests',
-                  b2time='Time step', b2tight='Solver precision')
+                  b2time='Time step', b2tight='Solver precision', b2rspace='Spatial operator',
+                  b2rquad='Integration', b2rtests='Weak tests', b2rtime='Time step', b2rtight='Solver precision')
     for j, method in enumerate(['tree_direct24', 'global_stable960']):
         values = [max(v['max_field_change'] for v in r['rows'] if v['method'] == method)*100 for r in refinements]
         ax.bar(np.arange(len(refinements))+(j-.5)*.34, np.maximum(values, 1e-12), .34,
@@ -98,7 +130,9 @@ text = f'''# Burgers tree embeddings: common fixed-tree numerical qualification
 
 {decision}
 
-The direct tree has1376 adjustable coefficients and the stable global POD-plus-Fourier control has960. The common baseline is L8192, Crank–Nicolson dt0.00125, Q512 and22016 weak tests. The spatial check uses L16384, integration Q1024, tests44032, time step0.000625, and the precision check tightens all registered initial/inner/outer tolerances100 times. Each changes only its named numerical control. This new baseline is not a one-factor comparison with the older global768 pilots.
+{history_text}
+
+The direct tree has1376 adjustable coefficients and the stable global POD-plus-Fourier control has960. The common baseline is L{expected['L']}, Crank–Nicolson dt0.00125, Q512 and22016 weak tests. The spatial check uses L{spatial_verification}, integration Q1024, tests44032, time step0.000625, and the precision check tightens all registered initial/inner/outer tolerances100 times. Each changes only its named numerical control. This new baseline is not a one-factor comparison with the older global768 pilots.
 
 All solves use the shared initial-field callable and the original fine-grid sign-upwind weak formulation. References enter only subsequent scoring. Physical errors use the current-time reference norm; the per-case empirical reference allowance is included in each accuracy decision. Every run returns an actual4096-by4096 final device field. The table combines the largest of five evolved physical errors and the actual-grid final error, and separately audits the complete returned stopping rule. Reported changes include the initial fit as well as all evolved output times.
 
@@ -132,6 +166,8 @@ for path in [out / '2026-11-18-tree-embedding-representation.md', main / '2026-1
 
 status = f'''**New Burgers tree-embedding study: B2 fixed-tree numerical qualification.** Nonlinear tree representation0.4238% at1152 variables and direct tree0.4229% at1376 pass every development snapshot; the global960 control remains better at0.3304%. B1 used6.317778 cumulative allocated GPU-hours. Its direct pilot passes physical accuracy, weak-test enrichment and integration checks. The nonlinear PDE checkpoint is stopped after two failed optimizer repairs:123/300 stationarity failures and151/300 complete-convergence failures. {decision} Current elapsed allocation{seconds/3600:.6f}h; active owned jobs: {', '.join(r['name'] for r in active) or 'none'}. No all-development PDE admission, runtime win or final-test opening. [Representation evidence](reports/2026-11-18-tree-embedding-representation.md); [fixed-tree checks](reports/{filename}). Old campaign remains PAUSED; no merge.'''
 record = dict(utc=stamp, decision=decision, source_hashes=source_hashes, records=records,
+              baseline_name=baseline_name, spatial_verification=spatial_verification,
+              original_failure_and_repair_context=history_text,
               remaining=remaining, failed=failed, elapsed_gpu_seconds=seconds,
               charged_gpu_seconds=charged, active_jobs=[r['name'] for r in active], own_status=status)
 key = hashlib.sha256(json.dumps(dict(sources=source_hashes, active=record['active_jobs']), sort_keys=True).encode()).hexdigest()[:12]

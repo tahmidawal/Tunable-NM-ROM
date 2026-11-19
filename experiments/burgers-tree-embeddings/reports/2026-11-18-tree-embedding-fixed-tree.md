@@ -1,19 +1,21 @@
 # Burgers tree embeddings: common fixed-tree numerical qualification
 
-Pilot qualification is incomplete. Outstanding checks: b2space, b2quad, b2tests, b2time, b2tight.
+Pilot qualification is incomplete. Outstanding checks: b2rspace, b2rquad, b2rtests, b2rtime, b2rtight.
 
-The direct tree has1376 adjustable coefficients and the stable global POD-plus-Fourier control has960. The common baseline is L8192, Crank–Nicolson dt0.00125, Q512 and22016 weak tests. The spatial check uses L16384, integration Q1024, tests44032, time step0.000625, and the precision check tightens all registered initial/inner/outer tolerances100 times. Each changes only its named numerical control. This new baseline is not a one-factor comparison with the older global768 pilots.
+The original L8192 setting failed spatial sensitivity: its doubling changed fields by 0.101589%, above0.1%. Both methods remained physically accurate and converged. The unchanged b2space arrays are reused as the finer L16384 baseline on physical and solver checks only; the failed coarse comparison remains in [the retained original setting report](B2-original-setting-retained.md). One further spatial check at L32768 is allowed, with no automatic higher-resolution ladder. Original unsubmitted b2tests/b2time/b2tight are superseded by the registered finer-setting checks. The old L8192 integration run is retained separately and is not transferred to the new baseline. The5400-second B2 allowance is unchanged.
+
+The direct tree has1376 adjustable coefficients and the stable global POD-plus-Fourier control has960. The common baseline is L16384, Crank–Nicolson dt0.00125, Q512 and22016 weak tests. The spatial check uses L32768, integration Q1024, tests44032, time step0.000625, and the precision check tightens all registered initial/inner/outer tolerances100 times. Each changes only its named numerical control. This new baseline is not a one-factor comparison with the older global768 pilots.
 
 All solves use the shared initial-field callable and the original fine-grid sign-upwind weak formulation. References enter only subsequent scoring. Physical errors use the current-time reference norm; the per-case empirical reference allowance is included in each accuracy decision. Every run returns an actual4096-by4096 final device field. The table combines the largest of five evolved physical errors and the actual-grid final error, and separately audits the complete returned stopping rule. Reported changes include the initial fit as well as all evolved output times.
 
 | Run | Case | Method | Worst physical error | Steps failing complete convergence | Largest field change | Run gate passes |
 |---|---|---|---:|---:|---:|---|
-| b2base | dev000 | tree_direct24 | 0.281178% | 0/200 | baseline | True |
-| b2base | dev000 | global_stable960 | 0.202566% | 0/200 | baseline | True |
-| b2base | dev003 | tree_direct24 | 0.021249% | 0/200 | baseline | True |
-| b2base | dev003 | global_stable960 | 0.020537% | 0/200 | baseline | True |
-| b2base | align002 | tree_direct24 | 0.312845% | 0/200 | baseline | True |
-| b2base | align002 | global_stable960 | 0.360317% | 0/200 | baseline | True |
+| b2space | dev000 | tree_direct24 | 0.259661% | 0/200 | baseline | True |
+| b2space | dev000 | global_stable960 | 0.100987% | 0/200 | baseline | True |
+| b2space | dev003 | tree_direct24 | 0.011627% | 0/200 | baseline | True |
+| b2space | dev003 | global_stable960 | 0.010283% | 0/200 | baseline | True |
+| b2space | align002 | tree_direct24 | 0.293380% | 0/200 | baseline | True |
+| b2space | align002 | global_stable960 | 0.348890% | 0/200 | baseline | True |
 
 
 
@@ -21,4 +23,4 @@ A passing small pilot is not the all44-development-trajectory gate. No deployabl
 
 Pilot clocks charge joint comparison setup to each method and cannot serve as method-specific speed ratios. Initialization, assembly, solving, rejected trials, fallback and requested output remain mandatory components of later complete-query timing. The equivalent packed field implementation has only CPU fixture evidence and is not used in this batch.
 
-Generated 2026-11-19T02:08:56.396442+00:00. Elapsed allocated time is23255 GPU-seconds (6.459722h). The reservation guard currently charges26548 seconds, including full reservations for active jobs. Active owned jobs: b2space, b2quad. B2 is capped at5400 additional GPU-seconds from22744, for a cumulative ceiling28144 seconds. Source/configurations, scheduler records and verified retention manifests are in the owned lane. The old campaign remains paused; final-test fields remain unopened.
+Generated 2026-11-19T02:20:27.239650+00:00. Elapsed allocated time is24277 GPU-seconds (6.743611h). The reservation guard currently charges25523 seconds, including full reservations for active jobs. Active owned jobs: b2quad. B2 is capped at5400 additional GPU-seconds from22744, for a cumulative ceiling28144 seconds. Source/configurations, scheduler records and verified retention manifests are in the owned lane. The old campaign remains paused; final-test fields remain unopened.

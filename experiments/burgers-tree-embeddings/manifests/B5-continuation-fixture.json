@@ -1,0 +1,59 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "failed_condition": "b5cache",
+      "submitted": [],
+      "closed": true
+    },
+    {
+      "failed_condition": "b5normal",
+      "submitted": [
+        "b5normal"
+      ],
+      "closed": true
+    },
+    {
+      "failed_condition": "b5compact",
+      "submitted": [
+        "b5normal",
+        "b5compact"
+      ],
+      "closed": true
+    },
+    {
+      "failed_condition": "reservation",
+      "submitted": [
+        "b5normal",
+        "b5compact"
+      ],
+      "closed": true
+    },
+    {
+      "failed_condition": "b5block1",
+      "submitted": [
+        "b5normal",
+        "b5compact",
+        "b5block0",
+        "b5block1"
+      ],
+      "closed": true
+    },
+    {
+      "failed_condition": null,
+      "submitted": [
+        "b5normal",
+        "b5compact",
+        "b5block0",
+        "b5block1"
+      ],
+      "closed": true
+    }
+  ],
+  "scope": "No external effects; dependency and reservation gates only",
+  "utc": "2026-11-19T05:10:03.455571+00:00",
+  "source_sha256": {
+    "cluster/finish_b5.py": "4c271e1d33db811353f2f3a1b297e3e2dca75e1078f49e80a503ae140b0c9519",
+    "test_b5_continuation.py": "928e85f2079253973807836623b4ae8c8bdf9e4ee430468c21532f666cefb2f7"
+  }
+}

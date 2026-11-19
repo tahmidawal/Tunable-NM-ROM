@@ -95,6 +95,11 @@ Recorded {utc()}. No final-test solution fields were opened, no old-campaign art
         actual_additional_gpu_seconds=used,cumulative_actual_gpu_seconds=total,
         review='configs/B5-REVIEW.md',accounting='manifests/allocation-audit-B5.json',archive='manifests/archive-closeout-B5.json')
     write('cluster/BATCHES.json',batches)
+    owner=read('OWNER.json')
+    if 'continuation' in owner:owner['continuation'].update(status='closed',finished_utc=utc(),reason=reason)
+    write('OWNER.json',owner)
+    claim=Path('/home/tahmid/Dev/QuadtreeNMROM/execution/tree-embeddings-owner.lock/owner.json')
+    assert json.loads(claim.read_text())['owner']==owner['owner'];claim.write_text(json.dumps(owner,indent=2)+'\n')
     backup('Close finite complete-query diagnostic with retained evidence and scoped decision')
     return dict(status='closed',reason=reason,decision=record['decision'],allocated_gpu_seconds=total,
         batch_gpu_seconds=used,paired_results_admitted=complete,finished_utc=utc())
@@ -108,6 +113,22 @@ def main():
     assert not any(v['name'] in ['b5normal','b5compact','b5block0','b5block1'] for v in rows),'No duplicate continuation'
     assert not sp.check_output(['git','-c','gc.auto=0','status','--porcelain','--',str(H)],text=True).strip()
     owner=read('OWNER.json');ns=owner['namespace'];base=shlex.split(first['args'])
+    continuation=dict(pid=os.getpid(),started_utc=utc(),status='active',script='cluster/finish_b5.py',
+        source_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),initial_job=first['id'],
+        log=str(H/'results/B5-controller.log'),scope='Only registered B5; no automatic new compute batch',
+        cumulative_ceiling_gpu_seconds=reg['cumulative_ceiling_gpu_seconds'])
+    write('manifests/B5-controller-start.json',continuation)
+    owner['continuation']=continuation;write('OWNER.json',owner)
+    claim=Path('/home/tahmid/Dev/QuadtreeNMROM/execution/tree-embeddings-owner.lock/owner.json')
+    assert json.loads(claim.read_text())['owner']==owner['owner'];claim.write_text(json.dumps(owner,indent=2)+'\n')
+    lab=Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/LAB-LOG.md')
+    with lab.open('a') as stream:
+        stream.write(f'\n\n### {utc()} — Tree-embedding B5 bounded queue continuation\n\n'
+            f'Job{first["id"]} remains queued. Local controller PID{os.getpid()} owns the finite B5 sequence under configs/B5-QUEUE-CONTINUATION.md in the owned lane. '
+            'It retains/audits each predecessor before submitting the next qualification, then both independent paired blocks only if both reservations fit. '
+            f'The cumulative allocated ceiling is{reg["cumulative_ceiling_gpu_seconds"]} seconds. No new batch, final-test opening, old-campaign restart or merge. '
+            'Start/provenance: manifests/B5-controller-start.json; live log: results/B5-controller.log.\n')
+    backup('Record ownership of the finite queued B5 continuation')
     if not collect_and_audit(['b5cache']):return close('Catalogue equivalence failed; downstream jobs were not submitted.')
     normal=replace(base,'--compare-previous',ns+'/b5cache/output')+['--normal-reuse']
     submit('b5normal',normal,20)

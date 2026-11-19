@@ -1495,7 +1495,7 @@
     "gpu": "a100",
     "submitted_utc": "2026-11-19T20:44:54.745389+00:00",
     "state": "RUNNING",
-    "elapsed_seconds": 264,
+    "elapsed_seconds": 540,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
   },
@@ -1508,6 +1508,21 @@
     "driver": "diagnose_stable_parent.py",
     "args": "",
     "gpu": "a100",
-    "submitted_utc": "2026-11-19T20:49:59.704447+00:00"
+    "submitted_utc": "2026-11-19T20:49:59.704447+00:00",
+    "state": "COMPLETED",
+    "elapsed_seconds": 40,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b7parentrepair",
+    "id": 7378372,
+    "reserved_minutes": 120,
+    "commit": "99ed528996c967df57f0d97e05f01bc29e3532a6",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b7parentrepair",
+    "driver": "train_parent_repair.py",
+    "args": "",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-19T20:54:34.378322+00:00"
   }
 ]

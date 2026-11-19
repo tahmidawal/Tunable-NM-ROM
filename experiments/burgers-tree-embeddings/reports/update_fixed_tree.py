@@ -111,11 +111,11 @@ if refinements:
     for j, method in enumerate(['tree_direct24', 'global_stable960']):
         values = [max(v['max_field_change'] for v in r['rows'] if v['method'] == method)*100 for r in refinements]
         ax.bar(np.arange(len(refinements))+(j-.5)*.34, np.maximum(values, 1e-12), .34,
-               label='Direct tree1376' if j == 0 else 'Global960')
+               label='Direct tree (1,376 variables)' if j == 0 else 'Global (960 variables)')
     ax.axhline(.1, color='#b5413c', ls='--', label='0.1% sensitivity limit')
     ax.set(yscale='log', ylabel='Largest current-time relative field change (%)',
            xticks=np.arange(len(refinements)), xticklabels=[labels[r['name']] for r in refinements],
-           title='Independent checks at the new common pilot setting')
+           title=f"Independent fixed-tree checks · L={expected['L']:,}, dt=0.00125")
     ax.legend(fontsize=8)
     for suffix in ['png', 'svg']:
         dest = out / f'b2-fixed-tree-qualification.{suffix}'

@@ -1373,7 +1373,7 @@
     "gpu": "a100",
     "submitted_utc": "2026-11-19T19:28:47.324497+00:00",
     "state": "RUNNING",
-    "elapsed_seconds": 104,
+    "elapsed_seconds": 192,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
   },
@@ -1386,6 +1386,21 @@
     "driver": "diagnose_crom_projection.py",
     "args": "",
     "gpu": "a100",
-    "submitted_utc": "2026-11-19T19:30:41.401176+00:00"
+    "submitted_utc": "2026-11-19T19:30:41.401176+00:00",
+    "state": "COMPLETED",
+    "elapsed_seconds": 62,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b6snffixture",
+    "id": 7373393,
+    "reserved_minutes": 6,
+    "commit": "6e6e410d77f12748f30a71e71cdc85895dbe13e3",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b6snffixture",
+    "driver": "resume_snf_native.py",
+    "args": "--no-compiled-modules",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-19T19:32:09.398139+00:00"
   }
 ]

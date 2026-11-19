@@ -1,6 +1,6 @@
 # Burgers tree embeddings: all-development fixed-tree qualification
 
-All-development qualification remains incomplete. Outstanding: b4time, b4quad.
+All 44 development trajectories pass physical accuracy, full solver convergence, time-step halving and doubled integration for both methods. Fixed-tree dynamics are admitted; deployable adaptation and complete-runtime confirmation remain separate stages.
 
 The same frozen direct24/52-node tree and stable global960 POD-plus-Fourier control use the initial-field callable, fine L16384 sign-upwind weak operator, Crank–Nicolson time integration,22016 tests and independently admitted packed field evaluation. The baseline uses step0.00125 and Q512; independent refinements halve the step and double Q. References enter only scoring after both solves. Final-test solution fields remain unopened.
 
@@ -10,12 +10,16 @@ Every physical decision covers all five evolved output times and the actual4096 
 |---|---|---:|---:|---:|---:|---:|---:|---|
 |b4base|tree_direct24|0.147669%|0.301255%|0.455470%|0.455525%|0|0.000000%|True|
 |b4base|global_stable960|0.103902%|0.202287%|0.348890%|0.348966%|0|0.000000%|True|
+|b4time|tree_direct24|0.151034%|0.308789%|0.464648%|0.464703%|0|0.025347%|True|
+|b4time|global_stable960|0.104451%|0.203640%|0.351372%|0.351448%|0|0.015784%|True|
+|b4quad|tree_direct24|0.147680%|0.301278%|0.455542%|0.455597%|0|0.000596%|True|
+|b4quad|global_stable960|0.103902%|0.202287%|0.348890%|0.348966%|0|0.000001%|True|
 
 ![All-development physical and projection errors](b4-all-development-physics.png)
 
 These are physical/numerical qualification runs, not paired speed benchmarks. Query clocks still charge shared comparison setup; no method-specific speed ratio is inferred. The nonlinear PDE checkpoint remains stopped after two failed optimizer repairs; the frozen tangent simplification also failed its representation screen. The cell catalogue has only CPU fixture evidence and is not used here. Native NM-ROM confirmation, deployable adaptation, complete-runtime benchmarking, method freeze and final-test evaluation remain outstanding.
 
-Latest scheduler snapshot: 29682 allocated GPU-seconds (8.245000h); charge including full active reservations 40289, cumulative cap 41876. Active owned jobs: b4time, b4quad. Generated 2026-11-19T04:04:35.649118+00:00. The old campaign remains paused; no automatic merge or unrelated3D work.
+Latest scheduler snapshot: 35096 allocated GPU-seconds (9.748889h); charge including full active reservations 35096, cumulative cap 41876. Active owned jobs: none. Generated 2026-11-19T04:59:19.202210+00:00. The old campaign remains paused; no automatic merge or unrelated3D work.
 
 ## Glossary
 

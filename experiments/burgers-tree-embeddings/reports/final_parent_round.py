@@ -28,26 +28,31 @@ for ax in axes:ax.axhline(.5,color='black',ls=':');ax.set(ylabel='Relative L2 er
 axes[0].set(xlabel='Development snapshot percentile',title='All484 independent reconstructions')
 axes[1].set(xlabel='Snapshot time',title='Offline reconstruction errors across time')
 fig.savefig(out/'final-errors.png',dpi=170);plt.close(fig)
-plots=[]
+plots=[];full_exports=[]
+export_dir=H/'results/b7-parent-exports';export_dir.mkdir(exist_ok=True)
 for ci,case in enumerate(named['cases']):
     if abs(case['nu']-.005)>1e-12:continue
     frames=[];rows=[r for r in case['rows'] if 'actual4096' in r]
     for row in rows:
         a=np.load(H/'results/b7namedparent/output'/row['actual4096']['file'])
         assert a['reference'].shape==(4096,4096) and a['prediction'].shape==(4096,4096)
-        frames.append((a['reference'][::8,::8],a['prediction'][::8,::8]));a.close()
+        frames.append((a['reference'],a['prediction']));a.close()
     vmax=max(v[0].max() for v in frames);emax=max(np.abs(v[1]-v[0]).max() for v in frames)
     fig,axes=plt.subplots(3,len(frames),figsize=(17,8),constrained_layout=True)
     for k,((ref,pred),row) in enumerate(zip(frames,rows)):
         for j,field in enumerate([ref,pred,np.abs(pred-ref)]):
-            im=axes[j,k].imshow(field.T,origin='lower',extent=[0,1,0,1],vmin=0,vmax=emax if j==2 else vmax,cmap='magma' if j==2 else 'viridis')
+            kind=['reference','reconstruction','error'][j]
+            export=export_dir/f'{case["case"]}_t{row["time"]:.2f}_{kind}.png'
+            plt.imsave(export,field.T,origin='lower',vmin=0,vmax=emax if j==2 else vmax,cmap='magma' if j==2 else 'viridis')
+            full_exports.append(dict(source=str(export),case=case['case'],time=row['time'],kind=kind,shape=[4096,4096],color_min=0,color_max=float(emax if j==2 else vmax)))
+            im=axes[j,k].imshow(field[::8,::8].T,origin='lower',extent=[0,1,0,1],vmin=0,vmax=emax if j==2 else vmax,cmap='magma' if j==2 else 'viridis')
             axes[j,k].set_xticks([0,.5,1]);axes[j,k].set_yticks([0,.5,1])
             if j==0:axes[j,k].set_title(f't={row["time"]:.2f}')
             if j==1:axes[j,k].set_xlabel(f'L2 error {100*row["actual4096"]["relative_error"]:.3f}%')
             if k==0:axes[j,k].set_ylabel(['Reference','Neural reconstruction','Absolute error'][j])
             if k==len(frames)-1:fig.colorbar(im,ax=axes[j,:],shrink=.8)
     fig.suptitle(case['definition']['name']+' — actual4096 arrays, previewed at512; offline fits, not PDE rollouts')
-    p=out/f'named-{ci:02d}-actual4096-times.png';fig.savefig(p,dpi=150);plt.close(fig);plots.append((case,p))
+    p=out/f'named-{ci:02d}-actual4096-times.png';fig.savefig(p,dpi=150);plt.close(fig);plots.append((case,p));print('full_resolution_exports',case['case'],flush=True)
 report=H/'reports/2026-11-19-neural-parent-training.md'
 lines=['# Neural parent training, full-resolution reconstructions and advancement','',
        'Completed B7 parent-training evidence and named-family reconstruction diagnostics. These fields are independently fitted offline reconstructions; they are not neural PDE rollouts. Final-test solution fields remain sealed.','',
@@ -66,7 +71,15 @@ lines.extend(['','The fixed-weight diagnosis showed that training-code optimizat
  '| Named development family | Viscosity | Worst reconstruction error | Unfinished fits |','|---|---:|---:|---:|'])
 for c in named['cases']:lines.append(f'|{c["definition"]["name"]}|{c["nu"]:g}|{100*c["worst_error"]:.6f}%|{c["unfinished"]}/11|')
 lines.extend(['','Named-family solutions were not added to training. Ridge and two-pulse cases test transfer beyond the original pulse/smooth training distribution. All24 primary-viscosity previews below come from actual4096-by4096 reference and reconstruction arrays; the saved errors use the full arrays and current-time reference norm.'])
-for c,p in plots:lines.extend(['',f'![{c["definition"]["name"]}]({out.name}/{p.name})'])
+for c,p in plots:
+    lines.extend(['',f'![{c["definition"]["name"]}]({out.name}/{p.name})','',
+                  '| Time | Full-resolution reference | Full-resolution neural reconstruction | Full-resolution error |','|---:|---|---|---|'])
+    times=sorted({r['time'] for r in full_exports if r['case']==c['case']})
+    for t in times:
+        selected=[r for r in full_exports if r['case']==c['case'] and r['time']==t]
+        links=['['+r['kind']+']('+out.name+'/full-resolution/'+Path(r['source']).name+')' for r in selected]
+        lines.append('|'+f'{t:.2f}'+'|'+'|'.join(links)+'|')
+
 starts_path=H/'results/b7parentstarts/output/result.json'
 if starts_path.exists():
     starts=json.loads(starts_path.read_text());assert starts['status']=='complete'
@@ -84,4 +97,10 @@ for p in [report,*out.glob('*.png')]:
     target=pub/p.name if p==report else dest/p.name;shutil.copy2(p,target)
     sha=lambda q:hashlib.sha256(q.read_bytes()).hexdigest()
     assert sha(p)==sha(target);records.append(dict(source=str(p),published=str(target),sha256=sha(p)))
+full_dest=dest/'full-resolution';full_dest.mkdir(exist_ok=True)
+for row in full_exports:
+    p=Path(row['source']);target=full_dest/p.name;shutil.copy2(p,target)
+    row.update(published=str(target),sha256=hashlib.sha256(p.read_bytes()).hexdigest())
+    assert row['sha256']==hashlib.sha256(target.read_bytes()).hexdigest()
+(H/'manifests/B7-parent-full-resolution-exports.json').write_text(json.dumps(full_exports,indent=2)+'\n')
 (H/'manifests/B7-parent-publication.json').write_text(json.dumps(records,indent=2)+'\n');print(report)

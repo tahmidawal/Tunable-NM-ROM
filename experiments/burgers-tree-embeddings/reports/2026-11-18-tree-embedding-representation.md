@@ -172,6 +172,12 @@ These pilots solve complete trajectories from the shared initial callable with t
 | dev003 | global_stable960 | 2048 | CN | 11008 | 2048 | 0.0025 | 0.0820% | True | True |
 | align002 | tree_child16_n64 | 2048 | CN | 11008 | 2048 | 0.0025 | 0.6531% | False | True |
 | align002 | global_stable960 | 2048 | CN | 11008 | 2048 | 0.0025 | 0.6481% | True | True |
+| dev000 | tree_child16_n64 | 2048 | CN | 11008 | 2048 | 0.0025 | 0.7945% | False | True |
+| dev000 | global_stable960 | 2048 | CN | 11008 | 2048 | 0.0025 | 0.7941% | True | True |
+| dev003 | tree_child16_n64 | 2048 | CN | 11008 | 2048 | 0.0025 | 0.0825% | True | True |
+| dev003 | global_stable960 | 2048 | CN | 11008 | 2048 | 0.0025 | 0.0820% | True | True |
+| align002 | tree_child16_n64 | 2048 | CN | 11008 | 2048 | 0.0025 | 0.6524% | False | True |
+| align002 | global_stable960 | 2048 | CN | 11008 | 2048 | 0.0025 | 0.6481% | True | True |
 
 ![Fixed-tree physics diagnosis](b1-fixed-tree-physics.png)
 
@@ -189,6 +195,13 @@ The first nonlinear-child PDE pilot reaches physical errors below1% on all three
 | b1childpdeR1 | dev000 | 0.7938% | 68/100 | 2.88e-05 | 6.14e-08 |
 | b1childpdeR1 | dev003 | 0.0825% | 0/100 | 4.62e-11 | 1.29e-08 |
 | b1childpdeR1 | align002 | 0.6531% | 76/100 | 2.88e-05 | 3.44e-06 |
+| b1childpdeR2 | dev000 | 0.7945% | 63/100 | 9.81e-06 | 6.14e-08 |
+| b1childpdeR2 | dev003 | 0.0825% | 0/100 | 1.97e-09 | 1.29e-08 |
+| b1childpdeR2 | align002 | 0.6524% | 60/100 | 1.01e-05 | 3.44e-06 |
+
+![Nonlinear online solver convergence](b1-nonlinear-solver-diagnostics.png)
+
+The second repair is complete and fails:123 of300 time steps miss1e-8 stationarity, and the largest returned-field change from LM120 is0.226685%. Stop further online optimizer tuning for this frozen checkpoint under the two-repair rule. Initial fits also remain underconverged. The representation admission remains valid; this candidate does not advance to adaptation or timing confirmation. Continue the separate direct-coefficient branch through its numerical gates. This is a scoped failure of the tested checkpoint/optimizers, not a universal limitation of local nonlinear decoders.
 
 Pulse errors remain above the physical gate in the initial pilot for both methods despite tightly converged weak solves. Spatial, temporal, test and integration refinements distinguish numerical error from reduced dynamics. The initial pilot omitted explicit burn-in immediately before timing: those original wall times are retained as unqualified diagnostics and support no speed comparison. Follow-ups include burn-in. Pilot clocks also charge the joint comparison setup to each method; they are not valid method-specific speed ratios. Complete timing must measure each method's own initialization, assembly and output. The small pilot is not all-development qualification, deployable adaptation, or a complete-runtime benchmark.
 
@@ -209,7 +222,7 @@ Original recipes, unsuccessful repairs and the original decision remain in [the 
 
 ## Accounting and provenance
 
-Generated 2026-11-19T01:27:52.582299+00:00. Terminal allocations recorded in the current ledger total 21197 GPU-seconds (5.888056 GPU-hours); nonterminal or not-yet-reconciled names: b1childpdeR2. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
+Generated 2026-11-19T01:34:21.275495+00:00. Terminal allocations recorded in the current ledger total 21819 GPU-seconds (6.060833 GPU-hours); nonterminal or not-yet-reconciled names: b1cnM16Q512. Outstanding reservations are enforced by the submission helper, not omitted from its admission calculation. The finite B1 ceiling, recipe definitions, source commits, GPU preflights, raw arrays, checkpoint histories and checksum-verified retention records remain in this lane. This report and all figures are generated from saved data; their source hashes are recorded beside them.
 
 ## Glossary
 

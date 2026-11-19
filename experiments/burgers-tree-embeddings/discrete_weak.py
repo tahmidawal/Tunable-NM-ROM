@@ -78,7 +78,8 @@ def make_field(slices,rank):
 
 
 def make_solver(field,L,iterations=30,cg_iterations=80,theta=1.,advection_tests=None,
-                coefficient_map=None,tested_mass_jacobian=None,scale_linear_coordinates=False):
+                coefficient_map=None,tested_mass_jacobian=None,scale_linear_coordinates=False,
+                cg_tolerance=1e-6,cg_absolute_tolerance=1e-12):
     assert theta in (1.,.5)
     assert (coefficient_map is None)==(tested_mass_jacobian is None)
     coefficients=(lambda z,cache:z) if coefficient_map is None else coefficient_map
@@ -118,7 +119,7 @@ def make_solver(field,L,iterations=30,cg_iterations=80,theta=1.,advection_tests=
                 C=jnp.linalg.cholesky(local_H*scale[:,None]*scale[None,:]+jnp.diag((damp*local_diag+1e-12)*scale**2))
                 def precondition(v):return jax.scipy.linalg.cho_solve((C,True),v)
                 transformed=lambda v:scale*action(scale*v)
-                scaled_delta,_=jax.scipy.sparse.linalg.cg(transformed,-scale*grad,M=precondition,tol=1e-6,atol=1e-12,maxiter=cg_iterations)
+                scaled_delta,_=jax.scipy.sparse.linalg.cg(transformed,-scale*grad,M=precondition,tol=cg_tolerance,atol=cg_absolute_tolerance,maxiter=cg_iterations)
                 delta=scale*scaled_delta
                 linear=jnp.linalg.norm(scale*(action(delta)+grad))/jnp.maximum(jnp.linalg.norm(scale*grad),1e-30)
                 dc=delta if coefficient_map is None else coefficients(c+delta,cache)-coefficients(c,cache)

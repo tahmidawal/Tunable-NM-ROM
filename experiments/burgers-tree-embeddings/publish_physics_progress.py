@@ -36,6 +36,8 @@ if coupled:
     changes=[max(v['previous_state_relative_change']) for v in tree_methods if 'previous_state_relative_change' in v]
     coupled_text=f"Latest nonlinear PDE diagnostic {latest_name}: {failures}/{count} steps miss stationarity; evolved physical accuracy passes {all(v['physical_accuracy_pass'] for v in tree_methods)}."
     if changes:coupled_text+=f" Largest returned-field change from its preceding setting is{100*max(changes):.6f}%."
+    if latest_name=='b1childpdeR2' and not latest['pilot_gate']:
+        coupled_text+=' Two distinct online solver repairs failed; stop optimizer tuning for this checkpoint. Its representation remains admitted, while the direct-coefficient branch continues numerical qualification. No nonlinear adaptation or timing confirmation is admitted.'
     status=status.replace('The first nonlinear PDE pilot also passes physical accuracy but fails stationarity on160/300 steps; a finite solver repair is running.',coupled_text)
 if 'ac' in globals() and ac['status']=='complete_frozen_child_allocation_controls':title+='; frozen child allocation'
 test_admission_text='Further test-enrichment qualification is pending.'

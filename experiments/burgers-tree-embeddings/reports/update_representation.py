@@ -175,6 +175,24 @@ ax.axhline(.1,color='#b5413c',ls='--',label='0.1% sensitivity threshold')
 ax.set(xticks=np.arange(len(checks)),xticklabels=[diagnostics[n] for n,r in checks],yscale='log',ylabel='Largest returned-field change (%)',title='Independent numerical checks; every requested time and pilot case')
 ax.tick_params(axis='x',labelsize=8);ax.legend(fontsize=8);figure(fig,'b1-numerical-sensitivities')
 coupled_rows=[]
+nonlinear_decision='The bounded nonlinear solver diagnosis is still in progress.'
+coupled_runs=[(n,r) for n,r in pde_runs if n.startswith('b1childpde')]
+if coupled_runs:
+    fig,axs=plt.subplots(1,3,figsize=(11,3.5),constrained_layout=True,sharey=True)
+    for n,r in coupled_runs:
+        label={'b1childpde':'LM30','b1childpdeR1':'LM120','b1childpdeR2':'BFGS120'}[n]
+        for i,c in enumerate(r['cases']):
+            s=np.asarray(c['methods']['tree_child16_n64']['step_status'],dtype=float)
+            axs[i].semilogy(np.arange(1,len(s)+1)*r['dt'],np.maximum(s[:,1],1e-18),label=label,lw=1)
+            axs[i].set(title=c['case'],xlabel='Time');axs[i].grid(alpha=.15)
+            if n=='b1childpdeR2':
+                g=np.asarray(c['methods']['global_stable960']['step_status'],dtype=float)
+                axs[i].semilogy(np.arange(1,len(g)+1)*r['dt'],np.maximum(g[:,1],1e-18),'--',color='gray',label='Global960 BFGS',lw=.8)
+    for ax in axs:ax.axhline(1e-8,color='#b5413c',ls=':',label='Required tolerance')
+    axs[0].set_ylabel('Scaled stationarity (every PDE step)');axs[-1].legend(fontsize=7)
+    figure(fig,'b1-nonlinear-solver-diagnostics')
+    if coupled_runs[-1][0]=='b1childpdeR2' and not coupled_runs[-1][1]['pilot_gate']:
+        nonlinear_decision='The second repair is complete and fails:123 of300 time steps miss1e-8 stationarity, and the largest returned-field change from LM120 is0.226685%. Stop further online optimizer tuning for this frozen checkpoint under the two-repair rule. Initial fits also remain underconverged. The representation admission remains valid; this candidate does not advance to adaptation or timing confirmation. Continue the separate direct-coefficient branch through its numerical gates. This is a scoped failure of the tested checkpoint/optimizers, not a universal limitation of local nonlinear decoders.'
 for run,r in pde_runs:
     if not run.startswith('b1childpde'):continue
     for c in r['cases']:
@@ -272,6 +290,10 @@ The first nonlinear-child PDE pilot reaches physical errors below1% on all three
 | Nonlinear PDE run | Case | Worst evolved physical error | Nonstationary steps | Worst step stationarity | Initial-fit stationarity |
 |---|---|---:|---:|---:|---:|
 {chr(10).join(coupled_rows)}
+
+![Nonlinear online solver convergence](b1-nonlinear-solver-diagnostics.png)
+
+{nonlinear_decision}
 
 Pulse errors remain above the physical gate in the initial pilot for both methods despite tightly converged weak solves. Spatial, temporal, test and integration refinements distinguish numerical error from reduced dynamics. The initial pilot omitted explicit burn-in immediately before timing: those original wall times are retained as unqualified diagnostics and support no speed comparison. Follow-ups include burn-in. Pilot clocks also charge the joint comparison setup to each method; they are not valid method-specific speed ratios. Complete timing must measure each method's own initialization, assembly and output. The small pilot is not all-development qualification, deployable adaptation, or a complete-runtime benchmark.
 

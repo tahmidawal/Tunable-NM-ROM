@@ -39,6 +39,11 @@ def main():
     assert float(jnp.max(jnp.abs(cnres(c,rhs,cache,dt,nu,norm)-densecn)))<1e-12
     cnout,cnstatus=cnstep(c,cache,dt,nu,1e-8,1e-10)
     assert jnp.all(jnp.isfinite(cnout)) and float(cnstatus[1])<1e-7,cnstatus
+    tight,_=W.make_solver(field,L,theta=.5,cg_tolerance=1e-8,cg_absolute_tolerance=1e-14)
+    tightout,tightstatus=tight(c,cache,dt,nu,1e-10,1e-12)
+    assert float(tightstatus[1])<1e-10,tightstatus
+    delta=tightout-cnout
+    assert float(jnp.sqrt(jnp.maximum(delta@G@delta,0)/(cnout@G@cnout)))<1e-8
     for Q in (16,32):
         qc,qs=QW.prepare(base,cells,T,U,L,Q);ca=dict(cache,quadrature=qc)
         fields=QW.make_fields(qs,rank);values=fields(c,ca)

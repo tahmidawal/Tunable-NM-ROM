@@ -1,0 +1,76 @@
+{
+  "source_sha256": "5082bd0e1ffa71a2615b321df2cfa2fef5a0d25c885702252ce6a577b1e0c854",
+  "status": "SCOPED_STOP_FROZEN_NONLINEAR_ONLINE_OPTIMIZER",
+  "repairs_completed": 2,
+  "pilot_gate": false,
+  "nonlinear_initial_fits_stationary": false,
+  "rows": [
+    {
+      "case": "dev000",
+      "method": "tree_child16_n64",
+      "physical_pass": true,
+      "nonstationary_steps": 63,
+      "worst_stationarity": 9.812993765658705e-06,
+      "change_from_R1": 0.001640552480285578,
+      "max_error": 0.007945039075456692,
+      "objective_evaluations": 33634,
+      "minimum_tangent_visibility": 0.3470385356530271
+    },
+    {
+      "case": "dev000",
+      "method": "global_stable960",
+      "physical_pass": true,
+      "nonstationary_steps": 0,
+      "worst_stationarity": 9.866635432497948e-11,
+      "change_from_R1": 3.4839836631327567e-09,
+      "max_error": 0.007941475492488737,
+      "objective_evaluations": 934,
+      "minimum_tangent_visibility": null
+    },
+    {
+      "case": "dev003",
+      "method": "tree_child16_n64",
+      "physical_pass": true,
+      "nonstationary_steps": 0,
+      "worst_stationarity": 1.967713333441308e-09,
+      "change_from_R1": 1.4400093602466992e-08,
+      "max_error": 0.0008246817190441637,
+      "objective_evaluations": 12565,
+      "minimum_tangent_visibility": 0.3650949629388193
+    },
+    {
+      "case": "dev003",
+      "method": "global_stable960",
+      "physical_pass": true,
+      "nonstationary_steps": 0,
+      "worst_stationarity": 6.608729220617518e-12,
+      "change_from_R1": 1.0481137247853032e-09,
+      "max_error": 0.000820346323633579,
+      "objective_evaluations": 700,
+      "minimum_tangent_visibility": null
+    },
+    {
+      "case": "align002",
+      "method": "tree_child16_n64",
+      "physical_pass": true,
+      "nonstationary_steps": 60,
+      "worst_stationarity": 1.0138784974984006e-05,
+      "change_from_R1": 0.0022668515313375858,
+      "max_error": 0.006524075753713845,
+      "objective_evaluations": 30461,
+      "minimum_tangent_visibility": 0.3554584894430795
+    },
+    {
+      "case": "align002",
+      "method": "global_stable960",
+      "physical_pass": true,
+      "nonstationary_steps": 0,
+      "worst_stationarity": 9.643885454288771e-11,
+      "change_from_R1": 5.327163024405525e-09,
+      "max_error": 0.006481442194669711,
+      "objective_evaluations": 854,
+      "minimum_tangent_visibility": null
+    }
+  ],
+  "decision": "Stop solver tuning for this checkpoint; preserve representation admission, continue independent direct-tree qualification; no final-test fields or speed claim"
+}

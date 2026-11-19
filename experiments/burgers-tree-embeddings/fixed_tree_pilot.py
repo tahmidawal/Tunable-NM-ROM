@@ -24,17 +24,23 @@ def main():
     ap.add_argument('--quadrature',type=int,default=0,help='0 means exact dense integration; otherwise structured fine-stencil integration')
     ap.add_argument('--stable-global',help='qualified construction record for the prescribed global960 control')
     ap.add_argument('--stationarity',type=float,default=1e-8);ap.add_argument('--update-tolerance',type=float,default=1e-10)
+    ap.add_argument('--cg-relative',type=float,default=1e-6);ap.add_argument('--cg-absolute',type=float,default=1e-12)
     a=ap.parse_args();out=Path(a.out);out.mkdir(parents=True,exist_ok=True);meta=preflight()
     admission=json.loads((Path(a.admission)/'result.json').read_text());assert admission['representation_gate']
     cachepath=Path(a.cache);cache_rec=json.loads((cachepath/'result.json').read_text())
+    assert digest(cachepath/'result.json')==admission['cache_sha256']
+    assert cache_rec['local_POD_sha256']==admission['checkpoint_sha256']
     assert digest(cachepath/'local_POD.pkl')==cache_rec['local_POD_sha256'];rotation=read_checkpoint(cachepath/'local_POD.pkl')['rotation'][:,:24]
     spanpath=Path(a.span);spanrec=json.loads((spanpath/'result.json').read_text());assert digest(spanpath/'pod_basis.npz')==spanrec['basis_sha256']
     allbasis=np.load(spanpath/'pod_basis.npz')['coefficients'];assert len(allbasis)==768
+    assert np.array_equal(np.load(cachepath/'global_basis.npz')['coefficients'],allbasis[:128])
+    assert {v['case']:v['sha256'] for v in spanrec['training_sources']}=={v['case']:v['reference_sha256'] for v in cache_rec['cases']['train']}
     global_basis=allbasis;global_name='global_POD768';global_hash=spanrec['basis_sha256']
     if a.stable_global:
         gp=Path(a.stable_global);gr=json.loads((gp/'result.json').read_text())
         assert gr['status']=='complete_stable_global_controls' and gr['base_sha256']==spanrec['basis_sha256']
         assert digest(gp/'stable_global_basis.npz')==gr['basis_sha256']
+        assert {v['case']:v['sha256'] for v in gr['training_sources']}=={v['case']:v['reference_sha256'] for v in cache_rec['cases']['train']}
         global_basis=np.load(gp/'stable_global_basis.npz')['coefficients'][:960];global_name='global_stable960';global_hash=gr['basis_sha256']
     refmap={r['case']:(p,r) for p,r in cohort(a.dev)};metric=TM.make_geometry(6);rule=TM.rule()
     result=dict(meta=meta,status='fixed_tree_pilot_running',L=a.L,dt=a.dt,labels=a.labels.split(','),cases=[],
@@ -48,7 +54,9 @@ def main():
         local_rotation_sha256=cache_rec['local_POD_sha256'],final_test_opened=False,
         timing_claim='diagnostic query wall times include assembly/compilation; no paired performance inference',timing_burn_in=True)
     result.update(global_control=global_name,global_control_sha256=global_hash,
-                  stationarity_tolerance=a.stationarity,update_tolerance=a.update_tolerance)
+                  stationarity_tolerance=a.stationarity,update_tolerance=a.update_tolerance,
+                  cg_relative_tolerance=a.cg_relative,cg_absolute_tolerance=a.cg_absolute,
+                  matched_training_reference_hashes=True,local_parent_basis_verified=True)
     if a.compare_previous:
         previous_path=Path(a.compare_previous);assert str(previous_path).startswith(os.environ['STUDY_NAMESPACE']+'/')
         previous_result=json.loads((previous_path/'result.json').read_text())
@@ -93,7 +101,8 @@ def main():
             if a.quadrature:
                 qfields=QW.make_fields(model['quadrature_slices'],24 if name.startswith('tree') else 0)
                 advection=QW.make_tested(qfields,a.L,a.quadrature);fitfield=lambda c,ca:qfields(c,ca)[0];fitN=a.quadrature
-            initial_fit=W.make_initial_fit(fitfield);step,residual=W.make_solver(field,a.L,theta=1. if a.integrator=='be' else .5,advection_tests=advection)
+            initial_fit=W.make_initial_fit(fitfield);step,residual=W.make_solver(field,a.L,theta=1. if a.integrator=='be' else .5,advection_tests=advection,
+                cg_tolerance=a.cg_relative,cg_absolute_tolerance=a.cg_absolute)
             burn_gpu();start=time.perf_counter();axis=jnp.arange(1,fitN)/fitN;xy=jnp.stack(jnp.meshgrid(axis,axis,indexing='ij'),axis=-1)
             u0=initial(xy);c,e0,lin=initial_fit(u0,ca);jax.block_until_ready(c)
             cold=time.perf_counter()-start;states=[np.asarray(c)];statuses=[];valid=True

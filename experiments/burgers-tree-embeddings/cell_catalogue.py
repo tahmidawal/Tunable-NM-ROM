@@ -48,9 +48,10 @@ def build(basis, rotation, L, Q, tests, depth=4, output_points=4096, rule=None,f
 
 @jax.jit
 def gather(arrays, nodes, columns):
+    rank=(len(columns)-len(arrays['cache']['packed']['basis']))//len(nodes) if len(nodes) else arrays['cache']['packed']['transform'].shape[-1]
     def fields(p):
         return dict(basis=p['basis'],sine_x=p['sine_x'],sine_y=p['sine_y'],
-                    X=p['X'][:,:,nodes],Y=p['Y'][:,:,nodes],transform=p['transform'][nodes])
+                    X=p['X'][:,:,nodes],Y=p['Y'][:,:,nodes],transform=p['transform'][nodes,:,:rank])
     ca = arrays['cache']
     result = dict(A=ca['A'][:,columns],indices=ca['indices'],lam=ca['lam'],
                   gram=ca['gram'][columns[:,None],columns[None,:]],packed=fields(ca['packed']))
@@ -59,9 +60,10 @@ def gather(arrays, nodes, columns):
 
 @jax.jit
 def gather_compact(arrays,nodes,columns,selectors):
+    rank=(len(columns)-len(arrays['cache']['compact']['basis']))//len(nodes) if len(nodes) else arrays['cache']['compact']['transform'].shape[-1]
     def fields(p):
         result={k:p[k] for k in ['basis','sine_x','sine_y']}
-        result['transform']=p['transform'][nodes]
+        result['transform']=p['transform'][nodes,:,:rank]
         buckets=[]
         for source,selection in zip(p['buckets'],selectors):
             rows=source['inverse'][nodes[selection['slots']]]
@@ -76,13 +78,15 @@ def gather_compact(arrays,nodes,columns,selectors):
     return dict(cache=result,output_cache={'compact':fields(arrays['output'])},transforms=arrays['transforms'][nodes])
 
 
-def select(catalogue, cells):
+def select(catalogue, cells,rank=None):
     """Host policy/lookup and device gathering are both charged to the query."""
     geo.valid(cells)
     lookup={tuple(v):i for i,v in enumerate(catalogue['cells'])}
     nodes=np.asarray([lookup[tuple(c)] for c in cells],dtype=np.int64)
-    root,rank=catalogue['root'],catalogue['rank']
-    columns=np.concatenate([np.arange(root),root+(nodes[:,None]*rank+np.arange(rank)).ravel()])
+    root,full_rank=catalogue['root'],catalogue['rank']
+    rank=full_rank if rank is None else rank
+    assert 0<rank<=full_rank
+    columns=np.concatenate([np.arange(root),root+(nodes[:,None]*full_rank+np.arange(rank)).ravel()])
     if catalogue.get('field_kernel','packed')=='packed':
         result=gather(catalogue['arrays'],jnp.asarray(nodes),jnp.asarray(columns))
     else:

@@ -1,0 +1,20 @@
+{
+  "status": "passed",
+  "analytic_diffusion_defect": 3.84015486244841e-11,
+  "perturbed_defect": 0.019980271518333648,
+  "zero_transfer_field_change": 0.0,
+  "zero_transfer_probe_change": 0.0,
+  "initial_mismatch": 0.0,
+  "candidate_cap_checked": true,
+  "scope": "CPU fixture only; no calibrated threshold or adaptive PDE admission",
+  "utc": "2026-11-19T04:07:10.124082+00:00",
+  "backend": "cpu",
+  "timeout_seconds": 55,
+  "source_sha256": {
+    "physics_probes.py": "8549c4bf734e12aa0a0481f7545a191f8838aedd397f46ec0d60e1d71c1e7404",
+    "adaptive_actions.py": "abea628fe25110c63135f2aee13b84d655a4f48dbeee2738b67741e037133224",
+    "cell_catalogue.py": "bb29698c2d3f29e6604b22c64c951bb74271ab624364beb058cf9438cd911130",
+    "test_physics_probes.py": "72080e785ea9e5d43c96f5fdb4f591fe480d6a9d39a3e6c77b8d36fd6a2ad7af"
+  },
+  "prequalification_correction": "The first analytic diffusion fixture caught a missing current-state diffusion multiplier in the new probe numerator. Corrected before this pass; no GPU job or existing solver used that preparation."
+}

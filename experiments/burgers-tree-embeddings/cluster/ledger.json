@@ -1423,5 +1423,16 @@
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1",
     "archived_remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b6snffixture"
+  },
+  {
+    "name": "b7parentpilot",
+    "id": 7377619,
+    "reserved_minutes": 30,
+    "commit": "29d5eab7b963b71a93807ba78127c875b6eaacfc",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b7parentpilot",
+    "driver": "train_stable_parent.py",
+    "args": "--phase pilot --updates 12000",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-19T20:26:37.829724+00:00"
   }
 ]

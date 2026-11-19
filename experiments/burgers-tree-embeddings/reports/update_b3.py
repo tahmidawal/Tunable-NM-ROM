@@ -14,7 +14,7 @@ def retained(name):
     if not rp.exists() or not mp.exists():return None
     m=json.loads(mp.read_text())
     assert m['local_and_remote_verified']
-    if m['terminal_state']!='COMPLETED':return dict(failed_job=m['terminal_state'])
+    if m['terminal_state']!='COMPLETED':return dict(failed_job=m['terminal_state'],retention_sha256=sha(mp))
     assert next(v['sha256'] for v in m['files'] if v['file']=='output/result.json')==sha(rp)
     return json.loads(rp.read_text())
 
@@ -129,7 +129,7 @@ main=Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports');assets=main/'2026-11
 for p in (H/'reports').glob('b3-frozen-tangent.*'):shutil.copy2(p,assets/p.name)
 (main/name).write_text(text.replace('](b3-frozen-tangent.png)','](2026-11-18-tree-embedding-representation-assets/b3-frozen-tangent.png)'))
 status=f'''**New Burgers tree-embedding study: B3 implementation and tangent diagnostics.** {decision} B2 admits only the three-case numerical setting for direct1376/global960. Latest recorded allocation{seconds/3600:.6f}h; active jobs: {', '.join(r['name'] for r in active) or 'none'}. No all-development PDE admission, runtime win or final-test opening. [Representation plots](reports/2026-11-18-tree-embedding-representation.md); [new diagnostics](reports/{name}). Old campaign remains PAUSED; nonlinear optimizer remains stopped; no merge.'''
-key=hashlib.sha256(json.dumps(dict(sources=sources,active=[r['name'] for r in active]),sort_keys=True).encode()).hexdigest()[:12]
+key=hashlib.sha256(json.dumps(dict(sources=sources,records=records,active=[r['name'] for r in active]),sort_keys=True).encode()).hexdigest()[:12]
 record=dict(utc=stamp,decision=decision,source_hashes=sources,records=records,elapsed_gpu_seconds=seconds,
             charged_gpu_seconds=charge,active_jobs=[r['name'] for r in active],own_status=status)
 (H/'manifests'/f'B3-progress-{key}.json').write_text(json.dumps(record,indent=2)+'\n')
@@ -141,6 +141,7 @@ if title not in contents:contents=contents.rstrip()+f'\n\n{title}\n\n{status}\n\
 lab.write_text(contents)
 owner=json.loads((H/'OWNER.json').read_text())
 owner.update(updated_utc=stamp,status='B3_IMPLEMENTATION_AND_TANGENT',decision=decision,
+             batch_gpu_seconds=reg['max_additional_gpu_seconds'],cumulative_ceiling_gpu_seconds=reg['cumulative_ceiling_gpu_seconds'],
              allocated_gpu_seconds=seconds,allocated_gpu_hours=seconds/3600,active_jobs=len(active),
              terminal_jobs=len(ledger)-len(active),completed_jobs=sum(r.get('state')=='COMPLETED' for r in ledger))
 (H/'OWNER.json').write_text(json.dumps(owner,indent=2)+'\n')

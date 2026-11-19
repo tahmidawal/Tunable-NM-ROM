@@ -1,5 +1,5 @@
 {
-  "cumulative_ceiling_gpu_seconds": 42296,
+  "cumulative_ceiling_gpu_seconds": 69642,
   "batches": [
     {
       "id": "B0",
@@ -136,6 +136,28 @@
       "review": "configs/B5-REVIEW.md",
       "accounting": "manifests/allocation-audit-B5.json",
       "archive": "manifests/archive-closeout-B5.json"
+    },
+    {
+      "id": "B6",
+      "baseline_allocated_gpu_seconds": 40842,
+      "max_additional_gpu_seconds": 28800,
+      "cumulative_ceiling_gpu_seconds": 69642,
+      "purpose": "Actual coordinate neural parent/child embeddings, qualified local-refinement dynamics, named Burgers families, CROM and SNF-ROM",
+      "max_concurrent": 2,
+      "max_seconds_per_job": 7200,
+      "configuration": "configs/B6-NEURAL-TREE.md",
+      "registered_utc": "2026-11-19T18:10:04.998112+00:00",
+      "activation_evidence": {
+        "configs/B5-REVIEW.md": "f902c78ed576014ad6e2e4b8268d84bec9fe598d9455059862d1f39734f3a67d",
+        "manifests/archive-closeout-B5.json": "572f9d3b93dcaa9c4e472216d29581de9af14b57fddbf5825503ad8ed8b16ef6",
+        "manifests/allocation-audit-B5.json": "c9bfeee7aafbdd8c4b6c607921c8d73d48f9232e3760ccbb9519d0124ac82d22",
+        "configs/B6-NEURAL-TREE.md": "f1556e9413c377eb7d8db9b2630d16898889407f2dccdbbc773335bb554d8b08",
+        "neural/named_cases.json": "416042c37cc22a81eb5454e138347a3f3c5f439ce13542106a816347a24e7eaf",
+        "manifests/B6-neural-field-fixture.json": "2988986107ccbd1a90a607459f63248a534b4c4a34f84e123d1eedc3e7cba2f5",
+        "manifests/B6-named-reference-fixture.json": "7e0e369ab74d9921bca29174c95789637a8ac387cea3e14710b496003c815494"
+      },
+      "status": "ACTIVE",
+      "user_authorization": "November19: focus on actual neural tree decoder with nonlinear child embeddings and local refinement; fix embedding PDE solve; compare CROM and SNF-ROM; test earlier Burgers types"
     }
   ]
 }

@@ -101,7 +101,7 @@ Native CROM training selected epoch {crom['selected_epoch']}, with worst encoded
 """
 doc=doc.replace('## Glossary',extra+'## Glossary')
 supplement=''
-npth=H/'results/b6namedneural/output/result.json'
+npth=H/'results/b6namedenc/output/result.json'
 if npth.exists():
     nr=json.loads(npth.read_text())
     if nr['status']=='complete':

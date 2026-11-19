@@ -1,0 +1,209 @@
+{
+  "purpose": "Generated numerical anchors for a manuscript outline; no new experiment",
+  "sources": [
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/measured-values.json",
+      "frozen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-manuscript-outline-assets/campaign-measured-values.json",
+      "sha256": "1c3a434a02f3f2080ee1a8819641b1bdefed7c2806ad90d3c0da8fe675954a3b"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-controlled-experiments-assets/source-manifest.json",
+      "role": "upstream raw-evidence provenance",
+      "sha256": "f9dfe7bdb60eb0194aa466cfc0f36b6d6d2d4515bc6dfdcda9ab04f5a47125aa"
+    }
+  ],
+  "template": {
+    "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-11-18-jcp-manuscript-outline-assets/outline-template.md",
+    "sha256": "366a6434002fe203c01c873884f7f5ed62b71c03e64610cb12a18435c88181cb"
+  },
+  "derived": {
+    "head": {
+      "rows": 584,
+      "dt": 0.01,
+      "cases": [
+        {
+          "case": 0,
+          "head": 0.0008337234677156426,
+          "span": 0.004023143240005665
+        },
+        {
+          "case": 1,
+          "head": 0.0009394006434694687,
+          "span": 0.008200883406536833
+        },
+        {
+          "case": 2,
+          "head": 0.0006543509678284385,
+          "span": 0.004846364839486405
+        },
+        {
+          "case": 3,
+          "head": 0.0012209753829612931,
+          "span": 0.012706913745013548
+        },
+        {
+          "case": 4,
+          "head": 0.001037551380642294,
+          "span": 0.010901286945737342
+        },
+        {
+          "case": 5,
+          "head": 0.001856325809011861,
+          "span": 0.005114348991023711
+        },
+        {
+          "case": 6,
+          "head": 0.0006937298941688093,
+          "span": 0.0062090445523808714
+        },
+        {
+          "case": 7,
+          "head": 0.0007916534726123902,
+          "span": 0.006679205904015541
+        },
+        {
+          "case": 8,
+          "head": 0.0008395481060574553,
+          "span": 0.004137088928297487
+        },
+        {
+          "case": 9,
+          "head": 0.0012629810111854307,
+          "span": 0.009557641450456065
+        },
+        {
+          "case": 10,
+          "head": 0.0010401397758957028,
+          "span": 0.007658829266724584
+        },
+        {
+          "case": 11,
+          "head": 0.0006911366049722219,
+          "span": 0.003422632809508887
+        },
+        {
+          "case": 12,
+          "head": 0.000994099813592111,
+          "span": 0.006714947244614166
+        },
+        {
+          "case": 13,
+          "head": 0.0014538584255094648,
+          "span": 0.006959056707868461
+        },
+        {
+          "case": 14,
+          "head": 0.0007026568472512392,
+          "span": 0.003755349169008676
+        },
+        {
+          "case": 15,
+          "head": 0.001373240188918648,
+          "span": 0.006905154336547009
+        }
+      ],
+      "head_median_percent": 0.096675022853079,
+      "head_worst_percent": 0.1856325809011861,
+      "span_median_percent": 0.6697076574314854,
+      "span_worst_percent": 1.2706913745013548,
+      "head_lower_count": 16,
+      "paired_ratio_median": 7.059035561122424
+    },
+    "width_baseline": {
+      "R": 128,
+      "M": 2048,
+      "case_count": 6,
+      "qualified_count": 6,
+      "maximum_error_median": 0.013227855417308549,
+      "maximum_error_worst": 0.0429789304436911,
+      "evolved_error_worst": 0.02801620250706044,
+      "evolution_distance_worst": 0.010674254037664947,
+      "initial_time_is_maximum_count": 4,
+      "tighter_iterations_median": 150.0,
+      "tighter_rejected_total": 0
+    },
+    "width_largest_registered": {
+      "R": 512,
+      "M": 8192,
+      "case_count": 6,
+      "qualified_count": 6,
+      "maximum_error_median": 0.00148416865617849,
+      "maximum_error_worst": 0.00391844645739062,
+      "evolved_error_worst": 0.0038420589068307595,
+      "evolution_distance_worst": 0.0019572071946504406,
+      "initial_time_is_maximum_count": 4,
+      "tighter_iterations_median": 150.0,
+      "tighter_rejected_total": 0
+    },
+    "lowest_median_cost_head_pod_comparison": {
+      "target": "learned_head_m292_dt0.02",
+      "group": "pod",
+      "comparator": "pod_head_m292_dt0.02",
+      "case_count": 16,
+      "qualified": true,
+      "target_median_ms": 26.5063605,
+      "target_median_error_percent": 0.11330844928162122,
+      "target_worst_error_percent": 0.19560039665109563,
+      "comparator_median_ms": 26.6176915,
+      "comparator_over_target": 1.004200161693266,
+      "individual_case_ratios": [
+        1.014430021252423,
+        1.0128458295805713,
+        0.969336262230914,
+        1.039651576449723,
+        0.9988596904223793,
+        0.9802701216720835,
+        1.007980115839161,
+        1.0068354710273293,
+        1.0041856451993036,
+        0.9766226670534764,
+        1.0027722911365333,
+        0.973785374459759,
+        0.9986023107585321,
+        1.0063652042755464,
+        0.9892274537887817,
+        1.006286955006602
+      ],
+      "paired_ratio_median": 1.0034789681679186,
+      "target_faster_case_count": 9,
+      "target_timing_outlier_count": 13,
+      "comparator_timing_outlier_count": 8,
+      "reason": ""
+    },
+    "matching_coarse_classical_comparison": {
+      "target": "learned_head_m292_dt0.02",
+      "group": "any_mesh_classical",
+      "comparator": "fom_m40_rk4_s10",
+      "case_count": 16,
+      "qualified": true,
+      "target_median_ms": 26.5063605,
+      "target_median_error_percent": 0.11330844928162122,
+      "target_worst_error_percent": 0.19560039665109563,
+      "comparator_median_ms": 23.953465,
+      "comparator_over_target": 0.9036874375869144,
+      "individual_case_ratios": [
+        0.9135281191874353,
+        0.9001834552151868,
+        0.8706352894558814,
+        0.9145015062670406,
+        0.9109691308659815,
+        0.8856306976917607,
+        0.9032988377686544,
+        0.9083694644859711,
+        0.8970928299050311,
+        0.8907340087627293,
+        0.9139857293593203,
+        0.8559337351935855,
+        0.9003513143295445,
+        0.9068289596236263,
+        0.888090637405679,
+        0.9031810964682355
+      ],
+      "paired_ratio_median": 0.90176620539889,
+      "target_faster_case_count": 0,
+      "target_timing_outlier_count": 13,
+      "comparator_timing_outlier_count": 5,
+      "reason": ""
+    }
+  }
+}

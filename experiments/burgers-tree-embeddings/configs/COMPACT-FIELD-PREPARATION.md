@@ -1,0 +1,7 @@
+# Compact runtime patches: preparation only
+
+The equivalent padded evaluator removes geometry-dependent compiled shapes but still computes local contributions across the entire integration grid. The plan requires preserving spatial locality when assessing its cost benefit. Prepare one alternative that groups fixed-size compact patches by depth, supplies their positions at runtime, and scatters them into the assembled field. Fixed slots cover every geometry under the declared node cap; unused slots and boundary padding are recorded and charged. Existing windows, normalization, coefficients, parents and fine-stencil neighbors are unchanged.
+
+Sub-minute CPU fixtures compare full fields, code derivatives, sign-upwind weak advection, boundaries and actual output grids with the admitted padded evaluator. Include mixed depth order through depth4 and non-dyadic output spacing. This alone does not qualify GPU numerics or establish a speed gain; scatter overhead may outweigh fewer arithmetic operations.
+
+No GPU allocation is activated here. A later finite cost batch must register this single kernel alternative explicitly, compare returned PDE states and accuracy with the unchanged decoder, and measure both implementations in the same allocation before choosing a faster path. B4 does not use this candidate. No additional architecture or kernel sweep, final-test opening, nonlinear optimizer restart or old-campaign write is authorized by this preparation record.

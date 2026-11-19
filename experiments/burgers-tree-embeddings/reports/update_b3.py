@@ -68,9 +68,10 @@ if tangent and 'failed_job' not in tangent:
     oldpath=H/'results/b1childgrowth64/output/result.json'
     old=json.loads(oldpath.read_text());assert tangent['growth_sha256']==sha(oldpath)
     assert old['model_sha256']==tangent['model_sha256']
-    labels=[v['case'] for v in tangent['cases']];assert len(labels)==44
+    labels=sorted([v['case'] for v in tangent['cases']],key=lambda s:(s.startswith('align'),s));assert len(labels)==44
     previous={v['case']:max(v['error'])*100 for v in old['cases']}
-    now=[max(v['error'])*100 for v in tangent['cases']]
+    current={v['case']:max(v['error'])*100 for v in tangent['cases']}
+    now=[current[v] for v in labels]
     plt.rcParams.update({'font.size':10,'axes.spines.top':False,'axes.spines.right':False,'svg.hashsalt':'burgers-tree-embeddings'})
     fig,ax=plt.subplots(figsize=(9,4.5),constrained_layout=True)
     ax.plot(np.arange(44),[previous[v] for v in labels],'.-',label='Frozen nonlinear child head',color='#3679b6')

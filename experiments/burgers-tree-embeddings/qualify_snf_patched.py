@@ -21,7 +21,11 @@ def main():
     start=original.index('function CRC.rrule(::typeof(merge),')
     end=original.index('\nfunction CRC.rrule(::typeof(_eachslice)',start)
     modified=original[:start]+'# Owned compatibility patch: use the installed ChainRules merge rule.\n'+original[end:]
-    (patched/'src/chainrules.jl').write_text(modified)
+    patched_rule=patched/'src/chainrules.jl'
+    # copytree preserves Julia package read-only modes; change only our private copy.
+    assert patched_rule.resolve().is_relative_to(out.resolve())
+    patched_rule.chmod(patched_rule.stat().st_mode | 0o200)
+    patched_rule.write_text(modified)
     (out/'lux-merge-compatibility.patch').write_text(''.join(difflib.unified_diff(original.splitlines(True),modified.splitlines(True),fromfile='Lux-original/src/chainrules.jl',tofile='Lux-patched/src/chainrules.jl')))
     lookup=[str(depot),str(resolve(ns/'b6snfnocache/output/julia-depot',ns)),str(old/'julia-depot')]
     env=dict(os.environ,JULIA_DEPOT_PATH=':'.join(lookup),JULIA_PKG_PRECOMPILE_AUTO='0',JULIA_NUM_THREADS='4',

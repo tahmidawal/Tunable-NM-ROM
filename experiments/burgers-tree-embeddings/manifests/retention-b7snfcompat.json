@@ -1,0 +1,1604 @@
+{
+  "name": "b7snfcompat",
+  "job": 7377998,
+  "source_commit": "e877cc803ebfed9b50ffba02fe604d5a3b6d5021",
+  "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b7snfcompat",
+  "local": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-18-burgers-tree-embeddings/experiments/burgers-tree-embeddings/results/b7snfcompat",
+  "checked_utc": "2026-11-19T20:44:07.174134+00:00",
+  "files": [
+    {
+      "file": "logs/7377998.err",
+      "sha256": "cdbe15c80c83b3aa0b3acb0ce608cd5f5d106b9433c1a2de095992b5b40f48d3",
+      "bytes": 1697
+    },
+    {
+      "file": "logs/7377998.out",
+      "sha256": "1c2d64e4bd608436afb6c55deb92ac6c109bc9551ab1f7cd019fb17c1bd489c2",
+      "bytes": 241
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/.JuliaFormatter.toml",
+      "sha256": "9e25afca424b4fbaa5ca5685227810b3475ec0f7d3bf0ae2030fe76dc2dad4a1",
+      "bytes": 253
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/.buildkite/pipeline.yml",
+      "sha256": "2dec8eb7e0b9fb9ddfb4f1448af5a90f4d3488743eb07069730d15e0faec1986",
+      "bytes": 12583
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/.github/dependabot.yml",
+      "sha256": "cc155956fec79314d07b89ac25c86107b1443523a63661b0369118e7b873a210",
+      "bytes": 255
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/.github/workflows/Benchmark.yml",
+      "sha256": "3dcd6b83ad5fa32479286fa53f45d9e9b22c17a44c9aa306a8e5e45cb785c328",
+      "bytes": 1701
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/.github/workflows/CI.yml",
+      "sha256": "e2929621840cfc48cb150a741adeb74309f550783df1129301a241cf7fb2a372",
+      "bytes": 1710
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/.github/workflows/CompatHelper.yml",
+      "sha256": "7dc5587f7224ed47708ae7668452073d4f7ae2b31d14d296bb94e19315ff9cdc",
+      "bytes": 1220
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/.github/workflows/DocCleanUp.yml",
+      "sha256": "099026af585acb011161116530915d81ce96711a0bc25cdd6a3febb42597fe8d",
+      "bytes": 781
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/.github/workflows/Downgrade.yml",
+      "sha256": "acb081cac220c7990ac6da18ae5ee490a2349fbd5dd682fd5ba4e00be5de2610",
+      "bytes": 1265
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/.github/workflows/Downstream.yml",
+      "sha256": "ad221c728d6c7f4d8fb325c164cbb2a5978ed11f1ec6706d6b1f3da7c7a503e5",
+      "bytes": 2580
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/.github/workflows/FormatCheck.yml",
+      "sha256": "872abc5be82628753c90ccfdd949395f9a92febf2d864b95eb6e972cdedb444d",
+      "bytes": 1150
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/.github/workflows/FormatPR.yml",
+      "sha256": "9c027bc91f8df4d19bf6cbf46e3eae79a5ff80cbe6b89212c97436682eca20ab",
+      "bytes": 1067
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/.github/workflows/Invalidations.yml",
+      "sha256": "ae3ed6b60ff8c5718ce26b783db059030890799129d5906a7e4996d444bf700e",
+      "bytes": 1472
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/.github/workflows/SpellCheck.yml",
+      "sha256": "a09f90fa909cd8935ada7773506d88bff577c762a57aa9062da3b1108ddc8ebf",
+      "bytes": 273
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/.github/workflows/TagBot.yml",
+      "sha256": "8c4c0a0f6885f934e019ccbbdd2716399396ac5cc2ac2d37fda2192f5d3f6e39",
+      "bytes": 650
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/.gitignore",
+      "sha256": "7f3e01d55dd9e35289e8674c412a0e77b3d840c07e570eafdd4d53ed88f9a227",
+      "bytes": 442
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/.typos.toml",
+      "sha256": "4b5c429bda5c68a60019981404e40c873889a3296247912b2fe22510cae6328d",
+      "bytes": 38
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/CITATION.cff",
+      "sha256": "87c0e106b2cd06443eaf2a09a033a1a3c0cf03a3cda7315771fcfccc5c293cb5",
+      "bytes": 336
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/LICENSE",
+      "sha256": "1a43491ff5a60a1021b564762e6708059b59e6b2677a83ad40038dad99221e8a",
+      "bytes": 1100
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/LocalPreferences.toml",
+      "sha256": "5ef79644c5a6fe87afd4551b6c3e24a2631d0c19b5d9bc6b4b209eb69f4fe02d",
+      "bytes": 61
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/Project.toml",
+      "sha256": "25d9484a96b313c147db72e4d42b2bfeca25dddcf20d28572fc527bcaca5f779",
+      "bytes": 5065
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/README.md",
+      "sha256": "c02d91a70370f100054fddeb6c318acbde1f6f7116e317d9941735520b0889cb",
+      "bytes": 4036
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/assets/lux-logo-dark.svg",
+      "sha256": "d56f11aff6bd79e749187acaba4af32fe2764bcc10683118a68eea5fc6b07448",
+      "bytes": 7825
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/assets/lux-logo.svg",
+      "sha256": "3574a356965bc4a15e378ce5d6a68d2e2fa5ac2a1a0d29d291004f4dc350a9a4",
+      "bytes": 7819
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/bench/.JuliaFormatter.toml",
+      "sha256": "8a8c0383989bd77f8deb15a329fbd8cb2cc535f3deafabadf4a117d9f528604a",
+      "bytes": 218
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/bench/Project.toml",
+      "sha256": "2e8c22b96c2a5e86fa3ad07ed10a471800e8454860ec0928d3f4cf8199d41c0f",
+      "bytes": 1001
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/bench/README.md",
+      "sha256": "9efc316e61c0b3b439564f7e77cdf0d4aefa2cd0aee9cb614024547726f187cb",
+      "bytes": 401
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/bench/helpers.jl",
+      "sha256": "e3776b27d5d41a965843aa7297e876cc5474016cd0957b8a85b59e3be5c124e1",
+      "bytes": 5688
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/bench/layers.jl",
+      "sha256": "998bc4e810d03e6997b59507bfdec1d5ff50ae4327dce2032e45290a4eec6551",
+      "bytes": 1339
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/bench/runbenchmarks.jl",
+      "sha256": "8723c1c303dd1f8ed3c1bb5b7ef8c708d19b9f8781933ccfc4d9b8a5dcc9d84d",
+      "bytes": 1115
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/bench/vgg.jl",
+      "sha256": "1e1c3313f6b8e220fd17483dc95142aaf3d17d472b150bd8b1f664a5bfd399ad",
+      "bytes": 3217
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/Project.toml",
+      "sha256": "5f6fcedf9bb9d153140d0c43d269092c8ee41a87e3c1555facb6f12bd958215c",
+      "bytes": 1504
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/make.jl",
+      "sha256": "780a178931befa7f66fb26d61d636224301961f60aca7cec3d7ef62953fa248b",
+      "bytes": 3658
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/package.json",
+      "sha256": "bc694c528b28b2dfc52c8b14f13349c245ade4dd72d59909826804fba8f61ef1",
+      "bytes": 472
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/.vitepress/config.mts",
+      "sha256": "58f8a7d560b8d5ddba749f3a1ba36e320c3476eb763a07c5595c922a4d6fe894",
+      "bytes": 11918
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/.vitepress/theme/index.ts",
+      "sha256": "3a99f7451b3569333df9ba4561e2eaecb63595b693b5a258366d2bfd8f7f176e",
+      "bytes": 519
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/.vitepress/theme/style.css",
+      "sha256": "4fbfd29f1484dc6f5bb8cc37bfd8d35f02ac4f3eb8b0114bb7691bd1a5c83644",
+      "bytes": 4791
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/api/Accelerator_Support/LuxAMDGPU.md",
+      "sha256": "3047db304fb4e601b36be542d36b677b3757d923db4d1ae059c042be11af2d5b",
+      "bytes": 331
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/api/Accelerator_Support/LuxCUDA.md",
+      "sha256": "388039d4480ca3d70cbd4ec42c346f4c30625179eb72c1faa995b101e257b4f2",
+      "bytes": 325
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/api/Accelerator_Support/LuxDeviceUtils.md",
+      "sha256": "3d1f78bc92c33b1552d72045baf6b58a969416681f7beebb918ccf30f846180a",
+      "bytes": 516
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/api/Building_Blocks/LuxCore.md",
+      "sha256": "b078100f0048390525ee29ef163dc36f5cb34a82427c391cac5bbf9176540d73",
+      "bytes": 1043
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/api/Building_Blocks/LuxLib.md",
+      "sha256": "afea2656f117658c22e40b2a859282ffe1aa401db1a4319fc48e06445cdb298e",
+      "bytes": 424
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/api/Building_Blocks/WeightInitializers.md",
+      "sha256": "815a8d69e1841825f4f1abc6c024fc98a09cc5dbf767d3dbd5286df78e8fd5f4",
+      "bytes": 668
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/api/Domain_Specific_Modeling/Boltz.md",
+      "sha256": "a6ba931d7d362e6204d34baaf5be8a1246d4150073c545ce7c600bbe5368fd89",
+      "bytes": 5490
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/api/Lux/contrib.md",
+      "sha256": "4c433648e5775507ad77bc6dddcbe9c44d3148b72617b1501dd5a00b042b7a86",
+      "bytes": 2221
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/api/Lux/distributed_utils.md",
+      "sha256": "64d88ffd2205072eff5f868981fd07193062c367d9d319ee26b75e62dcd5c185",
+      "bytes": 823
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/api/Lux/interop.md",
+      "sha256": "dd01e41a978eb78fb61450b607eecbf7e5fd794c79bb2cfc5a6cdced3de06eaf",
+      "bytes": 1546
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/api/Lux/layers.md",
+      "sha256": "5b13736af21e47c5067873fb5a989ab78a68e119198cfd0b1404198da0146c7b",
+      "bytes": 864
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/api/Lux/utilities.md",
+      "sha256": "82c67db6f31e9a318d683896807610942b8b6a52296adc3507968720019f5338",
+      "bytes": 943
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/api/Testing_Functionality/LuxTestUtils.md",
+      "sha256": "4bc1ac5c10ed2092535ee69a8498a73e849241c245c64c92f9f41d859bd0f105",
+      "bytes": 573
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/components/AsideTrustees.vue",
+      "sha256": "ceca53418ba665988664303917fdd1913a1d349a95d58ae696a577d3d549d2a6",
+      "bytes": 2458
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/components/Gallery.vue",
+      "sha256": "23d9280b0023b1b35616ae91c3f08bee143db61fd130815b82c7037d21c0215a",
+      "bytes": 701
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/components/GalleryImage.vue",
+      "sha256": "33da9e0dd43079fb0aacdaed97dbc2e297958fcc0c1f1f4b8d2d263200ae0fb1",
+      "bytes": 2539
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/ecosystem.md",
+      "sha256": "55717f1d5365db4897152f43b78da92ddd196d4ab6b8de67357229f00a51d1b4",
+      "bytes": 12931
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/index.md",
+      "sha256": "cad993cd3f0113e4f96d8e3bbcbfe0b488a7d5649cfc90f6773b785fb4028f76",
+      "bytes": 1574
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/introduction/citation.md",
+      "sha256": "1872191f38fe7c07c4e1bd671486ecf099c4b367122d7b2d590e534ae50b94b7",
+      "bytes": 723
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/introduction/index.md",
+      "sha256": "9304df86d8747f3ab77cddbe0ae2457dd98a94aa6153cc0fbdc3d305ea03282c",
+      "bytes": 3491
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/introduction/overview.md",
+      "sha256": "f3cbf168e707fc74575122ca29e45d9fc4d4ba61fc386837845d539f53b5d4d8",
+      "bytes": 3374
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/introduction/resources.md",
+      "sha256": "d572a8ba7f969348470d26ad0ff586fccd38d3e04ebdca8cfb1462fc9fcb2f3c",
+      "bytes": 810
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/manual/debugging.md",
+      "sha256": "e968ce3eae52d4a9bf798d34118e0613722839f29691514da4b58132d2e60dab",
+      "bytes": 5062
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/manual/dispatch_custom_input.md",
+      "sha256": "f9a9f789e4df78706632651c6904f3ce752db514a09870fc74dbc3338da6b878",
+      "bytes": 2875
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/manual/distributed_utils.md",
+      "sha256": "f4be23fc12b9e7d2588db626e8597a2eb8a1d957e67d528c4174ab74b48965b6",
+      "bytes": 4766
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/manual/freezing_model_parameters.md",
+      "sha256": "ae553272b7b5647e3ad81ff2b62e6809ad5fc207faf51279b08bbd8f993a688e",
+      "bytes": 2902
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/manual/gpu_management.md",
+      "sha256": "3b088588a26b2901040f62947e5abb94ccb16b025fd6d5e033b3730246b606db",
+      "bytes": 2189
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/manual/interface.md",
+      "sha256": "61cf50714c8728fc37838bce7e7ef26a59b0881ae503c117089671f62ce008c0",
+      "bytes": 8366
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/manual/migrate_from_flux.md",
+      "sha256": "403938a503235f6bdcffde2ddfb3d6fab7ab533e9f150261d581562108b358b5",
+      "bytes": 4228
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/manual/nested_autodiff.md",
+      "sha256": "28e3d584b23fd6d494024d18b87672acc020bd1f2d444f850e2367ecfe3b6d0f",
+      "bytes": 5155
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/manual/weight_initializers.md",
+      "sha256": "ba208a9507449d255e84e99e65aaa4ee75aa7959bedd6dcd12089aacddfd8186",
+      "bytes": 1725
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/public/blas_optimizations.jpg",
+      "sha256": "7b434540f64ebccb6d5d61dd84914fcdbcb6e5de2416102bc52082505b3ce3b4",
+      "bytes": 82448
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/public/gravitational_waveform.png",
+      "sha256": "764b13e0a9c1c00ae24a311e9d192bee9ee1a02aa17f7da33da410c38b157a80",
+      "bytes": 301793
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/public/hypernet.jpg",
+      "sha256": "18e262890d1de16a8d0a2a2e9718f67707e3cc9129c16c6239b994f2db7e2996",
+      "bytes": 233904
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/public/lstm-illustrative.webp",
+      "sha256": "8ecc647f0764f465fb421d7175ebb52e78e404cda02fd901624719629e00b93c",
+      "bytes": 384332
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/public/lux-logo-dark.svg",
+      "sha256": "d56f11aff6bd79e749187acaba4af32fe2764bcc10683118a68eea5fc6b07448",
+      "bytes": 7825
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/public/lux-logo.svg",
+      "sha256": "3574a356965bc4a15e378ce5d6a68d2e2fa5ac2a1a0d29d291004f4dc350a9a4",
+      "bytes": 7819
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/public/mlp.webp",
+      "sha256": "d91ff2c4daba908c10e5241b40925e00db264040622cc497aa024c6c81c38593",
+      "bytes": 32494
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/public/mnist.jpg",
+      "sha256": "2e09631aaf5ac0bb321bb60ee8a9f632e04e32653c8e7d346f7ac9bf886b10b4",
+      "bytes": 38837
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/public/neural-sde.png",
+      "sha256": "335eb80328d36f4bc3f78d235b69bf6fb419f38ef2ab65536b1549a6a58384ae",
+      "bytes": 73411
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/public/pinn.gif",
+      "sha256": "c9c3df92c7e5ffd91eb7af3cb237acc16a8b0e46c227afa3306c0cfefb06b1c1",
+      "bytes": 694882
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/public/symbolic_optimal_control.png",
+      "sha256": "c9a616da1504f6f295a459090d6a761b0e4d4571a4c1acc3b23c12a4750638e6",
+      "bytes": 53612
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/public/weather-neural-ode.gif",
+      "sha256": "6163e0845c3038b867e0013a42b697fee2985383d875c005a13da3378fb7a3ab",
+      "bytes": 3592417
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/src/tutorials/index.md",
+      "sha256": "7496c84a6d8a945905250b6502df6cb1172182cfeacff9f3ac78be864ee58405",
+      "bytes": 4163
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/docs/tutorials.jl",
+      "sha256": "232d71ef9ac7d45bf9fdcefa6b3b02bff9d2646eca39815475edd3c9c60eee03",
+      "bytes": 3604
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/Basics/Project.toml",
+      "sha256": "5563530861b6182b96abb5a4a41761364a2e109214e09eeb6ae3d66f2d443785",
+      "bytes": 691
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/Basics/main.jl",
+      "sha256": "5fcbe44a318d6df71819c8da22cd520f59c28408eeb985946d6901c2d53f5d6c",
+      "bytes": 11987
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/BayesianNN/Project.toml",
+      "sha256": "f785c3a8f7fb075ce547f7dcee0124ea703014ffdce114eaea6f13b6a7b316f4",
+      "bytes": 694
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/BayesianNN/main.jl",
+      "sha256": "bccd0c2103fec92889b05a9f41967593e65335a453fe9210381fe01b711f8aee",
+      "bytes": 7861
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/DDIM/Project.toml",
+      "sha256": "e9c8cd90ddfe159a8cb79023ba094c6aa51c02e77acef33cfe782b865321e2fe",
+      "bytes": 1079
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/DDIM/README.md",
+      "sha256": "b408775c9f9d2476e15303531a3f8908284b9a43852adcec942357bdba25a5b0",
+      "bytes": 1549
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/DDIM/generate.jl",
+      "sha256": "5460f509b3ccd673fc5c1ab4816d732e7a309e43405f5a03cc88ae803d601179",
+      "bytes": 2435
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/DDIM/model.jl",
+      "sha256": "b88b72702e3186f649a6db14437fc09b7263feb676c9b80d2caf41ba07e47ccf",
+      "bytes": 13340
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/DDIM/output/generate/img_004.gif",
+      "sha256": "db593dcb23d2d7bca98cc6bd6d22bc57c58dd1e9fa965032294a16618a50e78e",
+      "bytes": 3078769
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/DDIM/output/generate/img_005.gif",
+      "sha256": "4c80e84a30e3c6a870e035bc0ac65c5b569fbbc5e26f3e27c35d033fa53ec936",
+      "bytes": 3037052
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/DDIM/train.jl",
+      "sha256": "40e0121fc97f1a017991b07f72e25d97d076254f13076e9bb0493ee387d14f9a",
+      "bytes": 5490
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/GravitationalWaveForm/Project.toml",
+      "sha256": "afaae3f3e9c29890c14f66e3c825edd4831206b577c2c0cc5b18880ddf26df35",
+      "bytes": 1012
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/GravitationalWaveForm/main.jl",
+      "sha256": "5f7c0b314ed9ec28ca66add330f4a9d8f9d4a4a13b3715a8f3d3263426c4d36b",
+      "bytes": 12200
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/HyperNet/Project.toml",
+      "sha256": "c498b73e2b23177585cd4f7bd92f06628f42263cd5ad81b3007645a28c5ba491",
+      "bytes": 1108
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/HyperNet/main.jl",
+      "sha256": "59f73712571ca1ae7efae522ed85a854d04bc2e0d139f4db80b2b34ba4e4d4f3",
+      "bytes": 5376
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/ImageNet/Project.toml",
+      "sha256": "95af3e1335d1ca5c7d448d74db9f8ff32e4ca59b03941d0b7a62c23b749a64b0",
+      "bytes": 1786
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/ImageNet/README.md",
+      "sha256": "2b1c0ea0efd81bc2048a97f1a75f3ff94715ed85dd52677e64cb1db15b97a533",
+      "bytes": 6372
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/ImageNet/config.jl",
+      "sha256": "58ca69b32dc3583e210bcae5045de3fc4a508f118fe23be0572cea8ee9731b09",
+      "bytes": 1227
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/ImageNet/data.jl",
+      "sha256": "e58d0056b44fbba92833a0ecbd119fd4220ee1a9e0303b726c72396738cd6bde",
+      "bytes": 4003
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/ImageNet/main.jl",
+      "sha256": "be11e59198549aa01f2c2b15d6c53e7a6ec7a169185718a7b8b07e2c097d0a54",
+      "bytes": 9510
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/ImageNet/synsets.txt",
+      "sha256": "70002b0ff5de60a3a17a82dbfcff291931f96225ddf941ad2e182fc39e183d15",
+      "bytes": 10000
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/ImageNet/utils.jl",
+      "sha256": "dc7888809f438f2e092af6772f28bd4ec8121b8475017b9643ad0d810bbc507b",
+      "bytes": 4320
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/ImageNet/val_list.txt",
+      "sha256": "7249c9cb0358d791c7078cb2ebed587b2e4fa56e842da2fbe11859eb390998a5",
+      "bytes": 1586411
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/NeuralODE/Project.toml",
+      "sha256": "63e2a496d218011c0c7e508ecd053d5bf6bae34d26ff1c8ae474929e56451984",
+      "bytes": 1131
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/NeuralODE/main.jl",
+      "sha256": "436a578bb9a9122b620e5ab192e4bc0bcb077eb8fde7b68a96b5d5576294abf9",
+      "bytes": 8903
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/PolynomialFitting/Project.toml",
+      "sha256": "028e117480ebf6b334ead5b9e25419b6586c1e296e7b2fc8015d6b14d9e5b91f",
+      "bytes": 796
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/PolynomialFitting/main.jl",
+      "sha256": "a0799ee16c01cfadf369d8bbca3a8e412fd8b918b9af940abb18d44a9236084b",
+      "bytes": 3547
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/SimpleChains/Project.toml",
+      "sha256": "ab0eba0e8d2c01523aa40deb941cf14d51b1ad50cfbb386dc8221b18242b5c7d",
+      "bytes": 809
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/SimpleChains/main.jl",
+      "sha256": "afd40997a00ab3ac4c0904a5cac923fdc450c82abdbef6ff08bc6c40ae726f5e",
+      "bytes": 4333
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/SimpleRNN/Project.toml",
+      "sha256": "231d156e7a1b257de17abd6f1ee79cb2191ed719e72ce4b4ef02fd758d2ca69a",
+      "bytes": 849
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/SimpleRNN/main.jl",
+      "sha256": "fa793c995e5759e0a39e0e9aa2a9e048a20843b8da4f58f6dff8675b4b884fe1",
+      "bytes": 7940
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/SymbolicOptimalControl/Project.toml",
+      "sha256": "f56b595b1d56966420023f35eea5eb05028d7eea4416c7b830f6083a71e3eb9a",
+      "bytes": 1350
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/examples/SymbolicOptimalControl/main.jl",
+      "sha256": "b4cda8d2509bc90e348a5ca35ceae444b5f2c84688e01d003f51870e883314aa",
+      "bytes": 9234
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/ext/LuxComponentArraysExt.jl",
+      "sha256": "31a207fa714411aa96b96f51e782a33aca90a208d95a98a04716ad69a7f3b145",
+      "bytes": 788
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/ext/LuxComponentArraysReverseDiffExt.jl",
+      "sha256": "93821fee06c7ac4f1922e9b9643d0fcccc4c8c45028a4cde1ca24cc7bcadcd73",
+      "bytes": 262
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/ext/LuxDynamicExpressionsExt.jl",
+      "sha256": "cd7cc0b38b57fc8f11d2acf741f5049e7213d370ada6a42ed09f47a85221df9c",
+      "bytes": 1824
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/ext/LuxDynamicExpressionsForwardDiffExt.jl",
+      "sha256": "b00b861f0ee83058f94c595ea785af42346768075a16033c8c65aa1a8c99244d",
+      "bytes": 2479
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/ext/LuxFluxExt.jl",
+      "sha256": "8132cece23e11602a53f5a250515d5edece4cfba8f29873fed582bf12b2cde73",
+      "bytes": 12312
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/ext/LuxForwardDiffExt.jl",
+      "sha256": "480922ea72e3c8fd4a372f5435c19f591bb0a213c19e4c6137f1defc6356c1af",
+      "bytes": 8070
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/ext/LuxLuxAMDGPUExt.jl",
+      "sha256": "64182be68b6ef5500444afae1429119f3eacc7f5429ef2c6f0bd1a9e73e42cd1",
+      "bytes": 349
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/ext/LuxMLUtilsExt.jl",
+      "sha256": "ba458528ecbfaff2cbe1db784404c7c220f2be476742417e3e4ef274c0de49e7",
+      "bytes": 723
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/ext/LuxMPIExt.jl",
+      "sha256": "9b8feb10c447c39c5304b5ca228b26c0a2daf428b54303b826b4120e1367858f",
+      "bytes": 6752
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/ext/LuxMPINCCLExt.jl",
+      "sha256": "e28c7ca079218ba5c1e751a6f0eda41d36d525980d138bfddf68327430d025fa",
+      "bytes": 4070
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/ext/LuxOptimisersExt.jl",
+      "sha256": "ebc880b8b5a6013429fe3660fd67fda436558f38dcb8711016805b6cc7feeaac",
+      "bytes": 2311
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/ext/LuxReverseDiffExt.jl",
+      "sha256": "2abd07bb0dc8e3c30222e176cd2beac0c0f27b5ced623640b843bacad2db7b69",
+      "bytes": 2382
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/ext/LuxSimpleChainsExt.jl",
+      "sha256": "2d4cbc56cb7ff86e987639d538888c30a03e4717df0dc2ca585db346c8c8e40c",
+      "bytes": 3378
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/ext/LuxTrackerExt.jl",
+      "sha256": "e49d739df25fea5b86f8b119b768976c10662320682f3dffef2e129fa99cc87d",
+      "bytes": 4092
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/ext/LuxZygoteExt.jl",
+      "sha256": "657d55c0c61e4cd62281203d1d4f3c7e406ce295d904819c456c3c149cab68d4",
+      "bytes": 5559
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/src/Lux.jl",
+      "sha256": "39a54b5a582a9809ff6cf320fa58e652f518da648476b2571539b1d10b8b54cc",
+      "bytes": 3313
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/src/chainrules.jl",
+      "sha256": "a75aaeb724150629c2067ef1df30ef9971cafed0aee62f81238b833eea1b203d",
+      "bytes": 3273
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/src/contrib/contrib.jl",
+      "sha256": "25c93cbc46aa8552011d60bde02b6c898eda7f2edcb1be82ddb6ee473172761c",
+      "bytes": 1749
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/src/contrib/debug.jl",
+      "sha256": "5cbe178a541568d7223b17807b87d1a508b29540c8f5e72f1de58b1ad5d6674d",
+      "bytes": 6167
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/src/contrib/deprecated.jl",
+      "sha256": "a5701f1fd1c2b1e14ef1c3c14a989caafa0c0ea6a5e2a5faceafa1107dc0cc0b",
+      "bytes": 744
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/src/contrib/freeze.jl",
+      "sha256": "912e2807f64ddfd69745071878587ea6f9e11d9b7bc9b53aa6aa46bc07b89b68",
+      "bytes": 4671
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/src/contrib/map.jl",
+      "sha256": "67b04a28a2ab396cc0f5fdb747b443cc7b4d612e547a4f6b02330f08774e7b36",
+      "bytes": 5915
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/src/contrib/share_parameters.jl",
+      "sha256": "fd68fd89134fdf137ae488096942065b383f12013d2cfaca81db2212bb3279d7",
+      "bytes": 4159
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/src/contrib/training.jl",
+      "sha256": "b9c239d18c975ea82667d31b848ec8dc119d83283885e59191ede8d9eec32ea0",
+      "bytes": 2192
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/src/deprecated.jl",
+      "sha256": "b6825b6ba7e7bb10d46269a5eb5538456c05531b23b1f6caf440a7e1f426ee0f",
+      "bytes": 1601
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/src/distributed/backend.jl",
+      "sha256": "19e3ce2bdc975444eacc0c49ec41bcbea93385704d636da9a37cfffa36e137a4",
+      "bytes": 1422
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/src/distributed/public_api.jl",
+      "sha256": "bbc7553167b1fc279e3e15b63528ce796bd1842a2cf19eb5315040fbf097e056",
+      "bytes": 9042
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/src/helpers/compact.jl",
+      "sha256": "d0e917731287b73fefc04e861fb69b03cde118e24dcf09ce590f3d01a69fdbf3",
+      "bytes": 16394
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/src/helpers/stateful.jl",
+      "sha256": "d6c24c65875215a85e495db9231dea6d5448cf3d12a4d1396d8e65a96a80890c",
+      "bytes": 4132
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/src/layers/basic.jl",
+      "sha256": "982ffd15772c3f8842de3349cfbcabb009e68cf83359b7dd4b59471a1e0628f6",
+      "bytes": 16337
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/src/layers/containers.jl",
+      "sha256": "42329230bc610613a0aa5677fe80909e01c8871b8cedbaaff65e05d808213b0d",
+      "bytes": 20512
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/src/layers/conv.jl",
+      "sha256": "e57ea83e9030fd4140788ceeac1003cb94399ea45501576f5213155750baf3ae",
+      "bytes": 27699
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/src/layers/display.jl",
+      "sha256": "018650d9545c2eaa18137e0b7fe19931628c9eea44ad1051b0ea7525c850eaa6",
+      "bytes": 4355
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/src/layers/dropout.jl",
+      "sha256": "5b6c884698472e46dd39e56293bc8955ba012c69bde68dd837ceac4083a76664",
+      "bytes": 4907
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/src/layers/extension.jl",
+      "sha256": "c32530d17f39925a4257b621f79121027fa16fb9730857678303c96d99c2e4f2",
+      "bytes": 8501
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/src/layers/normalize.jl",
+      "sha256": "ba120a2ff8f1e723ce5b08f106dea53befee4f04a42593af8df58d19a74c8f18",
+      "bytes": 20168
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/src/layers/recurrent.jl",
+      "sha256": "29bb689a5c2ea752e25ba05668347ef599468a4369ff4586695c206f4d7b3382",
+      "bytes": 24015
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/src/transform/flux.jl",
+      "sha256": "19512d166a9dbfb65409bd820258ff503e08a9e2bdd6a8d1519f29a1b4844b26",
+      "bytes": 2170
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/src/transform/simplechains.jl",
+      "sha256": "5e3db75850e586636d53257629a7cbadc7e3bdb15c0b0acc6034aa3aac9ed9d0",
+      "bytes": 3283
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/src/transform/types.jl",
+      "sha256": "a538f523cced8f80a921e69e9ffc3b2c5069d4f4dad400c1b01fed11ff733e2e",
+      "bytes": 240
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/src/utils.jl",
+      "sha256": "f6ff75b6945230d049474cc6dcd215b4bdd4eecc8c69fb4c341909d3ea19630e",
+      "bytes": 10402
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/test/contrib/debug_tests.jl",
+      "sha256": "e96a06337cfde774e88f580347e2ace939d38b11dc3589a5209c1433b0851136",
+      "bytes": 5244
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/test/contrib/freeze_tests.jl",
+      "sha256": "047509382311cfb7ffdaff3ddb5051417125c5254474638aa793ba1206593d7b",
+      "bytes": 3131
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/test/contrib/map_tests.jl",
+      "sha256": "a1fb62a757e3fd23c138d33a1c7227c457996b22ea0b2662828a7b21bd20ebe1",
+      "bytes": 2435
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/test/contrib/share_parameters_tests.jl",
+      "sha256": "cd4346351cb68c96320bafd4079f5a729403f15041d4ef1e60d0e99d296a39db",
+      "bytes": 2618
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/test/contrib/training_tests.jl",
+      "sha256": "41131a08ee8e0be685b3dda870b00557f6f8fc4265731a904b5c7995ed79df74",
+      "bytes": 1704
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/test/core_tests.jl",
+      "sha256": "9d1ab3b6d3f502187b1cc7a5ab85dd549b589db1bd6414df1682e82491acd5e1",
+      "bytes": 485
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/test/distributed/common_distributedtest.jl",
+      "sha256": "a58798f161fc3fbaade039d51179434bddb0f93040c7646265be6c634bd9c4cd",
+      "bytes": 2728
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/test/distributed/data_distributedtest.jl",
+      "sha256": "95ad0b304007e13798c7da92cd1bfe11b00adb01f354162c7863de0f5118b199",
+      "bytes": 1012
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/test/distributed/optimizer_distributedtest.jl",
+      "sha256": "8646fe6675a258565e689f1dc64d7dfbded534fe82c2a4f046cb7bc7cdabd4ef",
+      "bytes": 1012
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/test/distributed/synchronize_distributedtest.jl",
+      "sha256": "17be6d1434e68a90ea78971cecf98e77fc391762ca8db4f45d9411afe4d785da",
+      "bytes": 2746
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/test/helpers/compact_tests.jl",
+      "sha256": "8d5ef7aa7575aad969c248fd5d9d0b40b890aea81ca57d035f09d974077606e4",
+      "bytes": 9134
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/test/helpers/nestedad_tests.jl",
+      "sha256": "ee84010e85e88d8ace1a90bdabc6c90250fa38ab750befe51f8645cd0b739e31",
+      "bytes": 4475
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/test/layers/basic_tests.jl",
+      "sha256": "92528562569b14e1be1f7b3766da01e7b9299bd88c8bc51ebba4333f83f0b332",
+      "bytes": 12562
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/test/layers/containers_tests.jl",
+      "sha256": "868efb82171373da7cf7e07a763db1ab5d07966e24cdc7dd6d74bf8f791d5591",
+      "bytes": 15477
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/test/layers/conv_tests.jl",
+      "sha256": "3bf714762a65aba20d6cd4b8dab225bcc839af502d0579824fdb36de95b9a738",
+      "bytes": 26070
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/test/layers/dropout_tests.jl",
+      "sha256": "331702b5887aff7e15d9cff1d433d6a589c471000356e547d5553425219b18fc",
+      "bytes": 3288
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/test/layers/dynamic_expressions_tests.jl",
+      "sha256": "acb2b4d1a0fbc01c0c9cadbfd14a5ac6731a9ecb7f28f2dbbdd8a55fb66d2fc8",
+      "bytes": 976
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/test/layers/normalize_tests.jl",
+      "sha256": "b0f89ccab79ee62afb528c2c7e18293848007cd05c772499f9107337b1564a1d",
+      "bytes": 15885
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/test/layers/recurrent_tests.jl",
+      "sha256": "4f8ec1a4d60b9ed71e4ad5c3d89d37ab03fe800c3ef998a60af49be0346231e5",
+      "bytes": 16268
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/test/misc_tests.jl",
+      "sha256": "a1ff141e79d2ebb33bdfce76f48bfe1671972eea90b4709066ef001e7330995a",
+      "bytes": 805
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/test/qa_tests.jl",
+      "sha256": "7d1921538e9f8ede96b70fad62eadb153659a217bc55778422e7a54232a31610",
+      "bytes": 868
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/test/runtests.jl",
+      "sha256": "f688ae1a90f199d124155f9504691afe7d464617461648922e5a81bbb6288d2e",
+      "bytes": 1972
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/test/setup_modes.jl",
+      "sha256": "63bf83b3d73576514fb4afe3bf0b1d7581da2225df82b3f4cc96847489f603a3",
+      "bytes": 803
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/test/shared_testsetup.jl",
+      "sha256": "08723a3e745067130090b7f08dac76b31da370196cd97a9e2c59afab5f2c1c1d",
+      "bytes": 1023
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/test/transform/flux_tests.jl",
+      "sha256": "c5023785df4a2aa862c8b77d393c5f037fea9e94a5959dac37e7c60917e40cb0",
+      "bytes": 16990
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/test/transform/simple_chains_tests.jl",
+      "sha256": "7febb80a8e39819d4b59b6a634b618a44601006263405beacaef37303915e93d",
+      "bytes": 3791
+    },
+    {
+      "file": "output/julia-depot/packages/Lux/68T9j/test/utils_tests.jl",
+      "sha256": "a236b70ff1faae6f2bd539019f18937d20d53494108989e7b23a551faf08df53",
+      "bytes": 4887
+    },
+    {
+      "file": "output/sources/snf/LICENSE",
+      "sha256": "de2c0c2e028c6e8735bee275bf72698d64a7e22c893be1391715411662ca9a51",
+      "bytes": 1108
+    },
+    {
+      "file": "output/sources/snf/Manifest.toml",
+      "sha256": "df1738f2fd04e499511562a8fb41c5962533d0dde8e51c622265ee78aa1ab866",
+      "bytes": 115555
+    },
+    {
+      "file": "output/sources/snf/Project.toml",
+      "sha256": "7641271e1b10f78022907ea0828679be5cc9c5170168f6829b0b5576a0a1fb41",
+      "bytes": 2931
+    },
+    {
+      "file": "output/sources/snf/README.md",
+      "sha256": "ec39aea5233252cb8f67156c64c1fc17cc0752b8dd804fa5025a675e89d5e3bc",
+      "bytes": 5366
+    },
+    {
+      "file": "output/sources/snf/benchmarks/batch_perf.jl",
+      "sha256": "33d6bb797a96688fd338a5e718d2626c61541b50ae88466f4fbe12189f7ff777",
+      "bytes": 1705
+    },
+    {
+      "file": "output/sources/snf/benchmarks/cuda_perf.jl",
+      "sha256": "f6a47c3ea2de1d908c74a46b21093f7c64a65b66e9d7a69acf10420afd9b3060",
+      "bytes": 28773
+    },
+    {
+      "file": "output/sources/snf/benchmarks/fft_perf.jl",
+      "sha256": "b3185ade70114999c45bf319c74e63598deb91edce0a644bb85b5ee07ee6dd97",
+      "bytes": 5274
+    },
+    {
+      "file": "output/sources/snf/benchmarks/misc_scripts/Project.toml",
+      "sha256": "6b647edb6ee811d4984a6e331be9068e89ccbf9b18c08511fef2498fda95b302",
+      "bytes": 352
+    },
+    {
+      "file": "output/sources/snf/benchmarks/misc_scripts/forwarddiff.jl",
+      "sha256": "560f0444b90accb806a2eba3f298972c35d2d05ab10e0b906486a2f9c5611342",
+      "bytes": 739
+    },
+    {
+      "file": "output/sources/snf/benchmarks/misc_scripts/gdopt.jl",
+      "sha256": "1e124160c34dc586af01319047e5fd027f7d646907876253b5968b0ece3a5a01",
+      "bytes": 1560
+    },
+    {
+      "file": "output/sources/snf/benchmarks/misc_scripts/hess.jl",
+      "sha256": "e1fb00d1245527ea0367e0843a343b4b68716466202304ed9e01e8091e476d89",
+      "bytes": 1032
+    },
+    {
+      "file": "output/sources/snf/benchmarks/misc_scripts/misc.jl",
+      "sha256": "87c22339862009f57bd53b2329eb8aa23b9e266e7a8ded73d9710f4ee7deb9f7",
+      "bytes": 2591
+    },
+    {
+      "file": "output/sources/snf/benchmarks/misc_scripts/scat.jl",
+      "sha256": "3c2a65fad75b06c17cd4765763d9f82e7ce50de1be899cec749f62ead5670de9",
+      "bytes": 740
+    },
+    {
+      "file": "output/sources/snf/benchmarks/operator/diffusion_fourier/datagen.jl",
+      "sha256": "93b5a0b63b9eef31c36742a8baf5e07b4ee5344696ce2a76494da37b106dacd4",
+      "bytes": 5947
+    },
+    {
+      "file": "output/sources/snf/benchmarks/operator/diffusion_fourier/exp_2d/model.jl",
+      "sha256": "529cf6ec156e520f2f2fac8b7614b5a9823dd92bcf1e9d43907b61cb40821dc9",
+      "bytes": 2583
+    },
+    {
+      "file": "output/sources/snf/benchmarks/operator/diffusion_fourier/exp_bilinear_scale/bilin.jl",
+      "sha256": "846924584f08cfd9446e6ea42c4e6234ad8e40c18f3394e88150403cdc594f8d",
+      "bytes": 2681
+    },
+    {
+      "file": "output/sources/snf/benchmarks/operator/diffusion_fourier/exp_bilinear_train/bilin.jl",
+      "sha256": "e88553183762575a8bf1ed8f93c6b98ba5d273792659b273844d9775a7c78081",
+      "bytes": 3006
+    },
+    {
+      "file": "output/sources/snf/benchmarks/operator/diffusion_fourier/exp_linear0/lin.jl",
+      "sha256": "a398e3eb339a63a2d367abf950f0f8825d031a24283527c553dd179058276061",
+      "bytes": 2520
+    },
+    {
+      "file": "output/sources/snf/benchmarks/operator/diffusion_fourier/exp_split/exp_split.jl",
+      "sha256": "af09b9783e1516f870ef4d69a5c64f9e887d4be5017029b13df58f094fdf4a8e",
+      "bytes": 2646
+    },
+    {
+      "file": "output/sources/snf/benchmarks/operator/diffusion_fourier/exp_wiggle0/wiggle.jl",
+      "sha256": "e3c4d24a68690367751e08079488c7f4f5fc004d4a3a9f88de8ce7a4d00a4978",
+      "bytes": 4936
+    },
+    {
+      "file": "output/sources/snf/benchmarks/operator/diffusion_fourier/gpu/bilin_gpu.jl",
+      "sha256": "04729c9c55515e5b82dc37421760985f68060247859666c9becffa69954ccdea",
+      "bytes": 2282
+    },
+    {
+      "file": "output/sources/snf/benchmarks/operator/diffusion_fourier/gpu/prof.jl",
+      "sha256": "5e2038fc05ce36cc833d88d39d1fbb6aa8d090f31ef1d66f92cd99b6f8328d41",
+      "bytes": 1162
+    },
+    {
+      "file": "output/sources/snf/benchmarks/operator/pdebench/advect1d.jl",
+      "sha256": "82fc265bac664343d958cd0292b9702f50548d1b4e4e9dc529bd93477ae7d049",
+      "bytes": 1482
+    },
+    {
+      "file": "output/sources/snf/benchmarks/operator/pdebench/burgers1d.jl",
+      "sha256": "ea786f304fa977750201a7a09d499c45f7da441059a84d349cfa5c27c2a3f12f",
+      "bytes": 1780
+    },
+    {
+      "file": "output/sources/snf/benchmarks/operator/pdebench/burgers_bilinear.jl",
+      "sha256": "93e6fad6fc26b34a7b730e0987e06434cbf879d20929ef4298fac048c70590fa",
+      "bytes": 2024
+    },
+    {
+      "file": "output/sources/snf/benchmarks/operator/pdebench/darcy2d.jl",
+      "sha256": "be1b56b52c359cb72b0785204ba13cfb843e35de8a77f10926214373bfd71321",
+      "bytes": 1517
+    },
+    {
+      "file": "output/sources/snf/benchmarks/operator/pdebench/pdebench.jl",
+      "sha256": "d349e0c2a65ca027e888203e0521a0d0ba9ab3788d19d1f1c16b755932c1ee30",
+      "bytes": 2661
+    },
+    {
+      "file": "output/sources/snf/benchmarks/zygote_perf.jl",
+      "sha256": "228d77083b3f8efcb89d48fcc0070dc72b8152648a8fbc631116e7995ac7b8e2",
+      "bytes": 2057
+    },
+    {
+      "file": "output/sources/snf/docs/Project.toml",
+      "sha256": "ecf77e660e452841d6ffa83a95a633f01acd7696052d49347931ba032ec8de94",
+      "bytes": 220
+    },
+    {
+      "file": "output/sources/snf/docs/make.jl",
+      "sha256": "7044bb1019eeb2d163a93d1b676fbdf8359621d90470e35d1b4ee06a5ca250dd",
+      "bytes": 753
+    },
+    {
+      "file": "output/sources/snf/experiments_SDF/Project.toml",
+      "sha256": "bebcd12158207dc7f0f7cabeb3f597d6350d26230682b000cc19047b817d743f",
+      "bytes": 307
+    },
+    {
+      "file": "output/sources/snf/experiments_SDF/SDF.jl",
+      "sha256": "a995b9bbd2204447bf14d8ce2ba1cb3feaf05dccf23919bc90c3733ca9a1d7bf",
+      "bytes": 6475
+    },
+    {
+      "file": "output/sources/snf/experiments_SDF/run.jl",
+      "sha256": "595a9f26835d38e181562aeefc77b82a1319e827970d002e1052b3a4b4d10f31",
+      "bytes": 2843
+    },
+    {
+      "file": "output/sources/snf/experiments_SDF/utils.jl",
+      "sha256": "3d2107ace91c4b17bb73baeab335708de88bb13902c35ca662d66b15870be7f5",
+      "bytes": 2348
+    },
+    {
+      "file": "output/sources/snf/experiments_SDF/view.jl",
+      "sha256": "763d7fa7c3b49448505c528ddee2bc722b372947fd0aca92f22a5b91631c679a",
+      "bytes": 1821
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/PCA.jl",
+      "sha256": "4eecad4f975c0eb9c174b6f7e7af42181bb9cd824f1ced6d41662bf4de81e2fc",
+      "bytes": 9925
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/advect1d_compare.jl",
+      "sha256": "62683743993557d9652d63a8705872da237a04bb6a12622a773d85df73f26bcb",
+      "bytes": 3443
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/advect1d_compare_projection.jl",
+      "sha256": "ac8b277005e1b6852eeb114b3a3adcf70c684c6c08b5f99c8fc70fc1b8e0f447",
+      "bytes": 5525
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/autodecode.jl",
+      "sha256": "485369ad18882ac29a0078bd9b4392d9438ca6d52eaea5660db525cdfb3edca1",
+      "bytes": 1867
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/cae.jl",
+      "sha256": "b4fcce54dc0b59ba862f15d9940227ef0bbd7d65b8ad61283406b44dcf913884",
+      "bytes": 1156
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/datagen_advect1D.jl",
+      "sha256": "1478ed08f36bb139ca97379bca722fc63b8b93584088afa879aac0bc27ff5ea9",
+      "bytes": 3356
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/dump/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/model_CAE01/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/model_CAE02/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/model_CAE03/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/model_CAE04/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/model_CAE08/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/model_CAE12/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/model_CAE16/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/model_CAE20/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/model_INR02/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/model_SNL01/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/model_SNL02/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/model_SNL03/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/model_SNL04/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/model_SNL08/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/model_SNL12/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/model_SNL16/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/model_SNL20/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/model_SNW01/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/model_SNW02/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/model_SNW03/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/model_SNW04/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/model_SNW08/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/model_SNW12/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/model_SNW16/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/model_SNW20/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/pca.jl",
+      "sha256": "7690088219d5aa460ebecb048a7d3d0064a5e0031284c7588365696ed0a4f592",
+      "bytes": 804
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier1D/snf.jl",
+      "sha256": "c1e3c90164b20a9099fa9fcfdc48eac92b8dde2c41f262143200dbb97b4c055e",
+      "bytes": 812
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier2D/FOM_timing.jl",
+      "sha256": "01321782157f08939b79b4de24e55d5f9a8cab9daa1f551a5f711a583d1247fd",
+      "bytes": 1999
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier2D/advect2d_compare.jl",
+      "sha256": "0ab22118bbe6c2a05ae5eed9834deb51c3af341cba165348457159e41dd44b49",
+      "bytes": 3152
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier2D/datagen_advect2D.jl",
+      "sha256": "fdbdc9ac88a39f81121e3b74f12d9e8417c0c61ae1ed7854211ace971ce3ca3d",
+      "bytes": 4266
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier2D/dump/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier2D/model_CAE02/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier2D/model_SNL02/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier2D/model_SNW02/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/advect_fourier2D/snf.jl",
+      "sha256": "1214d23d1ae57ed6ce54ea7e8b0d3142b75fe84631596b4ff184ac5c17e15e9a",
+      "bytes": 1386
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/autodecode.jl",
+      "sha256": "f973d516c0dcb5e824db3bc45ee592d796eceeaf1234c8b18f6f68bd70494120",
+      "bytes": 18392
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/burgers_fourier1D/burgers1d_compare.jl",
+      "sha256": "0e31ccf1c8acafed20d471aace137166412bddf30b698483afd4879efd9ef656",
+      "bytes": 3601
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/burgers_fourier1D/data_burg1D/README",
+      "sha256": "c75257f06a86764577a52548c48ff1fab45be71c6b6f4631fe828469b34a6ea0",
+      "bytes": 77
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/burgers_fourier1D/datagen_burgers1D.jl",
+      "sha256": "9b9468086a9daccb5bed08779a66aeddbbbfd42af5ecd4c6424332e8d97ad3a6",
+      "bytes": 4010
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/burgers_fourier1D/model_CAE02/dt/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/burgers_fourier1D/model_CAE02/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/burgers_fourier1D/model_SNL02/dt/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/burgers_fourier1D/model_SNL02/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/burgers_fourier1D/model_SNW02/dt/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/burgers_fourier1D/model_SNW02/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/burgers_fourier2D/FOM_timings.jl",
+      "sha256": "e303a7774a47568dedb2570a8473972dfa0fd4e4103f54ee26c73393ab4d2e94",
+      "bytes": 2585
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/burgers_fourier2D/burgers2d_compare.jl",
+      "sha256": "7e63d78016aa3bbe77224757694f6c2ca33106d753b2f89e948edaea06c17e93",
+      "bytes": 3545
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/burgers_fourier2D/datagen_burgers2D.jl",
+      "sha256": "514c60f49c24ca08f55dc50bb63891ed53da0899d3d67c73c0887da780519d18",
+      "bytes": 5050
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/burgers_fourier2D/model_CAE02/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/burgers_fourier2D/snf.jl",
+      "sha256": "e7e4c5ef9d69f51b513eb873491cfdc0cd10bf1d0952eb327c9f5bbe90e47883",
+      "bytes": 1165
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/cases.jl",
+      "sha256": "6950cdf4a54f27ea15d7a14d98595ffa55aa2ccf3b217126fa5fc3798aa131cd",
+      "bytes": 18293
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/compare.jl",
+      "sha256": "be5d3610612ef11f0bc1c6839c2f1ff66602c741096a04bc81bc4236abbb659e",
+      "bytes": 20820
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/convAE.jl",
+      "sha256": "3ebe89a5e4294a4157a1cc0c170750a190f29a30ed27895fb77d4e6e3e62a163",
+      "bytes": 15948
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/convINR.jl",
+      "sha256": "63fb23677bdd030da111478f83bd093bc74e41e9c13563200ccc1f67b4a4276f",
+      "bytes": 9642
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/ks_fourier1D/datagen_ks1D.jl",
+      "sha256": "26ab4b6890227598d790e20c6d6337788127fafa918a88fa629f4cef63119a30",
+      "bytes": 4550
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/ks_fourier1D/ks1d_compare.jl",
+      "sha256": "e9796d4e56cdf00531971cba4d3fbba5bd756ae2aab61d9372e677f34ba73f3c",
+      "bytes": 3297
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/ks_fourier1D/model_CAE01/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/ks_fourier1D/model_SN001/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/ks_fourier1D/model_SNL01/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/ks_fourier1D/model_SNW01/results/README.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/regularization/kan.jl",
+      "sha256": "9c718f94fafedba9e6922fe532b2a9e55d1d79f89d70872c35666f54d86bec17",
+      "bytes": 6160
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/regularization/post.jl",
+      "sha256": "61ba7d6171246c61ec93b4349f34470349f986953a17c16ab9dd5327b53de39d",
+      "bytes": 4917
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/regularization/reg.jl",
+      "sha256": "6be04b73e85a6afab4064a1fb1343e17c3ddbe92dd896a0605d82aa8c12ff14c",
+      "bytes": 8941
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/sdf_dataset/README",
+      "sha256": "8df8af44b0ea395fa54060d1d3e4b5c0c8c4d7bfda9957f0f3d7709912c9fe36",
+      "bytes": 57
+    },
+    {
+      "file": "output/sources/snf/experiments_SNFROM/smoothNF.jl",
+      "sha256": "f3b44c2122886ac17f27fe409382cc5cc07c7eb049f3e659988826b0b7ab6b2a",
+      "bytes": 21625
+    },
+    {
+      "file": "output/sources/snf/figs/Project.toml",
+      "sha256": "085205b56c728b1ad170d2b983c6bd08cc736afd4e6d1458d9006f824c03a00c",
+      "bytes": 257
+    },
+    {
+      "file": "output/sources/snf/figs/makefigs_SNFROM_paper.jl",
+      "sha256": "4a8b8d77c715d4d7ad398285e1953a5ea5b42ee36a09635aa54651d21519de7a",
+      "bytes": 29295
+    },
+    {
+      "file": "output/sources/snf/figs/makefigs_SNFROM_presi.jl",
+      "sha256": "693acc62beab4ec8d7f19dab82ae74f0a3c361c40ccc8f1188df8f9d65cc4ebf",
+      "bytes": 3654
+    },
+    {
+      "file": "output/sources/snf/figs/poster/mf.jl",
+      "sha256": "b1e77a76b4b70b14a945b53fa2bb13a46db9437e44141aeff96f1950578da25e",
+      "bytes": 4366
+    },
+    {
+      "file": "output/sources/snf/figs/poster/sine.jl",
+      "sha256": "6863321e6699740f5434ada84ea968efd9a3b3e9af149ec1f0eb4be1134ca238",
+      "bytes": 693
+    },
+    {
+      "file": "output/sources/snf/src/NeuralROMs.jl",
+      "sha256": "d8b13e7f12de844c97007a834536cd866f1e83e87abc5a06e8721efd51e487ac",
+      "bytes": 3334
+    },
+    {
+      "file": "output/sources/snf/src/autodiff.jl",
+      "sha256": "c756ff653ca7d3a221a72b799218be44ad56a39a86ddc6c203a5a94d01eb4d86",
+      "bytes": 5758
+    },
+    {
+      "file": "output/sources/snf/src/dynamics/evolve.jl",
+      "sha256": "97dcc8e5d9127e90866211ab8f48e23912156c778360112742107a40434cb639",
+      "bytes": 10319
+    },
+    {
+      "file": "output/sources/snf/src/dynamics/timeintegrator.jl",
+      "sha256": "ea39be1246c4eacd6e8d7ecae63620e89b8db6d96d1d764e58afdc906bf5755a",
+      "bytes": 11971
+    },
+    {
+      "file": "output/sources/snf/src/layers/basic.jl",
+      "sha256": "74e0f927bc8f452d9c9b4e1f6b1f466a3cfe27b91038a4f1ef2112f5084c0a3f",
+      "bytes": 4752
+    },
+    {
+      "file": "output/sources/snf/src/layers/encoder_decoder.jl",
+      "sha256": "6a87aa6a1ad0686d7e985ee8cdc77cd052531154b6e6314dcc70ba876f1d9efa",
+      "bytes": 7114
+    },
+    {
+      "file": "output/sources/snf/src/layers/sdf.jl",
+      "sha256": "54596dfbb24540655790a9db286232a7b233094f1c2f8d3b71847a3e868578ae",
+      "bytes": 9220
+    },
+    {
+      "file": "output/sources/snf/src/metrics.jl",
+      "sha256": "d8f9e0510656b65e10c5128fcea0e72631d97ad117821b2ca09bf0ac9239e9f2",
+      "bytes": 10217
+    },
+    {
+      "file": "output/sources/snf/src/neuralgridmodel.jl",
+      "sha256": "55ec40d50dd1a82744249827c6dcd0f5a01db3ca60589a473c3ea54d6e7bbf13",
+      "bytes": 8120
+    },
+    {
+      "file": "output/sources/snf/src/neuralmodel.jl",
+      "sha256": "5dc220f9dbdcb9fc2ec6cb57ea1c9b44d4376ecfb2c03092d1f00ec57a04ecc4",
+      "bytes": 3929
+    },
+    {
+      "file": "output/sources/snf/src/nonlinleastsq.jl",
+      "sha256": "81a950c53c95a434a72b9b64e32d2022820f4c0a056c6a0c195be3d39360cf57",
+      "bytes": 6870
+    },
+    {
+      "file": "output/sources/snf/src/operator/oplayers.jl",
+      "sha256": "2e29d1c3522a65aed42e09d2ea99f3431a9db8c3e0c9bd7d83b48e5767ba0850",
+      "bytes": 8851
+    },
+    {
+      "file": "output/sources/snf/src/operator/transform.jl",
+      "sha256": "860fc2f6c3f9d305363116521f368cba7a04c98e738a90a4fb49fbea9de5e75f",
+      "bytes": 1125
+    },
+    {
+      "file": "output/sources/snf/src/optimisers.jl",
+      "sha256": "3b2f2fec4c9666e37ffa5f35f7dd406eaafe4743fef3478ca7ed4a05c5a4ebbc",
+      "bytes": 1756
+    },
+    {
+      "file": "output/sources/snf/src/pdeproblems.jl",
+      "sha256": "5dcae9bd3479a4a6efece7d8f588201aa7b070b879d1af8fb504c1f29df1e212",
+      "bytes": 3804
+    },
+    {
+      "file": "output/sources/snf/src/train.jl",
+      "sha256": "59b7fc70dbe347293fd4a052229be9e4fb6459b781d7ac65317d8b38aba50c8a",
+      "bytes": 24059
+    },
+    {
+      "file": "output/sources/snf/src/utils.jl",
+      "sha256": "8224864921994725d84d66ab5b04b45f2d2e841f61d7c1383c551112a8838f6a",
+      "bytes": 4963
+    },
+    {
+      "file": "output/sources/snf/src/vis.jl",
+      "sha256": "717754cb72654607fe3ed4c274cb962199beeb0a1247fc6a91ced7cc63bdd85b",
+      "bytes": 7380
+    },
+    {
+      "file": "output/sources/snf/test/Project.toml",
+      "sha256": "6be539a2906198024d917916dc541eb715917ebe593ab6f6efbb18e0168fd0b1",
+      "bytes": 109
+    },
+    {
+      "file": "output/sources/snf/test/runtests.jl",
+      "sha256": "90871cb8dfd6fda53e071656e5f4f2c48f2a903c9912c7796b9347fd62fb8629",
+      "bytes": 93
+    },
+    {
+      "file": "SOURCE.sha256",
+      "sha256": "8bc2a2d4f0075858adbd733c76dd79e2b94ef7a203a5b4d756ced06d233f3886",
+      "bytes": 80897
+    },
+    {
+      "file": "run.sbatch",
+      "sha256": "6548a166eaf46806a41ea1f55363037ac256e09e95b3a4df2a4e927e832fabd4",
+      "bytes": 1813
+    }
+  ],
+  "local_and_remote_verified": true,
+  "remote_removed": false,
+  "terminal_state": "FAILED",
+  "checksum_file": "FAILED-RETENTION.sha256"
+}

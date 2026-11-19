@@ -40,13 +40,13 @@ These are provisional reconstruction and reference diagnostics for the new coord
 
 The first global neural parent uses eight nonlinear embeddings and three sine-network hidden layers. Its selected checkpoint, at update {r['selected_update']}, has worst independent development reconstruction error **{100*r['worst_256_projection']:.4f}%** over all 44 trajectories and 11 times. The worst actual 4096×4096 reconstruction gives **{100*r['actual4096']['relative_error']:.4f}%**, so the error is not a coarse scoring-grid artifact. The largest change between 128² and independent 256² scoring is {100*r['max_128_to_256_error_change']:.7f} percentage points.
 
-The parent fails the 0.5% representation gate. {r['unfinished_full_fits']} of 484 embedding fits remain unfinished under the registered stopping criterion; these are explicitly retained. Most fits reach stationarity, which supports investigating decoder/training capacity and local corrections rather than assuming every large error is merely an unfinished optimizer. This does not establish an inherent neural-decoder limitation.
+The parent fails the 0.5% representation gate. {r['unfinished_full_fits']} of 484 embedding fits were unfinished in this initial evaluation; these are retained, and the subsequent curvature-aware fitting repair resolves their stopping failures. Most fits reach stationarity, which supports investigating decoder/training capacity and local corrections rather than assuming every large error is merely an unfinished optimizer. This does not establish an inherent neural-decoder limitation.
 
 ![Parent training and all-snapshot reconstruction errors](2026-11-19-neural-tree-assets/parent-training-and-errors.png)
 
 ![Actual-resolution parent reconstruction and error](2026-11-19-neural-tree-assets/parent-actual4096-witness.png)
 
-The initial assembled-child recipe checks parent-fit stability first, initializes children from missing reference fields, and jointly trains embeddings and shared networks across tree depths. Uniform and prescribed allocations use the same checkpoint. Full independent scoring and useful independent child-direction checks are required before embedding-space PDE trajectories. The implemented nonlinear weak solver passes dense arithmetic and derivative fixtures; this is not an accuracy qualification of a trained model.
+The initial assembled-child recipe checked parent-fit stability, initialized children from missing reference fields, and jointly trained embeddings and shared networks across tree depths. Uniform and prescribed allocations used the same checkpoint. It failed reconstruction and joint-fit convergence, as detailed below. The implemented nonlinear weak solver passes dense arithmetic and derivative fixtures; this is not an accuracy qualification of a trained model.
 
 All twelve named development extensions passed spectral space/time ladders and independent finite-difference checks. They are qualified development references; this does not qualify any neural model.
 
@@ -96,7 +96,7 @@ These direct-feature coefficients are a capacity diagnostic, not nonlinear child
 
 ![Training damage and final repair capacity failure](2026-11-19-neural-tree-assets/neural-repair-diagnosis.png)
 
-Native CROM training selected epoch {crom['selected_epoch']}, with worst encoded subset error {100*chosen['encoded_subset_worst']:.4f}%. This is an unfinished reproduction diagnostic, not a fair performance ranking: native nonlinear projection, independent scoring and the2D dynamics adapter remain required. The retained recipe uses a lower learning-rate schedule than the author CLI defaults. SNF-ROM dependency installation succeeded but native import exposed a Lux/ChainRules precompile conflict; a single cache-disabled compatibility retry is registered. Neither comparator has an eligible complete solve time.
+Native CROM training selected epoch {crom['selected_epoch']}, with worst encoded subset error {100*chosen['encoded_subset_worst']:.4f}%. This is an unfinished reproduction diagnostic, not a fair performance ranking: native nonlinear projection, independent scoring and the2D dynamics adapter remain required. The retained recipe uses a lower learning-rate schedule than the author CLI defaults. SNF-ROM dependency installation succeeded but native import exposed a Lux/ChainRules precompile conflict; the cache-disabled compatibility and corrected-fixture outcomes are recorded below. Neither comparator has an eligible complete solve time.
 
 """
 doc=doc.replace('## Glossary',extra+'## Glossary')
@@ -106,8 +106,8 @@ if npth.exists():
     nr=json.loads(npth.read_text())
     if nr['status']=='complete':
         names=['Smooth','Compact pulse','Diagonal ridge','Two pulses']
-        table='\n'.join(f"|{v['case']}|{100*v['worst_parent']:.3f}%|{100*v['worst_tree']:.3f}%|{v['unfinished_tree']}/11|" for v in nr['cases'])
-        supplement+='## Tests on the requested Burgers families\n\nThese are independent256² offline reconstructions using retained failed neural checkpoints, not PDE solves. Reference checks passed for all twelve cases. No named case was added to training.\n\n|Case|Worst original-parent error|Worst retained nonlinear-tree error|Unfinished tree fits|\n|---|---:|---:|---:|\n'+table+'\n\n'
+        table='\n'.join(f"|{v['definition']['name']}, viscosity{v['nu']}|{100*v['worst_parent']:.3f}%|{100*v['worst_tree']:.3f}%|{v['unfinished_tree']}/11|" for v in nr['cases'])
+        supplement+='## Tests on the requested Burgers families\n\nThese are independent256² offline reconstructions using retained failed neural checkpoints, not PDE solves. Reference checks passed for all twelve cases. No named case was added to training. Ridges, two-pulse fields and the additional viscosities test transfer beyond the primary training distribution.\n\n|Case|Worst original-parent error|Worst retained nonlinear-tree error|Unfinished tree fits|\n|---|---:|---:|---:|\n'+table+'\n\n'
         fig,ax=plt.subplots(1,4,figsize=(16,3.8),constrained_layout=True)
         for j,axis in enumerate(ax):
             case=next(v for v in nr['cases'] if v['case']==f'named{j}_nu0.005')

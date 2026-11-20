@@ -31,7 +31,16 @@ def main():
     assert q['status']=='complete_profile' and len(q['states'])==3
     checks=[v['parity'][k] for v in q['states'] for k in ['root_jacobian','residual_jacobian']]
     assert all(v['passed'] and v['max_absolute']<=1e-9 and v['relative']<=1e-10 for v in checks)
-    qretention=verified_manifest(a.qualification_job,ns,{'output/result.json':top,'output/jacobian/result.json':qp})
+    source_manifest=top.parent.parent/'SOURCE.sha256'
+    qretention=verified_manifest(a.qualification_job,ns,{'output/result.json':top,
+        'output/jacobian/result.json':qp,'SOURCE.sha256':source_manifest})
+    source_entries=[line.split(maxsplit=1) for line in source_manifest.read_text().splitlines() if line.strip()]
+    derivative_source_hashes={}
+    for name in ['neural/stable.py','neural/residual_tree.py','neural/residual_weak.py']:
+        matches=[sha for sha,path in source_entries if path=='experiments/burgers-tree-embeddings/'+name]
+        assert len(matches)==1 and digest(HERE/name)==matches[0], 'Derivative source differs from retained GPU profile: '+name
+        derivative_source_hashes[name]=matches[0]
+
     model=read_checkpoint(mp);params=jax.tree.map(jnp.asarray,model['params'])
     pp=resolve(ns/'b7parentrepair/output/stable_parent.pkl',ns);assert digest(pp)==r['parent_sha256'];parent=read_checkpoint(pp)
     dp=resolve(ns/'b6parent/output/coordinate_data.npz',ns);assert digest(dp)==r['primary_data_sha256']==parent['data_sha256']
@@ -66,6 +75,7 @@ def main():
     result=dict(meta=metadata,status='running_offline_fit_continuation',model_job=a.model_job,source_result_sha256=digest(rp),model_sha256=digest(mp),
         model_retention_sha256=retention,qualification_sha256=digest(qp),qualification_retention_sha256=qretention,
         derivative_checks=checks,overall_profile_parity_passed=q['parity_passed'],
+        profile_source_manifest_sha256=digest(source_manifest),derivative_source_hashes=derivative_source_hashes,
         derivative_scope='Derivative values qualified; overall PDE trace parity is not claimed',
         primary_data_sha256=digest(dp),expanded_sources=dv['provenance'],rows=summary,
         max_chunks=5,iterations_per_chunk=200,max_seconds=a.max_seconds,final_test_opened=False,
@@ -112,4 +122,18 @@ def main():
     save(out/'result.json',result)
 
 
-if __name__=='__main__':main()
+if __name__=='__main__':
+    parser=argparse.ArgumentParser(add_help=False);parser.add_argument('--out',required=True)
+    args,_=parser.parse_known_args();path=Path(args.out)/'result.json'
+    result_existed=path.exists()
+    try:
+        main()
+    except Exception as exc:
+        # A rejected reused output directory must never mutate its prior evidence.
+        if not result_existed:
+            record=json.loads(path.read_text()) if path.exists() else dict(meta=meta(),final_test_opened=False,
+                representation_admitted=False,pde_admitted=False)
+            record.update(status_before_exception=record.get('status'),status='failed_setup_or_driver_exception',
+                exception_type=type(exc).__name__,exception=str(exc))
+            save(path,record)
+        raise

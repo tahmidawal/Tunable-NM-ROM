@@ -1,0 +1,573 @@
+{
+  "status": "passed",
+  "sources": [
+    {
+      "id": "development-head",
+      "source": "reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b.json",
+      "kind": "head",
+      "select": {
+        "rows": 584,
+        "dt": 0.01
+      },
+      "sha256": "5bd8eed34cb03731964a2ec10a4c6c38e5668fcce35d35a92d27348e81eac133",
+      "bytes": 4280625,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/evidence/development-head.json"
+    },
+    {
+      "id": "development-width",
+      "source": "reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-width-final.json",
+      "kind": "width",
+      "sha256": "00a1b048511628493b5d9aedccc8dc2842117d0d2f32538aa0bc66fe024244d0",
+      "bytes": 565503,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/evidence/development-width.json"
+    },
+    {
+      "id": "development-tests",
+      "source": "reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-full6.json",
+      "sha256": "f24884915d8042c61f287986a45766d622217560b39355ff000e6ee1287ff4a8",
+      "bytes": 5864982,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/evidence/development-tests.json"
+    },
+    {
+      "id": "development-cost-selection",
+      "source": "reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p04-selection.json",
+      "sha256": "80b83bba03784c21c63d051b003288e4c783a86080b880e216d4ff2a78ebd09f",
+      "bytes": 904651,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/evidence/development-cost-selection.json"
+    },
+    {
+      "id": "development-cost-confirmation",
+      "source": "reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p04.json",
+      "sha256": "d2e300e4284a6828f6c3fd28858d340bcb0f12ae906392b5fdfb40112ca01d73",
+      "bytes": 228309,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/evidence/development-cost-confirmation.json"
+    },
+    {
+      "id": "fresh-head",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/runs/c01/output/summary.json",
+      "kind": "head",
+      "sha256": "9f9b393005a95913a94651f32c75a0a800f990dfadc1695379b99896b29cd3c7",
+      "bytes": 2821642,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/evidence/fresh-head.json"
+    },
+    {
+      "id": "phase-audit",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/CONFIRMATION_AUDIT.json",
+      "sha256": "14207475dfb4048c9ed26145c1cd1772c701852155fe948d4694831bcb62cf40",
+      "bytes": 4363,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/evidence/phase-audit.json"
+    },
+    {
+      "id": "phase-final",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/FINAL_SUMMARY.json",
+      "sha256": "fd12904dd7acce561de30716de6c490b4f785764ef3a721cb43c13d5a08a0660",
+      "bytes": 48527,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/evidence/phase-final.json"
+    },
+    {
+      "id": "phase-initial-fit",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/IC_QUALIFICATION_DIAGNOSIS.json",
+      "sha256": "24e214a254f9e01e62caa382ea5df5426144219f33077d572fc10471f5ec7fa5",
+      "bytes": 16554,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/evidence/phase-initial-fit.json"
+    },
+    {
+      "id": "phase-replay",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/runs/c01/output/centroid_replay.json",
+      "sha256": "343671747f11d03b04bbe65d953e89375a7cff36585ac0d056863a849a938ec6",
+      "bytes": 689646,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/evidence/phase-replay.json"
+    },
+    {
+      "id": "phase-protocol",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/PROTOCOL.md",
+      "sha256": "8b505452e6e986f85a2ee52888b3d0b787c26b683b568cacee4cf31f4927d04b",
+      "bytes": 4188,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/evidence/phase-protocol.md"
+    },
+    {
+      "id": "phase-plot-check",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/PLOT_VERIFICATION.json",
+      "sha256": "d1480bc4c6af5fa76f0c0d3410f294f804e50076dfd545cf1973b812c02e19a9",
+      "bytes": 2865,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/evidence/phase-plot-check.json"
+    },
+    {
+      "id": "fresh-width",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/checks/fresh/analysis.json",
+      "kind": "width",
+      "sha256": "401ce5347c8d3480158f4b5ffbec714f077bbde0ce58651dbe2968eb3443e4f9",
+      "bytes": 199636,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/evidence/fresh-width.json"
+    },
+    {
+      "id": "sparse-bridge",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/runs/b01/output/summary.json",
+      "kind": "sparse",
+      "sha256": "cf394de399ba4d1afb308196bc4898029b26d8d8b2e314673311f8859c68c1ff",
+      "bytes": 245767,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/evidence/sparse-bridge.json"
+    },
+    {
+      "id": "derivative-summary",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/summary.json",
+      "sha256": "e3d5e04950007e62737f77e0a3622f34f5803a46d17dfa413902d525d2b08ac7",
+      "bytes": 4224,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/evidence/derivative-summary.json"
+    },
+    {
+      "id": "width-plotted-data",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/plotted-data.json",
+      "sha256": "e813fc595e672fa268cb821c5ec7c46bf9264c4c7674004ef5c890d5cf2b9069",
+      "bytes": 260958,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/evidence/width-plotted-data.json"
+    },
+    {
+      "id": "width-protocol",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/PROTOCOL-CLOSURE.md",
+      "sha256": "8db15c12b71c353d05f389484c1fde0689ad0188c723f47fe3e180fa32620f50",
+      "bytes": 6743,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/evidence/width-protocol.md"
+    },
+    {
+      "id": "fresh-cost",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/runs/p01/output/paired/result.json",
+      "kind": "cost",
+      "qualification_id": "cost-qualification",
+      "sha256": "3d48452a8cf12a4cee4b0b22a6b13ff661a43dd6707362944f6deac807274731",
+      "bytes": 79229,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/evidence/fresh-cost.json"
+    },
+    {
+      "id": "cost-qualification",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/runs/p01/output/numerical_qualification.json",
+      "sha256": "59bf14eb57f62d4727bc6e6a679d6b2436a1b55104206a51e271da955e5c3a5c",
+      "bytes": 396150,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/evidence/cost-qualification.json"
+    },
+    {
+      "id": "cost-references",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/runs/p01/output/references.json",
+      "sha256": "9d654448e75f8f81da8a3945c8ff4d4b6524ca1d92e066f707e77ba33b2db1a7",
+      "bytes": 9776,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/evidence/cost-references.json"
+    },
+    {
+      "id": "cost-audit",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/runs/p01/audit.json",
+      "sha256": "ade6ec3fffedacbc7ab0c399413b930127d0affa5e3ee09cf177adcb8bf04eef",
+      "bytes": 2194,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/evidence/cost-audit.json"
+    },
+    {
+      "id": "cost-protocol",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/PROTOCOL.md",
+      "sha256": "736db30ade625e3658b4c3cf92c710090f2b6680820f147711d5d3dd1094bc0e",
+      "bytes": 6310,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/evidence/cost-protocol.md"
+    },
+    {
+      "id": "cost-final",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/summary.json",
+      "sha256": "5b38ddfc4799b139861f04fcc6c1824087c8e9a5a98d6afe5a89ee43da03b1a3",
+      "bytes": 19435,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/evidence/cost-final.json"
+    },
+    {
+      "id": "coordinator-audit",
+      "source": "reports/2026-11-19-jcp-physical-diagnostics-assets/coordinator-audit.json",
+      "sha256": "e8fbbd4d4cd9ee653e78b88cae7aa2fcf4e54ce4ec6e2de91385f654df1901d0",
+      "bytes": 4260,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/evidence/coordinator-audit.json"
+    },
+    {
+      "id": "scheduler",
+      "source": "reports/2026-11-19-jcp-physical-diagnostics-assets/scheduler-audit.json",
+      "sha256": "03ec47d23f815092c54ac279f0ee133545aed89cfac832ef20ac6db5531d964b",
+      "bytes": 3113,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/evidence/scheduler.json"
+    },
+    {
+      "id": "phase-retention",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/RETENTION.json",
+      "sha256": "12653e1b3145c24f97d8623a20884cf90d8ab150a87bb6d2dc20af6abcacaad7",
+      "bytes": 900,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/evidence/phase-retention.json"
+    },
+    {
+      "id": "width-closeout",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/checks/CLOSEOUT.json",
+      "sha256": "0ad4117bfc7ce7461000950b1b93b3637df1471e3785441bd52fbc49b96336b2",
+      "bytes": 89130,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/evidence/width-closeout.json"
+    },
+    {
+      "id": "cost-retention",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/RETENTION.json",
+      "sha256": "31fea62378b4ef135def7ab3dad318b078ca4c9cbb21e21c35c1154c034af30d",
+      "bytes": 23386,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/evidence/cost-retention.json"
+    },
+    {
+      "id": "lane-closeout",
+      "source": "reports/2026-11-19-jcp-physical-diagnostics-assets/lane-closeout.json",
+      "sha256": "2d65e5d09e76bdfff9b98c3789f6c5aca470b34df4d3c88aba888c159e77b906",
+      "bytes": 2277,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/evidence/lane-closeout.json"
+    },
+    {
+      "id": "independent-review",
+      "source": "reports/2026-11-19-jcp-physical-diagnostics-assets/independent-review.md",
+      "sha256": "6214684c7dd532f389f2f38693fe93c137e10b8928e50c8d174b6f4117d1322e",
+      "bytes": 2483,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/evidence/independent-review.md"
+    },
+    {
+      "id": "cost-captions",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/captions.md",
+      "sha256": "64097d2c7d4782ac4b5769f19c1d4286e61cca9d7067a826101708a234cef97b",
+      "bytes": 5166,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/evidence/cost-captions.md"
+    },
+    {
+      "id": "phase-development",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/plots/phase_shape_development.png",
+      "sha256": "e832d5de853ac73a204cbe052501a22ff4d4c757085cc4db0c5a5938c2c92dea",
+      "bytes": 204892,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/phase-development.png"
+    },
+    {
+      "id": "phase-development-vector",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/plots/phase_shape_development.svg",
+      "sha256": "7a64cbeb1a181adfe73f6e55e3d8d2caf1987e2b26673f052da7a62ff07b3816",
+      "bytes": 90551,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/phase-development-vector.svg"
+    },
+    {
+      "id": "phase-development-pdf",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/plots/phase_shape_development.pdf",
+      "sha256": "e93f4103e98829dc6712a1e03c32d6681e07f895f12d3700e537e24034a0cc25",
+      "bytes": 19173,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/phase-development-pdf.pdf"
+    },
+    {
+      "id": "phase-fresh",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/plots/phase_shape_fresh.png",
+      "sha256": "3d20b84e1f615ef52cfe967ee750069b4522657777d353f5163d46ff7c2c9794",
+      "bytes": 204584,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/phase-fresh.png"
+    },
+    {
+      "id": "phase-fresh-vector",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/plots/phase_shape_fresh.svg",
+      "sha256": "ab6f6e68fdc062f7c3b3bcfc0003b1da7338b4741ccecb5fe2061b584140902f",
+      "bytes": 96660,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/phase-fresh-vector.svg"
+    },
+    {
+      "id": "phase-fresh-pdf",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/plots/phase_shape_fresh.pdf",
+      "sha256": "1421ec9f16d88d6e326c52684340084e893a14d43254f94cdea1dc8d3f06bf22",
+      "bytes": 19308,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/phase-fresh-pdf.pdf"
+    },
+    {
+      "id": "phase-all-cases",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/plots/phase_shape_all_cases_fresh.png",
+      "sha256": "cc062551e1e1aade7c5bc557e4092670faef7ac1e06ff00353eaaa8729c21cfd",
+      "bytes": 353122,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/phase-all-cases.png"
+    },
+    {
+      "id": "phase-all-cases-vector",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/plots/phase_shape_all_cases_fresh.svg",
+      "sha256": "09f3604f555be32aa17d1ee9e0a2f999de176a8a05d3a5ccffd18acf62a3a6a1",
+      "bytes": 162423,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/phase-all-cases-vector.svg"
+    },
+    {
+      "id": "phase-all-cases-pdf",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/plots/phase_shape_all_cases_fresh.pdf",
+      "sha256": "2a195188f1ba5c0f1d4bf5a355f41d7c3f9f59dd70cd53bd6504357152af4885",
+      "bytes": 25815,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/phase-all-cases-pdf.pdf"
+    },
+    {
+      "id": "derivative-time",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/derivative-error-time.png",
+      "sha256": "ca833f0ee3d88f8d6901d1e5b433b62109a9f496ce84c980026f9277cc5a669e",
+      "bytes": 374037,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/derivative-time.png"
+    },
+    {
+      "id": "derivative-time-vector",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/derivative-error-time.svg",
+      "sha256": "ff3d0a5aac850af0109ff121f272ea4005920cd63a0739e5c23a3a234eeb0481",
+      "bytes": 124355,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/derivative-time-vector.svg"
+    },
+    {
+      "id": "derivative-time-pdf",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/derivative-error-time.pdf",
+      "sha256": "7a8578a0a47ae3b52baa290e7f81f7ca6d63469aac390b82086b91f7e6a3dc5b",
+      "bytes": 32307,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/derivative-time-pdf.pdf"
+    },
+    {
+      "id": "derivative-maxima",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/derivative-error-case-maxima.png",
+      "sha256": "810cdaa8f8c9a6cbaf077c45f9dfd55924635840ea5c312a690966dbbec8b53b",
+      "bytes": 229833,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/derivative-maxima.png"
+    },
+    {
+      "id": "derivative-maxima-vector",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/derivative-error-case-maxima.svg",
+      "sha256": "b347b7d0079238283ee211f7d6240ee979e7ebae6e5104bc8b5c743342f62c28",
+      "bytes": 84200,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/derivative-maxima-vector.svg"
+    },
+    {
+      "id": "derivative-maxima-pdf",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/derivative-error-case-maxima.pdf",
+      "sha256": "2569554c62787b2bd0ca298ff0bf238d2e04e09ae3ef157fb6151ae89dcaf60e",
+      "bytes": 26396,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/derivative-maxima-pdf.pdf"
+    },
+    {
+      "id": "width-tests",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/width-test-accuracy-map.png",
+      "sha256": "48fbabf0e2c03878ac08eabfc93a373243d83d7d7515613fe35fbb66533ed45c",
+      "bytes": 163012,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/width-tests.png"
+    },
+    {
+      "id": "width-tests-vector",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/width-test-accuracy-map.svg",
+      "sha256": "c54999f05df88864358eddf50ecdd8303db322b00e9a87dea6d04755fee304da",
+      "bytes": 76111,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/width-tests-vector.svg"
+    },
+    {
+      "id": "width-tests-pdf",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/width-test-accuracy-map.pdf",
+      "sha256": "43051f679e01862ed2e939de2791f48047b31d1dd801841c643669f2b253f0d0",
+      "bytes": 28331,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/width-tests-pdf.pdf"
+    },
+    {
+      "id": "width-observer",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/width-test-map.png",
+      "sha256": "e583a1aa8046f59a265ddf6754a0f12f76f54e6e20b9c64d11449060ba07987e",
+      "bytes": 264805,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/width-observer.png"
+    },
+    {
+      "id": "width-observer-vector",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/width-test-map.svg",
+      "sha256": "f3b08864c7a46559ed4f15677aec0a11db42cbf344671ff5c042601505fd190e",
+      "bytes": 99232,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/width-observer-vector.svg"
+    },
+    {
+      "id": "width-observer-pdf",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/width-test-map.pdf",
+      "sha256": "c8df1d917fd24cfbf8f3f459964d6b74b68fe4eade80b04b3e914639126fbc8d",
+      "bytes": 35092,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/width-observer-pdf.pdf"
+    },
+    {
+      "id": "width-counterexample",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/width-test-transient-regressions.png",
+      "sha256": "5a23dd7932a19309db9d2155cfda48143b5725d1855b5abcf002f2537f24a628",
+      "bytes": 182570,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/width-counterexample.png"
+    },
+    {
+      "id": "width-counterexample-vector",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/width-test-transient-regressions.svg",
+      "sha256": "324bb08f38b39fef2f589beabfcce67312111155f56e889cb0225c711c5f2fb7",
+      "bytes": 69121,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/width-counterexample-vector.svg"
+    },
+    {
+      "id": "width-counterexample-pdf",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/width-test-transient-regressions.pdf",
+      "sha256": "b98db3aa62823a89bb8453a5e0a37152b2ec79245e0424451cf7aef535693cf1",
+      "bytes": 19989,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/width-counterexample-pdf.pdf"
+    },
+    {
+      "id": "width-fresh",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/closure/fresh-width-confirmation.png",
+      "sha256": "0d8ca3f3b76b1fce29acfd22bbdcce5ef70bc2818bfbf85092628909242551bf",
+      "bytes": 244192,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/width-fresh.png"
+    },
+    {
+      "id": "width-fresh-vector",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/closure/fresh-width-confirmation.svg",
+      "sha256": "5f8ff904606d26a2aa33e9dcd13e44873ba16243883f7a80204df18fd826f7f3",
+      "bytes": 81450,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/width-fresh-vector.svg"
+    },
+    {
+      "id": "width-fresh-pdf",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/closure/fresh-width-confirmation.pdf",
+      "sha256": "37305f4534ff68ccd7db378d504fb53825b0214a3fc10885faf2136ab256d113",
+      "bytes": 21896,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/width-fresh-pdf.pdf"
+    },
+    {
+      "id": "width-coverage",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/closure/fresh-case-coverage.png",
+      "sha256": "52114ead273605df8fcb56e18584017702986a464196db166a99e39301617256",
+      "bytes": 129694,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/width-coverage.png"
+    },
+    {
+      "id": "width-coverage-vector",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/closure/fresh-case-coverage.svg",
+      "sha256": "83ee09176821b1331f07c09ffe5d2f9d1c358aa358621e91f956f02a58ebc059",
+      "bytes": 38548,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/width-coverage-vector.svg"
+    },
+    {
+      "id": "width-coverage-pdf",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/closure/fresh-case-coverage.pdf",
+      "sha256": "7bd0dff27525741a109a9d88b611e7e8f02f0e977e93209fe60e354af3e68af1",
+      "bytes": 18811,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/width-coverage-pdf.pdf"
+    },
+    {
+      "id": "sparse-qualification",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/closure/sparse-bridge-qualification.png",
+      "sha256": "1dabb3884f3e43307e71da455c910b5e7bd7e9394440031de4bef86d55cac822",
+      "bytes": 191983,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/sparse-qualification.png"
+    },
+    {
+      "id": "sparse-qualification-vector",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/closure/sparse-bridge-qualification.svg",
+      "sha256": "dc628e31f82fab5c55cb18b05db55a63ca7d6be8f46380a9f6020aff2003d90f",
+      "bytes": 39897,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/sparse-qualification-vector.svg"
+    },
+    {
+      "id": "sparse-qualification-pdf",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/closure/sparse-bridge-qualification.pdf",
+      "sha256": "a37ace49f4072d8e2952aee826bfba94c626b820d0118bffb09d5294f269df94",
+      "bytes": 18012,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/sparse-qualification-pdf.pdf"
+    },
+    {
+      "id": "cost-selection",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/accuracy-cost-selection.png",
+      "sha256": "cf322cb10f69d7bfb05119d3d6fd59db0038fc05dedcd40b61f59fd0778f7f09",
+      "bytes": 181264,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/cost-selection.png"
+    },
+    {
+      "id": "cost-selection-vector",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/accuracy-cost-selection.svg",
+      "sha256": "0d9ba1e0f019ff86fa7b0719818b53507ee54b5447ed411c7958e4061f4c8bc5",
+      "bytes": 72761,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/cost-selection-vector.svg"
+    },
+    {
+      "id": "cost-selection-pdf",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/accuracy-cost-selection.pdf",
+      "sha256": "11ab94d1637d6c2a5feb920a7484c288ab6a8c37ae6ab6801d5d5b553039c6e8",
+      "bytes": 23460,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/cost-selection-pdf.pdf"
+    },
+    {
+      "id": "cost-selection-full",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/accuracy-cost-selection-full-range.png",
+      "sha256": "341828b804e739220e64e55c5862a499ccb7ee887c8999365235dfa5265b534d",
+      "bytes": 147082,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/cost-selection-full.png"
+    },
+    {
+      "id": "cost-selection-full-vector",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/accuracy-cost-selection-full-range.svg",
+      "sha256": "d990af4692438dfd4c79e8751ab69e8849a66647175a7e1b1ff56b85afc7bd81",
+      "bytes": 67383,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/cost-selection-full-vector.svg"
+    },
+    {
+      "id": "cost-selection-full-pdf",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/accuracy-cost-selection-full-range.pdf",
+      "sha256": "a1bdeeae175a9f92f6d88433cea65164c36bdf4fa4d33d9f38938514fe69c6f3",
+      "bytes": 22084,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/cost-selection-full-pdf.pdf"
+    },
+    {
+      "id": "cost-development-confirmation",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/accuracy-cost-confirmed-case-ratios.png",
+      "sha256": "609b7427a2874eedc074b7ca9747ba1230f159510d1a6822f7e14340eae7c89a",
+      "bytes": 184447,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/cost-development-confirmation.png"
+    },
+    {
+      "id": "cost-development-confirmation-vector",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/accuracy-cost-confirmed-case-ratios.svg",
+      "sha256": "eb59583d42e941dd1aeffb3c71385a71a4056b55b5cc524191081d968a0ead2f",
+      "bytes": 59736,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/cost-development-confirmation-vector.svg"
+    },
+    {
+      "id": "cost-development-confirmation-pdf",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/accuracy-cost-confirmed-case-ratios.pdf",
+      "sha256": "12332edc02ab664163353001d270a776eadbdecc9c88b4f2a18a7150afc00e00",
+      "bytes": 21717,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/cost-development-confirmation-pdf.pdf"
+    },
+    {
+      "id": "cost-repetitions",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/accuracy-cost-confirmation-repetition-spread.png",
+      "sha256": "f98e8b7bc807eeba6925a5b0c74744b785407a7171c90fd78406e05e031180ec",
+      "bytes": 100228,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/cost-repetitions.png"
+    },
+    {
+      "id": "cost-repetitions-vector",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/accuracy-cost-confirmation-repetition-spread.svg",
+      "sha256": "5e618b28e4c7042f3ebb5c445314ab98b95b53e6d4e04606a650532033fffa62",
+      "bytes": 30340,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/cost-repetitions-vector.svg"
+    },
+    {
+      "id": "cost-repetitions-pdf",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/accuracy-cost-confirmation-repetition-spread.pdf",
+      "sha256": "87c0d96ead27ffbc6896d4eff894409a2ba189fb6ee989d1bebbbf31b0f8eb47",
+      "bytes": 18556,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/cost-repetitions-pdf.pdf"
+    },
+    {
+      "id": "cost-fresh",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/accuracy-cost-fresh-confirmation.png",
+      "sha256": "557569a4c2a97309bb5b1d938cb35c685a3bdb3a10ff471beafd1af96d47b230",
+      "bytes": 260908,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/cost-fresh.png"
+    },
+    {
+      "id": "cost-fresh-vector",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/accuracy-cost-fresh-confirmation.svg",
+      "sha256": "94e404a2dbabdb6d3215efcde7c4576b809412d5bffd2c3e434e87e7e99910a4",
+      "bytes": 77702,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/cost-fresh-vector.svg"
+    },
+    {
+      "id": "cost-fresh-pdf",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/accuracy-cost-fresh-confirmation.pdf",
+      "sha256": "521ecc2b46fc0d5ead59e317dd079e31d1e6b78ed61c328997b07a0f6b46f6c8",
+      "bytes": 26993,
+      "frozen": "reports/2026-11-19-jcp-physical-diagnostics-assets/figures/cost-fresh-pdf.pdf"
+    }
+  ],
+  "report_sha256": "c9669874d25f3fbd61e3b2619d37e6e92b30e81053f6590c0c5cfdfe3c8f93d9",
+  "local_link_occurrences": 40,
+  "numeric_values_sha256": "58e5e96357b78d56e2d44bb93552e4b2cb6c8b4a15e514bda0d9f22379ba4544",
+  "scope": "registered-source hashes, raw repetition medians, generated tables and link existence; scientific qualification is separately linked"
+}

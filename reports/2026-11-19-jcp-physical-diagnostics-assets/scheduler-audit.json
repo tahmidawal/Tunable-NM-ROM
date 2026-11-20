@@ -1,0 +1,64 @@
+{
+  "jobs": [
+    {
+      "job_id": "7385291",
+      "job_name": "ctol_jpc_c01",
+      "partition": "gpu",
+      "state": "COMPLETED",
+      "elapsed_seconds": 268,
+      "allocated_resources": "billing=8,cpu=8,gres/gpu=1,mem=64G,node=1",
+      "exit_code": "0:0",
+      "node": "pax050",
+      "allocated_gpu_seconds": 268
+    },
+    {
+      "job_id": "7385297",
+      "job_name": "ctol_jwd_f128",
+      "partition": "gpu",
+      "state": "COMPLETED",
+      "elapsed_seconds": 143,
+      "allocated_resources": "billing=8,cpu=8,gres/gpu=1,mem=64G,node=1",
+      "exit_code": "0:0",
+      "node": "pax105",
+      "allocated_gpu_seconds": 143
+    },
+    {
+      "job_id": "7385298",
+      "job_name": "ctol_jwd_f512",
+      "partition": "gpu",
+      "state": "COMPLETED",
+      "elapsed_seconds": 264,
+      "allocated_resources": "billing=8,cpu=8,gres/gpu=1,mem=64G,node=1",
+      "exit_code": "0:0",
+      "node": "pax186",
+      "allocated_gpu_seconds": 264
+    },
+    {
+      "job_id": "7385300",
+      "job_name": "ctol_jcc_p01",
+      "partition": "gpu",
+      "state": "COMPLETED",
+      "elapsed_seconds": 269,
+      "allocated_resources": "billing=8,cpu=8,gres/gpu=1,mem=64G,node=1",
+      "exit_code": "0:0",
+      "node": "pax187",
+      "allocated_gpu_seconds": 269
+    },
+    {
+      "job_id": "7385403",
+      "job_name": "ctol_jwd_b01",
+      "partition": "gpu",
+      "state": "COMPLETED",
+      "elapsed_seconds": 48,
+      "allocated_resources": "billing=8,cpu=8,gres/gpu=1,mem=64G,node=1",
+      "exit_code": "0:0",
+      "node": "pax050",
+      "allocated_gpu_seconds": 48
+    }
+  ],
+  "job_count": 5,
+  "total_allocated_gpu_seconds": 992,
+  "all_terminal": true,
+  "source_sacct": "7385291|ctol_jpc_c01|gpu|COMPLETED|268|billing=8,cpu=8,gres/gpu=1,mem=64G,node=1|0:0|pax050\n7385291.batch|batch||COMPLETED|268|cpu=8,gres/gpu=1,mem=64G,node=1|0:0|pax050\n7385291.extern|extern||COMPLETED|268|billing=8,cpu=8,gres/gpu=1,mem=64G,node=1|0:0|pax050\n7385297|ctol_jwd_f128|gpu|COMPLETED|143|billing=8,cpu=8,gres/gpu=1,mem=64G,node=1|0:0|pax105\n7385297.batch|batch||COMPLETED|143|cpu=8,gres/gpu=1,mem=64G,node=1|0:0|pax105\n7385297.extern|extern||COMPLETED|143|billing=8,cpu=8,gres/gpu=1,mem=64G,node=1|0:0|pax105\n7385298|ctol_jwd_f512|gpu|COMPLETED|264|billing=8,cpu=8,gres/gpu=1,mem=64G,node=1|0:0|pax186\n7385298.batch|batch||COMPLETED|264|cpu=8,gres/gpu=1,mem=64G,node=1|0:0|pax186\n7385298.extern|extern||COMPLETED|264|billing=8,cpu=8,gres/gpu=1,mem=64G,node=1|0:0|pax186\n7385300|ctol_jcc_p01|gpu|COMPLETED|269|billing=8,cpu=8,gres/gpu=1,mem=64G,node=1|0:0|pax187\n7385300.batch|batch||COMPLETED|269|cpu=8,gres/gpu=1,mem=64G,node=1|0:0|pax187\n7385300.extern|extern||COMPLETED|269|billing=8,cpu=8,gres/gpu=1,mem=64G,node=1|0:0|pax187\n7385403|ctol_jwd_b01|gpu|COMPLETED|48|billing=8,cpu=8,gres/gpu=1,mem=64G,node=1|0:0|pax050\n7385403.batch|batch||COMPLETED|48|cpu=8,gres/gpu=1,mem=64G,node=1|0:0|pax050\n7385403.extern|extern||COMPLETED|48|billing=8,cpu=8,gres/gpu=1,mem=64G,node=1|0:0|pax050\n",
+  "source_sacct_sha256": "c2304283f9bdecc935d3b4b624f41009719d6bf307220001780134f6bf31f450"
+}

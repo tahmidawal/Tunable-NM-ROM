@@ -1,0 +1,69 @@
+{
+  "schema": "fresh-cost-audit-v1",
+  "passed": true,
+  "errors": [],
+  "subjects": {
+    "fom_m64_cnab2_s50": {
+      "invocations": 80,
+      "failures": 0,
+      "numerical_checks": 0,
+      "numerical_failures": 0,
+      "fractional_reference_failures": 0,
+      "timing_outliers": 2
+    },
+    "learned_head_m292_dt0.02": {
+      "invocations": 80,
+      "failures": 5,
+      "numerical_checks": 16,
+      "numerical_failures": 5,
+      "fractional_reference_failures": 0,
+      "timing_outliers": 2
+    },
+    "pod_head_m292_dt0.02": {
+      "invocations": 80,
+      "failures": 0,
+      "numerical_checks": 16,
+      "numerical_failures": 3,
+      "fractional_reference_failures": 0,
+      "timing_outliers": 7
+    },
+    "fom_m40_rk4_s10": {
+      "invocations": 80,
+      "failures": 0,
+      "numerical_checks": 0,
+      "numerical_failures": 0,
+      "fractional_reference_failures": 5,
+      "timing_outliers": 5
+    },
+    "pod_head_m292_dt0.01": {
+      "invocations": 80,
+      "failures": 0,
+      "numerical_checks": 16,
+      "numerical_failures": 2,
+      "fractional_reference_failures": 0,
+      "timing_outliers": 3
+    },
+    "learned_head": {
+      "invocations": 80,
+      "failures": 5,
+      "numerical_checks": 16,
+      "numerical_failures": 5,
+      "fractional_reference_failures": 0,
+      "timing_outliers": 2
+    }
+  },
+  "invocations": 516,
+  "reference_cases": 16,
+  "numerical_checks": 64,
+  "all_numerical_checks_pass": false,
+  "reference_max_refinement": 4.144579920426371e-06,
+  "max_solver_refinement": 1.0754010022401218e-10,
+  "source_hashes": {
+    "output/paired/result.json": "3d48452a8cf12a4cee4b0b22a6b13ff661a43dd6707362944f6deac807274731",
+    "output/paired/invocations.jsonl": "aedde248ab2866346b582c2d0bf8849df2799cab13edf1ee1549314bc30dd284",
+    "output/provenance.json": "d6e257c1058830616eae44a735b902ff7b59b54334d9c8aa8d7b93d0344a93b4",
+    "output/numerical_qualification.json": "59bf14eb57f62d4727bc6e6a679d6b2436a1b55104206a51e271da955e5c3a5c",
+    "output/references.json": "9d654448e75f8f81da8a3945c8ff4d4b6524ca1d92e066f707e77ba33b2db1a7",
+    "job.log": "e26605d91f2ec6c36e8663d39d592100dbf5805f4fdeb08972a1cc326a5ea674"
+  }
+}

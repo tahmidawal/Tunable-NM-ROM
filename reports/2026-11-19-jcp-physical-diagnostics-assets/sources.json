@@ -1,0 +1,333 @@
+{
+  "sources": [
+    {
+      "id": "development-head",
+      "source": "reports/2026-11-18-jcp-controlled-experiments-assets/evidence/head-p03b.json",
+      "kind": "head",
+      "select": {
+        "rows": 584,
+        "dt": 0.01
+      }
+    },
+    {
+      "id": "development-width",
+      "source": "reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-width-final.json",
+      "kind": "width"
+    },
+    {
+      "id": "development-tests",
+      "source": "reports/2026-11-18-jcp-controlled-experiments-assets/evidence/weak-full6.json"
+    },
+    {
+      "id": "development-cost-selection",
+      "source": "reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p04-selection.json"
+    },
+    {
+      "id": "development-cost-confirmation",
+      "source": "reports/2026-11-18-jcp-controlled-experiments-assets/evidence/cost-p04.json"
+    },
+    {
+      "id": "fresh-head",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/runs/c01/output/summary.json",
+      "kind": "head"
+    },
+    {
+      "id": "phase-audit",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/CONFIRMATION_AUDIT.json"
+    },
+    {
+      "id": "phase-final",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/FINAL_SUMMARY.json"
+    },
+    {
+      "id": "phase-initial-fit",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/IC_QUALIFICATION_DIAGNOSIS.json"
+    },
+    {
+      "id": "phase-replay",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/runs/c01/output/centroid_replay.json"
+    },
+    {
+      "id": "phase-protocol",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/PROTOCOL.md"
+    },
+    {
+      "id": "phase-plot-check",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/PLOT_VERIFICATION.json"
+    },
+    {
+      "id": "fresh-width",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/checks/fresh/analysis.json",
+      "kind": "width"
+    },
+    {
+      "id": "sparse-bridge",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/runs/b01/output/summary.json",
+      "kind": "sparse"
+    },
+    {
+      "id": "derivative-summary",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/summary.json"
+    },
+    {
+      "id": "width-plotted-data",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/plotted-data.json"
+    },
+    {
+      "id": "width-protocol",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/PROTOCOL-CLOSURE.md"
+    },
+    {
+      "id": "fresh-cost",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/runs/p01/output/paired/result.json",
+      "kind": "cost",
+      "qualification_id": "cost-qualification"
+    },
+    {
+      "id": "cost-qualification",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/runs/p01/output/numerical_qualification.json"
+    },
+    {
+      "id": "cost-references",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/runs/p01/output/references.json"
+    },
+    {
+      "id": "cost-audit",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/runs/p01/audit.json"
+    },
+    {
+      "id": "cost-protocol",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/PROTOCOL.md"
+    },
+    {
+      "id": "cost-final",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/summary.json"
+    },
+    {
+      "id": "coordinator-audit",
+      "source": "reports/2026-11-19-jcp-physical-diagnostics-assets/coordinator-audit.json"
+    },
+    {
+      "id": "scheduler",
+      "source": "reports/2026-11-19-jcp-physical-diagnostics-assets/scheduler-audit.json"
+    },
+    {
+      "id": "phase-retention",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/RETENTION.json"
+    },
+    {
+      "id": "width-closeout",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/checks/CLOSEOUT.json"
+    },
+    {
+      "id": "cost-retention",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/RETENTION.json"
+    },
+    {
+      "id": "lane-closeout",
+      "source": "reports/2026-11-19-jcp-physical-diagnostics-assets/lane-closeout.json"
+    },
+    {
+      "id": "independent-review",
+      "source": "reports/2026-11-19-jcp-physical-diagnostics-assets/independent-review.md"
+    },
+    {
+      "id": "cost-captions",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/captions.md"
+    }
+  ],
+  "figures": [
+    {
+      "id": "phase-development",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/plots/phase_shape_development.png"
+    },
+    {
+      "id": "phase-development-vector",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/plots/phase_shape_development.svg"
+    },
+    {
+      "id": "phase-development-pdf",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/plots/phase_shape_development.pdf"
+    },
+    {
+      "id": "phase-fresh",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/plots/phase_shape_fresh.png"
+    },
+    {
+      "id": "phase-fresh-vector",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/plots/phase_shape_fresh.svg"
+    },
+    {
+      "id": "phase-fresh-pdf",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/plots/phase_shape_fresh.pdf"
+    },
+    {
+      "id": "phase-all-cases",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/plots/phase_shape_all_cases_fresh.png"
+    },
+    {
+      "id": "phase-all-cases-vector",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/plots/phase_shape_all_cases_fresh.svg"
+    },
+    {
+      "id": "phase-all-cases-pdf",
+      "source": "worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/plots/phase_shape_all_cases_fresh.pdf"
+    },
+    {
+      "id": "derivative-time",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/derivative-error-time.png"
+    },
+    {
+      "id": "derivative-time-vector",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/derivative-error-time.svg"
+    },
+    {
+      "id": "derivative-time-pdf",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/derivative-error-time.pdf"
+    },
+    {
+      "id": "derivative-maxima",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/derivative-error-case-maxima.png"
+    },
+    {
+      "id": "derivative-maxima-vector",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/derivative-error-case-maxima.svg"
+    },
+    {
+      "id": "derivative-maxima-pdf",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/derivative-error-case-maxima.pdf"
+    },
+    {
+      "id": "width-tests",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/width-test-accuracy-map.png"
+    },
+    {
+      "id": "width-tests-vector",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/width-test-accuracy-map.svg"
+    },
+    {
+      "id": "width-tests-pdf",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/width-test-accuracy-map.pdf"
+    },
+    {
+      "id": "width-observer",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/width-test-map.png"
+    },
+    {
+      "id": "width-observer-vector",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/width-test-map.svg"
+    },
+    {
+      "id": "width-observer-pdf",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/width-test-map.pdf"
+    },
+    {
+      "id": "width-counterexample",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/width-test-transient-regressions.png"
+    },
+    {
+      "id": "width-counterexample-vector",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/width-test-transient-regressions.svg"
+    },
+    {
+      "id": "width-counterexample-pdf",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/saved/width-test-transient-regressions.pdf"
+    },
+    {
+      "id": "width-fresh",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/closure/fresh-width-confirmation.png"
+    },
+    {
+      "id": "width-fresh-vector",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/closure/fresh-width-confirmation.svg"
+    },
+    {
+      "id": "width-fresh-pdf",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/closure/fresh-width-confirmation.pdf"
+    },
+    {
+      "id": "width-coverage",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/closure/fresh-case-coverage.png"
+    },
+    {
+      "id": "width-coverage-vector",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/closure/fresh-case-coverage.svg"
+    },
+    {
+      "id": "width-coverage-pdf",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/closure/fresh-case-coverage.pdf"
+    },
+    {
+      "id": "sparse-qualification",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/closure/sparse-bridge-qualification.png"
+    },
+    {
+      "id": "sparse-qualification-vector",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/closure/sparse-bridge-qualification.svg"
+    },
+    {
+      "id": "sparse-qualification-pdf",
+      "source": "worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/figures/closure/sparse-bridge-qualification.pdf"
+    },
+    {
+      "id": "cost-selection",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/accuracy-cost-selection.png"
+    },
+    {
+      "id": "cost-selection-vector",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/accuracy-cost-selection.svg"
+    },
+    {
+      "id": "cost-selection-pdf",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/accuracy-cost-selection.pdf"
+    },
+    {
+      "id": "cost-selection-full",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/accuracy-cost-selection-full-range.png"
+    },
+    {
+      "id": "cost-selection-full-vector",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/accuracy-cost-selection-full-range.svg"
+    },
+    {
+      "id": "cost-selection-full-pdf",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/accuracy-cost-selection-full-range.pdf"
+    },
+    {
+      "id": "cost-development-confirmation",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/accuracy-cost-confirmed-case-ratios.png"
+    },
+    {
+      "id": "cost-development-confirmation-vector",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/accuracy-cost-confirmed-case-ratios.svg"
+    },
+    {
+      "id": "cost-development-confirmation-pdf",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/accuracy-cost-confirmed-case-ratios.pdf"
+    },
+    {
+      "id": "cost-repetitions",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/accuracy-cost-confirmation-repetition-spread.png"
+    },
+    {
+      "id": "cost-repetitions-vector",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/accuracy-cost-confirmation-repetition-spread.svg"
+    },
+    {
+      "id": "cost-repetitions-pdf",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/accuracy-cost-confirmation-repetition-spread.pdf"
+    },
+    {
+      "id": "cost-fresh",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/accuracy-cost-fresh-confirmation.png"
+    },
+    {
+      "id": "cost-fresh-vector",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/accuracy-cost-fresh-confirmation.svg"
+    },
+    {
+      "id": "cost-fresh-pdf",
+      "source": "worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/plots/accuracy-cost-fresh-confirmation.pdf"
+    }
+  ]
+}

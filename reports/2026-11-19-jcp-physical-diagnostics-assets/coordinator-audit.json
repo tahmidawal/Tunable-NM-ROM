@@ -1,0 +1,121 @@
+{
+  "integrity_passed": true,
+  "scope": "independent JSON arithmetic, cohort identity, failure retention, per-time cross-implementation error agreement; lane raw-array/source audits are additionally retained",
+  "phase_scientific_confirmation_passed": false,
+  "phase_initial_fit_failed_cases": [
+    8,
+    10
+  ],
+  "phase_all_trajectory_and_reference_checks_passed": true,
+  "cost_scientific_comparisons_passed": 0,
+  "cost_comparisons": 6,
+  "timed_invocation_count": 516,
+  "failed_timed_invocations": 10,
+  "cost_qualification_count": 64,
+  "cross_implementation_error_checks": [
+    {
+      "case": 0,
+      "max_absolute_difference_in_normalized_error": 2.2985086056692694e-17
+    },
+    {
+      "case": 1,
+      "max_absolute_difference_in_normalized_error": 1.7791757650487128e-16
+    },
+    {
+      "case": 2,
+      "max_absolute_difference_in_normalized_error": 1.184165612788668e-15
+    },
+    {
+      "case": 3,
+      "max_absolute_difference_in_normalized_error": 3.2395960913866872e-15
+    },
+    {
+      "case": 4,
+      "max_absolute_difference_in_normalized_error": 1.8800065670898647e-15
+    },
+    {
+      "case": 5,
+      "max_absolute_difference_in_normalized_error": 3.029802971010742e-16
+    },
+    {
+      "case": 6,
+      "max_absolute_difference_in_normalized_error": 3.349100510807723e-16
+    },
+    {
+      "case": 7,
+      "max_absolute_difference_in_normalized_error": 1.1405806854547507e-16
+    },
+    {
+      "case": 8,
+      "max_absolute_difference_in_normalized_error": 1.496399575431906e-14
+    },
+    {
+      "case": 9,
+      "max_absolute_difference_in_normalized_error": 7.508100044462118e-17
+    },
+    {
+      "case": 10,
+      "max_absolute_difference_in_normalized_error": 8.389664830910082e-15
+    },
+    {
+      "case": 11,
+      "max_absolute_difference_in_normalized_error": 2.174909558005922e-15
+    },
+    {
+      "case": 12,
+      "max_absolute_difference_in_normalized_error": 5.2692225582795515e-17
+    },
+    {
+      "case": 13,
+      "max_absolute_difference_in_normalized_error": 3.003240017784847e-17
+    },
+    {
+      "case": 14,
+      "max_absolute_difference_in_normalized_error": 1.3292318634672284e-16
+    },
+    {
+      "case": 15,
+      "max_absolute_difference_in_normalized_error": 3.820728455838918e-15
+    }
+  ],
+  "cross_implementation_max_absolute_error_difference": 1.496399575431906e-14,
+  "burgers_fresh_confirmation_passed": true,
+  "burgers_case_count": 8,
+  "burgers_selected_over_baseline_case_maxima": [
+    0.16229911562461374,
+    0.13756411432966506,
+    0.04287948358281243,
+    0.06025605334998303,
+    0.0683270124405791,
+    0.15186064440624847,
+    0.05295973200360802,
+    0.08819205496317166
+  ],
+  "sparse_rules_admitted": 0,
+  "sources": [
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/runs/c01/output/summary.json",
+      "sha256": "9f9b393005a95913a94651f32c75a0a800f990dfadc1695379b99896b29cd3c7"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/runs/p01/output/paired/result.json",
+      "sha256": "3d48452a8cf12a4cee4b0b22a6b13ff661a43dd6707362944f6deac807274731"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/runs/p01/output/paired/invocations.jsonl",
+      "sha256": "aedde248ab2866346b582c2d0bf8849df2799cab13edf1ee1549314bc30dd284"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-19-jcp-cost-confirm/experiments/jcp-cost-confirm/runs/p01/output/numerical_qualification.json",
+      "sha256": "59bf14eb57f62d4727bc6e6a679d6b2436a1b55104206a51e271da955e5c3a5c"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/checks/fresh/analysis.json",
+      "sha256": "401ce5347c8d3480158f4b5ffbec714f077bbde0ce58651dbe2968eb3443e4f9"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-19-jcp-width-deploy/experiments/jcp-width-deploy/runs/b01/output/summary.json",
+      "sha256": "cf394de399ba4d1afb308196bc4898029b26d8d8b2e314673311f8859c68c1ff"
+    }
+  ]
+}

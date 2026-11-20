@@ -1,0 +1,56 @@
+{
+  "passed": true,
+  "lanes": [
+    {
+      "lane": "phase-confirm",
+      "worktree": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-19-jcp-phase-confirm",
+      "source_commit": "8394b33cb3c2ce3912598ff80a64fd3b7d9b5e97",
+      "remote_ref": "refs/heads/codeonly/exp/2026-11-19-jcp-phase-confirm",
+      "remote_commit": "0d6c9c1b9918bdfbbe0176c83ca24e1cf30d96ad",
+      "clean": true,
+      "matching_remote_blob_count": 412,
+      "large_local_only_files": [],
+      "unmerged": true
+    },
+    {
+      "lane": "width-deploy",
+      "worktree": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-19-jcp-width-deploy",
+      "source_commit": "d049dda2ab0e7b6e90510e3bbfe0971069617a08",
+      "remote_ref": "refs/heads/codeonly/exp/2026-11-19-jcp-width-deploy",
+      "remote_commit": "21d2427138296d47636ad7a2f35fa430286ec7fd",
+      "clean": true,
+      "matching_remote_blob_count": 464,
+      "large_local_only_files": [],
+      "unmerged": true
+    },
+    {
+      "lane": "cost-confirm",
+      "worktree": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-19-jcp-cost-confirm",
+      "source_commit": "040fb32c1e0ba76505c692974ce7bca22606ec31",
+      "remote_ref": "refs/heads/codeonly/exp/2026-11-19-jcp-cost-confirm",
+      "remote_commit": "e33648bab6fad8677415060e99b6d3201db927ca",
+      "clean": true,
+      "matching_remote_blob_count": 144,
+      "large_local_only_files": [
+        {
+          "path": "experiments/jcp-cost-confirm/runs/p01/output/deployed_assets/learned/basis.npy",
+          "bytes": 402653312,
+          "source_git_blob": "cd3c4866e4957c134f736b77e0ffac02e87ae165"
+        },
+        {
+          "path": "experiments/jcp-cost-confirm/runs/p01/output/deployed_assets/pod/basis.npy",
+          "bytes": 402653312,
+          "source_git_blob": "d3e78efd012b1683913eddcf1d32e7a1d2bed134"
+        },
+        {
+          "path": "experiments/jcp-cost-confirm/runs/p01/result.tar.gz",
+          "bytes": 821203978,
+          "source_git_blob": "63714cf1f1e21e2b52cb9c7e3c382a3df7332fc0"
+        }
+      ],
+      "unmerged": true
+    }
+  ],
+  "owned_cluster_namespaces_absent": true,
+  "scope": "Remote identities and every eligible lane Git blob independently checked; large local-only cost arrays explicitly listed."
+}

@@ -12,7 +12,9 @@ below it is append-only, oldest first.
 
 ---
 
-# Where things stand — 2026-11-18
+# Where things stand — 2026-11-19
+
+**JCP physical-diagnostics and frozen-confirmation follow-up COMPLETE (Codex, 2026-11-19).** All requested phase/shape, derivative, width–test and accuracy–cost figures are saved. Frozen Burgers width/test confirmation passes on all 8 fresh cases: worst initialization-inclusive discrete-reference error falls from 2.972355% to 0.203092%. The head advantage persists after the declared physical-centroid alignment; fresh Navier–Stokes confirmation remains formally unqualified because 2 initial fits miss strict stationarity. No fresh cost comparison qualifies; both tested sparse rules fail admission, so sparse rollout and downstream timing were not run. All 5 jobs are terminal (992 allocated GPU-seconds). [Measured report and figures](reports/2026-11-19-jcp-physical-diagnostics-and-confirmation.md). The three new experiment branches are backed up separately and remain unmerged pending the user’s decision; designated large regenerable cost arrays remain local with hashes. Separate tree-study and paused-campaign state are unchanged.
 
 **Controlled JCP analysis campaign COMPLETE (Codex, 2026-11-18).** The matched original-family head study is independently accepted: median paired span/head error ratio 7.059 at the final registered setting. Frozen-width Burgers dynamics reduce worst initialization-inclusive error from 4.297893% to 0.391845%; fixed-test transient regressions remain retained. Complete-query cost is fully measured: the cheapest head is near-tied with POD and slower than eligible coarse-grid classical computation; every head setting loses to that stronger comparator on every case. All 18 attempts are terminal, totaling 5290 allocated GPU-seconds (1.469444 GPU-hours). No further experiments or fresh-cohort opening. [Final measured report and plots](reports/2026-11-18-jcp-controlled-experiments.md). The three experiment branches remain unmerged pending the user's merge decision. Separate tree-study and paused-campaign state are unchanged.
 
@@ -22076,3 +22078,46 @@ Highest-value additions to the previous outline are saved physical phase/shape d
 The plan keeps measured width/test cells sparse, quadrature operator and reference definitions distinct, selection-frontier timings separate from timing confirmation on existing cases, and fresh-cohort confirmation separate from both. Setup, reference, solver and finite-accuracy failures are not pooled into a method-failure probability. Existing historical seed/time/horizon/baseline evidence remains available within its scope. Expensive new training, perturbation growth, additional PDEs or broad comparator sweeps are conditional on stronger claims; frozen-choice confirmation and the selected sparse-deployment bridge remain the substantive potential additions.
 
 All report/source links and saved-document/source hashes were verified. The review introduces no new measured result and retracts none. No scientific run, training, cohort access, branch merge or unrelated campaign change occurred. This entry closes the three read-only reviewers and single synthesis writer; the earlier experiment merge decision remains pending.
+
+
+## 2026-11-19
+
+### Codex — physical diagnostics, frozen fresh-case confirmation and bounded sparse admission closed
+
+The user requested subagents to complete the saved phase/shape, derivative-error, width–test and accuracy–cost plots, then authorized finishing the follow-up experiments. Three agents used separate `2026-11-19-jcp-*` worktrees and owned cluster namespaces; a fourth read-only agent reviewed the interpretation. The coordinator assembled the [generated report](reports/2026-11-19-jcp-physical-diagnostics-and-confirmation.md) and verified numerical tables, raw repetition arithmetic, shared fresh-case identities, source hashes, local links, remote mirrors and namespace removal. Every failed qualification remains visible. No new training or historical sealed-cohort access occurred.
+
+**Qualified and observed outcomes.** On 8 fresh Burgers cases, the frozen joint change from width 128/tests 2048 to width 512/tests 8192 improves every case. Median/worst maximum field error falls from 0.632155% / 2.972355% to 0.066820% / 0.203092%; every arm passes numerical checks. These initialization-inclusive errors use the unchanged same-grid/same-step discrete full model and native initialization. They do not isolate width from test enrichment or certify continuum accuracy or online speed.
+
+Qualified development median paired span/head maximum-error ratios are 7.059036 before physical-centroid alignment and 7.160059 after it. Fresh observed ratios are 7.244560 and 7.330308, but initial-fit stationarity fails on cases 8, 10; formal confirmation remains failed. All trajectory/reference/common-state/action checks pass. Marginal objective ties and matching tighter fields were diagnosed without changing or waiving the frozen selector. The alignment does not establish optimal registration or a unique head mechanism.
+
+The saved selected Burgers configuration has worst field error 0.391845% and worst discrete-Laplacian error 183.141947%. Derivative/operator errors use the corresponding current reference norm; field errors use the original initial norm. The denominator audit rejects a vanishing-reference explanation for these records. The width–test map retains blank unmeasured cells and transient counterexamples.
+
+**Negative outcomes and experiments not run.** Fresh cost confirmation has 0 qualified comparisons out of 6. The 516 timed invocations retain 10 failures, all repeated measurements of the same learned-head physical-input failure. Tighter numerical checks expose additional failures; every subject exceeds the previous worst-error target, and the coarse classical subject also fails fractional-reference and timing-drift checks. Nominal returned-field diagnostics include rejected solves; missing full-cohort times are not imputed. No fresh speed claim is accepted. Independent Navier–Stokes implementations agree on common nominal errors to maximum absolute difference 1.49639958e-14; this is an integrity check, not a timing comparison across jobs.
+
+Both development-only sparse recipes fail admission. The checkerboard rule passes measured residual/action fidelity but fails sampled initial fitting; the other also fails residual/action checks and retains its optimization iteration-cap termination. All weights remain positive and both fixed upwind closures require every interior site, so neither is economical under the declared strategy. Sparse PDE rollout, time-step–sample-count interaction and complete-query sparse timing were **not run**. Other sparse or adaptive kernels are not ruled out.
+
+**Corrections and retractions.** No prior measured run values are retracted. The manuscript must not reduce the head advantage to centroid-drift control, transfer the development initial-floor interpretation to fresh Burgers maxima, treat the old derivative docstring as the implemented normalization, or upgrade unqualified fresh timing ratios to speedups. No failed numerical criterion was relaxed after inspecting the new cases.
+
+**Execution and retention.** Scientific jobs used GPU preflight, double precision, highest matrix precision, separate directories and recorded seeds/provenance. Timing comparisons remain within allocations with repetition arrays retained. Completed outputs were pulled and checksum checked; all owned cluster namespaces are removed.
+
+| Job | Registered run | State | Allocated GPU-seconds |
+|---|---|---|---:|
+| 7385291 | ctol_jpc_c01 | COMPLETED | 268 |
+| 7385297 | ctol_jwd_f128 | COMPLETED | 143 |
+| 7385298 | ctol_jwd_f512 | COMPLETED | 264 |
+| 7385300 | ctol_jcc_p01 | COMPLETED | 269 |
+| 7385403 | ctol_jwd_b01 | COMPLETED | 48 |
+
+Total: 992 allocated GPU-seconds (0.275556 GPU-hours); all 5 jobs terminal, none cancelled.
+
+| Lane | Final source commit | Verified mirror |
+|---|---|---|
+| `phase-confirm` | `8394b33cb3c2ce3912598ff80a64fd3b7d9b5e97` | `refs/heads/codeonly/exp/2026-11-19-jcp-phase-confirm` / `0d6c9c1b9918bdfbbe0176c83ca24e1cf30d96ad` |
+| `width-deploy` | `d049dda2ab0e7b6e90510e3bbfe0971069617a08` | `refs/heads/codeonly/exp/2026-11-19-jcp-width-deploy` / `21d2427138296d47636ad7a2f35fa430286ec7fd` |
+| `cost-confirm` | `040fb32c1e0ba76505c692974ce7bca22606ec31` | `refs/heads/codeonly/exp/2026-11-19-jcp-cost-confirm` / `e33648bab6fad8677415060e99b6d3201db927ca` |
+
+All eligible lane blobs match the remote mirrors. Phase and width scientific evidence is remotely retained. The cost lane's two large regenerable basis arrays and transport archive remain local and in source Git, with recorded hashes and regeneration instructions; they are excluded from its code-only mirror. This exception is documented in the report. The three new branches remain unmerged; the user's merge choice is requested at handoff as required by the repository.
+
+**Independent review and reproduction.** The reviewer found no scientific blocker to reporting this finite batch within the stated claim limits; the coordinator resolved the backup prerequisite. Report generation is deterministic, all 79 registered artifacts match source and frozen hashes, and all 40 local link occurrences resolve. Report SHA-256: `c9669874d25f3fbd61e3b2619d37e6e92b30e81053f6590c0c5cfdfe3c8f93d9`. Evidence integrity passes separately from retained scientific qualification failures.
+
+**Open work, conditional on claims.** First develop a robust Navier–Stokes initializer/stopping rule on exposed data, then freeze it and confirm on different untouched cases. A new performance claim additionally needs qualified solvers, sufficiently refined references, frozen comparators/accuracy criteria and clean paired timing. Efficient wider-model sparse deployment needs economical sampled initialization and reduced actual evaluated work before reached-state checks, trajectories, time–quadrature interaction and cost. Continuum derivatives, longer horizons or data efficiency require their own studies only if claimed. No unrelated tree-study work or paused campaign was resumed.

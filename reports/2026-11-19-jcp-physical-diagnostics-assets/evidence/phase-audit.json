@@ -1,0 +1,146 @@
+{
+  "schema": "phase-confirm-audit-v1",
+  "passed": false,
+  "evidence_integrity_passed": true,
+  "scientific_confirmation_qualified": false,
+  "initial_fit_failed_case_indices": [
+    8,
+    10
+  ],
+  "checks": {
+    "expected_16_complete_cases": true,
+    "backend_precision": true,
+    "parameter_hash": true,
+    "explicit_parameters": true,
+    "cohort_disjointness": true,
+    "all_qualification_flags": false,
+    "development_metric_replay": true,
+    "source_driver_hash": true,
+    "frozen_config_hash": true,
+    "frozen_method_executed": true,
+    "state_arrays_and_arithmetic": true,
+    "same_previous_state_probe_stationarity": true,
+    "same_previous_state_objective_nonincrease": true,
+    "concentrations_finite_in_unit_interval": true,
+    "no_failure_log_signatures": true,
+    "gpu_preflight": true,
+    "success_exit": true,
+    "inputs_checksums": true,
+    "outputs_checksums": true
+  },
+  "case_errors": [
+    {
+      "case": 0,
+      "head_max": 0.0011582944401564367,
+      "span_max": 0.017031990360922775,
+      "paired_span_over_head": 14.704370296919038
+    },
+    {
+      "case": 1,
+      "head_max": 0.0009441612082201349,
+      "span_max": 0.006928558820999828,
+      "paired_span_over_head": 7.3383218466061
+    },
+    {
+      "case": 2,
+      "head_max": 0.0005997105010380925,
+      "span_max": 0.007297141783397596,
+      "paired_span_over_head": 12.167773902185006
+    },
+    {
+      "case": 3,
+      "head_max": 0.002473086892702309,
+      "span_max": 0.011904960637827615,
+      "paired_span_over_head": 4.813806046587883
+    },
+    {
+      "case": 4,
+      "head_max": 0.0010057112933070094,
+      "span_max": 0.009654278199062942,
+      "paired_span_over_head": 9.599452907918993
+    },
+    {
+      "case": 5,
+      "head_max": 0.0007284663883090246,
+      "span_max": 0.005209115491320853,
+      "paired_span_over_head": 7.1507973118878905
+    },
+    {
+      "case": 6,
+      "head_max": 0.0009249105466083904,
+      "span_max": 0.006872463937107498,
+      "paired_span_over_head": 7.430409310725826
+    },
+    {
+      "case": 7,
+      "head_max": 0.0006945756150121075,
+      "span_max": 0.004820250817365243,
+      "paired_span_over_head": 6.9398503390897455
+    },
+    {
+      "case": 8,
+      "head_max": 0.0007872671430275572,
+      "span_max": 0.00318428532072817,
+      "paired_span_over_head": 4.04473290792057
+    },
+    {
+      "case": 9,
+      "head_max": 0.0007743520700212625,
+      "span_max": 0.004342974494281165,
+      "paired_span_over_head": 5.60852700266161
+    },
+    {
+      "case": 10,
+      "head_max": 0.0008644918108519015,
+      "span_max": 0.008919699634286784,
+      "paired_span_over_head": 10.317853243163738
+    },
+    {
+      "case": 11,
+      "head_max": 0.0008561991963078078,
+      "span_max": 0.0071069521951369445,
+      "paired_span_over_head": 8.300582651542177
+    },
+    {
+      "case": 12,
+      "head_max": 0.0007157546192254358,
+      "span_max": 0.002899243631309055,
+      "paired_span_over_head": 4.050611136043402
+    },
+    {
+      "case": 13,
+      "head_max": 0.0007329016318901782,
+      "span_max": 0.007260357843899073,
+      "paired_span_over_head": 9.906319658716496
+    },
+    {
+      "case": 14,
+      "head_max": 0.0008188994637521325,
+      "span_max": 0.004044275178100932,
+      "paired_span_over_head": 4.938671176520722
+    },
+    {
+      "case": 15,
+      "head_max": 0.0011803467091638308,
+      "span_max": 0.005430749651698803,
+      "paired_span_over_head": 4.600978347748349
+    }
+  ],
+  "probe_counts": {
+    "total": 320,
+    "stationary": 320,
+    "objective_nonincrease": 320,
+    "span_physical_error_larger": 320
+  },
+  "optional_fixed_frame_head_fit_nonstationary": 16,
+  "optional_fixed_frame_head_fit_total": 672,
+  "optional_fit_interpretation": "best-found upper bounds, not globally optimal projection; not used in phase-shape panel",
+  "minimum_fresh_concentration_all_runs": 0.6627841640398193,
+  "centroid_descriptive_ambiguity_entries": 0,
+  "bad_log_signatures": [],
+  "source_summary_sha256": "9f9b393005a95913a94651f32c75a0a800f990dfadc1695379b99896b29cd3c7",
+  "source_replay_sha256": "343671747f11d03b04bbe65d953e89375a7cff36585ac0d056863a849a938ec6",
+  "job_id": "7385291",
+  "source_commit": "2130a74e07b7c49e4c1ae8e81fe804d20969116e",
+  "gpu": "NVIDIA A100 80GB PCIe, GPU-d3b4eac9-553b-ac7f-475c-a7e58f8c909b, 81920 MiB"
+}

@@ -1,0 +1,177 @@
+{
+  "schema": "jcp-head-mechanism-v1",
+  "status": "proposed_before_execution",
+  "n": 64,
+  "rank": 64,
+  "k": 8,
+  "eval_seed": 202609202,
+  "eval_cases": 16,
+  "initial_case_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "closed_seeds": [
+    202609203,
+    202609211,
+    202609221
+  ],
+  "horizon": 0.2,
+  "dt_truth": 0.00025,
+  "truth_scheme": "cnab2",
+  "truth_output_dt": 0.01,
+  "operator": "exact discrete quadratic tensor, independently checked on dense fields",
+  "expanded_test_rows": 1168,
+  "test_settings": [
+    {
+      "rows": 292,
+      "dt": 0.02
+    },
+    {
+      "rows": 584,
+      "dt": 0.02
+    },
+    {
+      "rows": 584,
+      "dt": 0.01
+    }
+  ],
+  "frame": "free co-moving increment,3 extra unknowns in both arms",
+  "arms": [
+    "head_common",
+    "span_common",
+    "span_native"
+  ],
+  "primary_comparison": [
+    "head_common",
+    "span_common"
+  ],
+  "common_ic": "identical reconstruction of multistart head fit, same coefficients/frame at t0",
+  "native_ic": "span Euclidean projection of identical original physical u0; separately labeled",
+  "head_fit_starts": 4,
+  "solver": {
+    "algorithm": "adaptive diagonally-scaled LM with accepted/rejected trial history",
+    "gtols": [
+      1e-07,
+      1e-09
+    ],
+    "budget": 250,
+    "initial_damping": 0.0001,
+    "stationarity": "max_j abs(J_j^T r)/(||J_j||2 max(||r||2,1e-30))",
+    "stagnation": "rejected-trial or representable-step termination saved; never accepted as stationarity",
+    "roundoff_acceptance": {
+      "cost_relative_band_eps": 1024,
+      "only_when_gradient_below": 1e-05,
+      "trial_gradient_at_most_fraction": 0.5,
+      "step_norm_relative_max": 1e-06,
+      "all_changes_recorded": true,
+      "no_stationarity_gate_relaxation": true
+    }
+  },
+  "qualification": {
+    "operator_relative": 1e-09,
+    "jacobian_action_relative": 1e-06,
+    "shared_ic_relative": 1e-12,
+    "tight_tighter_field_difference": 1e-06,
+    "tight_tighter_fraction_of_physical_error": 0.01,
+    "stationarity_required": true,
+    "nonfinite_allowed": false,
+    "budget_termination_allowed": false,
+    "reference_absolute": 1e-05,
+    "reference_fraction_of_rom_error": 0.01,
+    "tight_tighter_normalization": "norm of original physical initial field",
+    "pilot_field_reproducibility": 1e-10
+  },
+  "primary_criteria": {
+    "head_benefit": "paired common-IC head max-over-time physical error lower than span under numerically qualified common settings; report all cases, median, worst, outliers; do not require favorable outcome for acceptance",
+    "mechanism": "residual reduction and physical drift tracked separately; span distance to head image is multistart best-found in reached frame, not certified/global",
+    "invariance": "compare qualification and effect under rows292->584 and dt0.02->0.01"
+  },
+  "stopping_gates": [
+    "any backend/precision/source/checksum failure invalidates run",
+    "any operator/Jacobian/sharedIC failure stops expansion",
+    "any numerical failure must be diagnosed before expanding cases",
+    "head benefit loss retained, no selective case removal",
+    "after dev2 pass request internal release for dev16"
+  ],
+  "diagnostics": [
+    "per-time errors,energy,divergence,physical centroid,shape-aligned error",
+    "coefficients,head codes,frame increments and accumulated centers",
+    "minimized and independent1168-row residuals",
+    "solver accepted/rejected histories,stationarity and termination",
+    "physical trial tangent normalized spectra including3frame variables",
+    "multistart fixed-frame distance from span to head",
+    "same-previous-state span solve seeded by reached head coefficients"
+  ],
+  "compute": {
+    "namespace": "/cluster/tufts/paralab/tawal01/jcp-head-mechanism-20261118-488b0837",
+    "initial_gpu_hours_ceiling": 3,
+    "initial_job_minutes": 45,
+    "one_active_job": true,
+    "gpu_per_job": 1,
+    "partition": "gpu",
+    "precision": "f64/highest",
+    "local_gpu_smoke": "none until parent slot assigned"
+  },
+  "outputs": "summary.json, case_*/trajectory arrays, histories,source/config/hardware metadata; measured plots only",
+  "reference_refinement": {
+    "dt": 0.00025,
+    "tighter_dt": 0.000125,
+    "scope": "same grid discrete FOM, not continuum",
+    "check_original_output_grid": true
+  },
+  "time_refinement_scope": "method-setting robustness: diffusion row weights also depend on dt; no temporal order claim",
+  "physical_tangent": {
+    "include_frame": true,
+    "gram_eigenvalue_relative_cutoff": 1e-12,
+    "absolute_cutoff": 1e-30,
+    "report_all_eigenvalues_and_retained_rank": true
+  },
+  "amendment": "p03b_stationary_objective_tie_selection",
+  "independent_shell": {
+    "first_row_zero_based": 584,
+    "last_exclusive": 1168,
+    "full_residual_vector_saved": true
+  },
+  "shared_state_geometry": true,
+  "reproducibility_reference": "p03",
+  "reproducibility_case_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "family": "original periodic NS3D two-potential family; source INITIAL_AMPLITUDE=0.2",
+  "fit_selection": {
+    "only_if_raw_minimum_is_nonstationary": true,
+    "stationarity_gate_unchanged": true,
+    "objective_tie_band": "1024 * float64 epsilon * max(raw_minimum_cost,1e-300)",
+    "choose": "lowest-cost stationary candidate within band; otherwise preserve original winner and failure",
+    "retain": "all candidate final codes, costs, gradients, histories; raw/selected indices; tie band; physical coefficient difference"
+  }
+}

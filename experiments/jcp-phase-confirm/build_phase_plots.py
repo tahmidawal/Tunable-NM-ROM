@@ -56,7 +56,8 @@ def plot_one(summary_path,kind,out,replay_path=None):
  axes[0].set_ylim(0,commonmax);axes[2].set_ylim(0,commonmax);axes[1].ticklabel_format(axis='y',style='sci',scilimits=(-2,2),useMathText=True)
  axes[0].legend(loc='upper left',frameon=False)
  cohort='Development' if kind=='development' else 'Fresh frozen-choice confirmation'
- fig.suptitle(f'{cohort}: position and aligned shape in matched dynamics\n{n} cases · R=64, k=8, M=584, Δt=0.01 · line: median; shade: full case range',fontsize=12)
+ if kind=='fresh' and not s['qualification']['passed']:cohort='Fresh cohort (initial-fit qualification incomplete)'
+ fig.suptitle(f'{cohort}: position and aligned shape in matched dynamics\n{n} cases · R=64, k=8; both add 3 frame variables · M=584, Δt=0.01 · median and full case range',fontsize=12)
  save(fig,out/f'phase_shape_{kind}')
  fig,axes=plt.subplots(4,4,figsize=(11.5,10),sharex=True,sharey=True,layout='constrained')
  for ax,ci in zip(axes.flat,range(n)):
@@ -83,15 +84,18 @@ def plot_one(summary_path,kind,out,replay_path=None):
    arr=series[arm]['pred_concentration'];mins=arr.min(axis=(0,2));ax.plot(times,mins,color=COLORS[arm],label=LABELS[arm],lw=2)
   truth=series['head_common']['truth_concentration'].min(axis=(0,2));ax.plot(times,truth,color='#333333',ls=':',lw=2,label='Reference')
   ax.axhline(.1,color='#888888',lw=1,ls='--',label='Declared ambiguity flag')
-  ax.set(xlabel='Time',ylabel='Minimum concentration across cases and coordinates',ylim=(0,1),xlim=(0,times[-1]),title=f'{cohort}: circular-centroid reliability');ax.legend(frameon=False,ncol=2)
+  ax.set(xlabel='Time',ylabel='Minimum concentration\n(across all cases and coordinates)',ylim=(0,1),xlim=(0,times[-1]),title=f'{cohort}\nCircular-centroid reliability');ax.legend(frameon=False,ncol=2)
   save(fig,out/f'centroid_reliability_{kind}')
  with (out/f'phase_shape_{kind}.csv').open('w',newline='') as f:
   w=csv.DictWriter(f,fieldnames=list(csvrows[0]));w.writeheader();w.writerows(csvrows)
  dump(out/f'phase_shape_{kind}.json',stats)
- text=f'''# {cohort}: physical position and centroid-aligned shape\n\nMeasured diagnostics from saved accepted trajectories. Qualification and sources are retained in the adjacent JSON; the three-panel plot shows median histories and full case ranges.\n\nBoth field errors use the original physical initial-field norm. Phase is the Euclidean norm of wrapped energy-weighted physical-centroid differences, shown as percent domain length. Alignment uses reference information and is diagnostic only; it is not an online correction or a globally optimal translation. The head and span start from the same reconstructed field and have the same three frame unknowns.\n\n| Diagnostic, maximum over evolved times | Head median | Span median | Head worst | Span worst | Median paired span/head ratio | Head lower cases |\n|---|---:|---:|---:|---:|---:|---:|\n'''
+ text=f'''# {cohort}: physical position and centroid-aligned shape\n\nMeasured diagnostics from saved trajectories. Qualification and sources are retained in the adjacent JSON; the three-panel plot shows median histories and full case ranges.\n\nBoth field errors use the original physical initial-field norm. Phase is the Euclidean norm of wrapped energy-weighted physical-centroid differences, shown as percent domain length. Alignment uses reference information and is diagnostic only; it is not an online correction or a globally optimal translation. The head and span start from the same reconstructed field and have the same three frame unknowns.\n\n| Diagnostic, maximum over evolved times | Head median | Span median | Head worst | Span worst | Median paired span/head ratio | Head lower cases |\n|---|---:|---:|---:|---:|---:|---:|\n'''
  for key,label in [('field','Ordinary field error (%)'),('shape','Centroid-aligned field error (%)'),('phase','Physical displacement (% domain length)')]:
   h=stats['by_arm']['head_common'][key];sp=stats['by_arm']['span_common'][key];pa=stats['paired'][key]
   text+=f"| {label} | {100*h['median_of_casewise_maxima']:.8g} | {100*sp['median_of_casewise_maxima']:.8g} | {100*h['worst']:.8g} | {100*sp['worst']:.8g} | {pa['median_ratio']:.6g} | {pa['head_lower_count']}/{n} |\n"
+ if kind=='fresh' and not s['qualification']['passed']:
+  failed=[c['index'] for c in cases if not c['head_ic_fit']['qualified']]
+  text+=f'\n**Provisional confirmation:** the frozen initial-fit stationarity check fails for cases {failed}. All trajectories remain shown. This cohort is not accepted as fully numerically qualified; no gate was relaxed or case removed. See IC_QUALIFICATION_DIAGNOSIS.json for exact gradients and candidate costs.\n'
  if reliability_known:
   cmin=min(stats['by_arm'][arm][key]['minimum'] for arm in ARMS for key in ('pred_concentration','truth_concentration'));nbad=sum(stats['by_arm'][arm]['pred_concentration']['below_0p1'] for arm in ARMS)+stats['by_arm']['head_common']['truth_concentration']['below_0p1']
   text+=f'\nThe minimum circular-moment concentration is {cmin:.8g}; {nbad} coordinate/time entries fall below the prospectively declared descriptive flag. This assesses centroid definition, not uniqueness of the underlying physical structure.\n'

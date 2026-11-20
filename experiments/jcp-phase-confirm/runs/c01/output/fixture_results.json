@@ -1,0 +1,89 @@
+{
+  "backend": "gpu",
+  "dtype": "float64",
+  "affine_solve": {
+    "reason": "stationarity",
+    "gradient": 1.6485970816179637e-13,
+    "cost": 0.3755555555555556,
+    "residual_norm": 0.8666666666666667,
+    "iterations": 3,
+    "accepted": 3
+  },
+  "cap_reason": "budget",
+  "head_jacobian_relative": 1.4802808736776328e-16,
+  "physical_tangent_gram_relative": 1.1524716077066509e-15,
+  "tangent_retained_rank": 4,
+  "tangent_excluded": 3,
+  "analytic_residual_action": {
+    "epsilons": [
+      0.0001,
+      1e-05,
+      1e-06
+    ],
+    "relative_errors": [
+      3.877610177874446e-13,
+      5.111771736093031e-12,
+      4.789883932902118e-11
+    ],
+    "minimum": 3.877610177874446e-13
+  },
+  "all_passed": true,
+  "roundoff_tight_affine": {
+    "reason": "stationarity",
+    "gradient": 1.1457849938064337e-16,
+    "cost": 0.37555555555555553,
+    "residual_norm": 0.8666666666666666,
+    "iterations": 4,
+    "accepted": 4,
+    "history": [
+      {
+        "iteration": 0,
+        "cost": 2.52,
+        "trial_cost": 0.37555559973750585,
+        "gradient": 0.6929348671835832,
+        "damping": 0.0001,
+        "step_norm": 1.5611984117335238,
+        "accepted": true,
+        "acceptance_reason": "strict_decrease",
+        "trial_gradient": 0.00023204443415093405,
+        "roundoff_band": 5.729816621169448e-13
+      },
+      {
+        "iteration": 1,
+        "cost": 0.37555559973750585,
+        "trial_cost": 0.3755555555555556,
+        "gradient": 0.00023204443415093405,
+        "damping": 3.3333333333333335e-05,
+        "step_norm": 0.00021955139370727136,
+        "accepted": true,
+        "acceptance_reason": "strict_decrease",
+        "trial_gradient": 1.0540830274922852e-08,
+        "roundoff_band": 8.539145704560402e-14
+      },
+      {
+        "iteration": 2,
+        "cost": 0.3755555555555556,
+        "trial_cost": 0.3755555555555556,
+        "gradient": 1.0540830274922852e-08,
+        "damping": 1.1111111111111112e-05,
+        "step_norm": 1.0499217889294903e-08,
+        "accepted": true,
+        "acceptance_reason": "roundoff_gradient_improvement",
+        "trial_gradient": 1.6485970816179637e-13,
+        "roundoff_band": 8.53914469997916e-14
+      },
+      {
+        "iteration": 3,
+        "cost": 0.3755555555555556,
+        "trial_cost": 0.37555555555555553,
+        "gradient": 1.6485970816179637e-13,
+        "damping": 3.7037037037037037e-06,
+        "step_norm": 1.6903550010661437e-13,
+        "accepted": true,
+        "acceptance_reason": "strict_decrease",
+        "trial_gradient": 1.1457849938064337e-16,
+        "roundoff_band": 8.53914469997916e-14
+      }
+    ]
+  }
+}

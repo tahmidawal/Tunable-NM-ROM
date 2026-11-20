@@ -233,6 +233,16 @@
         ],
         "median_of_casewise_maxima": 2.2847755980204252e-05,
         "worst": 4.29551956545054e-05
+      },
+      "pred_concentration": {
+        "minimum": 0.6631142354405212,
+        "below_0p1": 0,
+        "coordinate_time_count": 1008
+      },
+      "truth_concentration": {
+        "minimum": 0.663176224966195,
+        "below_0p1": 0,
+        "coordinate_time_count": 1008
       }
     },
     "span_common": {
@@ -301,13 +311,24 @@
         ],
         "median_of_casewise_maxima": 3.107836809447747e-05,
         "worst": 7.815630311108276e-05
+      },
+      "pred_concentration": {
+        "minimum": 0.663222633378685,
+        "below_0p1": 0,
+        "coordinate_time_count": 1008
+      },
+      "truth_concentration": {
+        "minimum": 0.663176224966195,
+        "below_0p1": 0,
+        "coordinate_time_count": 1008
       }
     }
   },
-  "reliability_known": false,
-  "centroid_replay_qualification": null,
+  "reliability_known": true,
+  "centroid_replay_qualification": true,
   "sources": {
-    "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/saved_development/summary.json": "5bd8eed34cb03731964a2ec10a4c6c38e5668fcce35d35a92d27348e81eac133"
+    "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/saved_development/summary.json": "5bd8eed34cb03731964a2ec10a4c6c38e5668fcce35d35a92d27348e81eac133",
+    "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-19-jcp-phase-confirm/experiments/jcp-phase-confirm/runs/c01/output/centroid_replay.json": "343671747f11d03b04bbe65d953e89375a7cff36585ac0d056863a849a938ec6"
   },
   "paired": {
     "field": {

@@ -87,6 +87,8 @@ def main():
     else:raise ValueError('First fixed-tree driver supports original development/alignment cases only')
     out=Path(a.out);out.mkdir(parents=True,exist_ok=True);metadata=preflight()
     ns=Path(os.environ['STUDY_NAMESPACE']);load_start=time.perf_counter()
+    query_start=load_start
+    excluded_seconds=dict(gpu_conditioning=0.,reference_scoring=0.,optional_output_host_transfer=0.,archival_io=0.)
     mp=resolve(ns/a.model_job/'output/nonlinear_tree.pkl',ns)
     mr=json.loads((mp.parent/'result.json').read_text());assert mr['status'].startswith('complete_')
     assert digest(mp)==mr['selected_sha256'] and not mr['final_test_opened']
@@ -122,10 +124,12 @@ def main():
         normalization='current-time reference physical L2',reference=reference,outputs=[],steps_completed=0,steps_attempted=0,
         initial_input='Shared initial-field callable; parameter descriptors used only inside that callable',
         no_future_truth_in_online_path=True,adaptation=False,source_load_seconds=source_load_seconds,
-        timing_contract='Single invocation, unpaired. Complete cold query includes cache assembly, cold initialization, explicit compilation, all executed steps, and five device4096 reconstructions. Host transfer, reference scoring and archival I/O separate.',
+        timing_contract='Single invocation, unpaired. Enclosing online wall time includes source loading, cache assembly, cold initialization, explicit compilation, all executed steps, required acceptance transfers/control, and requested device4096 reconstructions. Explicitly timed conditioning, optional output host transfer, reference scoring and archival I/O are excluded and reported separately.',
         time_and_integration_convergence_qualified=False,paired_runtime_comparison=False)
-    save(out/'result.json',result)
-    result['gpu_burn']=burn_gpu()
+    archive_start=time.perf_counter();save(out/'result.json',result)
+    excluded_seconds['archival_io']+=time.perf_counter()-archive_start
+    conditioning_start=time.perf_counter();result['gpu_burn']=burn_gpu()
+    excluded_seconds['gpu_conditioning']+=time.perf_counter()-conditioning_start
     charges={};compile_times={};step_times=[];codes=[];statuses=[];output_compile={}
     dt=jnp.float64(a.dt);nu=jnp.float64(data.NU)
     station=jnp.float64(a.station_tolerance);update=jnp.float64(a.update_tolerance)
@@ -172,19 +176,38 @@ def main():
     result['cells']=np.asarray(cells);codes.append(np.asarray(z));statuses.append(np.asarray(ist)[[0,1,2,4,3,5]])
 
     def persist():
-        result['timing']=dict(components=charges,explicit_compilation=compile_times,
-            step_seconds=step_times,step_seconds_sum=sum(step_times),
-            complete_cold_query_seconds=source_load_seconds+sum(charges.values())+sum(compile_times.values())+sum(step_times),
-            compile_note='Explicit fitting/step/output kernel compilation separated. Spatial feature assembly first-use compilation remains included in assembly/reconstruction.',
-            host_transfer_seconds=sum(r['host_transfer_seconds'] for r in result['outputs']),
-            reference_scoring_seconds=sum(r['reference_scoring_seconds'] for r in result['outputs']),
-            archival_io_seconds=sum(r['archival_io_seconds'] for r in result['outputs']))
+        # Archive trajectory evidence first. The timing snapshot is taken after
+        # this archive and before this call's status JSON write. That final write
+        # is outside this snapshot; its measured duration is excluded from every
+        # later snapshot. Thus no persist write is omitted or subtracted twice.
+        archive_start=time.perf_counter()
         np.savez_compressed(out/'trajectory_codes.npz',codes=np.stack(codes),statuses=np.stack(statuses),
             times=np.arange(len(codes))*a.dt,cells=np.asarray(cells),
             status_columns=np.array(['relative_residual_or_initial_error','stationarity','field_update','iterations_used','accepted_updates','converged']))
         result['trajectory_codes_file']='trajectory_codes.npz'
         result['trajectory_codes_sha256']=digest(out/'trajectory_codes.npz')
-        save(out/'result.json',finite_json(result))
+        excluded_seconds['archival_io']+=time.perf_counter()-archive_start
+        snapshot=time.perf_counter();elapsed=snapshot-query_start
+        excluded=sum(excluded_seconds.values())
+        assert elapsed>=excluded>=0.,(elapsed,excluded)
+        online_wall=elapsed-excluded
+        component_sum=source_load_seconds+sum(charges.values())+sum(compile_times.values())+sum(step_times)
+        result['timing']=dict(components=charges,explicit_compilation=compile_times,
+            step_seconds=step_times,step_seconds_sum=sum(step_times),
+            complete_cold_query_seconds=online_wall,online_wall_seconds=online_wall,
+            elapsed_to_timing_snapshot_seconds=elapsed,excluded_seconds=dict(excluded_seconds),
+            summed_instrumented_components_seconds=component_sum,
+            component_sum_note='Incomplete decomposition; excludes uninstrumented control and required acceptance transfers. Complete query is measured by the enclosing wall timer.',
+            timing_snapshot_boundary='After current trajectory archival, before current result JSON serialization/write. All earlier status writes are included in cumulative archival exclusion; current write is outside this snapshot.',
+            compile_note='Explicit fitting/step/output kernel compilation separated. Spatial feature assembly first-use compilation remains included in assembly/reconstruction.',
+            host_transfer_seconds=excluded_seconds['optional_output_host_transfer'],
+            reference_scoring_seconds=excluded_seconds['reference_scoring'],
+            archival_io_seconds=excluded_seconds['archival_io'])
+        archive_start=time.perf_counter()
+        try:
+            save(out/'result.json',finite_json(result))
+        finally:
+            excluded_seconds['archival_io']+=time.perf_counter()-archive_start
 
     def output_field(code):
         # Device output contains all4096² values. Host transfer happens afterwards.
@@ -235,17 +258,30 @@ def main():
             # Explicit output compilation is separated once, not double-counted.
             compile_times[f'output_{t:.2f}']=compile_seconds
             charges[f'reconstruction_{t:.2f}']=reconstruction-compile_seconds
-            begin=time.perf_counter();host=np.asarray(prediction);transfer=time.perf_counter()-begin
+            begin=time.perf_counter()
+            try:
+                host=np.asarray(prediction)
+            finally:
+                transfer=time.perf_counter()-begin
+                excluded_seconds['optional_output_host_transfer']+=transfer
             if not np.isfinite(host).all():
                 result.update(status='failed_nonfinite_output',failed_time=t);persist();return
-            begin=time.perf_counter();truth,error,relative=score_after_output(host,round(t/.025));score_seconds=time.perf_counter()-begin
+            begin=time.perf_counter()
+            try:
+                truth,error,relative=score_after_output(host,round(t/.025))
+            finally:
+                score_seconds=time.perf_counter()-begin
+                excluded_seconds['reference_scoring']+=score_seconds
             begin=time.perf_counter();file_record=None
-            if not a.no_save_fields:
-                path=out/f'{a.case_label}_{a.layout}_t{t:.2f}_actual4096.npz'
-                np.savez_compressed(path,prediction=host,reference=truth,error=error,time=t,
-                    codes=np.asarray(z),cells=np.asarray(cells),role='Fixed-tree PDE output, no future truth in online solve')
-                file_record=dict(file=path.name,sha256=digest(path))
-            archival=time.perf_counter()-begin
+            try:
+                if not a.no_save_fields:
+                    path=out/f'{a.case_label}_{a.layout}_t{t:.2f}_actual4096.npz'
+                    np.savez_compressed(path,prediction=host,reference=truth,error=error,time=t,
+                        codes=np.asarray(z),cells=np.asarray(cells),role='Fixed-tree PDE output, no future truth in online solve')
+                    file_record=dict(file=path.name,sha256=digest(path))
+            finally:
+                archival=time.perf_counter()-begin
+                excluded_seconds['archival_io']+=archival
             allowance=float(reference['allowance'][round(t/.025)])
             result['outputs'].append(dict(time=t,shape=[4096,4096],relative_error=relative,
                 reference_allowance=allowance,error_plus_allowance=relative+allowance,

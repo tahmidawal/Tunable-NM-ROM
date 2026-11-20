@@ -27,8 +27,10 @@ def main():
     ap.add_argument('--epochs', type=int, default=200)
     ap.add_argument('--resume-job', default='')
     ap.add_argument('--latent', type=int, default=32)
+    ap.add_argument('--lr-multipliers', type=float, nargs=2, default=[10.,5.])
     a = ap.parse_args()
     assert 0 < a.epochs <= 200 and a.latent > 0
+    assert all(np.isfinite(v) and v>0 for v in a.lr_multipliers)
     if a.resume_job:
         job_names(a.resume_job)
         assert ',' not in a.resume_job
@@ -123,7 +125,7 @@ def main():
     # Semantic source fingerprint survives archive moves and zip timestamps.
     fingerprint = hashlib.sha256(json.dumps({g: [(r['case'], r['sha256']) for r in rows]
                                              for g, rows in sources.items()}, sort_keys=True).encode()).hexdigest()
-    config = dict(latent=a.latent, width=128, base_lr=1e-4, lr_multipliers=[10., 5.],
+    config = dict(latent=a.latent, width=128, base_lr=1e-4, lr_multipliers=list(a.lr_multipliers),
                   scheduler_epochs=[100, 100], batch_size=4, order_seed=2026111987,
                   selection_primary_cases=[0, 3, 13, 20], selection_time_indices=[0, 5, 10],
                   projection_iterations=[20, 50], native_diff_threshold=1e-15,
@@ -132,7 +134,7 @@ def main():
     stats = dict(mean_x=xy.mean(0), std_x=xy.std(0), min_x=xy.min(0), max_x=xy.max(0),
                  mean_q=np.array([arrays['train'].mean()]), std_q=np.array([arrays['train'].std()]))
     model = cromnet.CROMnet(fmt, stats, torch.zeros((1, len(xy), 3)), 1e-4, 4, a.latent, 64, 6, 4,
-                           False, True, .3, 30, False, [10., 5.], [100, 100], 'explicit')
+                           False, True, .3, 30, False, list(a.lr_multipliers), [100, 100], 'explicit')
     model.setup('fit'); model = model.cuda().double()
     assert all(p.dtype == torch.float64 for p in model.parameters())
     assert all(b.dtype == torch.float64 for b in model.buffers())
@@ -167,6 +169,42 @@ def main():
                   port_fixtures=dict(training_gradient_max_difference=gradient_error, native_analytic_jacobian_difference=jacobian_error),
                   final_test_opened=False, representation_admitted=False, pde_comparator_admitted=False,
                   history=[], selected_epoch=None, selected_sha256=None)
+    # Fixed small diagnostic batch: pulse, smooth, ridge, two-pulse at t=0.
+    diagnostic_cases=[0,3]+[next(i for i,row in enumerate(sources['train']) if row['family']==family)
+                            for family in ['ridge','two_pulse']]
+    diagnostic_indices=[11*i for i in diagnostic_cases]
+    constant_mean_loss=1000*float(stats['std_q'][0])**2
+    result.update(training_constant_mean_native_loss=constant_mean_loss,training_diagnostics=[],
+        diagnostic_snapshot_indices=diagnostic_indices,
+        diagnostic_cases=[sources['train'][i]['case'] for i in diagnostic_cases],
+        projection_execution_is_not_convergence=True,physical_stationarity_threshold=1e-8,
+        native_stop_reason_observability='Unmodified author solve returns codes only; stopping reason is not exposed')
+
+    def training_diagnostic(epoch):
+        """Read-only gradient/variation probe; no optimizer update or random draw."""
+        was_training=model.training;model.eval()
+        q=train[diagnostic_indices]
+        with torch.enable_grad():
+            prediction,latent,_=model(inputs(q))
+            loss=1000*model.criterion(prediction,q[:,:,None])
+            named=list(model.named_parameters())
+            gradients=torch.autograd.grad(loss,tuple(p for _,p in named))
+        with torch.no_grad():
+            constant=1000*torch.mean((q-float(stats['mean_q'][0]))**2)
+            record=dict(epoch=epoch,effective_lr=float(optimizer.param_groups[0]['lr']),
+                batch_native_loss=float(loss.detach()),batch_constant_mean_native_loss=float(constant),
+                full_training_constant_mean_native_loss=constant_mean_loss,
+                output_mean=float(prediction.detach().mean()),output_std=float(prediction.detach().std(unbiased=False)),
+                output_spatial_std_by_field=prediction.detach()[:,:,0].std(dim=1,unbiased=False).cpu().tolist(),
+                latent_norm_by_field=torch.linalg.vector_norm(latent.detach(),dim=1).cpu().tolist(),
+                latent_between_field_std_mean=float(latent.detach().std(dim=0,unbiased=False).mean()),
+                gradient_l2=float(torch.sqrt(sum(torch.sum(g*g) for g in gradients))),
+                all_gradients_finite=all(bool(torch.isfinite(g).all()) for g in gradients),
+                layers={name:dict(weight_l2=float(p.norm()),max_abs=float(p.abs().max()),gradient_l2=float(g.norm()))
+                        for (name,p),g in zip(named,gradients) if name.endswith('weight')})
+        model.train(was_training)
+        assert np.isfinite(record['batch_native_loss']) and record['all_gradients_finite']
+        return record
     start_epoch = 0; best = np.inf
     if a.resume_job:
         rp = resolve(ns/a.resume_job/'output/result.json', ns); previous = json.loads(rp.read_text())
@@ -180,6 +218,8 @@ def main():
         start_epoch = state['epoch']; best = state['best_projected_error']
         result['history'] = [dict(row, origin_output=row.get('origin_output', str(rp.parent)))
                              for row in previous['history']]
+        result['training_diagnostics'] = [dict(row,origin_output=row.get('origin_output',str(rp.parent)))
+                                           for row in previous.get('training_diagnostics',[])]
         result['resume'] = dict(job=a.resume_job, result_sha256=digest(rp), checkpoint_sha256=digest(cp), epoch=start_epoch)
         if previous['selected_sha256']:
             selected = rp.parent/'crom_selected.pt'; assert digest(selected) == previous['selected_sha256']
@@ -199,6 +239,7 @@ def main():
         def updateStateSample(self, z, decoder, points):
             return model.decoder(torch.cat([z.reshape(1, a.latent).expand(len(points), -1), points], 1))
         def getJacobianSample(self, z, decoder, points):
+            self.jacobian_calls=getattr(self,'jacobian_calls',0)+1
             inp = torch.cat([z.reshape(1, a.latent).expand(len(points), -1), points], 1)
             jac, _ = model.decoder.computeJacobianFullAnalytical(inp)
             return jac[:, 0, :a.latent]
@@ -216,10 +257,15 @@ def main():
                 row = dict(index=i, case=sources['dev'][i//11]['case'], time=float(data.TIMES[i%11]))
                 try:
                     z = model.encoder(dev[i:i+1, :, None]).reshape(1, 1, a.latent)
-                    errors, fits = [], []
+                    errors, fits, native_exits = [], [], []
                     for iterations in [0, 20, 50]:
                         if iterations:
+                            before=getattr(problem,'jacobian_calls',0)
                             z = solver.solve(z, dev[i, :, None], tx, step_size=1, max_iters=iterations, print_info=False)
+                            used=problem.jacobian_calls-before
+                            native_exits.append(dict(iteration_budget=iterations,jacobian_evaluations=used,
+                                returned=True,returned_before_iteration_budget=used<iterations,
+                                stop_reason='Not exposed by unmodified native solver; return alone does not certify physical stationarity'))
                         pred = problem.updateStateSample(z, None, fine_points)[:, 0]
                         error = torch.sqrt(torch.sum(fine_weights*(pred-fine_truth[i//11][i%11])**2))/arrays['dev_norm'][i]
                         assert torch.isfinite(error) and torch.isfinite(z).all()
@@ -230,11 +276,21 @@ def main():
                     stationarity = float(torch.max(abs((jac.T@residual)[:, 0]/scale))/torch.linalg.vector_norm(dev[i]))
                     assert np.isfinite(stationarity)
                     row.update(passed_execution=True, independent_errors=errors, codes=np.stack(fits),
-                               scaled_stationarity=stationarity)
+                               scaled_stationarity=stationarity,native_solve_observations=native_exits,
+                               physical_stationarity_threshold=1e-8,physical_stationarity_pass=stationarity<=1e-8,
+                               convergence_certified=False,
+                               convergence_note='Physical stationarity is reported separately; native final-iteration update/stop reason is not exposed')
                 except (RuntimeError, AssertionError) as exc:
                     row.update(passed_execution=False, error=repr(exc))
                 projected.append(row)
         return encoded_errors, projected
+    if start_epoch==0:
+        initial=out/'crom_initial.pt'
+        torch.save(dict(model=model.state_dict(),format=fmt,statistics=stats,config=config,epoch=0,
+                        initialization='Authored constructor initialization; no training update'),initial)
+        result.update(initial_checkpoint=initial.name,initial_checkpoint_sha256=digest(initial))
+    result['training_diagnostics'].append(training_diagnostic(start_epoch))
+    print('crom_training_diagnostic',result['training_diagnostics'][-1],flush=True)
     save(out/'result.json', result)
     for epoch in range(start_epoch+1, a.epochs+1):
         model.train(); order = rng.permutation(len(train)); losses = []
@@ -245,6 +301,14 @@ def main():
             assert torch.isfinite(loss)
             loss.backward(); optimizer.step(); losses.append(float(loss.detach()))
         scheduler.step()
+        if epoch in [1,2,5,10] or epoch%20==0 or epoch==a.epochs:
+            diagnosis=training_diagnostic(epoch);result['training_diagnostics'].append(diagnosis)
+            if epoch in [1,2,5,10]:
+                path=out/f'crom_diagnostic_epoch{epoch:04d}.pt'
+                torch.save(dict(model=model.state_dict(),format=fmt,statistics=stats,config=config,epoch=epoch,
+                                role='Early training diagnostic, not optimizer-resumable checkpoint'),path)
+                diagnosis.update(checkpoint=path.name,checkpoint_sha256=digest(path))
+            print('crom_training_diagnostic',diagnosis,flush=True);save(out/'result.json',result)
         if epoch % 20 and epoch != a.epochs:
             continue
         encoded, projected = evaluate()
@@ -253,9 +317,13 @@ def main():
         projection = out/f'projection_epoch{epoch:04d}.pt'
         torch.save(projected, projection)
         row = dict(epoch=epoch, lr=epoch_lr, mean_native_loss=float(np.mean(losses)),
+                   native_loss_over_constant_mean_baseline=float(np.mean(losses))/constant_mean_loss,
                    encoded_full_errors=encoded, encoded_full_worst=max(encoded),
                    projected_subset_worst=float(metric) if valid else None,
                    failed_projection_fits=sum(not r['passed_execution'] for r in projected),
+                   physical_stationarity_passes=sum(r.get('physical_stationarity_pass',False) for r in projected),
+                   physical_stationarity_failures=sum(r['passed_execution'] and not r.get('physical_stationarity_pass',False) for r in projected),
+                   failed_projection_fits_meaning='Execution exceptions/nonfinite values only, not a convergence count',
                    projection_file=projection.name, projection_sha256=digest(projection))
         result['history'].append(row)
         improved = metric < best

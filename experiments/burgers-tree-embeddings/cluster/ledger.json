@@ -1639,8 +1639,19 @@
     "gpu": "a100",
     "submitted_utc": "2026-11-20T01:03:21.852828+00:00",
     "state": "RUNNING",
-    "elapsed_seconds": 6,
+    "elapsed_seconds": 42,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b8childprimary",
+    "id": 7385704,
+    "reserved_minutes": 120,
+    "commit": "d76f4b2f2f1dce7544f6f673f545e84b028b78fd",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b8childprimary",
+    "driver": "train_residual_tree.py",
+    "args": "",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-20T01:04:19.469413+00:00"
   }
 ]

@@ -90,6 +90,7 @@ def main():
     ap.add_argument('--qualification-job', default='b8snftrainfix')
     ap.add_argument('--boundary-envelope', action='store_true')
     ap.add_argument('--boundary-qualification-job', default='b8snfboundary')
+    ap.add_argument('--progress-qualification-job', default='b8snfprogress')
     ap.add_argument('--timeout-seconds', type=int, default=6900)
     a = ap.parse_args()
     if a.fixture:
@@ -161,8 +162,19 @@ def main():
         else:
             result['boundary_envelope']=False
             result['boundary_scope']='Unconstrained native-network control; not an eligible boundary-conforming PDE comparator'
+        assert a.progress_qualification_job.replace('-', '').isalnum()
+        pqp=resolve(ns/a.progress_qualification_job/'output/result.json',ns)
+        pq=json.loads(pqp.read_text());assert pq['passed'] and pq['scientific_progress'] and pq['fixture']['scientific_progress_passed']
+        prm=HERE/'manifests'/('retention-'+a.progress_qualification_job+'.json')
+        pm=json.loads(prm.read_text());assert pm['local_and_remote_verified']
+        ph={row['file']:row['sha256'] for row in pm['files']};assert digest(pqp)==ph['output/result.json']
+        assert pq['native_training_qualification_sha256']==digest(qpath)
+        assert pq['scientific_progress_helper_sha256']==digest(HERE/'baselines/snf_progress.jl')
+        result.update(progress_qualification_sha256=digest(pqp),progress_retention_sha256=digest(prm))
         progress_patch, progress_diff = patch_scientific_progress(project)
+        assert progress_patch==pq['scientific_progress_patch']
         (out/'scientific-progress.patch').write_text(progress_diff)
+        assert digest(out/'scientific-progress.patch')==pq['scientific_progress_patch_sha256']
         shutil.copy2(HERE/'baselines/snf_progress.jl', out/'snf_progress.jl')
         result.update(scientific_progress_patch=progress_patch,
             scientific_progress_patch_sha256=digest(out/'scientific-progress.patch'),

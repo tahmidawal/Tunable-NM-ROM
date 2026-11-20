@@ -7,7 +7,7 @@ from neural.build_data import resolve
 from training_io import checkpoint,read_checkpoint
 import data
 from neural import spatial_sampling as SS
-from evaluate_residual_tree import load_group, owned_job
+from evaluate_residual_tree import load_group, owned_job, zero_child_audit
 from extend_residual_fits import verified_manifest
 
 
@@ -226,6 +226,25 @@ def main():
         alphas=jnp.array([0.,1.,.5,.25,.125]);loss=jax.vmap(candidate)(alphas);ix=jnp.argmin(loss,axis=0)
         z=zz*alphas[ix,None,None]
         return jnp.concatenate([rz,z.reshape(len(y),-1)],axis=1),jnp.sqrt(jnp.min(loss,axis=0))
+    def representative_zero_audits(p,bank,stage,model_sha256=None):
+        started=time.perf_counter();primary_count=len(dr['groups']['train']['labels'])
+        primary=data.parameters('train',primary_count)
+        narrow=np.flatnonzero((primary[:,0]==0)&(primary[:,3]<=.05))
+        assert len(narrow)>0
+        representatives=[('narrow_primary',int(narrow[0])),('ridge',tr['family'].index('ridge')),('two_pulse',tr['family'].index('two_pulse'))]
+        rows=[]
+        for family,ci in representatives:
+            for variant,layout in enumerate(variant_labels):
+                active=4 if variant==0 else a.nodes;k=32+active*a.child_k
+                cell=jnp.asarray(cells[variant,ci,:active]);B=R.feature_matrix(p['feature'],cell,xy)
+                audit=zero_child_audit(p,jnp.asarray(bank[variant,11*ci,:k]),B,xy,w)
+                rows.append(dict(family=family,case=tr['labels'][ci],cohort='train',time=0.,layout=layout,cells=np.asarray(cell),audit=audit))
+        passed=all(row['audit']['zero_child_preserved'] and row['audit']['useful_independent_directions'] for row in rows)
+        filename=f'zero_child_audit_{stage}.pkl'
+        sha=checkpoint(out/filename,dict(stage=stage,rows=rows,model_sha256=model_sha256,parent_sha256=digest(pp),
+            passed=passed,scope='Three training trajectories at t0 across three layouts; not a global direction or accuracy gate'))
+        return dict(file=filename,sha256=sha,passed=passed,fields=len(rows),elapsed_seconds=time.perf_counter()-started,
+            cases=[tr['labels'][ci] for _,ci in representatives],scope='Representative training directions only; all-case qualification remains required')
     initial=[];initerr=[]
     if a.reuse_codes:
         assert np.array_equal(np.asarray(reused['cells']),cells), 'Initialization tree layouts changed'
@@ -248,6 +267,7 @@ def main():
             initerr.append(errors)
         codes=jnp.concatenate(initial)
     assert codes.shape==(3*snapshots,dimension)
+    initial_zero_audit=representative_zero_audits(params,codes.reshape(3,snapshots,dimension),'initial') if a.fresh_children else None
     co=C.initialize_masked(codes)
     trainable=dict(feature=params['feature'],head=params['head']);opt=optax.chain(optax.clip_by_global_norm(5.),optax.adam(optax.cosine_decay_schedule(3e-4,a.updates,alpha=.1)));no=opt.init(trainable)
     rate=optax.cosine_decay_schedule(3e-3,a.updates,alpha=.1)
@@ -322,7 +342,8 @@ def main():
         objective='Family-balanced physical relative reconstruction; independent jointly fitted parent/child codes for each depth/layout; shared frozen root and shared learned feature/head weights',
         all_final_refit=a.all_final_refit,warm_job=a.warm_job,warm_checkpoint_sha256=None if wp is None else digest(wp),
         parent_job=a.parent_job,parent_retention_sha256=parent_retention,expanded_parent=expanded_parent,
-        fresh_children=a.fresh_children,zero_child_preservation_max_abs=zero_preservation,assembled_jacobian=a.assembled_jacobian,derivative_qualification=derivative_proof,
+        fresh_children=a.fresh_children,representative_zero_audit_required=a.fresh_children,initial_zero_child_audit=initial_zero_audit,
+        zero_child_preservation_max_abs=zero_preservation,assembled_jacobian=a.assembled_jacobian,derivative_qualification=derivative_proof,
         parent_training_admission='Completed retained matched parent; no standalone parent2percent gate. Representation/PDE gates remain separate',
         reuse_codes=a.reuse_codes,reuse_provenance=reuse_provenance,
         parent_initializer='reused' if a.reuse_codes else a.parent_initializer,
@@ -389,6 +410,10 @@ def main():
         row['sha256']=checkpoint(out/f'tree_{it:06d}.pkl',payload);result['history'].append(row)
         if worst<best:best=worst;result['selected_sha256']=checkpoint(out/'nonlinear_tree.pkl',payload);result['selected_update']=it;selected=payload
         save(out/'result.json',result);print('child_selection',row,flush=True)
+    if a.fresh_children:
+        result['selected_zero_child_audit']=representative_zero_audits(selected['params'],selected['training_codes'],'selected',result['selected_sha256'])
+        result['selected_zero_child_directions_pass']=result['selected_zero_child_audit']['passed']
+        save(out/'result.json',result)
     ev=selected['evaluation'];coarse=evaluate(selected['params'],'coarse4',selection)
     result['comparison_sha256']=checkpoint(out/'allocation_comparison.pkl',ev+coarse)
     result['coarse4_diagnostic']=dict(worst=max(r['independent_error'] for r in coarse),unfinished=sum(not bool(r['status'][-1]) for r in coarse))

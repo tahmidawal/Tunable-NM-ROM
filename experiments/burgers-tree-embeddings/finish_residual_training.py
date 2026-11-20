@@ -4,7 +4,7 @@ from common import *
 from neural import residual_tree as R, fields as F, allocations as A
 from neural.build_data import resolve
 from neural.parent_provenance import load_parent
-from evaluate_residual_tree import load_group, make_initializer, equal_tree, owned_job
+from evaluate_residual_tree import load_group, make_initializer, equal_tree, owned_job, zero_child_audit
 from extend_residual_fits import verified_manifest
 from training_io import checkpoint, read_checkpoint
 import data
@@ -79,6 +79,12 @@ def run():
             assert np.array_equal(v['times'],data.TIMES)
             fine[ci]=data.synth_grid(jnp.asarray(v['coefficients']),jnp.unique(xf[:,0])).reshape(11,-1)
     for name in ['initialization.pkl','root_initialization.pkl']:shutil.copyfile(rp.parent/name,out/name)
+    if source.get('representative_zero_audit_required',False):
+        initial_audit=source['initial_zero_child_audit'];name=initial_audit['file'];path=rp.parent/name
+        assert path.parent.resolve()==rp.parent.resolve()
+        entry=entries['output/'+name]
+        assert path.stat().st_size==entry['bytes'] and digest(path)==entry['sha256']==initial_audit['sha256']
+        shutil.copyfile(path,out/name)
     result=dict(source);result.update(meta=metadata,status='finishing_trained_candidates',parent_job=parent_proof['parent_job'],parent_provenance=parent_proof,history=[],
         source_job=a.source_job,source_status=source['status'],source_terminal_state=terminal,
         source_retention_sha256=digest(manifest),source_files={name:entries['output/'+name]['sha256'] for name in names},
@@ -91,7 +97,8 @@ def run():
         final_test_opened=False,representation_admitted=False,pde_admitted=False,
         initialization_sha256=digest(out/'initialization.pkl'),root_initialization_sha256=digest(out/'root_initialization.pkl'))
     # Do not expose inherited selected hashes as if their files existed in this output.
-    for key in ['selected_sha256','selected_update','comparison_sha256','worst_subset_error','unfinished_subset_fits','coarse4_diagnostic']:
+    for key in ['selected_sha256','selected_update','comparison_sha256','worst_subset_error','unfinished_subset_fits','coarse4_diagnostic',
+                'selected_zero_child_audit','selected_zero_child_directions_pass']:
         result.pop(key,None)
     def persist():
         result['elapsed_seconds']=time.perf_counter()-started;save(out/'result.json',result)
@@ -157,6 +164,29 @@ def run():
     selected.update(params=params,training_codes=bank,training_fit_records=statuses,optimizer=None,
         optimizer_note='No weight updates; embedding refits invalidate any optimizer continuation')
     result['selected_sha256']=checkpoint(out/'nonlinear_tree.pkl',selected)
+    if source.get('representative_zero_audit_required',False):
+        audit_start=time.perf_counter();primary=data.parameters('train',128)
+        narrow=np.flatnonzero((primary[:,0]==0)&(primary[:,3]<=.05));assert len(narrow)>0
+        representatives=[('narrow_primary',int(narrow[0])),('ridge',tr['family'].index('ridge')),('two_pulse',tr['family'].index('two_pulse'))]
+        audit_rows=[]
+        for family,ci in representatives:
+            for variant,layout in enumerate(variants):
+                if not budget():return
+                active=4 if variant==0 else nodes;k=32+active*child_k
+                cell=jnp.asarray(cells[variant,ci,:active]);B=R.feature_matrix(params['feature'],cell,xy)
+                audit=zero_child_audit(params,bank[variant,11*ci,:k],B,xy,w)
+                audit_rows.append(dict(family=family,case=tr['labels'][ci],cohort='train',time=0.,layout=layout,cells=np.asarray(cell),audit=audit))
+                checkpoint(out/'zero_child_audit_selected_partial.pkl',dict(rows=audit_rows,complete=len(audit_rows)==9,
+                    model_sha256=result['selected_sha256'],parent_sha256=digest(pp)))
+        passed=all(v['audit']['zero_child_preserved'] and v['audit']['useful_independent_directions'] for v in audit_rows)
+        filename='zero_child_audit_selected.pkl'
+        audit_hash=checkpoint(out/filename,dict(stage='selected_after_training_code_refresh',rows=audit_rows,
+            model_sha256=result['selected_sha256'],parent_sha256=digest(pp),passed=passed,
+            scope='Three training trajectories at t0 across three layouts; not global qualification'))
+        result['selected_zero_child_audit']=dict(file=filename,sha256=audit_hash,passed=passed,fields=9,
+            elapsed_seconds=time.perf_counter()-audit_start,cases=[tr['labels'][ci] for _,ci in representatives],
+            regenerated_after_code_refresh=True,scope='Representative directions only; all-case qualification remains required')
+        result['selected_zero_child_directions_pass']=passed
     result.update(status='complete_nonlinear_child_multidepth_subset',all_final_refit=True,
         worst_subset_error=max(v['independent_error'] for v in ev),unfinished_subset_fits=sum(not bool(v['status'][-1]) for v in ev),
         coarse4_diagnostic=dict(worst=max(v['independent_error'] for v in coarse),unfinished=sum(not bool(v['status'][-1]) for v in coarse)),

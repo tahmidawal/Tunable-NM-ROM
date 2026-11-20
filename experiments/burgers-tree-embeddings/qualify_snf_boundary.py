@@ -22,10 +22,11 @@ def patch_boundary(project):
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--out',required=True)
     ap.add_argument('--qualification-job',default='b8snftrainfix');ap.add_argument('--timeout-seconds',type=int,default=1200)
+    ap.add_argument('--scientific-progress',action='store_true')
     a=ap.parse_args();assert a.qualification_job.replace('-','').isalnum() and 0<a.timeout_seconds<=1800
     out=Path(a.out);out.mkdir(parents=True,exist_ok=True);assert not (out/'result.json').exists()
     result=dict(status='preparing',passed=False,final_test_opened=False,study_data_opened=False,
-        trained_comparator=False,pde_comparator_admitted=False,
+        trained_comparator=False,pde_comparator_admitted=False,scientific_progress=a.scientific_progress,
         derivative_scope='GPU wrapped values and native parameter-loss gradients; cluster CPU spatial/latent gradients and Hessians; actual GPU online derivative path remains unqualified',
         classification='Native SNF plus continuous physical boundary envelope; modified new-PDE port')
     save(out/'result.json',result)
@@ -47,6 +48,16 @@ def main():
         rule=compat.parent/'julia-depot/packages/Lux/68T9j/src/chainrules.jl';assert digest(rule)==q['lux_patched_rule_sha256']
         project=out/'sources/snf';shutil.copytree(old,project)
         patch_record,patch=patch_boundary(project);(out/'boundary-port.patch').write_text(patch)
+        if a.scientific_progress:
+            from train_snf_expanded import patch_scientific_progress
+            progress_patch,progress_diff=patch_scientific_progress(project)
+            (out/'scientific-progress.patch').write_text(progress_diff)
+            for name in ['snf_progress.jl','snf_progress_fixture.jl']:
+                shutil.copy2(HERE/'baselines'/name,out/name)
+            result.update(scientific_progress_patch=progress_patch,
+                scientific_progress_patch_sha256=digest(out/'scientific-progress.patch'),
+                scientific_progress_helper_sha256=digest(out/'snf_progress.jl'),
+                scientific_progress_checks_sha256=digest(out/'snf_progress_fixture.jl'))
         for name in ['snf_boundary.jl','snf_boundary_fixture.jl']:
             shutil.copy2(HERE/'baselines'/name,out/name)
         base=qp.parent/'native_training_fixture.jl';assert digest(base)==q['fixture_sha256']==hashes['output/native_training_fixture.jl']
@@ -56,6 +67,11 @@ def main():
         text=replace_once(text,'metrics = Dict(', 'boundary_metrics = b8_boundary_checks(native_model)\nmetrics = Dict(')
         text=replace_once(text,'open(joinpath(out, "training-fixture.toml"), "w") do io',
                           'merge!(metrics, boundary_metrics)\nopen(joinpath(out, "training-fixture.toml"), "w") do io')
+        if a.scientific_progress:
+            text=replace_once(text,'include(joinpath(out, "snf_boundary_fixture.jl"))',
+                'include(joinpath(out, "snf_boundary_fixture.jl"))\ninclude(joinpath(out, "snf_progress_fixture.jl"))')
+            text=replace_once(text,'merge!(metrics, boundary_metrics)',
+                'merge!(metrics, boundary_metrics)\nmerge!(metrics, b8_progress_checks(out))')
         fixture=out/'boundary_training_fixture.jl';fixture.write_text(text)
         depot=out/'julia-depot';depot.mkdir()
         lookup=[depot,qp.parent/'julia-depot']+[resolve(ns/job/'output/julia-depot',ns)
@@ -76,7 +92,8 @@ def main():
         metrics=out/'training-fixture.toml'
         if metrics.exists():result['fixture']=tomllib.loads(metrics.read_text());result['fixture_result_sha256']=digest(metrics)
         result.update(status='complete_boundary_qualification',passed=result['execution']['returncode']==0
-            and result.get('fixture',{}).get('passed',False) and result.get('fixture',{}).get('boundary_wrapper_passed',False))
+            and result.get('fixture',{}).get('passed',False) and result.get('fixture',{}).get('boundary_wrapper_passed',False)
+            and (not a.scientific_progress or result.get('fixture',{}).get('scientific_progress_passed',False)))
     except BaseException as exc:
         result.update(status='failed',error=repr(exc),traceback=traceback.format_exc());raise
     finally:save(out/'result.json',result)

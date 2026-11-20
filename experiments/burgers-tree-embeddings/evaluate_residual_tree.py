@@ -173,6 +173,14 @@ def main():
     pp,pr,parent,parent_proof=load_parent(model_record,ns)
     assert digest(pp)==model['parent_sha256']
     assert equal_tree(params['root'], parent['network']), 'Frozen parent weights changed'
+    representative_audit_pass=True
+    if model_record.get('representative_zero_audit_required',False):
+        ar=model_record['selected_zero_child_audit'];apath=mp.parent/ar['file'];assert digest(apath)==ar['sha256']
+        audit_payload=read_checkpoint(apath);assert audit_payload['model_sha256']==digest(mp)
+        assert len(audit_payload['rows'])==9
+        representative_audit_pass=all(v['audit']['zero_child_preserved'] and v['audit']['useful_independent_directions'] for v in audit_payload['rows'])
+        assert representative_audit_pass==ar['passed']==model_record['selected_zero_child_directions_pass']
+
     dp = resolve(ns/'b6parent/output/coordinate_data.npz', ns)
     assert digest(dp) == parent['data_sha256']
     with np.load(dp) as v: arrays = {k: np.array(v[k]) for k in v.files}
@@ -212,7 +220,7 @@ def main():
                   parent_job=parent_proof['parent_job'],parent_provenance=parent_proof,
                   model_record_sha256=digest(mrp), parent_sha256=digest(pp), primary_data_sha256=digest(dp),
                   expanded_sources=train['provenance']+dev['provenance'], final_test_opened=False,
-                  parent_weights_verified_identical=True, expected_cases=total_cases, evaluated_cases=count,
+                  parent_weights_verified_identical=True,representative_zero_child_audit_pass=representative_audit_pass, expected_cases=total_cases, evaluated_cases=count,
                   diagnostic_subset=limited, train_labels=train['labels'], dev_labels=dev['labels'],
                   normalization='current-time reference physical L2', root_k=root_k, child_k=child_k,
                   trained_nodes=trained_nodes, evaluated_nodes=nodes, nodes=nodes, active_variables=root_k+nodes*child_k, layouts={}, representation_admitted=False,
@@ -297,7 +305,7 @@ def main():
         audit = zero_child_audit(params, jnp.asarray(worst['codes']), Bw, xy, w)
         passed = bool(not limited and max(errors) <= .005 and max(changes) <= .0002
                       and all(bool(s[-1]) for s in statuses) and actual['relative_error'] <= .005
-                      and audit['zero_child_preserved'] and audit['useful_independent_directions'])
+                      and audit['zero_child_preserved'] and audit['useful_independent_directions'] and representative_audit_pass)
         result['layouts'][kind].update(status='complete', actual4096=actual, zero_child_audit=audit,
                                        numerical_representation_gate=passed,
                                        representation_admitted=passed and not dev_jobs)

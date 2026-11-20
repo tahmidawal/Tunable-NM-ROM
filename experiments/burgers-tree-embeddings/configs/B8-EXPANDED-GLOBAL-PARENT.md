@@ -93,3 +93,7 @@ error before selection reductions; retain the offending payload in a separate
 failure checkpoint and stop. The refreshed final checkpoint stores refreshed
 metrics matching its codes/evaluation, preserves pre_refresh_metrics and the
 pre-refresh checkpoint hash, and retains both sets in the result record.
+
+## Owner advancement decision — 2026-11-20 UTC
+
+Launch the registered latent32 attempt as b8parent32 after commit/mirror and an available owned slot. The independent implementation review found no blocker; the retained profile passes all six derivative-value checks, and exact source binding is enforced. Expanded parent-only initialization left all 440 new-family root fits unfinished and code norms well outside the original-family range. Expanded child selection remains 11.910% worst at25000 updates with42 unfinished fits. This justifies parent training on missing families in parallel with completing and diagnosing the frozen-parent children. It does not presume that the children are capacity-limited or that a new parent will pass. Preserve all1760 training-code refits and strict36-field selection,120-minute allocation, same final-test seal and accounting. Latent64 remains separately registered but is not launched by this decision.

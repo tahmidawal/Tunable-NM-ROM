@@ -53,7 +53,9 @@ def fixture():
 
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument('--out'); ap.add_argument('--fixture', action='store_true')
-    ap.add_argument('--qualification-job', default='b8snftraincheck')
+    ap.add_argument('--qualification-job', default='b8snftrainfix')
+    ap.add_argument('--boundary-envelope', action='store_true')
+    ap.add_argument('--boundary-qualification-job', default='b8snfboundary')
     ap.add_argument('--timeout-seconds', type=int, default=6900)
     a = ap.parse_args()
     if a.fixture:
@@ -103,6 +105,28 @@ def main():
         lux_rule = compat.parent/'julia-depot/packages/Lux/68T9j/src/chainrules.jl'
         assert digest(lux_rule) == qualification['lux_patched_rule_sha256']
         project = out/'sources/snf'; shutil.copytree(oldproject, project)
+        if a.boundary_envelope:
+            from qualify_snf_boundary import patch_boundary
+            assert a.boundary_qualification_job.replace('-', '').isalnum()
+            bqp = resolve(ns/a.boundary_qualification_job/'output/result.json', ns)
+            bq = json.loads(bqp.read_text()); assert bq['passed'] and bq['fixture']['boundary_wrapper_passed']
+            brp = HERE/'manifests'/('retention-'+a.boundary_qualification_job+'.json')
+            br = json.loads(brp.read_text()); assert br['local_and_remote_verified']
+            bh = {row['file']:row['sha256'] for row in br['files']}
+            assert digest(bqp)==bh['output/result.json']
+            assert bq['native_training_qualification_sha256']==digest(qpath)
+            assert digest(HERE/'baselines/snf_boundary.jl')==bq['boundary_wrapper_sha256']
+            boundary_patch, patchtext = patch_boundary(project)
+            assert boundary_patch==bq['boundary_patch']
+            (out/'boundary-port.patch').write_text(patchtext)
+            assert digest(out/'boundary-port.patch')==bq['boundary_patch_sha256']
+            shutil.copy2(HERE/'baselines/snf_boundary.jl', out/'snf_boundary.jl')
+            result.update(boundary_envelope=True, boundary_qualification_sha256=digest(bqp),
+                boundary_retention_sha256=digest(brp), boundary_wrapper_sha256=bq['boundary_wrapper_sha256'],
+                boundary_patch=boundary_patch, classification='Native SNF training with continuous physical Dirichlet decoder; modified new-PDE port, not unchanged published reproduction')
+        else:
+            result['boundary_envelope']=False
+            result['boundary_scope']='Unconstrained native-network control; not an eligible boundary-conforming PDE comparator'
         adapter = out/'snf_expanded_training.jl'; shutil.copy2(HERE/'baselines/snf_expanded_training.jl', adapter)
         depot = out/'julia-depot'; depot.mkdir()
         lookup = [depot, qpath.parent/'julia-depot'] + [resolve(ns/job/'output/julia-depot', ns)
@@ -176,7 +200,7 @@ def main():
         save(out/'result.json', result)
         env = dict(os.environ, JULIA_DEPOT_PATH=':'.join(map(str, lookup)), JULIA_PKG_PRECOMPILE_AUTO='0',
             JULIA_NUM_THREADS='4', JULIA_NUM_PRECOMPILE_TASKS='4', GKSwstype='100',
-            CUDA_CACHE_PATH=str(out/'cuda-cache'), B8_SNF_OUTPUT=str(out), B8_SNF_PROJECT=str(project))
+            CUDA_CACHE_PATH=str(out/'cuda-cache'), B8_SNF_OUTPUT=str(out), B8_SNF_PROJECT=str(project), B8_SNF_BOUNDARY='1' if a.boundary_envelope else '0')
         remaining = int(a.timeout_seconds-(time.monotonic()-started)); assert remaining > 0
         result['execution'] = command([str(binary), '--startup-file=no', '--project='+str(project), str(adapter)],
             out/'native_expanded_training.log', env, timeout=remaining)

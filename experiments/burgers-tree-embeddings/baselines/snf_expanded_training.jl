@@ -7,6 +7,9 @@ CUDA.allowscalar(false)
 @assert ENDIAN_BOM == 0x04030201 "Raw adapter requires little-endian host"
 out = ENV["B8_SNF_OUTPUT"]
 @assert realpath(pkgdir(NeuralROMs)) == realpath(ENV["B8_SNF_PROJECT"])
+if get(ENV,"B8_SNF_BOUNDARY","0")=="1"
+    include(joinpath(out,"snf_boundary.jl"))
+end
 include(joinpath(pkgdir(NeuralROMs), "experiments_SNFROM", "smoothNF.jl"))
 BLAS.set_num_threads(4)
 
@@ -52,7 +55,8 @@ function main()
     split = (; Ix=:, _Ib=collect(1:160), Ib_=collect(161:212), _It=:, It_=:)
     metrics = Dict{String,Any}("completed" => false, "final_test_opened" => false,
         "representation_admitted" => false, "pde_comparator_admitted" => false,
-        "exact_resume_supported" => false)
+        "exact_resume_supported" => false,
+        "continuous_boundary_port" => get(ENV,"B8_SNF_BOUNDARY","0")=="1")
     try
         model, stats, metadata = train_SNF(
             file, joinpath(out, "native_model"), 32, 0, 5, 64, 128, 210;

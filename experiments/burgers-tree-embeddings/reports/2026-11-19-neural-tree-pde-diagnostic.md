@@ -32,6 +32,29 @@ Separately excluded: reference scoring2.542s, optional output-to-host transfer0.
 
 The CROM high-rate attempt collapsed near a constant predictor and was interrupted with artifacts retained; it is not a fair competing result. A fresh lower-rate native-network repair is prepared. SNF native training-path qualification and matched-data training remain separate prerequisites. No competitor superiority claim is justified.
 
+
+## Optimized implementation supplement
+
+A separate optimized run completed the same500-step fixed-tree diagnostic and allfive actual4096 outputs with a **68.777-second cold online query**, using reverse-mode root derivatives and cached local output features. Cache construction, compilation and requested device reconstructions are included. This is a separate unpaired measurement; **no cross-job speed ratio or CROM/SNF advantage is claimed**. The original diagnostic and its figures above remain unchanged.
+
+**The exact replay failed.** The original replay job terminated at its bitwise initialization-equality assertion after the solve completed; its wrapper record remained `running_continuous_replay`. The largest initial-code discrepancy was2.69229e-15. The retained failed job is not relabeled successful.
+
+A separately retained postmortem compared physical fields without rerunning or changing the solve:
+
+| Component | Observed result |
+|---|---:|
+| Worst relative difference across501 integration fields | 1.54479e-10 |
+| Worst relative difference across five actual4096 outputs | 1.14506e-10 |
+| Steps with different iteration counts | 0 |
+| States with different accepted-update counts | 27 |
+| Physical-field component threshold | 1e-08 |
+| Physical-field components passed | True |
+| Exact replay / original overall gate passed | False / False |
+
+Integration comparisons normalize by the current original integration-field norm; full-output comparisons normalize by the current reference-field norm. These are implementation-difference measurements, separate from reference accuracy. Physical-field agreement supports investigating the optimized implementation further; it does not erase the failed exact replay, establish time/integration convergence or qualify the harder cases.
+
+Optimized solve job7387152, source `28907d523f973e5c1a36886adcfd8db9139ec052`; postmortem job7387309, source `31e6faf4a04b19b548546fe61f0ef6c8c64c28ba`. Both are retained with verified hashes; the optimized solve resides inside the explicitly FAILED `b8treereplay` job.
+
 ## Provenance
 
 Solver job7386952, source `8406c37c9de74347ffedb4d36f4d2a281b3f0330`; model `b8childprimary` hash `55db1ce218df57408a3350bf6283eeb0f2b4824e17c4a1ded60b6fb3a52a074a`. Plot job7387022, source `1e680ddf8a177f68863f1a6c942d6ce0ccc3783a`. All solver/plot outputs retained with local and remote hash verification in `manifests/retention-b8treepde.json` and `manifests/retention-b8treeplots.json`. Plotting independently recomputed allfive full-grid errors and verified every saved error array against prediction-minus-reference.

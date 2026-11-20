@@ -1879,7 +1879,7 @@
     "gpu": "a100",
     "submitted_utc": "2026-11-20T02:48:48.939071+00:00",
     "state": "RUNNING",
-    "elapsed_seconds": 123,
+    "elapsed_seconds": 394,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
   },
@@ -1892,6 +1892,21 @@
     "driver": "extend_residual_fits.py",
     "args": "--model-job b8childgn --qualification-job b8implprofile",
     "gpu": "a100",
-    "submitted_utc": "2026-11-20T02:53:16.421115+00:00"
+    "submitted_utc": "2026-11-20T02:53:16.421115+00:00",
+    "state": "COMPLETED",
+    "elapsed_seconds": 58,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b8matchedspan",
+    "id": 7387656,
+    "reserved_minutes": 30,
+    "commit": "a40c36fee8570d9822d5cdf4077180aff4c69a9b",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b8matchedspan",
+    "driver": "analyze_residual_span.py",
+    "args": "--model-job b8childgn --root-code-source selected-joint --time-indices 0",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-20T02:57:43.315329+00:00"
   }
 ]

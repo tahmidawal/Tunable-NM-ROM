@@ -1698,8 +1698,23 @@
     "args": "--train-jobs b8trainrefs --dev-jobs b8devrefs --warm-job b8childprimary --all-final-refit",
     "gpu": "a100",
     "submitted_utc": "2026-11-20T01:17:29.341092+00:00",
+    "state": "CANCELLED by 34493",
+    "elapsed_seconds": 803,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b8cromexpanded",
+    "id": 7386569,
+    "reserved_minutes": 60,
+    "commit": "1a3b62c3116525f21ab904ca6c7b99c4f195e177",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b8cromexpanded",
+    "driver": "train_crom_expanded.py",
+    "args": "",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-20T01:26:40.889369+00:00",
     "state": "RUNNING",
-    "elapsed_seconds": 322,
+    "elapsed_seconds": 482,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
   }

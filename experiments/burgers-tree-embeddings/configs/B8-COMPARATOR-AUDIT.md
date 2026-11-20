@@ -40,6 +40,22 @@ The first configuration is latent32, width128, batch4, base learning rate `1e-4`
 
 The source `crom_online/online/Experiments/Burger.py` implements forced inviscid one-dimensional Burgers, not this scalar two-dimensional viscous problem. A tested problem adapter must supply the common initial field, Dirichlet handling, two-dimensional advection/diffusion and requested times while retaining native CROM projection/evolution. Preserve distinctions between native framework ports and architecture-inspired weak-solver controls. Do not treat failed reproduction as a defeated competitor.
 
+### CROM scalar 2D online adapter qualification
+
+`baselines/crom_scalar2d.py` is a new scalar viscous/Dirichlet problem adapter, not the author's original 1D example. It preserves the explicit physical Euler target and native GN projection in pinned `crom_online/online/online.py:216-233`. Fine-grid sign-upwind advection and five-point diffusion use spacing `1/16384` regardless of spatial sample count. Decoder values and code Jacobians must be in physical units. Boundary/outside values and Jacobians are exactly zero; this does not establish that an unconstrained trained decoder has a sufficiently smooth near-boundary trace.
+
+Pinned `Experiments/Burger.py:121-123` updates `q` but not `q_sample`. The nonlinear solver's final `computeLossAndR` does refresh accepted samples, so this is **not evidence of a stale-state defect in the native nonlinear branch**. The linear branch lacks that solver side effect. The adapter explicitly refreshes samples on each RHS and accepted step, and its multistep regression checks against an independent dense predictor/projection recurrence.
+
+The tiny CPU fixture imports unmodified author `Decoder.py` (SHA256 `5cbc11c2ea15a206a3de5efc676e78b2f6267979e91b5728133c4435b9a7c385`) and `NonlinearSolver.py` (SHA256 `48a9f6f385ecb7fd0d2ff66ade315e8b7d10196d2bf898a0889448dc498cffc1`). It passed dense RHS equality, first-order continuum convergence, boundary/Jacobian checks and three native-GN steps. These are implementation fixtures, not trained-model PDE accuracy or runtime results. No PDE comparator is admitted by them.
+
+Native `1e-15` stopping thresholds remain the reference configuration. Report projection residual, scaled physical stationarity and whole-step field change; the last quantity is not the native final-iteration stopping increment. Trained-model timestep and sample-count convergence remain mandatory. The full-grid forward-Euler diffusion bound is approximately `1.86e-7`, but manifold-projected stability must be assessed rather than automatically imposing roughly 1.34 million steps or replacing native evolution with the tree weak stepper. Total accounting must include actual stencil decoding, all GN trials, initialization and requested full output.
+
+Retained local fixture output (2026-11-19; CPU-only, float64, one Torch thread, absolute project Python through `jaxrun`, 55-second process cap; exit 0):
+
+```json
+{"status":"passed","native_decoder_used":true,"native_gauss_newton_used":true,"dense_rhs_max_error":0.0,"continuum_rhs_errors":[0.19357365792465026,0.09657052405842809,0.048223324827118524],"code_jacobian_fd_max_error":8.874295048810765e-11,"rhs_code_jacobian_fd_max_error":2.615922700677231e-09,"three_step_code_errors":[1.1102230246251565e-16,3.885780586188048e-16,4.996003610813204e-16],"final_projection_diagnostics":{"relative_projection_residual":0.009547691933101088,"scaled_stationarity":2.024914674060865e-17,"relative_pde_field_update":0.003184834401469053},"stale_sample_regression_passed":true,"physical_intervals":16384,"sample_points":1024,"stencil_union_points":5120,"pde_comparator_admitted":false}
+```
+
 ## SNF-ROM
 
 Operational evidence: `results/b7snff64/output/result.json` passes the native float64 GPU-gradient and scalar-equivalent RHS fixture. It does not establish that the complete native training stack is float64-ready. Julia1.10.10, the resolved Manifest and private Lux rule patch are retained; do not reinstall or re-resolve dependencies.

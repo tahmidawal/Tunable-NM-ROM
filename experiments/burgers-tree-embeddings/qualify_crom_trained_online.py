@@ -87,9 +87,22 @@ def main():
             probe_codes='Zero plus encoder codes from train000/train003/b8_train000/b8_train001 initial fields; no held-out solutions',
             checks=[],boundary_strips=[])
         save(out/'result.json',result)
+        failure_count=0
+        def retain_nonfinite(context,values):
+            nonlocal failure_count
+            failure_count+=1
+            path=out/f'nonfinite_{failure_count:03d}.npz'
+            np.savez_compressed(path,**{key:value.detach().cpu().numpy() for key,value in values.items()})
+            result.setdefault('nonfinite_failures',[]).append(dict(context=context,file=path.name,sha256=digest(path)))
+            # Raw NaN/Inf remain in the binary evidence, never in JSON scalars.
+            raise FloatingPointError('Nonfinite numerical evidence retained: '+context)
         def error(actual,expected):
-            assert torch.isfinite(actual).all() and torch.isfinite(expected).all()
-            return float(torch.max(abs(actual-expected))/(1+torch.max(abs(expected))))
+            if not bool(torch.isfinite(actual).all() and torch.isfinite(expected).all()):
+                retain_nonfinite('derivative_or_formulation_comparison',dict(actual=actual,expected=expected))
+            measure=torch.max(abs(actual-expected))/(1+torch.max(abs(expected)))
+            if not bool(torch.isfinite(measure)):
+                retain_nonfinite('nonfinite_derived_error',dict(actual=actual,expected=expected,measure=measure))
+            return float(measure)
         nodes=structured_nodes(8,16384,device='cuda')
         problem=ScalarBurgers2D(decoder,latent,lambda p:torch.zeros((len(p),1),device='cuda'),nodes,intervals=16384)
         points=torch.tensor([[.17,.23],[.43,.61],[.73,.37],[.54,.81]],device='cuda')
@@ -136,10 +149,20 @@ def main():
                 # Boundary derivative gives a numerical scale for the first strip; no physics target.
                 fullj=model.decoder.computeJacobianFullAnalytical(torch.cat([z[None].expand(len(bp),-1),bp],1))[0][:,0,latent:]
                 slopes=torch.cat([fullj[0:3,0],fullj[3:6,1],-fullj[6:9,0],-fullj[9:12,1]])
+                strip_arrays=dict(boundary_points=bp,first_strip_points=one,second_strip_points=two,
+                    boundary_values=bval,first_strip_values=u1,second_strip_values=u2,
+                    boundary_code_jacobian=bj,boundary_spatial_jacobian=fullj,inward_normal_derivative=slopes)
+                strip_path=out/f'boundary_code{number:02d}_L{L}.npz'
+                np.savez_compressed(strip_path,**{key:value.detach().cpu().numpy() for key,value in strip_arrays.items()})
+                strip_artifact=dict(code=number,intervals=L,file=strip_path.name,sha256=digest(strip_path))
+                result.setdefault('boundary_strip_artifacts',[]).append(strip_artifact)
+                if not all(bool(torch.isfinite(value).all()) for value in strip_arrays.values()):
+                    result.setdefault('nonfinite_failures',[]).append(dict(context='boundary_strip',**strip_artifact))
+                    raise FloatingPointError(f'Nonfinite boundary strip retained: code{number}, L{L}')
                 secant=error(u1/h,slopes)
                 strip=dict(code=number,intervals=L,boundary_max=float(abs(bval).max()),boundary_code_jacobian_max=float(abs(bj).max()),
                     first_strip_max=float(abs(u1).max()),second_strip_max=float(abs(u2).max()),
-                    normal_secant_relative_error=secant)
+                    normal_secant_relative_error=secant,artifact=strip_path.name,artifact_sha256=strip_artifact['sha256'])
                 strip['passed']=strip['boundary_max']<=1e-12 and strip['boundary_code_jacobian_max']<=1e-12 and secant<=.02
                 result['boundary_strips'].append(strip)
             save(out/'result.json',result)

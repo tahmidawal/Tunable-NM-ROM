@@ -51,3 +51,11 @@ trajectory-level representation qualification, independent current-time
 physical scoring, strict projection convergence and actual4096²output remain
 required before scientific PDE admission. A native solver return alone is not
 convergence; no comparator accuracy/runtime or tree superiority claim follows.
+
+Failure-persistence repair: save each small boundary-strip point/value/Jacobian
+array as a hashed NPZ artifact before validating its finiteness. All NaN/Inf
+outputs remain in binary evidence with a JSON-safe failure reference; no
+nonfinite scalar enters the result record. Derivative/formulation comparisons
+also retain nonfinite operands or derived-error values before raising. A failed
+fixture writes status=failed and its error/traceback without discarding the
+numerical evidence or weakening a threshold.

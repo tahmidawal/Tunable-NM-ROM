@@ -1,3 +1,7 @@
+# Historical upstream protocol — superseded for this lane
+
+The executable scope, cohort, gates and two-GPU-hour ceiling for this lane are exclusively [PROTOCOL-CLOSURE.md](PROTOCOL-CLOSURE.md). The inherited text below is provenance for completed development work; its permissions, candidate ladder and three-hour budget do not govern this follow-up.
+
 # Weak-test visibility on the frozen Burgers span
 
 This is a prospective development-only mechanism experiment. No results exist yet. The first block isolates test-space effects for the original discrete sign-upwind operator; it does not establish continuum accuracy or a speed advantage.

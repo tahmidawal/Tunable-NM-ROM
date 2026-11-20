@@ -1924,8 +1924,19 @@
     "gpu": "a100",
     "submitted_utc": "2026-11-20T03:04:03.475171+00:00",
     "state": "RUNNING",
-    "elapsed_seconds": 328,
+    "elapsed_seconds": 399,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b8freshspan",
+    "id": 7387877,
+    "reserved_minutes": 30,
+    "commit": "8ee5f33c47350a4f89d9b18dd97f58560d81cff7",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b8freshspan",
+    "driver": "analyze_residual_span.py",
+    "args": "--model-job b8freshchildren --root-code-source selected-joint --time-indices 0",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-20T03:27:30.394814+00:00"
   }
 ]

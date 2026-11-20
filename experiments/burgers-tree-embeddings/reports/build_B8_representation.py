@@ -84,7 +84,62 @@ Several converged fits remain above the0.5% representation threshold, including 
 Continuation job{long['meta']['job']}; verified result hash `{proof['sha256']}`. Its complete scalar records are retained alongside this report's metadata.
 '''
     longfit_summary=dict(provenance=proof,rows=long['rows'],converged=long['converged'],unfinished=long['unfinished'],failed=long['failed'],worst_before=before,worst_after=after)
-metadata=dict(provenance=proofs,rows=rows,summary=stats,longfit_followup=longfit_summary,family_mapping=families,plot_sha256=sha(plot),
+fresh_supplement='';fresh_summary=None;extra_assets=[]
+if (H/'manifests/retention-b8freshchildren.json').exists():
+    frp,proof=verified('b8freshchildren','result.json');proofs.append(proof);fr=json.loads(frp.read_text())
+    fcp,proof=verified('b8freshchildren','nonlinear_tree.pkl');proofs.append(proof)
+    assert fr['status']=='complete_nonlinear_child_multidepth_subset' and not fr['final_test_opened']
+    assert sha(fcp)==fr['selected_sha256'] and fr['parent_job']=='b8parent32'
+    assert fr['parent_sha256']==records['b8parent32']['selected_sha256']
+    fm=pickle.loads(fcp.read_bytes());freshrows=[]
+    for v in fm['evaluation']:
+        assert np.isfinite(v['independent_error']) and np.isfinite(np.asarray(v['status'])).all()
+        freshrows.append(dict(case=v['case'],layout=v['layout'],time=float(v['time']),family=families[v['case']],
+            independent_error=float(v['independent_error']),converged=bool(v['status'][-1])))
+    prior=[v for v in rows if v['job']=='b8childgn']
+    assert len(freshrows)==72 and {(v['case'],v['layout'],v['time']) for v in freshrows}=={(v['case'],v['layout'],v['time']) for v in prior}
+    fs=[];fig,axes=plt.subplots(2,3,figsize=(14,8),sharex=True,sharey=True,layout='constrained')
+    for ri,layout in enumerate(['uniform','prescribed']):
+        for col,family in enumerate(groups):
+            ax=axes[ri,col];counts=[]
+            for label,values,color in [('Prior B7-root tree',prior,'#2166ac'),('Fresh expanded-root tree',freshrows,'#d95f02')]:
+                subset=[v for v in values if v['layout']==layout and v['family']==family];assert len(subset)==12
+                ts=[0.,.125,.25];worst=[100*max(v['independent_error'] for v in subset if v['time']==t) for t in ts]
+                med=[100*float(np.median([v['independent_error'] for v in subset if v['time']==t])) for t in ts]
+                ax.plot(ts,worst,'o-',color=color,label=label+' worst');ax.plot(ts,med,'--',color=color,label=label+' median')
+                unfinished=[v for v in subset if not v['converged']];counts.append(len(unfinished))
+                ax.scatter([v['time'] for v in unfinished],[100*v['independent_error'] for v in unfinished],marker='x',color=color,s=45,alpha=.8)
+                fs.append(dict(model=label,layout=layout,family=family,fields=len(subset),unfinished=len(unfinished),
+                    worst=max(v['independent_error'] for v in subset),median=float(np.median([v['independent_error'] for v in subset]))))
+            ax.axhline(.5,color='black',ls=':',label='0.5% threshold');ax.set_yscale('log');ax.set_xticks([0,.125,.25]);ax.grid(alpha=.2)
+            ax.set_title(f"{family.replace('_',' ').title()} · unfinished prior/fresh: {counts[0]}/12 / {counts[1]}/12",fontsize=10)
+            if col==0:ax.set_ylabel(layout+'20\nRelative L2 error (%)')
+            if ri==1:ax.set_xlabel('Snapshot time (separate offline fits)')
+    handles,labels=axes[0,0].get_legend_handles_labels();fig.legend(handles,labels,loc='outside lower center',ncol=3,fontsize=9)
+    fig.suptitle('Fresh expanded-root tree versus prior B7-root tree\n128² fit /256² independent score; colored × = unfinished field fits\nDifferent parent and training: no causal child gain, no PDE or actual4096 claim',fontsize=13)
+    freshplot=assets/'fresh_vs_prior_representation.png';fig.savefig(freshplot,dpi=160);plt.close(fig);extra_assets.append(freshplot)
+    fresh_count=sum(not v['converged'] for v in freshrows);fresh_worst=max(v['independent_error'] for v in freshrows)
+    fresh_table='\n'.join(f"| {layout}20 | {family.replace('_',' ')} | {100*next(v['worst'] for v in fs if v['model']=='Prior B7-root tree' and v['layout']==layout and v['family']==family):.3f}% | {100*next(v['worst'] for v in fs if v['model']=='Fresh expanded-root tree' and v['layout']==layout and v['family']==family):.3f}% | {next(v['unfinished'] for v in fs if v['model']=='Prior B7-root tree' and v['layout']==layout and v['family']==family)}/12 | {next(v['unfinished'] for v in fs if v['model']=='Fresh expanded-root tree' and v['layout']==layout and v['family']==family)}/12 |" for layout in ['uniform','prescribed'] for family in groups)
+    fresh_supplement=f"""
+## Fresh children on the expanded parent: separate retained experiment
+
+The fresh16-code children on the expanded-data parent selected update{fr['selected_update']}. Their worst independent error is **{100*fresh_worst:.4f}%**, with **{fresh_count}/72 unfinished fits**. The prior B7-root tree remains11.7786% with41/72 unfinished in its original selected panel. Both still fail the0.5% representation requirement; these are selected-field diagnostics, not all-case qualification.
+
+![Fresh and prior representation errors]({assets.name}/{freshplot.name})
+
+Solid curves show each family's worst error at that time; dashed curves show its median. Colored crosses retain individual unfinished fits. The table uses each family's worst across all three times.
+
+| Allocation | Family | Prior worst | Fresh worst | Prior unfinished | Fresh unfinished |
+|---|---|---:|---:|---:|---:|
+{fresh_table}
+
+Ridge and two-pulse worst errors are lower in this fresh experiment, while primary-family worst errors are slightly higher. The parent checkpoint and child training changed, so this comparison does not isolate the effect of children or establish a causal gain. It also does not replace the prior long-fit follow-up: that follow-up used the older tree checkpoint. Matched feature-span and local-enrichment diagnostics are needed to separate nonlinear-head limits, spatial coverage and fitting effort. These snapshots are independently fitted fields; no new PDE trajectory or actual4096 claim is made.
+
+Fresh-child job{fr['meta']['job']}, model hash `{fr['selected_sha256']}`; parent hash `{fr['parent_sha256']}`. Manifest-verified scalar source rows and summary are retained in this report's metadata. Original plots, original selected-panel counts and the older-checkpoint long-fit evidence remain unchanged.
+"""
+    fresh_summary=dict(rows=freshrows,summary=fs,model_sha256=fr['selected_sha256'],parent_sha256=fr['parent_sha256'],
+        plot_sha256=sha(freshplot),worst=fresh_worst,unfinished=fresh_count,paired_causal_comparison=False)
+metadata=dict(provenance=proofs,rows=rows,summary=stats,longfit_followup=longfit_summary,fresh_children=fresh_summary,family_mapping=families,plot_sha256=sha(plot),
     fit_grid=128,independent_grid=256,current_time_reference_normalization=True,actual4096=False,pde_trajectory=False,
     paired_child_gain=False,representation_admitted=False,final_test_opened=False)
 mp=assets/'representation_metadata.json';mp.write_text(json.dumps(metadata,indent=2)+'\n')
@@ -109,7 +164,9 @@ The first two rows of panels share one local checkpoint and compare uniform vers
 
 {supplement}
 
-**Decision:** retain all failures, use matched feature-span evidence to distinguish representation limits from nonlinear fitting, and evaluate fresh children trained on the expanded parent separately when that run completes. No final-test fields were opened; no CROM/SNF accuracy or runtime superiority is established here.
+{fresh_supplement}
+
+**Decision:** retain all failures, use matched feature-span evidence to distinguish representation limits from nonlinear fitting, and use the fresh expanded-parent results as a separate architecture/training experiment. No final-test fields were opened; no CROM/SNF accuracy or runtime superiority is established here.
 
 The earlier smooth-case actual4096 PDE fields, error plots, runtime accounting and optimized-replay postmortem remain available in [the neural-tree PDE diagnostic](2026-11-19-neural-tree-pde-diagnostic.md). Its successful single smooth case does not qualify these localized cases.
 
@@ -119,7 +176,7 @@ Tree job{tree['meta']['job']}, selected checkpoint `{tree['selected_sha256']}`; 
 '''
 report=H/'reports'/(name+'.md');report.write_text(text)
 published=[]
-for src in [plot,mp,report]:
+for src in [plot,mp,report]+extra_assets:
     dest=CAN/src.relative_to(H);dest.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(src,dest);assert sha(src)==sha(dest)
     published.append(dict(source=str(src),published=str(dest),sha256=sha(src)))
 (H/'manifests/B8-representation-publication.json').write_text(json.dumps(dict(provenance=proofs,files=published),indent=2)+'\n')

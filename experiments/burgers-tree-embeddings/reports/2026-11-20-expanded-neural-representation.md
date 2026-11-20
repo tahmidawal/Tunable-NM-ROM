@@ -41,7 +41,30 @@ Several converged fits remain above the0.5% representation threshold, including 
 Continuation job7387441; verified result hash `046f71caa63d9507cc18952eddd2b671e5c298e2b0290eb8c7acca70b56e9a9d`. Its complete scalar records are retained alongside this report's metadata.
 
 
-**Decision:** retain all failures, use matched feature-span evidence to distinguish representation limits from nonlinear fitting, and evaluate fresh children trained on the expanded parent separately when that run completes. No final-test fields were opened; no CROM/SNF accuracy or runtime superiority is established here.
+
+## Fresh children on the expanded parent: separate retained experiment
+
+The fresh16-code children on the expanded-data parent selected update30000. Their worst independent error is **8.8624%**, with **21/72 unfinished fits**. The prior B7-root tree remains11.7786% with41/72 unfinished in its original selected panel. Both still fail the0.5% representation requirement; these are selected-field diagnostics, not all-case qualification.
+
+![Fresh and prior representation errors](2026-11-20-expanded-neural-representation-assets/fresh_vs_prior_representation.png)
+
+Solid curves show each family's worst error at that time; dashed curves show its median. Colored crosses retain individual unfinished fits. The table uses each family's worst across all three times.
+
+| Allocation | Family | Prior worst | Fresh worst | Prior unfinished | Fresh unfinished |
+|---|---|---:|---:|---:|---:|
+| uniform20 | primary | 2.065% | 2.181% | 2/12 | 4/12 |
+| uniform20 | ridge | 11.779% | 8.862% | 12/12 | 6/12 |
+| uniform20 | two pulse | 2.861% | 1.828% | 9/12 | 1/12 |
+| prescribed20 | primary | 1.505% | 1.758% | 1/12 | 1/12 |
+| prescribed20 | ridge | 10.439% | 8.257% | 12/12 | 6/12 |
+| prescribed20 | two pulse | 2.810% | 1.656% | 5/12 | 3/12 |
+
+Ridge and two-pulse worst errors are lower in this fresh experiment, while primary-family worst errors are slightly higher. The parent checkpoint and child training changed, so this comparison does not isolate the effect of children or establish a causal gain. It also does not replace the prior long-fit follow-up: that follow-up used the older tree checkpoint. Matched feature-span and local-enrichment diagnostics are needed to separate nonlinear-head limits, spatial coverage and fitting effort. These snapshots are independently fitted fields; no new PDE trajectory or actual4096 claim is made.
+
+Fresh-child job7387425, model hash `a1121a65043c5bb03c62dac93c9d730610b8a62f9929aa0ba6b26467b3c61d15`; parent hash `153eb2c5b4f79ce61d845b44632f4d7e21f8c1cb67845b504b08a2f7523c4276`. Manifest-verified scalar source rows and summary are retained in this report's metadata. Original plots, original selected-panel counts and the older-checkpoint long-fit evidence remain unchanged.
+
+
+**Decision:** retain all failures, use matched feature-span evidence to distinguish representation limits from nonlinear fitting, and use the fresh expanded-parent results as a separate architecture/training experiment. No final-test fields were opened; no CROM/SNF accuracy or runtime superiority is established here.
 
 The earlier smooth-case actual4096 PDE fields, error plots, runtime accounting and optimized-replay postmortem remain available in [the neural-tree PDE diagnostic](2026-11-19-neural-tree-pde-diagnostic.md). Its successful single smooth case does not qualify these localized cases.
 

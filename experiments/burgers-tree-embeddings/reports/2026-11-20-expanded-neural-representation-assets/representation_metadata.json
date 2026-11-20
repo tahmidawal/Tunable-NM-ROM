@@ -35,6 +35,18 @@
       "file": "result.json",
       "sha256": "046f71caa63d9507cc18952eddd2b671e5c298e2b0290eb8c7acca70b56e9a9d",
       "retention_manifest_sha256": "84178523318b1b2b0404f96bcb249fc51d0b6c907cc6a41cc97d33271872aa12"
+    },
+    {
+      "job": "b8freshchildren",
+      "file": "result.json",
+      "sha256": "cd0ad5b1f8480f7c2bcc4819164ec34ded4a25dfdc29d23ac124f42896c198ae",
+      "retention_manifest_sha256": "d34d96bd322b55a293057d28c4ada525fdf3f2b7a5c6610081a6f467a4f756b7"
+    },
+    {
+      "job": "b8freshchildren",
+      "file": "nonlinear_tree.pkl",
+      "sha256": "a1121a65043c5bb03c62dac93c9d730610b8a62f9929aa0ba6b26467b3c61d15",
+      "retention_manifest_sha256": "d34d96bd322b55a293057d28c4ada525fdf3f2b7a5c6610081a6f467a4f756b7"
     }
   ],
   "rows": [
@@ -3902,6 +3914,702 @@
     "failed": 0,
     "worst_before": 0.117785930691363,
     "worst_after": 0.11651497605824881
+  },
+  "fresh_children": {
+    "rows": [
+      {
+        "case": "dev000",
+        "layout": "uniform",
+        "time": 0.0,
+        "family": "primary",
+        "independent_error": 0.00994653708662462,
+        "converged": true
+      },
+      {
+        "case": "dev000",
+        "layout": "uniform",
+        "time": 0.125,
+        "family": "primary",
+        "independent_error": 0.007352539974394054,
+        "converged": false
+      },
+      {
+        "case": "dev000",
+        "layout": "uniform",
+        "time": 0.25,
+        "family": "primary",
+        "independent_error": 0.009356643791789776,
+        "converged": false
+      },
+      {
+        "case": "dev003",
+        "layout": "uniform",
+        "time": 0.0,
+        "family": "primary",
+        "independent_error": 0.004290321802018319,
+        "converged": true
+      },
+      {
+        "case": "dev003",
+        "layout": "uniform",
+        "time": 0.125,
+        "family": "primary",
+        "independent_error": 0.0037053495109208886,
+        "converged": true
+      },
+      {
+        "case": "dev003",
+        "layout": "uniform",
+        "time": 0.25,
+        "family": "primary",
+        "independent_error": 0.00417996296737452,
+        "converged": true
+      },
+      {
+        "case": "dev013",
+        "layout": "uniform",
+        "time": 0.0,
+        "family": "primary",
+        "independent_error": 0.016494182209646196,
+        "converged": false
+      },
+      {
+        "case": "dev013",
+        "layout": "uniform",
+        "time": 0.125,
+        "family": "primary",
+        "independent_error": 0.00894587935774567,
+        "converged": true
+      },
+      {
+        "case": "dev013",
+        "layout": "uniform",
+        "time": 0.25,
+        "family": "primary",
+        "independent_error": 0.007572080734744157,
+        "converged": true
+      },
+      {
+        "case": "align004",
+        "layout": "uniform",
+        "time": 0.0,
+        "family": "primary",
+        "independent_error": 0.02181021678089038,
+        "converged": false
+      },
+      {
+        "case": "align004",
+        "layout": "uniform",
+        "time": 0.125,
+        "family": "primary",
+        "independent_error": 0.009644778317156407,
+        "converged": true
+      },
+      {
+        "case": "align004",
+        "layout": "uniform",
+        "time": 0.25,
+        "family": "primary",
+        "independent_error": 0.009981668168910315,
+        "converged": true
+      },
+      {
+        "case": "b8_dev000",
+        "layout": "uniform",
+        "time": 0.0,
+        "family": "ridge",
+        "independent_error": 0.021057642863791626,
+        "converged": false
+      },
+      {
+        "case": "b8_dev000",
+        "layout": "uniform",
+        "time": 0.125,
+        "family": "ridge",
+        "independent_error": 0.00936211034938929,
+        "converged": true
+      },
+      {
+        "case": "b8_dev000",
+        "layout": "uniform",
+        "time": 0.25,
+        "family": "ridge",
+        "independent_error": 0.008776679615336474,
+        "converged": true
+      },
+      {
+        "case": "b8_dev001",
+        "layout": "uniform",
+        "time": 0.0,
+        "family": "two_pulse",
+        "independent_error": 0.01381081216935941,
+        "converged": false
+      },
+      {
+        "case": "b8_dev001",
+        "layout": "uniform",
+        "time": 0.125,
+        "family": "two_pulse",
+        "independent_error": 0.009392432337734019,
+        "converged": true
+      },
+      {
+        "case": "b8_dev001",
+        "layout": "uniform",
+        "time": 0.25,
+        "family": "two_pulse",
+        "independent_error": 0.008211918214719368,
+        "converged": true
+      },
+      {
+        "case": "b8_dev002",
+        "layout": "uniform",
+        "time": 0.0,
+        "family": "ridge",
+        "independent_error": 0.046620067429882076,
+        "converged": false
+      },
+      {
+        "case": "b8_dev002",
+        "layout": "uniform",
+        "time": 0.125,
+        "family": "ridge",
+        "independent_error": 0.010564443623829935,
+        "converged": true
+      },
+      {
+        "case": "b8_dev002",
+        "layout": "uniform",
+        "time": 0.25,
+        "family": "ridge",
+        "independent_error": 0.008229526319188002,
+        "converged": true
+      },
+      {
+        "case": "b8_dev003",
+        "layout": "uniform",
+        "time": 0.0,
+        "family": "two_pulse",
+        "independent_error": 0.011948391621482191,
+        "converged": true
+      },
+      {
+        "case": "b8_dev003",
+        "layout": "uniform",
+        "time": 0.125,
+        "family": "two_pulse",
+        "independent_error": 0.00947984102244521,
+        "converged": true
+      },
+      {
+        "case": "b8_dev003",
+        "layout": "uniform",
+        "time": 0.25,
+        "family": "two_pulse",
+        "independent_error": 0.009455444387442375,
+        "converged": true
+      },
+      {
+        "case": "b8_dev004",
+        "layout": "uniform",
+        "time": 0.0,
+        "family": "ridge",
+        "independent_error": 0.021197436908490297,
+        "converged": false
+      },
+      {
+        "case": "b8_dev004",
+        "layout": "uniform",
+        "time": 0.125,
+        "family": "ridge",
+        "independent_error": 0.01046161734822893,
+        "converged": false
+      },
+      {
+        "case": "b8_dev004",
+        "layout": "uniform",
+        "time": 0.25,
+        "family": "ridge",
+        "independent_error": 0.007268058273413497,
+        "converged": true
+      },
+      {
+        "case": "b8_dev005",
+        "layout": "uniform",
+        "time": 0.0,
+        "family": "two_pulse",
+        "independent_error": 0.018278326235668347,
+        "converged": true
+      },
+      {
+        "case": "b8_dev005",
+        "layout": "uniform",
+        "time": 0.125,
+        "family": "two_pulse",
+        "independent_error": 0.010272364771461998,
+        "converged": true
+      },
+      {
+        "case": "b8_dev005",
+        "layout": "uniform",
+        "time": 0.25,
+        "family": "two_pulse",
+        "independent_error": 0.008004855135960623,
+        "converged": true
+      },
+      {
+        "case": "b8_dev006",
+        "layout": "uniform",
+        "time": 0.0,
+        "family": "ridge",
+        "independent_error": 0.08862368482235708,
+        "converged": false
+      },
+      {
+        "case": "b8_dev006",
+        "layout": "uniform",
+        "time": 0.125,
+        "family": "ridge",
+        "independent_error": 0.019718221890041472,
+        "converged": false
+      },
+      {
+        "case": "b8_dev006",
+        "layout": "uniform",
+        "time": 0.25,
+        "family": "ridge",
+        "independent_error": 0.007950160403924482,
+        "converged": true
+      },
+      {
+        "case": "b8_dev007",
+        "layout": "uniform",
+        "time": 0.0,
+        "family": "two_pulse",
+        "independent_error": 0.006899320094232029,
+        "converged": true
+      },
+      {
+        "case": "b8_dev007",
+        "layout": "uniform",
+        "time": 0.125,
+        "family": "two_pulse",
+        "independent_error": 0.007733085345849442,
+        "converged": true
+      },
+      {
+        "case": "b8_dev007",
+        "layout": "uniform",
+        "time": 0.25,
+        "family": "two_pulse",
+        "independent_error": 0.007381159055002782,
+        "converged": true
+      },
+      {
+        "case": "dev000",
+        "layout": "prescribed",
+        "time": 0.0,
+        "family": "primary",
+        "independent_error": 0.00885455483525406,
+        "converged": true
+      },
+      {
+        "case": "dev000",
+        "layout": "prescribed",
+        "time": 0.125,
+        "family": "primary",
+        "independent_error": 0.007393059768804034,
+        "converged": true
+      },
+      {
+        "case": "dev000",
+        "layout": "prescribed",
+        "time": 0.25,
+        "family": "primary",
+        "independent_error": 0.010162359143210575,
+        "converged": true
+      },
+      {
+        "case": "dev003",
+        "layout": "prescribed",
+        "time": 0.0,
+        "family": "primary",
+        "independent_error": 0.004290321802018318,
+        "converged": true
+      },
+      {
+        "case": "dev003",
+        "layout": "prescribed",
+        "time": 0.125,
+        "family": "primary",
+        "independent_error": 0.003705349510920891,
+        "converged": true
+      },
+      {
+        "case": "dev003",
+        "layout": "prescribed",
+        "time": 0.25,
+        "family": "primary",
+        "independent_error": 0.004179962967374519,
+        "converged": true
+      },
+      {
+        "case": "dev013",
+        "layout": "prescribed",
+        "time": 0.0,
+        "family": "primary",
+        "independent_error": 0.012597231393082518,
+        "converged": true
+      },
+      {
+        "case": "dev013",
+        "layout": "prescribed",
+        "time": 0.125,
+        "family": "primary",
+        "independent_error": 0.010569241724511968,
+        "converged": true
+      },
+      {
+        "case": "dev013",
+        "layout": "prescribed",
+        "time": 0.25,
+        "family": "primary",
+        "independent_error": 0.008335784084589374,
+        "converged": true
+      },
+      {
+        "case": "align004",
+        "layout": "prescribed",
+        "time": 0.0,
+        "family": "primary",
+        "independent_error": 0.01757803716587429,
+        "converged": false
+      },
+      {
+        "case": "align004",
+        "layout": "prescribed",
+        "time": 0.125,
+        "family": "primary",
+        "independent_error": 0.010909018037588609,
+        "converged": true
+      },
+      {
+        "case": "align004",
+        "layout": "prescribed",
+        "time": 0.25,
+        "family": "primary",
+        "independent_error": 0.010688591056940182,
+        "converged": true
+      },
+      {
+        "case": "b8_dev000",
+        "layout": "prescribed",
+        "time": 0.0,
+        "family": "ridge",
+        "independent_error": 0.019233521508646195,
+        "converged": false
+      },
+      {
+        "case": "b8_dev000",
+        "layout": "prescribed",
+        "time": 0.125,
+        "family": "ridge",
+        "independent_error": 0.0105189224801923,
+        "converged": true
+      },
+      {
+        "case": "b8_dev000",
+        "layout": "prescribed",
+        "time": 0.25,
+        "family": "ridge",
+        "independent_error": 0.011711039042340585,
+        "converged": true
+      },
+      {
+        "case": "b8_dev001",
+        "layout": "prescribed",
+        "time": 0.0,
+        "family": "two_pulse",
+        "independent_error": 0.016443165716666916,
+        "converged": false
+      },
+      {
+        "case": "b8_dev001",
+        "layout": "prescribed",
+        "time": 0.125,
+        "family": "two_pulse",
+        "independent_error": 0.010179368556146066,
+        "converged": false
+      },
+      {
+        "case": "b8_dev001",
+        "layout": "prescribed",
+        "time": 0.25,
+        "family": "two_pulse",
+        "independent_error": 0.009426406324674879,
+        "converged": true
+      },
+      {
+        "case": "b8_dev002",
+        "layout": "prescribed",
+        "time": 0.0,
+        "family": "ridge",
+        "independent_error": 0.03319885143126665,
+        "converged": false
+      },
+      {
+        "case": "b8_dev002",
+        "layout": "prescribed",
+        "time": 0.125,
+        "family": "ridge",
+        "independent_error": 0.010735624744648373,
+        "converged": true
+      },
+      {
+        "case": "b8_dev002",
+        "layout": "prescribed",
+        "time": 0.25,
+        "family": "ridge",
+        "independent_error": 0.00987325270049946,
+        "converged": true
+      },
+      {
+        "case": "b8_dev003",
+        "layout": "prescribed",
+        "time": 0.0,
+        "family": "two_pulse",
+        "independent_error": 0.012817926169199002,
+        "converged": true
+      },
+      {
+        "case": "b8_dev003",
+        "layout": "prescribed",
+        "time": 0.125,
+        "family": "two_pulse",
+        "independent_error": 0.010545920032351469,
+        "converged": true
+      },
+      {
+        "case": "b8_dev003",
+        "layout": "prescribed",
+        "time": 0.25,
+        "family": "two_pulse",
+        "independent_error": 0.011738788622356253,
+        "converged": true
+      },
+      {
+        "case": "b8_dev004",
+        "layout": "prescribed",
+        "time": 0.0,
+        "family": "ridge",
+        "independent_error": 0.019751708206046104,
+        "converged": false
+      },
+      {
+        "case": "b8_dev004",
+        "layout": "prescribed",
+        "time": 0.125,
+        "family": "ridge",
+        "independent_error": 0.010781497028124129,
+        "converged": false
+      },
+      {
+        "case": "b8_dev004",
+        "layout": "prescribed",
+        "time": 0.25,
+        "family": "ridge",
+        "independent_error": 0.010646055674644897,
+        "converged": true
+      },
+      {
+        "case": "b8_dev005",
+        "layout": "prescribed",
+        "time": 0.0,
+        "family": "two_pulse",
+        "independent_error": 0.016559792937507475,
+        "converged": true
+      },
+      {
+        "case": "b8_dev005",
+        "layout": "prescribed",
+        "time": 0.125,
+        "family": "two_pulse",
+        "independent_error": 0.01084525390666162,
+        "converged": false
+      },
+      {
+        "case": "b8_dev005",
+        "layout": "prescribed",
+        "time": 0.25,
+        "family": "two_pulse",
+        "independent_error": 0.008198373504151283,
+        "converged": true
+      },
+      {
+        "case": "b8_dev006",
+        "layout": "prescribed",
+        "time": 0.0,
+        "family": "ridge",
+        "independent_error": 0.08256782146986824,
+        "converged": false
+      },
+      {
+        "case": "b8_dev006",
+        "layout": "prescribed",
+        "time": 0.125,
+        "family": "ridge",
+        "independent_error": 0.01816661800759875,
+        "converged": false
+      },
+      {
+        "case": "b8_dev006",
+        "layout": "prescribed",
+        "time": 0.25,
+        "family": "ridge",
+        "independent_error": 0.009924630219911346,
+        "converged": true
+      },
+      {
+        "case": "b8_dev007",
+        "layout": "prescribed",
+        "time": 0.0,
+        "family": "two_pulse",
+        "independent_error": 0.0069391758746359545,
+        "converged": true
+      },
+      {
+        "case": "b8_dev007",
+        "layout": "prescribed",
+        "time": 0.125,
+        "family": "two_pulse",
+        "independent_error": 0.008234666470631044,
+        "converged": true
+      },
+      {
+        "case": "b8_dev007",
+        "layout": "prescribed",
+        "time": 0.25,
+        "family": "two_pulse",
+        "independent_error": 0.008490715656712397,
+        "converged": true
+      }
+    ],
+    "summary": [
+      {
+        "model": "Prior B7-root tree",
+        "layout": "uniform",
+        "family": "primary",
+        "fields": 12,
+        "unfinished": 2,
+        "worst": 0.020646471573757614,
+        "median": 0.003549388926077094
+      },
+      {
+        "model": "Fresh expanded-root tree",
+        "layout": "uniform",
+        "family": "primary",
+        "fields": 12,
+        "unfinished": 4,
+        "worst": 0.02181021678089038,
+        "median": 0.009151261574767724
+      },
+      {
+        "model": "Prior B7-root tree",
+        "layout": "uniform",
+        "family": "ridge",
+        "fields": 12,
+        "unfinished": 12,
+        "worst": 0.117785930691363,
+        "median": 0.04364996419124226
+      },
+      {
+        "model": "Fresh expanded-root tree",
+        "layout": "uniform",
+        "family": "ridge",
+        "fields": 12,
+        "unfinished": 6,
+        "worst": 0.08862368482235708,
+        "median": 0.010513030486029432
+      },
+      {
+        "model": "Prior B7-root tree",
+        "layout": "uniform",
+        "family": "two_pulse",
+        "fields": 12,
+        "unfinished": 9,
+        "worst": 0.028612249599759283,
+        "median": 0.016213185695806032
+      },
+      {
+        "model": "Fresh expanded-root tree",
+        "layout": "uniform",
+        "family": "two_pulse",
+        "fields": 12,
+        "unfinished": 1,
+        "worst": 0.018278326235668347,
+        "median": 0.009423938362588197
+      },
+      {
+        "model": "Prior B7-root tree",
+        "layout": "prescribed",
+        "family": "primary",
+        "fields": 12,
+        "unfinished": 1,
+        "worst": 0.0150522344745082,
+        "median": 0.0036781232424698764
+      },
+      {
+        "model": "Fresh expanded-root tree",
+        "layout": "prescribed",
+        "family": "primary",
+        "fields": 12,
+        "unfinished": 1,
+        "worst": 0.01757803716587429,
+        "median": 0.009508456989232316
+      },
+      {
+        "model": "Prior B7-root tree",
+        "layout": "prescribed",
+        "family": "ridge",
+        "fields": 12,
+        "unfinished": 12,
+        "worst": 0.10439320742891754,
+        "median": 0.039592510937848435
+      },
+      {
+        "model": "Fresh expanded-root tree",
+        "layout": "prescribed",
+        "family": "ridge",
+        "fields": 12,
+        "unfinished": 6,
+        "worst": 0.08256782146986824,
+        "median": 0.011246268035232357
+      },
+      {
+        "model": "Prior B7-root tree",
+        "layout": "prescribed",
+        "family": "two_pulse",
+        "fields": 12,
+        "unfinished": 5,
+        "worst": 0.02810456327244031,
+        "median": 0.014941940414482392
+      },
+      {
+        "model": "Fresh expanded-root tree",
+        "layout": "prescribed",
+        "family": "two_pulse",
+        "fields": 12,
+        "unfinished": 3,
+        "worst": 0.016559792937507475,
+        "median": 0.010362644294248768
+      }
+    ],
+    "model_sha256": "a1121a65043c5bb03c62dac93c9d730610b8a62f9929aa0ba6b26467b3c61d15",
+    "parent_sha256": "153eb2c5b4f79ce61d845b44632f4d7e21f8c1cb67845b504b08a2f7523c4276",
+    "plot_sha256": "153929664bc7b08de7d3f2a621e93ba9c22d163e42ac14d096f06f5853543deb",
+    "worst": 0.08862368482235708,
+    "unfinished": 21,
+    "paired_causal_comparison": false
   },
   "family_mapping": {
     "b8_dev000": "ridge",

@@ -206,6 +206,7 @@ def main():
     sel,conf,cfg,dev_provenance=[json.loads(p.read_text()) for p in paths]
     data={"schema":"jcp-cost-plotted-data-v1","error_contract":"max over five evolved outputs, initial-field norm; initial separate", "ratio_direction":"comparator/head; above1 favors head","sources":{str(p.relative_to(HERE)):hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}}
     points,excluded=development(sel,conf,args.out,data)
+    fresh_case_note = "When available, the missing head timing cases are identified in the shaded part of the plot."
     if args.fresh:
         res=json.loads(args.fresh.read_text());data['sources'][str(args.fresh)]=hashlib.sha256(args.fresh.read_bytes()).hexdigest()
         output=args.fresh.parent.parent
@@ -213,6 +214,10 @@ def main():
         q,refs,prov=[json.loads(p.read_text()) for p in fresh_paths]
         data['sources'].update({str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in fresh_paths})
         fresh(res,cfg,q,refs,prov,args.out,data)
+        missing = {name: sorted(set(cfg['case_ids'])-set(map(int,res['confirmation'][name]['cases']))) for name in cfg['frozen_comparators']}
+        missing_union = sorted({i for ids in missing.values() for i in ids})
+        valid_counts = sorted({len(res['confirmation'][name]['cases']) for name in missing})
+        fresh_case_note = f"All {len(cfg['case_ids'])} nominal physical cases appear in the error panels. The shaded timing case index {', '.join(map(str,missing_union))} has no nominally valid head query; each head ratio panel therefore contains only {', '.join(map(str,valid_counts))} available cases, not a complete-cohort timing result."
     (args.out/"plotted-data.json").write_text(json.dumps(data,indent=2,allow_nan=False)+'\n')
     captions=f'''# Accuracy–cost figure captions
 
@@ -224,7 +229,11 @@ Final saved development measurements are replotted here; a fresh panel is includ
 
 **Repetition spread.** All confirmation timing repetitions normalized by their own method–case median. This displays measurement variation; it is neither case-generalization uncertainty nor trained-model seed uncertainty. Tukey outliers remain displayed and retained.
 
-**Fresh confirmation.** The new physical cohort is plotted separately. The error panels include all nominal learned/POD qualification outputs, including numerically rejected ones marked with crosses, and classical same-invocation scored outputs. These error diagnostics are not joined to separately timed measurements to manufacture a cost point. Unchanged development cohort-median and cohort-worst limits are dashed/dotted guides; the median limit is not a per-case cutoff. The paired timing panels show only available nominally valid timed outputs; the missing head case is marked. All fresh comparisons fail full qualification, and these observed partial ratios support no accepted speed claim. Legends identify fixed-threshold and fresh-head-matching qualification separately. This is frozen-choice validation, not a new accuracy–cost selection frontier.
+**Fresh confirmation: physical errors.** Each left-panel point is one case's maximum nominal field error over the requested evolved outputs. Learned/POD values come from the nominal qualification calls; classical values come from their scored timing calls. Crosses mark failure of a numerical check, including initial fitting, tighter stopping or fractional reference accuracy. Returned fields from rejected solves remain visible as diagnostics. These error diagnostics are not combined with separately timed measurements to manufacture an accuracy–cost point. {fresh_case_note}
+
+The dashed horizontal line is the frozen **cohort-median** accuracy limit: individual cases may exceed it while the cohort median still passes. It is not a per-case requirement. The dotted line is the frozen **cohort-maximum** limit: a case above it makes the cohort maximum fail. Both limits remain at their original development values.
+
+**Fresh confirmation: observed timing ratios.** The right panels show comparator/head case-median ratios for the available nominally valid timed calls. The dashed line at one is a timing tie. Legend numbers are medians of these paired ratios. The legend's `fixed` decision requires complete-case coverage, numerical and timing qualification, and both the head and comparator to satisfy the unchanged cohort-median and cohort-maximum limits. The separate `match` decision requires complete-case coverage, numerical and timing qualification, and the comparator's fresh cohort median and maximum errors to be no greater than the fresh head's. `match` does not redefine or relax the frozen limits. Every fresh comparison fails full qualification; the plotted partial ratios support no accepted speed claim. This is frozen-choice validation, not a new selection frontier.
 
 **Hardware scope.** Saved development measurements used {dev_provenance['gpu'].split(',')[0]}. Each fresh plot uses its own recorded allocation; no absolute time is pooled across hardware.
 

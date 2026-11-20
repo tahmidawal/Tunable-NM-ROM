@@ -8,7 +8,9 @@ Final saved development measurements are replotted here; a fresh panel is includ
 
 **Repetition spread.** All confirmation timing repetitions normalized by their own method–case median. This displays measurement variation; it is neither case-generalization uncertainty nor trained-model seed uncertainty. Tukey outliers remain displayed and retained.
 
-**Fresh confirmation.** When present, the new physical cohort is plotted separately, using only its own same-allocation timing measurements. Filled/hollow markers show median/worst errors, with unchanged development limits as dashed/dotted lines. Every paired ratio is shown even if the fixed accuracy or numerical/timing qualification fails; the data explicitly contain fixed-limit and fresh-head-matching decisions separately. This is frozen-choice validation, not a new accuracy–cost selection frontier.
+**Fresh confirmation.** The new physical cohort is plotted separately. The error panels include all nominal learned/POD qualification outputs, including numerically rejected ones marked with crosses, and classical same-invocation scored outputs. These error diagnostics are not joined to separately timed measurements to manufacture a cost point. Unchanged development cohort-median and cohort-worst limits are dashed/dotted guides; the median limit is not a per-case cutoff. The paired timing panels show only available nominally valid timed outputs; the missing head case is marked. All fresh comparisons fail full qualification, and these observed partial ratios support no accepted speed claim. Legends identify fixed-threshold and fresh-head-matching qualification separately. This is frozen-choice validation, not a new accuracy–cost selection frontier.
+
+**Hardware scope.** Saved development measurements used NVIDIA L40S. Each fresh plot uses its own recorded allocation; no absolute time is pooled across hardware.
 
 ## Incomplete selection configurations
 

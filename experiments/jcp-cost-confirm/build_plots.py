@@ -28,6 +28,9 @@ def save(fig, out, stem):
     for ext in ["png", "svg", "pdf"]:
         kwargs = {"metadata": {"Date": None}} if ext == "svg" else ({"metadata": {"CreationDate": None, "ModDate": None}} if ext == "pdf" else {})
         fig.savefig(out / f"{stem}.{ext}", bbox_inches="tight", **kwargs)
+        if ext == "svg":
+            p = out / f"{stem}.{ext}"
+            p.write_text("\n".join(line.rstrip() for line in p.read_text().splitlines()) + "\n")
     plt.close(fig)
 
 
@@ -133,41 +136,63 @@ def development(selection, confirmed, out, data):
     return points, excluded
 
 
-def fresh(result, cfg, out, data):
+def fresh(result, cfg, qualifications, references, provenance, out, data):
     targets = list(cfg["frozen_comparators"])
     fig, axs = plt.subplots(2, 2, figsize=(11.5, 7.2), constrained_layout=True)
     data["fresh_confirmation"] = result
+    data["fresh_numerical_qualification"] = qualifications
+    data["fresh_provenance"] = provenance
     for row, target in enumerate(targets):
         ax, rat = axs[row]
         names = [target] + list(dict.fromkeys(cfg["frozen_comparators"][target].values()))
         threshold = cfg["frozen_thresholds"][target]
-        for name in names:
+        for offset, name in enumerate(names):
             r = result["confirmation"][name]
             g = group(name, r)
             label = "Head" if name == target else g
-            ax.scatter(r["median_case_ms"], 100*r["median_case_evolved_max_error"], c=COLORS[g], marker=MARKERS[g], s=72, label=label+" median")
-            ax.scatter(r["median_case_ms"], 100*r["worst_evolved_error"], facecolors="none", edgecolors=COLORS[g], marker=MARKERS[g], s=72)
-            ax.plot([r["median_case_ms"]]*2, 100*np.array([r["median_case_evolved_max_error"],r["worst_evolved_error"]]), color=COLORS[g], alpha=.5)
+            qq = sorted([q for q in qualifications if q["subject"] == name], key=lambda q:q["case"])
+            if qq:
+                ids = [q["case"] for q in qq]
+                values = [100*q["nominal_metrics"]["evolved_max_error"] for q in qq]
+                passed = np.array([q["passed"] for q in qq])
+            else:
+                ids = sorted(map(int, r["cases"]))
+                values = [100*r["cases"][str(i)]["evolved_max_error"] for i in ids]
+                passed = np.array([references[i]["absolute_reference_pass"] and
+                    references[i]["dt_refinement_max"] <= min(cfg["reference_absolute_gate"],
+                        cfg["reference_fraction_of_target_error"]*r["cases"][str(i)]["evolved_max_error"]) for i in ids])
+            xx = np.array(ids)+(offset-1.5)*.13
+            yy = np.array(values)
+            ax.scatter(xx[passed], yy[passed], c=COLORS[g], marker=MARKERS[g], s=38, label=label)
+            ax.scatter(xx[~passed], yy[~passed], c=COLORS[g], marker="x", s=40)
         ax.axhline(100*threshold["median_case_evolved_max_error"], color="#777", ls="--", label="Frozen median limit")
         ax.axhline(100*threshold["worst_evolved_error"], color="#777", ls=":", label="Frozen worst limit")
         ax.set_title(TARGET_LABELS[target])
-        ax.set_xlabel("Fresh complete query (ms; median of case medians)")
-        ax.set_ylabel("Max evolved field error (%)\nfilled: median; hollow: worst")
-        ax.legend(fontsize=7.4, ncol=2)
+        ax.set_xlabel("Fresh case index · × fails numerical qualification")
+        ax.set_ylabel("Nominal max evolved field error (%)")
+        ax.set_yscale("log")
+        ax.set_xlim(-.6,15.6)
+        lo, hi = ax.get_ylim()
+        ax.set_ylim(lo, hi*2.8)
+        ax.legend(fontsize=7.4, ncol=2, loc="upper right")
         for offset, (key, comparison) in enumerate(result["comparisons"][target].items()):
             g=GROUP_LABELS[key]
             qualification = "fixed " + ("pass" if comparison["qualified_fixed_threshold"] else "fail") + ", match " + ("pass" if comparison["qualified_fresh_head_match"] else "fail")
             rat.scatter(np.array(comparison["paired_case_ids"])+(offset-1)*.13, comparison["paired_case_ratios"], s=24,
                 color=COLORS[g], marker=MARKERS[g], label=f"{g}: {np.median(comparison['paired_case_ratios']):.3f} ({qualification})")
         rat.axhline(1, color="#444", ls="--", lw=1)
-        rat.set_xlabel("Fresh case index")
-        rat.set_ylabel("Comparator / head query time")
+        rat.set_xlabel("Fresh case index · available nominal timings only")
+        rat.set_ylabel("Unqualified comparator / head time")
+        rat.axvspan(14.6,15.4,color="#c9cdd1",alpha=.35)
+        rat.set_xlim(-.6,15.6)
+        rat.text(15,.04,"Head init failed",rotation=90,ha="center",va="bottom",fontsize=7,transform=rat.get_xaxis_transform())
         lo, hi = rat.get_ylim()
         rat.set_ylim(lo, hi + .32 * (hi - lo))
         rat.legend(fontsize=7.2, loc="upper right")
         for a in [ax,rat]:
+            a.set_xticks([0,3,6,9,12,15])
             a.grid(axis="y", color="#e0e5e9", lw=.6)
-    fig.suptitle("Fresh physical confirmation · frozen models, comparators and accuracy limits", fontsize=12)
+    fig.suptitle("Fresh confirmation does not pass frozen qualification · no accepted speed claim", fontsize=12)
     save(fig,out,"accuracy-cost-fresh-confirmation")
 
 
@@ -177,13 +202,17 @@ def main():
     parser.add_argument("--out",type=Path,default=HERE/"plots")
     args=parser.parse_args()
     args.out.mkdir(parents=True,exist_ok=True)
-    paths=[HERE/"evidence/cost-p04-selection.json",HERE/"evidence/cost-p04.json",HERE/"configs/fresh16.json"]
-    sel,conf,cfg=[json.loads(p.read_text()) for p in paths]
+    paths=[HERE/"evidence/cost-p04-selection.json",HERE/"evidence/cost-p04.json",HERE/"configs/fresh16.json",HERE/"evidence/cost-p04-provenance.json"]
+    sel,conf,cfg,dev_provenance=[json.loads(p.read_text()) for p in paths]
     data={"schema":"jcp-cost-plotted-data-v1","error_contract":"max over five evolved outputs, initial-field norm; initial separate", "ratio_direction":"comparator/head; above1 favors head","sources":{str(p.relative_to(HERE)):hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}}
     points,excluded=development(sel,conf,args.out,data)
     if args.fresh:
         res=json.loads(args.fresh.read_text());data['sources'][str(args.fresh)]=hashlib.sha256(args.fresh.read_bytes()).hexdigest()
-        fresh(res,cfg,args.out,data)
+        output=args.fresh.parent.parent
+        fresh_paths=[output/'numerical_qualification.json',output/'references.json',output/'provenance.json']
+        q,refs,prov=[json.loads(p.read_text()) for p in fresh_paths]
+        data['sources'].update({str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in fresh_paths})
+        fresh(res,cfg,q,refs,prov,args.out,data)
     (args.out/"plotted-data.json").write_text(json.dumps(data,indent=2,allow_nan=False)+'\n')
     captions=f'''# Accuracy–cost figure captions
 
@@ -195,7 +224,9 @@ Final saved development measurements are replotted here; a fresh panel is includ
 
 **Repetition spread.** All confirmation timing repetitions normalized by their own method–case median. This displays measurement variation; it is neither case-generalization uncertainty nor trained-model seed uncertainty. Tukey outliers remain displayed and retained.
 
-**Fresh confirmation.** When present, the new physical cohort is plotted separately, using only its own same-allocation timing measurements. Filled/hollow markers show median/worst errors, with unchanged development limits as dashed/dotted lines. Every paired ratio is shown even if the fixed accuracy or numerical/timing qualification fails; the data explicitly contain fixed-limit and fresh-head-matching decisions separately. This is frozen-choice validation, not a new accuracy–cost selection frontier.
+**Fresh confirmation.** The new physical cohort is plotted separately. The error panels include all nominal learned/POD qualification outputs, including numerically rejected ones marked with crosses, and classical same-invocation scored outputs. These error diagnostics are not joined to separately timed measurements to manufacture a cost point. Unchanged development cohort-median and cohort-worst limits are dashed/dotted guides; the median limit is not a per-case cutoff. The paired timing panels show only available nominally valid timed outputs; the missing head case is marked. All fresh comparisons fail full qualification, and these observed partial ratios support no accepted speed claim. Legends identify fixed-threshold and fresh-head-matching qualification separately. This is frozen-choice validation, not a new accuracy–cost selection frontier.
+
+**Hardware scope.** Saved development measurements used {dev_provenance['gpu'].split(',')[0]}. Each fresh plot uses its own recorded allocation; no absolute time is pooled across hardware.
 
 ## Incomplete selection configurations
 
@@ -209,7 +240,7 @@ Final saved development measurements are replotted here; a fresh panel is includ
 **Complete query:** all work from the declared host initial field to returned host fields, including native initialization and diagnostics conversion. **Head:** nonlinear coefficient map inside a frozen bank. **Span:** arbitrary linear combinations of the bank. **POD:** a snapshot-derived spatial basis; POD-head settings use a frozen coefficient map. **Coarse/same-grid:** a classical solver using fewer/the same grid points as the returned field. **Median/worst error:** middle/largest casewise maximum evolved error. **Selection:** the development comparison used to choose settings. **Confirmation:** repetitions or fresh cases evaluated after choices were fixed, identified separately. **Paired ratio:** comparator time divided by ROM time for the same case. **Marginal envelope:** observed best time–error choices for one plotted error statistic. **Tukey outlier:** a sample more than one and a half interquartile ranges beyond the lower or upper quartile.
 '''
     (args.out/"captions.md").write_text(captions)
-    manifest={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(args.out.iterdir()) if p.is_file() and p.name!='MANIFEST.json'}
+    manifest={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(args.out.iterdir()) if p.is_file() and p.name not in ['MANIFEST.json','VERIFICATION.json']}
     (args.out/'MANIFEST.json').write_text(json.dumps(manifest,indent=2)+'\n')
     print(json.dumps({'output':str(args.out),'figures':[p.name for p in args.out.glob('*.png')],'complete_selection_configs':len(points),'incomplete_selection_configs':len(excluded)}))
 

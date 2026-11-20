@@ -1,0 +1,154 @@
+{
+  "derivative_case_maxima": {
+    "R128-M2048": {
+      "error": {
+        "median_percent": 1.322785541730855,
+        "worst_percent": 4.29789304436911
+      },
+      "gradient_error": {
+        "median_percent": 18.081260594133433,
+        "worst_percent": 38.58726013800705
+      },
+      "upwind_advection_error": {
+        "median_percent": 12.130173938632732,
+        "worst_percent": 44.56825919214477
+      },
+      "laplacian_error": {
+        "median_percent": 141.13082614366158,
+        "worst_percent": 404.55771491750386
+      }
+    },
+    "R256-M2048": {
+      "error": {
+        "median_percent": 0.46198662963796416,
+        "worst_percent": 1.0194737751109004
+      },
+      "gradient_error": {
+        "median_percent": 6.757635615234507,
+        "worst_percent": 21.769856222690926
+      },
+      "upwind_advection_error": {
+        "median_percent": 3.2176942552873498,
+        "worst_percent": 22.272338832343802
+      },
+      "laplacian_error": {
+        "median_percent": 91.32197024419663,
+        "worst_percent": 182.11418968407554
+      }
+    },
+    "R256-M4096": {
+      "error": {
+        "median_percent": 0.4586173822211081,
+        "worst_percent": 0.8348344801886872
+      },
+      "gradient_error": {
+        "median_percent": 6.576821464164202,
+        "worst_percent": 16.92973890337865
+      },
+      "upwind_advection_error": {
+        "median_percent": 2.690483905948155,
+        "worst_percent": 17.21371183221973
+      },
+      "laplacian_error": {
+        "median_percent": 67.92435035804667,
+        "worst_percent": 145.10300178019256
+      }
+    },
+    "R512-M2048": {
+      "error": {
+        "median_percent": 0.22196101552808867,
+        "worst_percent": 0.6540428991170233
+      },
+      "gradient_error": {
+        "median_percent": 6.7016813660848555,
+        "worst_percent": 13.775771499160625
+      },
+      "upwind_advection_error": {
+        "median_percent": 1.345935639417293,
+        "worst_percent": 4.056830703909175
+      },
+      "laplacian_error": {
+        "median_percent": 222.11227489797008,
+        "worst_percent": 465.0938108320826
+      }
+    },
+    "R512-M8192": {
+      "error": {
+        "median_percent": 0.148416865617849,
+        "worst_percent": 0.391844645739062
+      },
+      "gradient_error": {
+        "median_percent": 2.751502309447082,
+        "worst_percent": 4.842574262914274
+      },
+      "upwind_advection_error": {
+        "median_percent": 0.9353929931817208,
+        "worst_percent": 3.185757510286466
+      },
+      "laplacian_error": {
+        "median_percent": 86.21645315708895,
+        "worst_percent": 183.14194732380963
+      }
+    }
+  },
+  "denominator_ranges": {
+    "error": {
+      "minimum": 38.17851348867331,
+      "maximum": 90.84176571063952,
+      "smallest_fraction_of_initial": 1.0
+    },
+    "gradient_error": {
+      "minimum": 95.47139937149649,
+      "maximum": 1705.3490830181051,
+      "smallest_fraction_of_initial": 0.17046912025438324
+    },
+    "upwind_advection_error": {
+      "minimum": 8.663202863941894,
+      "maximum": 911.5428643425848,
+      "smallest_fraction_of_initial": 0.026512839469690606
+    },
+    "laplacian_error": {
+      "minimum": 838.6826041863276,
+      "maximum": 357035.5839207995,
+      "smallest_fraction_of_initial": 0.013372249002642422
+    }
+  },
+  "regressions": [
+    {
+      "case": 0,
+      "maximum_increase_percentage_points": 0.0006995432022099583,
+      "time": 0.25,
+      "increased_time_count": 3
+    },
+    {
+      "case": 1,
+      "maximum_increase_percentage_points": 0.0008830338752637386,
+      "time": 0.01,
+      "increased_time_count": 2
+    },
+    {
+      "case": 2,
+      "maximum_increase_percentage_points": 0.008421845095723987,
+      "time": 0.01,
+      "increased_time_count": 3
+    },
+    {
+      "case": 3,
+      "maximum_increase_percentage_points": 0.13107868826601696,
+      "time": 0.125,
+      "increased_time_count": 42
+    },
+    {
+      "case": 4,
+      "maximum_increase_percentage_points": 0.03348246377399031,
+      "time": 0.01,
+      "increased_time_count": 34
+    },
+    {
+      "case": 5,
+      "maximum_increase_percentage_points": 0.22672566906423505,
+      "time": 0.015,
+      "increased_time_count": 50
+    }
+  ]
+}

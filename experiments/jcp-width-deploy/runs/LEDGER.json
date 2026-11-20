@@ -1,0 +1,22 @@
+{
+  "lane": "jcp_width_deployment",
+  "ceiling_allocated_gpu_seconds": 7200,
+  "attempts": [
+    {
+      "attempt": "f128",
+      "job_id": "7385297",
+      "reservation_seconds": 1200
+    },
+    {
+      "attempt": "f512",
+      "job_id": "7385298",
+      "reservation_seconds": 1200
+    }
+  ],
+  "preparation_failures": [
+    {
+      "description": "Initial staging lacked local runs directory; no payload or scheduler job created. Directory created and exact staging rerun.",
+      "gpu_seconds": 0
+    }
+  ]
+}

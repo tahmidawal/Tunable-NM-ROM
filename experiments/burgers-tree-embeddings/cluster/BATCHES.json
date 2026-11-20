@@ -1,5 +1,5 @@
 {
-  "cumulative_ceiling_gpu_seconds": 74003,
+  "cumulative_ceiling_gpu_seconds": 78863,
   "batches": [
     {
       "id": "B0",
@@ -186,6 +186,20 @@
       "review": "configs/B7-REVIEW.md",
       "accounting": "manifests/allocation-audit-B7-FINAL.json",
       "archive": "manifests/archive-closeout-B7-ALL.json"
+    },
+    {
+      "id": "B8",
+      "baseline_allocated_gpu_seconds": 50063,
+      "max_additional_gpu_seconds": 28800,
+      "cumulative_ceiling_gpu_seconds": 78863,
+      "max_concurrent": 2,
+      "max_seconds_per_job": 7200,
+      "configuration": "configs/B8-NONLINEAR-CHILDREN.md",
+      "status": "ACTIVE",
+      "purpose": "New nonlinear child training and expanded ridge/two-pulse cohorts; subsequent qualified embedding PDE and matched native comparators",
+      "registered_utc": "2026-11-20T00:58:11.106509+00:00",
+      "repair_limit": null,
+      "user_authorization": "Explicit continuation, no two-repair stop; independent ideation and train nonlinear children with expanded independent cohorts"
     }
   ]
 }

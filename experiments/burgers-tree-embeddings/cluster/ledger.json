@@ -1627,5 +1627,20 @@
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1",
     "archived_remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/archive/b7render",
     "archive_label": "B7-FINAL"
+  },
+  {
+    "name": "b8trainrefs",
+    "id": 7385700,
+    "reserved_minutes": 60,
+    "commit": "78516f9fa8db04a9ee82ae25101edc39dae49d2e",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b8trainrefs",
+    "driver": "generate_expanded_references.py",
+    "args": "--cohort train --start 0 --count 32",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-20T01:03:21.852828+00:00",
+    "state": "RUNNING",
+    "elapsed_seconds": 6,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
   }
 ]

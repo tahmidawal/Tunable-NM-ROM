@@ -21,10 +21,16 @@ def main():
     for group,jobs in [('train',a.train_jobs),('dev',a.dev_jobs)]:
         groups[group]=dict(y=[arrays[group+'_y']],encoder=[arrays[group+'_encoder']],norm=[arrays[group+'_norm']],
                            labels=list(dr['groups'][group]['labels']),sources=list(dr['groups'][group]['sources']),family=['primary']*len(dr['groups'][group]['labels']))
-        for job in filter(None,jobs.split(',')):
+        joblist=list(filter(None,jobs.split(',')));assert len(joblist)==len(set(joblist))
+        for job in joblist:
             rp=resolve(ns/job/'output/result.json',ns);record=json.loads(rp.read_text());assert record['cohort']==group
+            assert record['status']=='complete_expanded_ladders_pending_independent_crosscheck' and record['all_ladders_pass']
+            assert not record['final_test_opened']
             cache=rp.parent/'coordinate_data.npz';assert digest(cache)==record['coordinate_data']['sha256'];v=np.load(cache)
-            assert np.allclose(v['xy'],xy) and np.allclose(v['w'],w)
+            assert np.array_equal(v['xy'],arrays['xy']) and np.array_equal(v['w'],arrays['w'])
+            assert np.array_equal(v['encoder_xy'],arrays['encoder_xy'])
+            assert np.array_equal(v['case_ids'],np.repeat([r['case'] for r in record['cases']],11))
+            assert np.array_equal(v['times'],np.tile(data.TIMES,len(record['cases'])))
             provenance.append(dict(job=job,record_sha256=digest(rp),cache_sha256=digest(cache),cohort=group))
             for key in ['y','encoder','norm']:groups[group][key].append(v[key])
             for row in record['cases']:
@@ -34,6 +40,7 @@ def main():
         for key in ['y','encoder','norm']:groups[group][key]=jnp.asarray(np.concatenate(groups[group][key]))
     tr,dv=groups['train'],groups['dev'];train_count=len(tr['labels']);dev_count=len(dv['labels'])
     assert len(set(tr['labels'])&set(dv['labels']))==0
+    assert len(set(tr['labels']))==train_count and len(set(dv['labels']))==dev_count
     params=R.initialize(jax.random.PRNGKey(a.seed),root,child_k=a.child_k,features=a.features,width=64)
     if a.warm_job:
         wp=resolve(ns/a.warm_job/'output/nonlinear_tree.pkl',ns);wr=json.loads((wp.parent/'result.json').read_text());assert digest(wp)==wr['selected_sha256']

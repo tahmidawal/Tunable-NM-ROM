@@ -166,7 +166,7 @@ def main():
     ns = Path(os.environ['STUDY_NAMESPACE'])
     mp = resolve(ns/a.model_job/'output/nonlinear_tree.pkl', ns)
     mrp = mp.parent/'result.json'; model_record = json.loads(mrp.read_text())
-    assert model_record['status'] == 'complete_nonlinear_child_subset'
+    assert model_record['status'] in ('complete_nonlinear_child_subset','complete_nonlinear_child_multidepth_subset')
     assert digest(mp) == model_record['selected_sha256'] and not model_record['final_test_opened']
     model = read_checkpoint(mp); params = jax.tree.map(jnp.asarray, model['params'])
     pp = resolve(ns/'b7parentrepair/output/stable_parent.pkl', ns)

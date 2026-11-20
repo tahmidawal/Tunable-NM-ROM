@@ -48,6 +48,11 @@ def main():
         hashes={r['file']:r['sha256'] for r in retained['files']}
         assert digest(top)==hashes['output/result.json']
         assert digest(qp)==hashes['output/jacobian/result.json']
+        source_manifest=top.parent.parent/'SOURCE.sha256'
+        assert digest(source_manifest)==hashes['SOURCE.sha256']
+        source_entries=[line.split(maxsplit=1) for line in source_manifest.read_text().splitlines() if line.strip()]
+        stable_hashes=[sha for sha,name in source_entries if name=='experiments/burgers-tree-embeddings/neural/stable.py']
+        assert len(stable_hashes)==1 and digest(HERE/'neural/stable.py')==stable_hashes[0], 'Current decoder/Jacobian differs from qualified profile source'
         pp=resolve(ns/'b7parentrepair/output/stable_parent.pkl',ns);pr=json.loads((pp.parent/'result.json').read_text())
         assert digest(pp)==pr['selected_sha256'];parent=read_checkpoint(pp)
         dp=resolve(ns/'b6parent/output/coordinate_data.npz',ns);assert digest(dp)==parent['data_sha256']
@@ -104,10 +109,21 @@ def main():
             with np.load(path) as v:
                 assert np.array_equal(v['times'],data.TIMES)
                 fine[ci]=data.synth_grid(jnp.asarray(v['coefficients']),jnp.unique(xf[:,0])).reshape(11,-1)
+        failure_serial=0
+        def require_finite(values,context,payload):
+            nonlocal failure_serial
+            if all(np.isfinite(np.asarray(value)).all() for value in values):return
+            failure_serial+=1
+            path=out/f'nonfinite_failure_{failure_serial:02d}.pkl'
+            sha=checkpoint(path,dict(context=context,payload=payload,admitted=False))
+            result.setdefault('nonfinite_failures',[]).append(dict(context=context,file=path.name,sha256=sha))
+            raise FloatingPointError('Nonfinite values retained before selection: '+context)
         def finish(p,z,group,i):
             z,st=fit(p,z,xy,group['y'][i],w,group['norm'][i]);attempts=[np.asarray(st)]
+            require_finite([z,st],f'training_refresh_{i}_initial',dict(index=i,codes=z,status=st,attempts=attempts))
             if not bool(st[-1]):
                 z,st=more(p,z,xy,group['y'][i],w,group['norm'][i]);attempts.append(np.asarray(st))
+                require_finite([z,st],f'training_refresh_{i}_continuation',dict(index=i,codes=z,status=st,attempts=attempts))
             return z,st,attempts
         evaluation_serial=0
         def evaluate(p,c):
@@ -117,12 +133,15 @@ def main():
             for i in selection:
                 near,interp=S.nearest_starts(dv['encoder'][i],tr['encoder'],c)
                 fits=[fit(p,start,xy,dv['y'][i],w,dv['norm'][i]) for start in [near,interp,jnp.zeros(a.latent)]]
+                require_finite([value for pair in fits for value in pair],f'panel_{evaluation_serial}_field_{i}_starts',dict(index=i,fits=fits,previous_rows=rows))
                 selected=min(range(3),key=lambda j:float(fits[j][1][0]));z,st=fits[selected]
                 attempts=[dict(start=name,status=np.asarray(candidate[1])) for name,candidate in zip(['nearest','interpolated','zero'],fits)]
                 if not bool(st[-1]):
                     z,st=more(p,z,xy,dv['y'][i],w,dv['norm'][i]);attempts.append(dict(start='selected_continuation',status=np.asarray(st)))
+                require_finite([z,st],f'panel_{evaluation_serial}_field_{i}_selected',dict(index=i,codes=z,status=st,attempts=attempts,previous_rows=rows))
                 ci,ti=divmod(i,11)
                 pred=S.apply(p,z,xf);error=float(jnp.sqrt(jnp.sum(wf*(pred-fine[ci][ti])**2))/dv['norm'][i])
+                require_finite([error],f'panel_{evaluation_serial}_field_{i}_score',dict(index=i,codes=z,status=st,attempts=attempts,independent_error=error,previous_rows=rows))
                 rows.append(dict(index=i,case=dv['labels'][ci],time=float(data.TIMES[ti]),codes=np.asarray(z),
                     status=np.asarray(st),attempts=attempts,selected_start=selected,independent_error=error,
                     scoring_change=abs(error-float(st[0])),converged=bool(st[-1]) and np.isfinite(np.asarray(st)).all().item()))
@@ -134,7 +153,8 @@ def main():
             jacobian_qualification_sha256=digest(qp),qualification_wrapper_sha256=digest(top),jacobian_retention_sha256=digest(manifest),
             derivative_qualification_checks=derivative_checks,overall_pde_trace_parity_passed=q['parity_passed'],
             qualification_scope='Root/residual derivative values only; overall strict PDE iteration/acceptance trace gate is not a training prerequisite and is not claimed passed',
-            stable_module_sha256=digest(HERE/'neural/stable.py'),
+            stable_module_sha256=digest(HERE/'neural/stable.py'),qualified_source_manifest_sha256=digest(source_manifest),
+            qualified_stable_module_sha256=stable_hashes[0],
             expanded_sources=tr['provenance']+dv['provenance'],train_labels=tr['labels'],dev_labels=dv['labels'],
             initialization='B7 weights/primary codes; each expanded snapshot copies nearest original training-field code; no extrapolated unfinished root fits',
             initial_field_preservation_max_abs=preservation,
@@ -193,10 +213,18 @@ def main():
                     codes=np.stack(refreshed),records=fitrows,network_sha256=result['selected_sha256']))
                 print('expanded_global_final_refresh',i+1,len(codes),float(st[0]),bool(st[-1]),flush=True)
         codes=jnp.asarray(np.stack(refreshed));ev=evaluate(network,codes)
-        selected.update(training_codes=codes,evaluation=ev,training_fit_records=fitrows,
+        refreshed_metrics=dict(update=selected['update'],stage='selected_network_after_all_training_code_refresh',
+            worst_independent_error=max(r['independent_error'] for r in ev),
+            median_independent_error=float(np.median([r['independent_error'] for r in ev])),
+            unfinished=sum(not r['converged'] for r in ev),max_scoring_change=max(r['scoring_change'] for r in ev),
+            worst_training_error=max(float(r['status'][0]) for r in fitrows),
+            unfinished_training_fits=sum(not bool(r['status'][-1]) for r in fitrows))
+        selected.update(pre_refresh_metrics=dict(selected['metrics']),metrics=refreshed_metrics,
+            pre_refresh_checkpoint_sha256=result['selected_sha256'],training_codes=codes,evaluation=ev,training_fit_records=fitrows,
             optimizer=None,optimizer_note='Code refresh invalidates saved Adam state; no exact continuation from this artifact')
         result['selected_sha256']=checkpoint(out/'stable_parent.pkl',selected)
-        result.update(status='complete_expanded_global_selection',
+        result.update(status='complete_expanded_global_selection',pre_refresh_metrics=selected['pre_refresh_metrics'],
+            refreshed_metrics=refreshed_metrics,
             worst_independent_error=max(r['independent_error'] for r in ev),
             unfinished_fits=sum(not r['converged'] for r in ev),max_scoring_change=max(r['scoring_change'] for r in ev),
             worst_training_error=max(float(r['status'][0]) for r in fitrows),

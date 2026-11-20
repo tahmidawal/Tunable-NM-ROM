@@ -84,3 +84,12 @@ parent limitation before attributing failure or improvement to local children.
 Runtime risk: repeated cold panel fits and the final all-training refresh can
 consume the allocation. Retain incomplete results if the120-minute cap is hit;
 do not omit the full refresh or change fit gates to label the attempt complete.
+
+Pre-submission integrity repair: verify the retained profile SOURCE.sha256
+manifest against its retention hash, then require the current neural/stable.py
+hash to equal that qualified source entry. Retain the additional in-run
+derivative check. Reject any nonfinite candidate codes, fit status or scored
+error before selection reductions; retain the offending payload in a separate
+failure checkpoint and stop. The refreshed final checkpoint stores refreshed
+metrics matching its codes/evaluation, preserves pre_refresh_metrics and the
+pre-refresh checkpoint hash, and retains both sets in the result record.

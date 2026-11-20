@@ -1729,7 +1729,7 @@
     "gpu": "a100",
     "submitted_utc": "2026-11-20T01:36:01.626658+00:00",
     "state": "RUNNING",
-    "elapsed_seconds": 740,
+    "elapsed_seconds": 783,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
   },
@@ -1747,5 +1747,16 @@
     "elapsed_seconds": 330,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b8treeplots",
+    "id": 7387022,
+    "reserved_minutes": 10,
+    "commit": "1e680ddf8a177f68863f1a6c942d6ce0ccc3783a",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b8treeplots",
+    "driver": "render_residual_pde.py",
+    "args": "--source-job b8treepde",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-20T01:49:48.507305+00:00"
   }
 ]

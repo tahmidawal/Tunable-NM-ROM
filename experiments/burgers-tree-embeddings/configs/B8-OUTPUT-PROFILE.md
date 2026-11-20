@@ -1,0 +1,9 @@
+# B8 equivalent actual4096 output profile
+
+One A100-80GB job, at most15 allocated minutes. Entry: `benchmark_residual_output.py --out OUTPUT --source-job b8treepde`. No training, PDE evolution, final-test fields or new field archives.
+
+Compare in one invocation: original16-row host-directed packed preparation;64-row host-first geometry with explicitly compiled child features; identical64-row path with fixed supports/features cached across all five retained codes. Every variant reconstructs all4096² values. Burn GPU before each variant; fresh compilation caches per variant. Parent first-layer caching is intentionally omitted.
+
+Charge construction, coordinate transfers, compilation, full parent decoding, child assembly and full device output. Cached path pays its complete cache construction once. Verification transfers and retained field reads are excluded from reconstruction timing and reported separately. Report cumulative five-output cost, not just warm output time. Source/model/trajectory/field hashes are checked. Every predicted element is compared with the retained baseline, requiring maximum absolute error below1e-11 and relative L2 discrepancy below1e-10. A failed assertion invalidates equivalence.
+
+Report logical cached GPU-array bytes and allocator memory snapshots. Allocator cumulative peak is not reset and must not be presented as a variant-specific peak. Child features are roughly13.4GB for the four-node case; actual bytes include coordinates and indices. This run is fixed-order and single-repetition, so it screens optimizations and does not establish a definitive paired runtime result. Cache validity is restricted to this fixed model, coordinates and tree. Future adaptive changes must rebuild affected caches and charge that work. No science change or method qualification is claimed.

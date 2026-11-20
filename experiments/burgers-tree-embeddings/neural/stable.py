@@ -41,3 +41,15 @@ def nearest_starts(field,training_fields,codes):
     ids=jnp.argsort(distance)[:8]
     weight=1/jnp.maximum(distance[ids],1e-12);weight=weight/weight.sum()
     return codes[ids[0]],jnp.sum(codes[ids]*weight[:,None],axis=0)
+
+
+def code_jacobian(p, z, xy):
+    """Scalar-output reverse differentiation independently at each point.
+
+    Avoid a full-field jacrev, whose output dimension is the spatial grid size.
+    The online root code is one vector; arbitrary point batches are flattened.
+    """
+    assert z.ndim == 1 and xy.shape[-1] == 2
+    points=xy.reshape(-1,2)
+    J=jax.vmap(jax.grad(apply,argnums=1),in_axes=(None,None,0))(p,z,points)
+    return J.reshape(xy.shape[:-1]+(len(z),))

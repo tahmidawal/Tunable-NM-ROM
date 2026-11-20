@@ -72,3 +72,14 @@ def tree(params, z, xy, cells):
 
 def tree_jacobian(params, z, xy, cells):
     return cached_jacobian(dict(params, B=feature_matrix(params['feature'], cells, xy)), z, xy)
+
+
+def cached_jacobian_reverse(params, z, xy):
+    """Same block Jacobian, scalar reverse mode for the nonlinear root only."""
+    root_k, child_k = dimensions(params)
+    local = z[root_k:].reshape(-1, child_k)
+    parent = S.code_jacobian(params['root'], z[:root_k], xy)
+    head_jac = jax.vmap(jax.jacfwd(coefficients, argnums=1), in_axes=(None, 0, None))(
+        params['head'], local, params['scale'])
+    children = jnp.einsum('pnr,nrk->pnk', params['B'], head_jac).reshape(len(xy), -1)
+    return jnp.concatenate([parent, children], axis=-1)

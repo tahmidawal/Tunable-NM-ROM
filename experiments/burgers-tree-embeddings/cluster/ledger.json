@@ -1653,8 +1653,8 @@
     "args": "",
     "gpu": "a100",
     "submitted_utc": "2026-11-20T01:04:19.469413+00:00",
-    "state": "RUNNING",
-    "elapsed_seconds": 210,
+    "state": "COMPLETED",
+    "elapsed_seconds": 441,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
   },
@@ -1667,6 +1667,21 @@
     "driver": "generate_expanded_references.py",
     "args": "--cohort dev --start 0 --count 8",
     "gpu": "a100",
-    "submitted_utc": "2026-11-20T01:11:02.178532+00:00"
+    "submitted_utc": "2026-11-20T01:11:02.178532+00:00",
+    "state": "COMPLETED",
+    "elapsed_seconds": 93,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b8expandedfd",
+    "id": 7385993,
+    "reserved_minutes": 60,
+    "commit": "84f4965069bf664d0d06c4a51663b001c2df16d8",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b8expandedfd",
+    "driver": "crosscheck_expanded.py",
+    "args": "--source-jobs b8trainrefs,b8devrefs",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-20T01:16:36.591957+00:00"
   }
 ]

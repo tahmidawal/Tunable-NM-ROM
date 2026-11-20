@@ -1,6 +1,6 @@
 {
   "schema": "jcp-cost-confirm-retention-v1",
-  "status": "checksum-verified raw files retained locally; backup verification follows commit",
+  "status": "checksum-verified local/Git retention and code-only backup verified",
   "job_id": "7385300",
   "job_terminal_state": "COMPLETED",
   "allocated_gpu_seconds": 269,
@@ -514,5 +514,15 @@
       "over_code_only_mirror_limit": false
     }
   },
-  "large_file_scope": "Large regenerated deployment basis arrays and transport archive exceed code-only mirror limit. Their local copies and Git blobs are retained; frozen trained parameters, generator, measurement records, source hashes and regeneration recipe are backed up through code-only mirror."
+  "large_file_scope": "Large regenerated deployment basis arrays and transport archive exceed code-only mirror limit. Their local copies and Git blobs are retained; frozen trained parameters, generator, measurement records, source hashes and regeneration recipe are backed up through code-only mirror.",
+  "backup_verification": {
+    "source_commit": "cca07ee5771b7a79cb647ba9515ea72bb054811b",
+    "mirror_commit": "7f9a176484daa8e66704166fa1027b94d99366d6",
+    "matched_blob_count": 143,
+    "large_files_omitted_from_mirror": [
+      "experiments/jcp-cost-confirm/runs/p01/output/deployed_assets/learned/basis.npy",
+      "experiments/jcp-cost-confirm/runs/p01/output/deployed_assets/pod/basis.npy",
+      "experiments/jcp-cost-confirm/runs/p01/result.tar.gz"
+    ]
+  }
 }

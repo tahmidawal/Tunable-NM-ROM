@@ -38,6 +38,8 @@ function b8_boundary_checks(native_model)
     identity_error = maximum(abs.(physical_gpu-b.*raw_physical))
     boundary_error = maximum(abs.(physical_gpu[:,1:6]))
     @assert identity_error<1e-12 && boundary_error<1e-12
+    # Native train_model returns host parameters: these input-gradient/Hessian
+    # checks are intentionally cluster CPU checks, not GPU nested-AD admission.
     gradient_error=0.0; laplacian_error=0.0; latent_fd_error=0.0
     for x in ([0.31,0.42],[0.63,0.28],[1/16384,0.43])
         raw = physical(x,z;wrapped=false)
@@ -57,7 +59,11 @@ function b8_boundary_checks(native_model)
         end
     end
     @assert gradient_error<1e-10 && laplacian_error<1e-9 && latent_fd_error<1e-6
-    Dict("boundary_wrapper_passed"=>true,"boundary_max_absolute"=>boundary_error,
+    Dict("boundary_wrapper_passed"=>true,
+        "value_and_native_training_gradient_device"=>"GPU Float64",
+        "spatial_latent_gradient_and_hessian_device"=>"cluster CPU Float64",
+        "gpu_nested_spatial_ad_qualified"=>false,
+        "online_derivative_path_qualification_required"=>true,"boundary_max_absolute"=>boundary_error,
         "physical_normalization_identity_error"=>identity_error,
         "spatial_product_rule_relative_error"=>gradient_error,
         "laplacian_product_rule_relative_error"=>laplacian_error,

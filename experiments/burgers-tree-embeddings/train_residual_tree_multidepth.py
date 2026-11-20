@@ -7,11 +7,17 @@ from neural.build_data import resolve
 from training_io import checkpoint,read_checkpoint
 import data
 from neural import spatial_sampling as SS
+from evaluate_residual_tree import load_group, owned_job
+from extend_residual_fits import verified_manifest
 
 
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--out',required=True);ap.add_argument('--updates',type=int,default=30000)
-    ap.add_argument('--train-jobs',required=True);ap.add_argument('--dev-jobs',required=True);ap.add_argument('--warm-job',required=True)
+    ap.add_argument('--train-jobs',required=True);ap.add_argument('--dev-jobs',required=True);ap.add_argument('--warm-job',default='')
+    ap.add_argument('--parent-job',default='b7parentrepair')
+    ap.add_argument('--fresh-children',action='store_true')
+    ap.add_argument('--assembled-jacobian',choices=['forward','reverse'],default='forward')
+    ap.add_argument('--qualification-job',default='b8implprofile')
     ap.add_argument('--reuse-codes',action='store_true',help='Reuse verified root and selected multidepth codes from warm-job; reset all Adam clocks/moments and learning-rate schedules')
     ap.add_argument('--parent-initializer',choices=['newton','gn-only'],default='newton',help='Three60-step parent GN starts; optionally finish selected unfinished start with120 Newton steps. Does not alter assembled fitting.')
     ap.add_argument('--spatial-sampling',choices=['uniform-index','residual-mixture'],default='uniform-index')
@@ -20,11 +26,35 @@ def main():
     ap.add_argument('--all-final-refit',action='store_true',help='Refit all times/all variants at final checkpoint; otherwise rotating time only')
     ap.add_argument('--child-k',type=int,default=16);ap.add_argument('--features',type=int,default=64);ap.add_argument('--nodes',type=int,default=20)
     ap.add_argument('--seed',type=int,default=2026111989);a=ap.parse_args()
-    assert a.train_jobs and a.dev_jobs and a.warm_job and a.nodes==20
+    assert a.train_jobs and a.dev_jobs and a.nodes==20
+    owned_job(a.parent_job);expanded_parent=a.parent_job!='b7parentrepair'
+    assert bool(a.warm_job)!=a.fresh_children, 'Choose exactly one warm checkpoint or fresh children'
+    assert not a.reuse_codes or a.warm_job
+    if expanded_parent:
+        assert a.fresh_children and not a.reuse_codes and a.assembled_jacobian=='reverse' and a.parent_initializer=='gn-only'
     assert a.updates>0
     variant_labels=['coarse4','uniform20','prescribed20'];variant_probabilities=[.2,.4,.4]
     out=Path(a.out);out.mkdir(parents=True,exist_ok=True);metadata=preflight();ns=Path(os.environ['STUDY_NAMESPACE'])
-    pp=resolve(ns/'b7parentrepair/output/stable_parent.pkl',ns);pr=json.loads((pp.parent/'result.json').read_text());assert digest(pp)==pr['selected_sha256']
+    pp=resolve(ns/a.parent_job/'output/stable_parent.pkl',ns);pr=json.loads((pp.parent/'result.json').read_text());assert digest(pp)==pr['selected_sha256']
+    parent_retention=None;derivative_proof=None;wp=None
+    if expanded_parent:
+        assert pr['status']=='complete_expanded_global_selection' and pr['latent']==32 and not pr['final_test_opened']
+        parent_retention=verified_manifest(a.parent_job,ns,{'output/result.json':pp.parent/'result.json','output/stable_parent.pkl':pp})
+    if a.assembled_jacobian=='reverse':
+        owned_job(a.qualification_job)
+        top=resolve(ns/a.qualification_job/'output/result.json',ns);qp=top.parent/'jacobian/result.json';q=json.loads(qp.read_text())
+        qret=verified_manifest(a.qualification_job,ns,{'output/result.json':top,'output/jacobian/result.json':qp})
+        assert q['status']=='complete_profile' and len(q['states'])==3
+        checks=[v['parity'][k] for v in q['states'] for k in ['root_jacobian','residual_jacobian']]
+        assert all(v['passed'] and v['max_absolute']<=1e-9 and v['relative']<=1e-10 for v in checks)
+        qm=json.loads((HERE/'manifests'/f'retention-{a.qualification_job}.json').read_text())
+        hashes={v['file']:v['sha256'] for v in qm['files']};sm=top.parent.parent/'SOURCE.sha256';assert digest(sm)==hashes['SOURCE.sha256']
+        entries=[line.split(maxsplit=1) for line in sm.read_text().splitlines() if line.strip()]
+        for module in ['stable.py','residual_tree.py']:
+            matches=[sha for sha,name in entries if name=='experiments/burgers-tree-embeddings/neural/'+module]
+            assert len(matches)==1 and digest(HERE/'neural'/module)==matches[0]
+        derivative_proof=dict(job=a.qualification_job,sha256=digest(qp),retention_sha256=qret,source_manifest_sha256=digest(sm),
+            checks=checks,overall_pde_trace_passed=q['parity_passed'],scope='Derivative values only; no PDE trace claim')
     parent=read_checkpoint(pp);dp=resolve(ns/'b6parent/output/coordinate_data.npz',ns);assert digest(dp)==parent['data_sha256']
     arrays=dict(np.load(dp));dr=parent['data_record'];root=jax.tree.map(jnp.asarray,parent['network'])
     xy,w=jnp.asarray(arrays['xy']),jnp.asarray(arrays['w']);rng=np.random.default_rng(a.seed)
@@ -52,12 +82,28 @@ def main():
     tr,dv=groups['train'],groups['dev'];train_count=len(tr['labels']);dev_count=len(dv['labels'])
     assert len(set(tr['labels'])&set(dv['labels']))==0
     assert len(set(tr['labels']))==train_count and len(set(dv['labels']))==dev_count
+    if expanded_parent:
+        assert (train_count,dev_count)==(160,52) and root['modulation']['w'].shape[0]==32
+        assert parent['train_labels']==pr['train_labels']==tr['labels'] and parent['dev_labels']==pr['dev_labels']==dv['labels']
+        assert parent['expanded_sources']==pr['expanded_sources']==provenance
+        assert np.asarray(parent['training_codes']).shape==(1760,32) and np.isfinite(parent['training_codes']).all()
+        assert np.array_equal(parent['training_encoder'],np.asarray(tr['encoder']))
+        for group,jobs in [('train',a.train_jobs),('dev',a.dev_jobs)]:
+            checked=load_group(ns,group,jobs.split(','),arrays,parent)
+            assert checked['labels']==groups[group]['labels'] and checked['provenance']==[v for v in provenance if v['cohort']==group]
+            assert np.array_equal(checked['y'],groups[group]['y']) and np.array_equal(checked['norm'],groups[group]['norm'])
     params=R.initialize(jax.random.PRNGKey(a.seed),root,child_k=a.child_k,features=a.features,width=64)
     if a.warm_job:
         wp=resolve(ns/a.warm_job/'output/nonlinear_tree.pkl',ns);wr=json.loads((wp.parent/'result.json').read_text());assert digest(wp)==wr['selected_sha256']
         assert wr['status'].startswith('complete_')
         warm=read_checkpoint(wp);params=jax.tree.map(jnp.asarray,warm['params']);assert params['scale'].shape==(a.features,) and R.dimensions(params)==(32,a.child_k)
         assert warm['parent_sha256']==digest(pp)
+    zero_preservation=None
+    if a.fresh_children:
+        probe=xy[::1024];audit_cells=jnp.asarray([[1,0,0],[1,0,1],[1,1,0],[1,1,1]])
+        audit_root=jnp.asarray(parent['training_codes'][0]);audit_code=jnp.concatenate([audit_root,jnp.zeros(4*a.child_k)])
+        zero_preservation=float(jnp.max(jnp.abs(R.tree(params,audit_code,probe,audit_cells)-S.apply(root,audit_root,probe))))
+        assert zero_preservation==0.
     reused=None;reuse_provenance=None;root_fit_records=[]
     if a.reuse_codes:
         assert wr['status']=='complete_nonlinear_child_multidepth_subset'
@@ -90,6 +136,27 @@ def main():
             retention_manifest_sha256=digest(manifest_path),verified_files=retained,
             selected_update=wr['selected_update'],optimizer_state='Reset all moments and clocks; restart declared learning-rate schedule; not exact optimizer resume')
         print('verified_multidepth_code_reuse',a.warm_job,rootcodes.shape,devroot.shape,flush=True)
+    elif expanded_parent:
+        rootcodes=jnp.asarray(parent['training_codes']);dev_codes=[]
+        rootfit=F.make_fit(S.apply,60,jacobian=S.code_jacobian)
+        rootmore=F.make_fit(S.apply,120,jacobian=S.code_jacobian)
+        for i in range(len(dv['y'])):
+            near,interp=S.nearest_starts(dv['encoder'][i],tr['encoder'],rootcodes)
+            candidates=[rootfit(root,z,xy,dv['y'][i],w,dv['norm'][i]) for z in [near,interp,jnp.zeros(32)]]
+            assert all(np.isfinite(np.asarray(v)).all() for pair in candidates for v in pair)
+            selected_start=min(range(3),key=lambda k:float(candidates[k][1][0]));z,st=candidates[selected_start]
+            attempts=[dict(start=name,status=np.asarray(v[1])) for name,v in zip(['nearest_training_field','interpolated_training_fields','zero'],candidates)]
+            if not bool(st[-1]):
+                z,st=rootmore(root,z,xy,dv['y'][i],w,dv['norm'][i]);attempts.append(dict(start='selected_parent_gn_continuation',status=np.asarray(st)))
+            assert np.isfinite(np.asarray(z)).all() and np.isfinite(np.asarray(st)).all()
+            dev_codes.append(z);root_fit_records.append(dict(cohort='dev',index=i,case=dv['labels'][i//11],time=float(data.TIMES[i%11]),
+                selected_gn_start=selected_start,attempts=attempts,status=np.asarray(st),converged=bool(st[-1])))
+            if (i+1)%16==0 or i+1==len(dv['y']):
+                checkpoint(out/'root_initialization_partial_dev.pkl',dict(root_codes=rootcodes,dev_root_codes=jnp.stack(dev_codes),
+                    parent_sha256=digest(pp),expanded_sources=provenance,train_labels=tr['labels'],dev_labels=dv['labels'],
+                    completed=i+1,expected=572,complete=False,new_fit_records=root_fit_records))
+                print('expanded_parent_dev_fit',i+1,572,float(st[0]),bool(st[-1]),flush=True)
+        devroot=jnp.stack(dev_codes)
     else:
         rootfit=F.make_fit(S.apply,60)
         rootmore=F.make_fit(S.apply,120,newton=True) if a.parent_initializer=='newton' else None
@@ -195,7 +262,8 @@ def main():
         value,(gn,gz)=jax.value_and_grad(loss,argnums=(0,1))(net,codes[bank_ids]);up,no=opt.update(gn,no,net)
         mask=jnp.concatenate([jnp.ones(32,dtype=bool),jnp.repeat(jnp.arange(a.nodes)<active,a.child_k)])
         codes,co=C.update_masked(codes,co,bank_ids,gz,rate(it),mask[None,:]);return optax.apply_updates(net,up),codes,no,co,value
-    fit=F.make_fit(R.cached,60,jacobian=R.cached_jacobian);more=F.make_fit(R.cached,120,jacobian=R.cached_jacobian)
+    assembled_jac=R.cached_jacobian_reverse if a.assembled_jacobian=='reverse' else R.cached_jacobian
+    fit=F.make_fit(R.cached,60,jacobian=assembled_jac);more=F.make_fit(R.cached,120,jacobian=assembled_jac)
     xf,wf=data.grid(256,True);xf,wf=jnp.asarray(xf),jnp.asarray(wf)
     selection=[11*c+t for c in [0,3,13,20] for t in [0,5,10]]
     selection += [11*c+t for c in range(44,dev_count) for t in [0,5,10]]
@@ -252,7 +320,10 @@ def main():
         variant_labels=variant_labels,variant_probabilities=variant_probabilities,independent_codes_per_variant=True,
         bank_shape=[3,snapshots,dimension],bank_index='variant * snapshots + snapshot',
         objective='Family-balanced physical relative reconstruction; independent jointly fitted parent/child codes for each depth/layout; shared frozen root and shared learned feature/head weights',
-        all_final_refit=a.all_final_refit,warm_job=a.warm_job,warm_checkpoint_sha256=digest(wp),
+        all_final_refit=a.all_final_refit,warm_job=a.warm_job,warm_checkpoint_sha256=None if wp is None else digest(wp),
+        parent_job=a.parent_job,parent_retention_sha256=parent_retention,expanded_parent=expanded_parent,
+        fresh_children=a.fresh_children,zero_child_preservation_max_abs=zero_preservation,assembled_jacobian=a.assembled_jacobian,derivative_qualification=derivative_proof,
+        parent_training_admission='Completed retained matched parent; no standalone parent2percent gate. Representation/PDE gates remain separate',
         reuse_codes=a.reuse_codes,reuse_provenance=reuse_provenance,
         parent_initializer='reused' if a.reuse_codes else a.parent_initializer,
         new_parent_field_fit_summary=root_fit_summary,

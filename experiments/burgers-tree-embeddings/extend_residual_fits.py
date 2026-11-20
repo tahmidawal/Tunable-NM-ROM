@@ -3,6 +3,7 @@ import argparse
 from common import *
 from neural import residual_tree as R, fields as F
 from neural.build_data import resolve
+from neural.parent_provenance import load_parent
 from evaluate_residual_tree import load_group, owned_job
 from training_io import read_checkpoint, checkpoint
 import data
@@ -42,7 +43,7 @@ def main():
         derivative_source_hashes[name]=matches[0]
 
     model=read_checkpoint(mp);params=jax.tree.map(jnp.asarray,model['params'])
-    pp=resolve(ns/'b7parentrepair/output/stable_parent.pkl',ns);assert digest(pp)==r['parent_sha256'];parent=read_checkpoint(pp)
+    pp,parent_record,parent,parent_proof=load_parent(r,ns)
     dp=resolve(ns/'b6parent/output/coordinate_data.npz',ns);assert digest(dp)==r['primary_data_sha256']==parent['data_sha256']
     with np.load(dp) as v:arrays={k:np.array(v[k]) for k in v.files}
     jobs=[v['job'] for v in r['expanded_sources'] if v['cohort']=='dev']
@@ -72,7 +73,7 @@ def main():
                     final=dict(chunk=0,status=st,fit_error=float(st[0]),stationarity=float(st[1]),physical_update=float(st[2]),
                         independent_error=row['independent_error'],code_norm=float(jnp.linalg.norm(z)),converged=bool(st[-1]),
                         note='Selected checkpoint state; replaced after successful continuation')))
-    result=dict(meta=metadata,status='running_offline_fit_continuation',model_job=a.model_job,source_result_sha256=digest(rp),model_sha256=digest(mp),
+    result=dict(meta=metadata,status='running_offline_fit_continuation',parent_job=parent_proof['parent_job'],parent_provenance=parent_proof,model_job=a.model_job,source_result_sha256=digest(rp),model_sha256=digest(mp),
         model_retention_sha256=retention,qualification_sha256=digest(qp),qualification_retention_sha256=qretention,
         derivative_checks=checks,overall_profile_parity_passed=q['parity_passed'],
         profile_source_manifest_sha256=digest(source_manifest),derivative_source_hashes=derivative_source_hashes,

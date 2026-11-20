@@ -1729,7 +1729,7 @@
     "gpu": "a100",
     "submitted_utc": "2026-11-20T01:36:01.626658+00:00",
     "state": "RUNNING",
-    "elapsed_seconds": 3172,
+    "elapsed_seconds": 3520,
     "allocated_cpus": 8,
     "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
   },
@@ -1832,6 +1832,25 @@
     "driver": "compare_residual_replay.py",
     "args": "",
     "gpu": "a100",
-    "submitted_utc": "2026-11-20T02:29:37.421408+00:00"
+    "submitted_utc": "2026-11-20T02:29:37.421408+00:00",
+    "state": "COMPLETED",
+    "elapsed_seconds": 38,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
+  },
+  {
+    "name": "b8parent32",
+    "id": 7387351,
+    "reserved_minutes": 120,
+    "commit": "1d7253e897d2c688c0e31f0ae3cc18be151245a8",
+    "remote": "/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-20261118-1044bfe3/b8parent32",
+    "driver": "train_stable_expanded.py",
+    "args": "--latent 32 --qualification-job b8implprofile",
+    "gpu": "a100",
+    "submitted_utc": "2026-11-20T02:33:40.760589+00:00",
+    "state": "RUNNING",
+    "elapsed_seconds": 52,
+    "allocated_cpus": 8,
+    "allocated_tres": "billing=8,cpu=8,gres/gpu=1,mem=96G,node=1"
   }
 ]

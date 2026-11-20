@@ -3,6 +3,7 @@ import argparse
 from common import *
 from training_io import read_checkpoint, checkpoint
 from neural.build_data import resolve
+from neural.parent_provenance import load_parent
 from neural import residual_tree as R, stable as S, fields as F, allocations as A
 import data
 
@@ -46,9 +47,7 @@ def main():
     assert record['status'].startswith('complete_nonlinear_child') and not record['final_test_opened']
     mp = rp.parent/'nonlinear_tree.pkl'; assert digest(mp) == record['selected_sha256']
     model = read_checkpoint(mp); p = jax.tree.map(jnp.asarray, model['params']); root_k, child_k = R.dimensions(p)
-    parent_path = resolve(ns/'b7parentrepair/output/stable_parent.pkl', ns)
-    assert digest(parent_path) == record['parent_sha256']
-    parent = read_checkpoint(parent_path)
+    parent_path,parent_record,parent,parent_proof=load_parent(record,ns)
     assert all(np.array_equal(x,y) for x,y in zip(jax.tree.leaves(p['root']),jax.tree.leaves(parent['network'])))
     dp = resolve(ns/'b6parent/output/coordinate_data.npz', ns); assert digest(dp) == parent['data_sha256'] == record['primary_data_sha256']
     arrays = dict(np.load(dp)); xy,w = jnp.asarray(arrays['xy']),jnp.asarray(arrays['w'])
@@ -78,7 +77,7 @@ def main():
     selected=[labels.index(label) for label in ['dev000','dev003','dev013','align004']]
     expanded=list(range(len(dr['labels']),len(labels))); assert len(expanded)==8
     selected+=expanded
-    result=dict(meta=metadata,status='running_offline_span_diagnostic',model_job=a.model_job,
+    result=dict(meta=metadata,status='running_offline_span_diagnostic',parent_job=parent_proof['parent_job'],parent_provenance=parent_proof,model_job=a.model_job,
         source_result_sha256=digest(rp),model_sha256=digest(mp),parent_sha256=digest(parent_path),
         root_initialization_sha256=digest(initpath),primary_data_sha256=digest(dp),expanded_sources=source_records,
         selected_cases=[labels[i] for i in selected],time_indices=times,max_seconds=a.max_seconds,

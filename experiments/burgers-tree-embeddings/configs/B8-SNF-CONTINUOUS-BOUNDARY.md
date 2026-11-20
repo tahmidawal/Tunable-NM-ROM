@@ -1,7 +1,7 @@
 # B8 SNF continuous physical boundary qualification
 
 Prospective fixture only: one GPU, at most30allocated GPU minutes, subprocess
-limit1200seconds. Submit only from backed-up reviewed source, in a new owned
+limit1200seconds. Submit only from backed-up reviewed source, in a unique job directory within the owned study
 namespace, within the shared two-job cap. No dependency changes. Retain all
 failed fixtures. This file/implementation does not submit a job.
 
@@ -34,9 +34,13 @@ samples, or multiply a finished native checkpoint and call that retraining.
 The qualifier reuses the exact retained native seven-stage training fixture,
 with this wrapper inserted before FlatDecoder construction. It retains the
 normalization-invariance, full parameter-gradient and optimizer checks, then
-checks GPU Float64 physical/normalized identity, all four boundaries/corners,
-parameter/state identity against native setup, spatial gradient product rule,
-Laplacian product rule, and latent central finite differences. Interior and
+checks GPU Float64 physical/normalized identity and all four boundaries/corners.
+The retained native training gradient checks also execute on GPU. Parameter/state
+identity, spatial gradient product rule, Laplacian product rule and latent central
+finite differences use the host model returned by native training and execute on
+the cluster CPU in Float64. These do not qualify GPU nested spatial AD. The
+actual online derivative path still needs separate qualification before any PDE
+admission. Interior and
 first-interior-distance1/16384probes are included. Boundary/value tolerance
 1e-12; spatial gradient relative1e-10; Laplacian relative1e-9; latent finite
  difference relative1e-6. CUDA scalar indexing remains disabled. No study
@@ -59,3 +63,7 @@ native training schedule, statistics and budgets. Online initialization remains
 field-only. Native losses alone establish neither physical representation
 qualification nor a PDE accuracy/runtime comparison; independent projection,
 actual4096²outputs and complete PDE solves remain outstanding gates.
+
+The scientific schedule requests210epochs as seven native30-epoch stages with
+early stopping enabled (default patience6 per stage). Actual completed epochs
+may be fewer; requested210 is not a claim that210epochs were executed.

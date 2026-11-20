@@ -8,6 +8,7 @@ from common import *
 from neural import stable as S, fields as F, allocations as A, residual_tree as R
 from neural import expanded_cases as E
 from neural.build_data import resolve
+from neural.parent_provenance import load_parent
 from training_io import checkpoint, read_checkpoint
 import data
 
@@ -169,10 +170,8 @@ def main():
     assert model_record['status'] in ('complete_nonlinear_child_subset','complete_nonlinear_child_multidepth_subset')
     assert digest(mp) == model_record['selected_sha256'] and not model_record['final_test_opened']
     model = read_checkpoint(mp); params = jax.tree.map(jnp.asarray, model['params'])
-    pp = resolve(ns/'b7parentrepair/output/stable_parent.pkl', ns)
-    pr = json.loads((pp.parent/'result.json').read_text())
-    assert digest(pp) == pr['selected_sha256'] == model['parent_sha256']
-    parent = read_checkpoint(pp)
+    pp,pr,parent,parent_proof=load_parent(model_record,ns)
+    assert digest(pp)==model['parent_sha256']
     assert equal_tree(params['root'], parent['network']), 'Frozen parent weights changed'
     dp = resolve(ns/'b6parent/output/coordinate_data.npz', ns)
     assert digest(dp) == parent['data_sha256']
@@ -186,6 +185,7 @@ def main():
     train = load_group(ns, 'train', train_jobs, arrays, parent)
     dev = load_group(ns, 'dev', dev_jobs, arrays, parent)
     assert not set(train['labels']) & set(dev['labels'])
+    if parent_proof['expanded_parent']:assert dev['labels']==model_record['dev_labels']
     assert train['labels'] == model_record['train_labels'], 'Training cohort must match selected checkpoint'
     for entry in declared:
         matches = [p for p in train['provenance']+dev['provenance'] if p['job'] == entry['job']]
@@ -199,12 +199,17 @@ def main():
     more = F.make_fit(R.cached, 120, jacobian=R.cached_jacobian)
     rootfit = F.make_fit(S.apply, 60); rootmore = F.make_fit(S.apply, 120, newton=True)
     initializer = make_initializer(child_k, nodes)
-    devfit_path = resolve(ns/'b7parentrepair/output/development_fits.pkl', ns)
-    assert digest(devfit_path) == pr['all_fits_sha256']
-    original = read_checkpoint(devfit_path)
-    original_codes = jnp.asarray(original['codes']); original_status = np.asarray(original['status'])
-    assert len(original_codes) == len(parent['data_record']['groups']['dev']['labels'])*11
+    if parent_proof['expanded_parent']:
+        original_codes=jnp.zeros((0,32));original_status=np.empty((0,6))
+        # Refit every development root for this parent; never inherit B7 fits.
+    else:
+        devfit_path = resolve(ns/'b7parentrepair/output/development_fits.pkl', ns)
+        assert digest(devfit_path) == pr['all_fits_sha256']
+        original = read_checkpoint(devfit_path)
+        original_codes = jnp.asarray(original['codes']); original_status = np.asarray(original['status'])
+        assert len(original_codes) == len(parent['data_record']['groups']['dev']['labels'])*11
     result = dict(meta=metadata, status='running', model_job=a.model_job, model_sha256=digest(mp),
+                  parent_job=parent_proof['parent_job'],parent_provenance=parent_proof,
                   model_record_sha256=digest(mrp), parent_sha256=digest(pp), primary_data_sha256=digest(dp),
                   expanded_sources=train['provenance']+dev['provenance'], final_test_opened=False,
                   parent_weights_verified_identical=True, expected_cases=total_cases, evaluated_cases=count,

@@ -10,6 +10,7 @@ from common import *
 from neural import stable as S, fields as F, allocations as A, residual_tree as R
 from neural import residual_weak as W, packed_residual as P, weak as BaseWeak
 from neural.build_data import resolve
+from neural.parent_provenance import load_parent
 from training_io import read_checkpoint
 from evaluate_residual_tree import owned_job, job_list, equal_tree, make_initializer
 import data
@@ -96,10 +97,8 @@ def main():
     mr=json.loads((mp.parent/'result.json').read_text());assert mr['status'].startswith('complete_')
     assert digest(mp)==mr['selected_sha256'] and not mr['final_test_opened']
     model=read_checkpoint(mp);params=jax.tree.map(jnp.asarray,model['params'])
-    pp=resolve(ns/'b7parentrepair/output/stable_parent.pkl',ns)
-    pr=json.loads((pp.parent/'result.json').read_text())
-    assert digest(pp)==pr['selected_sha256']==model['parent_sha256']
-    parent=read_checkpoint(pp);assert equal_tree(params['root'],parent['network'])
+    pp,pr,parent,parent_proof=load_parent(mr,ns)
+    assert digest(pp)==model['parent_sha256'];assert equal_tree(params['root'],parent['network'])
     root_k,child_k=R.dimensions(params);assert root_k==32 and a.nodes<=mr['nodes']
     assert a.M>2*(root_k+a.nodes*child_k), 'Weak tests must comfortably exceed state dimension'
     qp=None;qr={}
@@ -118,7 +117,7 @@ def main():
     qualification=json.loads((HERE/'manifests/reference-qualification.json').read_text())
     assert qualification['all_required_crosschecks_passed']
     source_load_seconds=time.perf_counter()-load_start
-    result=dict(meta=metadata,status='preparing_fixed_tree_solve',root_jacobian=a.root_jacobian,output_mode=a.output_mode,model_job=a.model_job,model_sha256=digest(mp),
+    result=dict(meta=metadata,status='preparing_fixed_tree_solve',parent_job=parent_proof['parent_job'],parent_provenance=parent_proof,root_jacobian=a.root_jacobian,output_mode=a.output_mode,model_job=a.model_job,model_sha256=digest(mp),
         qualification_job=a.qualification_job or None,qualification_sha256=digest(qp) if qp else None,representation_gate_passed=gate,
         expanded_reference_proof=fd,diagnostic=a.diagnostic,method_admitted=False,final_test_opened=False,
         case=a.case_label,layout=a.layout,nodes=a.nodes,root_k=root_k,child_k=child_k,
@@ -175,7 +174,7 @@ def main():
     jax.block_until_ready(z);charges['cold_embedding_initialization']=time.perf_counter()-start
     result['initialization']=dict(root_attempts=root_statuses,tree_attempts=initial_statuses,
         residual_initializer_error=float(initializer_error[0]),initial_callable_relative_error=float(ist[0]),
-        converged=bool(ist[-1]),training_library='B7 parent training sampled fields/codes; no development codes')
+        converged=bool(ist[-1]),training_library=parent_proof['parent_job']+' training sampled fields/codes; no development codes')
     result['cells']=np.asarray(cells);codes.append(np.asarray(z));statuses.append(np.asarray(ist)[[0,1,2,4,3,5]])
 
     def persist():

@@ -72,6 +72,9 @@ function main()
         metrics["completed"] = true
         metrics["native_training_steps"] = NeuralROMs.B8_FLOAT64_AUDIT["steps"]
         metrics["gpu_float64_array_checks"] = NeuralROMs.B8_FLOAT64_AUDIT["arrays"]
+        metrics["requested_epochs"] = 210
+        metrics["native_early_stopping_enabled"] = true
+        metrics["schedule"] = "Seven requested30-epoch native stages; actual epochs may be fewer"
         metrics["latent_dimension"] = 32
         metrics["hyper_input_dimension"] = 17
         metrics["decoder_sine_hidden_layers"] = 6

@@ -26,6 +26,7 @@ def main():
     out=Path(a.out);out.mkdir(parents=True,exist_ok=True);assert not (out/'result.json').exists()
     result=dict(status='preparing',passed=False,final_test_opened=False,study_data_opened=False,
         trained_comparator=False,pde_comparator_admitted=False,
+        derivative_scope='GPU wrapped values and native parameter-loss gradients; cluster CPU spatial/latent gradients and Hessians; actual GPU online derivative path remains unqualified',
         classification='Native SNF plus continuous physical boundary envelope; modified new-PDE port')
     save(out/'result.json',result)
     try:

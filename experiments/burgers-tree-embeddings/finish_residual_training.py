@@ -3,6 +3,7 @@ import argparse, shutil, traceback
 from common import *
 from neural import residual_tree as R, fields as F, allocations as A
 from neural.build_data import resolve
+from neural.parent_provenance import load_parent
 from evaluate_residual_tree import load_group, make_initializer, equal_tree, owned_job
 from extend_residual_fits import verified_manifest
 from training_io import checkpoint, read_checkpoint
@@ -46,7 +47,7 @@ def run():
     assert q['status']=='complete_profile' and len(q['states'])==3
     checks=[row['parity'][key] for row in q['states'] for key in ['root_jacobian','residual_jacobian']]
     assert all(v['passed'] and v['max_absolute']<=1e-9 and v['relative']<=1e-10 for v in checks)
-    pp=resolve(ns/'b7parentrepair/output/stable_parent.pkl',ns);assert digest(pp)==source['parent_sha256'];parent=read_checkpoint(pp)
+    pp,parent_record,parent,parent_proof=load_parent(source,ns)
     dp=resolve(ns/'b6parent/output/coordinate_data.npz',ns);assert digest(dp)==source['primary_data_sha256']==parent['data_sha256']
     with np.load(dp) as v:arrays={k:np.array(v[k]) for k in v.files}
     groups={}
@@ -78,7 +79,7 @@ def run():
             assert np.array_equal(v['times'],data.TIMES)
             fine[ci]=data.synth_grid(jnp.asarray(v['coefficients']),jnp.unique(xf[:,0])).reshape(11,-1)
     for name in ['initialization.pkl','root_initialization.pkl']:shutil.copyfile(rp.parent/name,out/name)
-    result=dict(source);result.update(meta=metadata,status='finishing_trained_candidates',history=[],
+    result=dict(source);result.update(meta=metadata,status='finishing_trained_candidates',parent_job=parent_proof['parent_job'],parent_provenance=parent_proof,history=[],
         source_job=a.source_job,source_status=source['status'],source_terminal_state=terminal,
         source_retention_sha256=digest(manifest),source_files={name:entries['output/'+name]['sha256'] for name in names},
         weight_updates_performed=0,source_trained_update=30000,all_final_refit=False,

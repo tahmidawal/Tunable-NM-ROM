@@ -51,6 +51,40 @@ def fixture():
     print('SNF_DESCRIPTOR_AND_COLUMN_MAJOR_SHAPE_PASS')
 
 
+def patch_scientific_progress(project):
+    """Exact scientific-only observer insertion; native updates/stopping stay intact."""
+    import difflib, hashlib
+    from qualify_snf_training import replace_once
+    path=project/'src/train.jl';original=path.read_text()
+    modified=replace_once(original,
+        '        kwargs = (;lossfun, opt_st, cb, io, early_stopping, patience, schedule)',
+        '        kwargs = (;lossfun, opt_st, cb, io, early_stopping, patience, schedule,\n'
+        '            b8_context=(dir=dir,metadata=metadata,stats=STATS,stage=iopt))')
+    modified=replace_once(modified,'    for epoch in 1:nepoch\n',
+        '    b8_context = get(kwargs, :b8_context, nothing)\n'
+        '    for epoch in 1:nepoch\n        b8_epoch_begin = time_ns()\n')
+    modified=replace_once(modified,'        for batch in _loader\n',
+        '        b8_batch_begin = time_ns()\n        for batch in _loader\n')
+    modified=replace_once(modified,
+        '        # callback, early stopping\n        _, l_, ifbreak_cb = cb(p, st; epoch, nepoch, io)',
+        '        b8_batch_seconds = (time_ns()-b8_batch_begin)/1e9\n'
+        '        b8_callback_begin = time_ns()\n'
+        '        # callback, early stopping\n        _, l_, ifbreak_cb = cb(p, st; epoch, nepoch, io)')
+    modified=replace_once(modified,
+        '        minconfig, ifbreak_mc = update_minconfig(minconfig, l_, p, st, opt_st; io)\n',
+        '        minconfig, ifbreak_mc = update_minconfig(minconfig, l_, p, st, opt_st; io)\n'
+        '        b8_callback_seconds = (time_ns()-b8_callback_begin)/1e9\n'
+        '        b8_scientific_progress(b8_context, NN, p, st, minconfig, epoch, nepoch,\n'
+        '            num_batches, b8_batch_seconds, b8_callback_seconds,\n'
+        '            (time_ns()-b8_epoch_begin)/1e9, l_, ifbreak_cb | ifbreak_mc)\n')
+    modified='include(joinpath(ENV["B8_SNF_OUTPUT"], "snf_progress.jl"))\n'+modified
+    path.chmod(path.stat().st_mode|0o200);path.write_text(modified)
+    sha=lambda text:hashlib.sha256(text.encode()).hexdigest()
+    return dict(file='src/train.jl',original_sha256=sha(original),patched_sha256=sha(modified)), ''.join(
+        difflib.unified_diff(original.splitlines(True),modified.splitlines(True),
+                             fromfile='train.jl',tofile='train.jl.scientific-progress'))
+
+
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument('--out'); ap.add_argument('--fixture', action='store_true')
     ap.add_argument('--qualification-job', default='b8snftrainfix')
@@ -127,6 +161,12 @@ def main():
         else:
             result['boundary_envelope']=False
             result['boundary_scope']='Unconstrained native-network control; not an eligible boundary-conforming PDE comparator'
+        progress_patch, progress_diff = patch_scientific_progress(project)
+        (out/'scientific-progress.patch').write_text(progress_diff)
+        shutil.copy2(HERE/'baselines/snf_progress.jl', out/'snf_progress.jl')
+        result.update(scientific_progress_patch=progress_patch,
+            scientific_progress_patch_sha256=digest(out/'scientific-progress.patch'),
+            scientific_progress_helper_sha256=digest(out/'snf_progress.jl'))
         adapter = out/'snf_expanded_training.jl'; shutil.copy2(HERE/'baselines/snf_expanded_training.jl', adapter)
         depot = out/'julia-depot'; depot.mkdir()
         lookup = [depot, qpath.parent/'julia-depot'] + [resolve(ns/job/'output/julia-depot', ns)
@@ -192,10 +232,11 @@ def main():
             raw_files={k: dict(file=k+'.f64', shape=s, sha256=digest(out/(k+'.f64'))) for k,s in shapes.items()},
             descriptor_statistics_sha256=digest(out/'descriptor_statistics.json'),
             matched_sources_sha256=digest(out/'matched_sources.json'),
-            config=dict(latent=32, hh=0, hd=5, hyper_width=64, decoder_width=128, epochs=210,
+            config=dict(latent=32, hh=0, hd=5, hyper_width=64, decoder_width=128, requested_epochs=210, native_early_stopping=True,
+                schedule="Seven requested30-epoch stages; actual completed epochs may be fewer",
                 warmup=False, train_batch=262144, validation_batch=262144, hyper_l2=.001,
                 lipschitz_penalty=0., decoder_weight_decay=.01, seed=2026111991),
-            checkpoint_policy='Retain every native stage model and final model; model/STATS only, no exact optimizer/RNG resume',
+            checkpoint_policy='Retain native stages/final plus current and best model at epoch1/every5epochs/stage-end/early-stop; model/STATS only, no exact optimizer/RNG resume',
             initialization_caveat='Native rand32 bias values are converted to Float64; optimizer arithmetic and gradients are Float64')
         save(out/'result.json', result)
         env = dict(os.environ, JULIA_DEPOT_PATH=':'.join(map(str, lookup)), JULIA_PKG_PRECOMPILE_AUTO='0',
@@ -215,6 +256,8 @@ def main():
         result['elapsed_wall_seconds'] = time.monotonic()-started
         result['checkpoints'] = [dict(file=str(p.relative_to(out)), bytes=p.stat().st_size, sha256=digest(p))
                                  for p in sorted((out/'native_model').glob('*.jld2'))]
+        progress_file = out/'native_model/epoch_progress.tsv'
+        if progress_file.exists(): result['epoch_progress_sha256'] = digest(progress_file)
         log = out/'native_expanded_training.log'
         if log.exists(): result['log_sha256'] = digest(log)
         save(out/'result.json', result)

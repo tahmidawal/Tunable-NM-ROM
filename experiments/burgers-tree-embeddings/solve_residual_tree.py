@@ -13,6 +13,7 @@ from neural.build_data import resolve
 from training_io import read_checkpoint
 from evaluate_residual_tree import owned_job, job_list, equal_tree, make_initializer
 import data
+from neural.cached_output import OutputCache
 
 
 def finite_json(value):
@@ -71,6 +72,8 @@ def main():
     ap.add_argument('--M',type=int,default=2048);ap.add_argument('--dt',type=float,default=.0005)
     ap.add_argument('--iterations',type=int,default=60);ap.add_argument('--theta',type=float,choices=[.5,1.],default=.5)
     ap.add_argument('--station-tolerance',type=float,default=1e-8);ap.add_argument('--update-tolerance',type=float,default=1e-10)
+    ap.add_argument('--root-jacobian',choices=['forward','reverse'],default='forward')
+    ap.add_argument('--output-mode',choices=['baseline16','cached64'],default='baseline16')
     ap.add_argument('--no-save-fields',action='store_true');a=ap.parse_args()
     assert a.L>=16384 and a.Q<=a.L and a.L%a.Q==0
     assert a.dt>0 and abs(round(.05/a.dt)*a.dt-.05)<1e-13
@@ -115,7 +118,7 @@ def main():
     qualification=json.loads((HERE/'manifests/reference-qualification.json').read_text())
     assert qualification['all_required_crosschecks_passed']
     source_load_seconds=time.perf_counter()-load_start
-    result=dict(meta=metadata,status='preparing_fixed_tree_solve',model_job=a.model_job,model_sha256=digest(mp),
+    result=dict(meta=metadata,status='preparing_fixed_tree_solve',root_jacobian=a.root_jacobian,output_mode=a.output_mode,model_job=a.model_job,model_sha256=digest(mp),
         qualification_job=a.qualification_job or None,qualification_sha256=digest(qp) if qp else None,representation_gate_passed=gate,
         expanded_reference_proof=fd,diagnostic=a.diagnostic,method_admitted=False,final_test_opened=False,
         case=a.case_label,layout=a.layout,nodes=a.nodes,root_k=root_k,child_k=child_k,
@@ -151,7 +154,7 @@ def main():
     rootfit=F.make_fit(S.apply,60);rootmore=F.make_fit(S.apply,120,newton=True)
     fit=F.make_fit(R.cached,60,jacobian=R.cached_jacobian)
     more=F.make_fit(R.cached,120,jacobian=R.cached_jacobian)
-    init=make_initializer(child_k,a.nodes);step=W.make_step(a.L,a.Q,a.iterations,a.theta)
+    init=make_initializer(child_k,a.nodes);step=W.make_step(a.L,a.Q,a.iterations,a.theta,root_jacobian=a.root_jacobian)
     def compiled(name,fun,*args):
         begin=time.perf_counter();executable=fun.lower(*args).compile()
         compile_times[name]=time.perf_counter()-begin;return executable
@@ -209,7 +212,26 @@ def main():
         finally:
             excluded_seconds['archival_io']+=time.perf_counter()-archive_start
 
+    optimized_output=None
     def output_field(code):
+        nonlocal optimized_output
+        if a.output_mode=='cached64':
+            assembled_now=optimized_output is None
+            if assembled_now:
+                begin=time.perf_counter();optimized_output=OutputCache(params,cells,rows=64)
+                cache_bytes=optimized_output.build()
+                result['output_cache']=dict(build_seconds=time.perf_counter()-begin,
+                    logical_cache_bytes=cache_bytes,charged_inside_first_reconstruction=True,
+                    build_compilation_seconds=optimized_output.compilation_seconds)
+                prior_compile=0.
+            else:prior_compile=optimized_output.compilation_seconds
+            output=optimized_output.reconstruct(code,reuse=True)
+            available_rows=sum(P.feature_rows(packed) for _,packed in optimized_output.tiles)
+            rows=available_rows if assembled_now else 0
+            result['output_cache']['spatial_feature_rows_built_once']=available_rows
+            result['output_cache']['total_compilation_seconds']=optimized_output.compilation_seconds
+            return output,rows,optimized_output.compilation_seconds-prior_compile
+
         # Device output contains all4096² values. Host transfer happens afterwards.
         axis=np.linspace(0.,1.,4096);chunks=[]
         kernel=jax.jit(P.apply);spatial_rows=0;compilation=0.
@@ -234,8 +256,9 @@ def main():
             coefficients=jnp.asarray(v['coefficients'][ti])
         truth=np.asarray(data.synth_grid(coefficients,jnp.linspace(0.,1.,4096)))
         error=prediction-truth
-        relative=float(np.linalg.norm(error)/np.linalg.norm(truth))
-        return truth,error,relative
+        reference_norm=float(np.linalg.norm(truth))
+        relative=float(np.linalg.norm(error)/reference_norm)
+        return truth,error,relative,reference_norm
 
     try:
         if not bool(ist[-1]) or not np.isfinite(np.asarray(ist)).all() or not np.isfinite(np.asarray(z)).all():
@@ -268,7 +291,7 @@ def main():
                 result.update(status='failed_nonfinite_output',failed_time=t);persist();return
             begin=time.perf_counter()
             try:
-                truth,error,relative=score_after_output(host,round(t/.025))
+                truth,error,relative,reference_norm=score_after_output(host,round(t/.025))
             finally:
                 score_seconds=time.perf_counter()-begin
                 excluded_seconds['reference_scoring']+=score_seconds
@@ -285,7 +308,7 @@ def main():
             allowance=float(reference['allowance'][round(t/.025)])
             result['outputs'].append(dict(time=t,shape=[4096,4096],relative_error=relative,
                 reference_allowance=allowance,error_plus_allowance=relative+allowance,
-                physical_accuracy_pass=bool(relative+allowance<=.01),device_reconstruction_seconds=reconstruction,
+                physical_accuracy_pass=bool(relative+allowance<=.01),reference_l2_discrete=reference_norm,device_reconstruction_seconds=reconstruction,
                 explicit_output_compile_seconds=compile_seconds,host_transfer_seconds=transfer,
                 reference_scoring_seconds=score_seconds,archival_io_seconds=archival,fields=file_record,
                 supported_child_network_rows=rows,dense_child_network_rows=4096**2*a.nodes))

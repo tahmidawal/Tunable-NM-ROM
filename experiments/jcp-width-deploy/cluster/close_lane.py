@@ -25,7 +25,8 @@ for record in ledger['attempts']:
  files=[]
  for line in (folder/'RESULTS.sha256').read_text().splitlines():
   expected,rel=line.split('  ',1);p=folder/rel;assert sha(p)==expected
-  path=str(p.relative_to(repo));assert localtree.get(path) and localtree[path]==remotetree.get(path),path
+  path=str(p.relative_to(repo));working_blob=git('hash-object','--',str(p)).decode().strip()
+  assert localtree.get(path)==working_blob and working_blob==remotetree.get(path),path
   files.append({'path':rel,'sha256':expected,'verified_remote_blob':remotetree[path]})
  records.append(dict(attempt=a,job_id=str(record['job_id']),allocated_gpu_seconds=record['allocated_gpu_seconds'],scientific_files_verified=len(files),files=files,remote_job_directory=f'{NS}/{a}'))
 # Recheck exact owned names before deleting only these checksum-verified duplicates.

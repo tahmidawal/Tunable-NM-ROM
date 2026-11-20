@@ -16,6 +16,7 @@ def dump(p,x):p.write_text(json.dumps(x,indent=2,allow_nan=False)+'\n')
 def save(fig,path):
  fig.savefig(path.with_suffix('.png'),dpi=220,bbox_inches='tight',metadata={'Software':'saved-record phase-shape builder'})
  fig.savefig(path.with_suffix('.svg'),bbox_inches='tight',metadata={'Date':None})
+ svg=path.with_suffix('.svg');svg.write_text('\n'.join(line.rstrip() for line in svg.read_text().splitlines())+'\n')
  fig.savefig(path.with_suffix('.pdf'),bbox_inches='tight',metadata={'CreationDate':None,'ModDate':None})
  plt.close(fig)
 

@@ -1,0 +1,10 @@
+{
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/wave2d-rom-latent-stepping/deps/burgers2d-coord-rom/burgers2d_film.py",
+  "sha256": "51b02f5cccf28b0e3eb9f53310c3a2a020af265d26dfb9d6918be46a2bd672e1",
+  "function_source": "def sample_params(seed=SEED, m=None):\n    \"\"\"One rng draw shared by every script; val = the LAST N_VAL entries.\"\"\"\n    rng = np.random.default_rng(seed)\n    m = m or (N_TRAIN + N_VAL)\n    cx = rng.uniform(0.15, 0.85, m)\n    cy = rng.uniform(0.15, 0.85, m)\n    w = rng.uniform(0.05, 0.20, m)\n    a = rng.uniform(0.5, 2.0, m)\n    lognu = rng.uniform(np.log(0.01), np.log(0.1), m)\n    nu = np.exp(lognu)\n    z = np.stack([\n        (cx - 0.5) / 0.35,\n        (cy - 0.5) / 0.35,\n        (w - 0.125) / 0.075,\n        (a - 1.25) / 0.75,\n        (lognu - np.log(np.sqrt(0.001))) / (0.5 * np.log(10.0)),\n    ], axis=1).astype(np.float32)\n    return cx, cy, w, a, nu, z",
+  "constants": {
+    "N_TRAIN": 512,
+    "N_VAL": 64,
+    "SEED": 0
+  }
+}

@@ -51,7 +51,12 @@ native_model, stats, trained_metadata = train_SNF(
 NN, p_host, st_host = native_model
 @assert eltype(p_host) === Float64
 device = Lux.gpu_device()
-p, st = Lux.f64(device((p_host, st_host)))
+# Preserve parameter values/axes without the Lux adaptor reconstructing GPU leaves.
+p = ComponentArray(CUDA.CuArray(Float64.(getdata(p_host))), getaxes(p_host))
+st = device(st_host)
+@assert getaxes(p) == getaxes(p_host)
+@assert Array(getdata(p)) == Float64.(getdata(p_host))
+NeuralROMs.b8_assert_gpu_float64(st)
 st = Lux.trainmode(st)
 NeuralROMs.b8_assert_gpu_float64(p)
 # CuIterator's pinned implementation preserves input Float64; copy the first
@@ -93,6 +98,7 @@ metrics = Dict(
     "passed" => true,
     "training_only_normalization_invariant_to_development_shift" => true,
     "train_mean_absolute_error" => abs(only(md_a.ū)-expected_mean),
+    "flat_parameter_transfer_preserves_values_and_axes" => true,
     "native_training_steps" => NeuralROMs.B8_FLOAT64_AUDIT["steps"],
     "gpu_float64_array_checks" => NeuralROMs.B8_FLOAT64_AUDIT["arrays"],
     "directional_gradient_relative_error" => gradient_error,

@@ -105,4 +105,15 @@ def main():
         physical_accuracy_pass=sr['physical_accuracy_pass'],complete_cold_query_seconds=sr['timing']['complete_cold_query_seconds'])
     save(out/'result.json',result)
 
-if __name__=='__main__':main()
+if __name__=='__main__':
+    try:
+        main()
+    except Exception as exc:
+        # Persist future failures without altering any already retained attempt.
+        parser=argparse.ArgumentParser(add_help=False);parser.add_argument('--out',required=True)
+        args,_=parser.parse_known_args();path=Path(args.out)/'result.json'
+        record=json.loads(path.read_text()) if path.exists() else dict(meta=meta(),diagnostic=True)
+        record.update(status_before_exception=record.get('status'),status='failed_exception',passed=False,
+            exception_type=type(exc).__name__,exception=str(exc))
+        save(path,record)
+        raise

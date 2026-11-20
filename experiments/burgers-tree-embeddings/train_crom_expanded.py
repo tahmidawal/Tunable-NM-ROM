@@ -27,6 +27,7 @@ def main():
     ap.add_argument('--epochs', type=int, default=200)
     ap.add_argument('--resume-job', default='')
     ap.add_argument('--latent', type=int, default=32)
+    ap.add_argument('--boundary-envelope',action='store_true',help='New-PDE continuous Dirichlet port; wrap physical native output with16x(1-x)y(1-y)')
     ap.add_argument('--lr-multipliers', type=float, nargs=2, default=[10.,5.])
     a = ap.parse_args()
     assert 0 < a.epochs <= 200 and a.latent > 0
@@ -125,7 +126,7 @@ def main():
     # Semantic source fingerprint survives archive moves and zip timestamps.
     fingerprint = hashlib.sha256(json.dumps({g: [(r['case'], r['sha256']) for r in rows]
                                              for g, rows in sources.items()}, sort_keys=True).encode()).hexdigest()
-    config = dict(latent=a.latent, width=128, base_lr=1e-4, lr_multipliers=list(a.lr_multipliers),
+    config = dict(latent=a.latent, boundary_envelope=a.boundary_envelope, width=128, base_lr=1e-4, lr_multipliers=list(a.lr_multipliers),
                   scheduler_epochs=[100, 100], batch_size=4, order_seed=2026111987,
                   selection_primary_cases=[0, 3, 13, 20], selection_time_indices=[0, 5, 10],
                   projection_iterations=[20, 50], native_diff_threshold=1e-15,
@@ -135,7 +136,11 @@ def main():
                  mean_q=np.array([arrays['train'].mean()]), std_q=np.array([arrays['train'].std()]))
     model = cromnet.CROMnet(fmt, stats, torch.zeros((1, len(xy), 3)), 1e-4, 4, a.latent, 64, 6, 4,
                            False, True, .3, 30, False, list(a.lr_multipliers), [100, 100], 'explicit')
-    model.setup('fit'); model = model.cuda().double()
+    model.setup('fit')
+    if a.boundary_envelope:
+        from baselines.crom_boundary import BoundaryDecoder
+        model.decoder=BoundaryDecoder(model.decoder,a.latent)
+    model = model.cuda().double()
     assert all(p.dtype == torch.float64 for p in model.parameters())
     assert all(b.dtype == torch.float64 for b in model.buffers())
     optimizers, schedulers = model.configure_optimizers(); optimizer, scheduler = optimizers[0], schedulers[0]
@@ -164,7 +169,8 @@ def main():
                   matched_data_sha256=digest(out/'matched_data.npz'), matched_sources_sha256=digest(out/'matched_sources.json'),
                   train_trajectories=len(sources['train']), dev_trajectories=len(sources['dev']),
                   normalization='Training normalization fitted on training fields only; scoring uses current-time reference physical L2',
-                  classification='Pinned author CROM networks/optimizer/native GN; documented float64/manual-loop and new-data port',
+                  classification=('Boundary-conforming new-PDE CROM port: physical decoder envelope; native encoder/loss/optimizer, not unchanged reproduction' if a.boundary_envelope else 'Pinned author CROM networks/optimizer/native GN; documented float64/manual-loop and new-data port'),
+                  boundary_port_sha256=digest(HERE/'baselines/crom_boundary.py') if a.boundary_envelope else None,
                   reference_status='Primary qualified; expanded spectral ladders passed, independent FD tracked separately',
                   port_fixtures=dict(training_gradient_max_difference=gradient_error, native_analytic_jacobian_difference=jacobian_error),
                   final_test_opened=False, representation_admitted=False, pde_comparator_admitted=False,
@@ -174,7 +180,15 @@ def main():
                             for family in ['ridge','two_pulse']]
     diagnostic_indices=[11*i for i in diagnostic_cases]
     constant_mean_loss=1000*float(stats['std_q'][0])**2
-    result.update(training_constant_mean_native_loss=constant_mean_loss,training_diagnostics=[],
+    # Best training-only scalar envelope is a collapse diagnostic, never a target.
+    envelope=16*tx[:,0]*(1-tx[:,0])*tx[:,1]*(1-tx[:,1])
+    envelope_coefficient=(train*envelope[None]).sum()/(len(train)*(envelope**2).sum())
+    envelope_baseline=envelope_coefficient*envelope
+    envelope_loss=1000*torch.mean((train-envelope_baseline[None])**2)
+    result.update(training_constant_mean_native_loss=constant_mean_loss,
+        training_best_scalar_envelope_coefficient=float(envelope_coefficient),
+        training_best_scalar_envelope_native_loss=float(envelope_loss),
+        scalar_envelope_baseline_scope='Training-only least squares, native unweighted physical1000MSE; diagnostics only',training_diagnostics=[],
         diagnostic_snapshot_indices=diagnostic_indices,
         diagnostic_cases=[sources['train'][i]['case'] for i in diagnostic_cases],
         projection_execution_is_not_convergence=True,physical_stationarity_threshold=1e-8,
@@ -193,6 +207,9 @@ def main():
             constant=1000*torch.mean((q-float(stats['mean_q'][0]))**2)
             record=dict(epoch=epoch,effective_lr=float(optimizer.param_groups[0]['lr']),
                 batch_native_loss=float(loss.detach()),batch_constant_mean_native_loss=float(constant),
+                batch_training_scalar_envelope_native_loss=float(1000*torch.mean((q-envelope_baseline[None])**2)),
+                full_training_scalar_envelope_native_loss=float(envelope_loss),
+                training_scalar_envelope_coefficient=float(envelope_coefficient),
                 full_training_constant_mean_native_loss=constant_mean_loss,
                 output_mean=float(prediction.detach().mean()),output_std=float(prediction.detach().std(unbiased=False)),
                 output_spatial_std_by_field=prediction.detach()[:,:,0].std(dim=1,unbiased=False).cpu().tolist(),

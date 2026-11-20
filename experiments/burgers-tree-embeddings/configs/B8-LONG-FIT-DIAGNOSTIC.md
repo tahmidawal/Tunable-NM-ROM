@@ -1,0 +1,11 @@
+# B8 long-fit optimization discriminator
+
+After b8childgn completes and its selected checkpoint is retained/verified, run `extend_residual_fits.py --out OUTPUT --model-job b8childgn --qualification-job b8implprofile`. One GPU, maximum30 allocated minutes; default soft stop1680seconds before starting another field/chunk. Individual operations can overrun the soft check, so scheduler30minutes is mandatory. No automatic extension.
+
+Use selected evaluation codes for b8_dev006, b8_dev000, b8_dev001 and align004 at0,0.125,0.25 under uniform/prescribed layouts:24fields. All are development diagnostics. Verify source/model/cache/reference hashes and locally/remotely verified model/profile retention. Require all six retained root/residual derivative checks, not the overall PDE trace gate; retain its actual failed flag.
+
+Freeze all network weights, preserve cells and jointly continue the existing parent/child codes with R.cached_jacobian_reverse. Use the same128²Gauss physical residual/current-time norm and unchanged LM convergence gates (stationarity1e-8, update1e-10, existing sufficiently-small-stationarity clause). Up to five200-iteration chunks; damping restarts at1e-3 each chunk, code persists. Stop a field only for the unchanged convergence rule, explicit numerical failure or finite experiment limit. Process round-robin so every unfinished field receives a first chunk before any receives a fifth.
+
+Record initial status/error/code norm and every chunk's error, stationarity, physical update, iteration/acceptance counts, code norm and elapsed wall cost including assembly/compilation/scoring. Score each completed chunk independently on256²Gauss using retained development reference fields; this is offline truth-assisted fitting, not an online policy. Persist each code payload and incremental JSON. Failed and unfinished fits remain visible; unfinished fits are not decoder capacity floors. A completed diagnostic may still contain unfinished fits.
+
+No weights, trajectory physics, final-test fields or actual4096 qualification are changed. No PDE admission, runtime superiority or representation success follows automatically. Purpose: distinguish insufficient optimization effort from a nonlinear-head restriction before another architecture change.

@@ -79,7 +79,10 @@ def patched_sources(project):
         'STATS = Int[], Float32[], Float32[], Float32[], Float32[], Float32[], Float32[]',
         'STATS = Int[], Float64[], Float64[], Float64[], Float64[], Float64[], Float64[]')
     modified = replace_once(modified, '    p, st = (p, st) |> device\n',
-        '    p, st = Lux.f64((p, st) |> device)\n    b8_assert_gpu_float64(p)\n')
+        '    # Keep ComponentArray axes; adapt only flat storage, never reconstruct GPU leaves.\n'
+        '    p = ComponentArray(CUDA.CuArray(Float64.(getdata(p))), getaxes(p))\n'
+        '    st = device(st)\n'
+        '    b8_assert_gpu_float64(p)\n    b8_assert_gpu_float64(st)\n')
     modified = replace_once(modified,
         '@assert eltype(p) ∈ (Float32, ComplexF32)', '@assert eltype(p) ∈ (Float64, ComplexF64)')
     modified = replace_once(modified,
@@ -135,6 +138,8 @@ def main():
                   patches=records, patch_sha256=digest(patchfile), fixture_sha256=digest(fixture),
                   final_test_opened=False, study_data_opened=False, shared_environment_modified=False,
                   trained_comparator=False,
+                  parameter_transfer='Float64 flat CuArray storage with original ComponentArray axes; state transferred separately; CUDA scalar indexing remains disabled',
+                  failed_predecessor='b8snftraincheck / job7387185: Lux.f64 GPU ComponentArray reconstruction scalar-indexing failure; retained separately',
                   scope='Tiny native SNF makedata_SNF/train_SNF/FlatDecoder optimization fixture; not study training or PDE qualification')
     save(out/'result.json', result)
     result['execution'] = command([str(binary), '--startup-file=no', '--project='+str(project), str(fixture)],

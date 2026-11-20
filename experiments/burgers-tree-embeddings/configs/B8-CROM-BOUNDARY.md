@@ -1,0 +1,13 @@
+# Prospective continuous-boundary CROM port
+
+Preparation only; no job is launched or admitted by this change. Next registered experiment should train fresh with --boundary-envelope --lr-multipliers 1 .5, retaining the200-epoch schedule and existing finite allocation. Do not initialize from the unconstrained or collapsed checkpoint. Retain the unconstrained low-rate control and unsuccessful recipes.
+
+BoundaryDecoder wraps the native decoder's already denormalized physical output with B(x,y)=16x(1-x)y(1-y). Do not divide targets by B; no endpoint discontinuity or singular boundary target is introduced. The native encoder, training normalization, loss, optimizer and native projector remain. This is explicitly a boundary-conforming new-PDE port, not an unchanged CROM reproduction.
+
+Full analytical derivatives include B times every native derivative, plus raw physical output times the spatial derivatives of B. Code derivatives at the boundary are zero, while normal spatial derivatives can be nonzero. Physical coordinate inputs are used before the native coordinate normalization. Native decoder mean and standard deviation remain inside the envelope.
+
+The training flag defaults false, preserving unconstrained execution. New checkpoint configurations bind boundary_envelope; incompatible flag resumes reject through existing exact configuration checks. Older checkpoints lacking this config field are not implicitly migrated. Wrapped state dictionaries nest native decoder keys under decoder.native; evaluators must reconstruct the wrapper from bound config before loading. Source SHA is recorded. The existing native training_step/manual-loss gradient and analytical/autodiff Jacobian gates run on the wrapped model before any training.
+
+Tiny synthetic affine CPU fixture only: analytical/autodiff maximum difference4.44e-16; spatial finite-difference difference9.62e-11. Exact boundary field/code derivative zeros, nonzero spatial product term, physical denormalization placement, wrapped-objective parameter-gradient parity, parameter identity and state-dictionary roundtrip passed. No local trained-model evaluation. This fixture does not qualify scientific accuracy or online PDE stability.
+
+Collapse diagnostics also retain the best training-only scalar-envelope baseline: c=sum(train*B)/(number_of_training_fields*sum(B²)), measured with native unweighted1000MSE. Representative batches are scored against that same training-fitted c*B (never batch-refitted). Ordinary constant-mean loss and latent variation remain. This changes neither training objective nor checkpoint selection.

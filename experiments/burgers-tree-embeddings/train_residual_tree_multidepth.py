@@ -6,6 +6,7 @@ from neural import stable as S,fields as F,allocations as A,code_optimizer as C,
 from neural.build_data import resolve
 from training_io import checkpoint,read_checkpoint
 import data
+from neural import spatial_sampling as SS
 
 
 def main():
@@ -13,6 +14,9 @@ def main():
     ap.add_argument('--train-jobs',required=True);ap.add_argument('--dev-jobs',required=True);ap.add_argument('--warm-job',required=True)
     ap.add_argument('--reuse-codes',action='store_true',help='Reuse verified root and selected multidepth codes from warm-job; reset all Adam clocks/moments and learning-rate schedules')
     ap.add_argument('--parent-initializer',choices=['newton','gn-only'],default='newton',help='Three60-step parent GN starts; optionally finish selected unfinished start with120 Newton steps. Does not alter assembled fitting.')
+    ap.add_argument('--spatial-sampling',choices=['uniform-index','residual-mixture'],default='uniform-index')
+    ap.add_argument('--family-sampling',choices=['legacy','split-primary'],default='legacy')
+    ap.add_argument('--sampling-alpha',type=float,default=.5)
     ap.add_argument('--all-final-refit',action='store_true',help='Refit all times/all variants at final checkpoint; otherwise rotating time only')
     ap.add_argument('--child-k',type=int,default=16);ap.add_argument('--features',type=int,default=64);ap.add_argument('--nodes',type=int,default=20)
     ap.add_argument('--seed',type=int,default=2026111989);a=ap.parse_args()
@@ -181,13 +185,13 @@ def main():
     trainable=dict(feature=params['feature'],head=params['head']);opt=optax.chain(optax.clip_by_global_norm(5.),optax.adam(optax.cosine_decay_schedule(3e-4,a.updates,alpha=.1)));no=opt.init(trainable)
     rate=optax.cosine_decay_schedule(3e-3,a.updates,alpha=.1)
     @partial(jax.jit,static_argnames=('active',))
-    def step(net,codes,no,co,si,bank_ids,pi,active,it,root,scale,xy,w,y,norm,cs):
+    def step(net,codes,no,co,si,bank_ids,pi,importance,active,it,root,scale,xy,w,y,norm,cs):
         def loss(net,z):
             def one(zz,cell,points):
                 p=dict(net,root=root,scale=scale)
                 return R.tree(p,zz[:32+active*a.child_k],points,cell[:active])
             pred=jax.vmap(one)(z,cs[bank_ids],xy[pi]);target=y[si[:,None],pi]
-            return jnp.mean(len(w)*w[pi]*((pred-target)/norm[si,None])**2)
+            return jnp.mean(importance*((pred-target)/norm[si,None])**2)
         value,(gn,gz)=jax.value_and_grad(loss,argnums=(0,1))(net,codes[bank_ids]);up,no=opt.update(gn,no,net)
         mask=jnp.concatenate([jnp.ones(32,dtype=bool),jnp.repeat(jnp.arange(a.nodes)<active,a.child_k)])
         codes,co=C.update_masked(codes,co,bank_ids,gz,rate(it),mask[None,:]);return optax.apply_updates(net,up),codes,no,co,value
@@ -213,8 +217,36 @@ def main():
             pred=R.cached(dict(p,B=Bf),z,xf);err=float(jnp.sqrt(jnp.sum(wf*(pred-fine[ci][ti])**2))/dv['norm'][i])
             rows.append(dict(index=i,case=dv['labels'][ci],time=float(data.TIMES[ti]),layout=kind,codes=np.asarray(z),cells=np.asarray(cell),status=np.asarray(st),independent_error=err,scoring_change=abs(err-float(st[0]))))
         return rows
+    sampler=None;strata=None;sampling_start=time.perf_counter()
+    hostw=np.asarray(w)
+    if a.family_sampling=='split-primary':
+        primary_count=len(dr['groups']['train']['labels'])
+        assert tr['labels'][:primary_count]==dr['groups']['train']['labels']
+        strata=SS.stratify(data.parameters('train',primary_count),tr['family'][primary_count:])
+    if a.spatial_sampling=='residual-mixture':
+        # Fixed parent proposals use training truth only; assemble CDF in small chunks.
+        probabilities=np.empty((snapshots,len(w)),dtype=np.float64)
+        cdf=np.empty_like(probabilities)
+        parent_prediction=jax.jit(lambda z:S.apply(root,z[:,None,:],xy[None]))
+        for start in range(0,snapshots,4):
+            stop=min(start+4,snapshots)
+            residual=np.asarray(tr['y'][start:stop]-parent_prediction(rootcodes[start:stop]))
+            chunk=SS.prepare(hostw,residual,a.sampling_alpha)
+            probabilities[start:stop]=chunk['probabilities'];cdf[start:stop]=chunk['cdf']
+        sampler=dict(weights=hostw,probabilities=probabilities,cdf=cdf,fields=snapshots,
+                     points=len(w),cohort='train',alpha=a.sampling_alpha)
+    sampling_record=dict(spatial=a.spatial_sampling,family=a.family_sampling,alpha=a.sampling_alpha,
+        preparation_seconds=time.perf_counter()-sampling_start,
+        proposal_bytes=0 if sampler is None else probabilities.nbytes+cdf.nbytes+hostw.nbytes,
+        parent_sha256=digest(pp),root_initialization_sha256=root_initialization_sha256,
+        training_data_sha256=digest(dp),expanded_sources=[r for r in provenance if r['cohort']=='train'],
+        proposal_sha256=None if sampler is None else hashlib.sha256(probabilities.tobytes()).hexdigest(),
+        strata=None if strata is None else {k:v for k,v in strata.items() if k!='groups'},
+        importance='Original quadrature weight / sampling probability; full quadrature N*w',
+        proposal_role='Fixed offline training-only frozen-parent residual; no development or online sampling')
+    print('sampling_preparation',sampling_record,flush=True)
     result=dict(meta=metadata,status='training',parent_sha256=digest(pp),primary_data_sha256=digest(dp),expanded_sources=provenance,
-        seed=a.seed,child_k=a.child_k,features=a.features,nodes=a.nodes,active_variables=32+a.nodes*a.child_k,
+        sampling=sampling_record,seed=a.seed,child_k=a.child_k,features=a.features,nodes=a.nodes,active_variables=32+a.nodes*a.child_k,
         parent_weights_frozen=True,final_test_opened=False,primary_only=False,train_labels=tr['labels'],dev_labels=dv['labels'],
         normalization='current-time reference physical L2',initial_errors=initerr,
         variant_labels=variant_labels,variant_probabilities=variant_probabilities,independent_codes_per_variant=True,
@@ -237,11 +269,19 @@ def main():
     best=np.inf;selected=None
     family=np.repeat(np.array(tr['family']),11);families=sorted(set(family));family_indices=[np.flatnonzero(family==f) for f in families]
     for it in range(1,a.updates+1):
-        full=it>a.updates-2000;batch=2 if full else 4;pool=family_indices[int(rng.integers(len(families)))];si=rng.choice(pool,batch,replace=False)
-        pi=np.tile(np.arange(len(w)),(batch,1)) if full else rng.integers(len(w),size=(batch,512))
+        full=it>a.updates-2000;batch=2 if full else 4
+        if strata is None:
+            pool=family_indices[int(rng.integers(len(families)))];si=rng.choice(pool,batch,replace=False)
+        else:
+            _,trajectories=SS.draw_stratum(rng,strata,batch);si=11*trajectories+rng.integers(11,size=batch)
+        if full or sampler is None:
+            pi=np.tile(np.arange(len(w)),(batch,1)) if full else rng.integers(len(w),size=(batch,512))
+            importance=len(w)*w[pi]
+        else:
+            sampled=SS.draw(rng,sampler,si,512);pi=sampled['indices'];importance=jnp.asarray(sampled['importance_weights'])
         variant=int(rng.choice(3,p=variant_probabilities));active=4 if variant==0 else a.nodes
         bank_ids=variant*snapshots+si
-        trainable,codes,no,co,value=step(trainable,codes,no,co,jnp.asarray(si),jnp.asarray(bank_ids),jnp.asarray(pi),active,it-1,root,params['scale'],xy,w,tr['y'],tr['norm'],cellarray)
+        trainable,codes,no,co,value=step(trainable,codes,no,co,jnp.asarray(si),jnp.asarray(bank_ids),jnp.asarray(pi),importance,active,it-1,root,params['scale'],xy,w,tr['y'],tr['norm'],cellarray)
         if it%1000==0:
             print('child_training',it,float(value),flush=True)
             checkpoint(out/'latest_training.pkl',dict(params=dict(trainable,root=root,scale=params['scale']),training_codes=codes.reshape(3,snapshots,dimension),training_cells=cells,variant_labels=variant_labels,update=it,parent_sha256=digest(pp),expanded_sources=provenance))

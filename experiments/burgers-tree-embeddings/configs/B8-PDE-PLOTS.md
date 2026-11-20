@@ -1,0 +1,5 @@
+# B8 neural PDE output rendering
+
+After b8treepde terminates and its fields/source/logs are retained and hash-verified, run render_residual_pde.py --source-job b8treepde in one owned job of at most10 allocated GPU-minutes, within the existing B8 tranche and maximumtwo concurrent jobs. This is postprocessing, not a solver experiment. GPU preflight remains required; plotting itself uses CPU Matplotlib.
+
+Verify source output hashes, actual4096-by4096 float64 arrays, per-pixel signed error consistency and the full-grid current-time normalized relative errors. Retain all full fields; uniformly subsample only the displayed image to512-by512, label that distinction. Plot reference/model/absolute-error rows across all five output times, error+referenceallowance against1%, and separately identified complete cold-query wall/component costs. Label initialization as Q128 fit-grid scoring. This single smooth fixed-tree diagnostic cannot establish adaptation, all-case qualification, or a paired CROM/SNF runtime claim.

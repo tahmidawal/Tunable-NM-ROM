@@ -87,3 +87,22 @@ For the fair continuous-boundary comparison variant, the additional retained
 qualification and --boundary-envelope flag in B8-SNF-CONTINUOUS-BOUNDARY.md are
 mandatory. The unconstrained native-network control remains separately labelled.
 The failed b8snftraincheck execution is retained under B8-SNF-FLOAT64-REPAIR.md.
+
+GPU ownership repair: the coordinator selects CPU-only JAX before importing
+common utilities and performs no scientific numerical work. It launches the
+same hash-verified full212-trajectory synthesis in a dedicated cluster CUDA
+subprocess, with GPU Float64/highest-precision preflight and preallocation
+disabled. The coordinator waits for successful process termination, then
+rechecks every raw binary's hash/byte count and descriptor/source/TOML hashes
+before starting Julia. Process exit releases all synthesis GPU allocations and
+its CUDA context, including any caching-allocator pool; cache clearing alone is
+not relied upon. Failed/timed-out preparation blocks Julia launch.
+
+Retain worker PID, parent PID, preflight, log, elapsed preparation time and
+NVML device/process memory snapshots before synthesis, after synthesis, and
+after worker exit. NVML-query failure is explicitly recorded, not interpreted
+as zero memory use. Preparation and both processes remain inside the same
+allocated job and the same6900-second orchestration budget; this change does
+not add compute or alter reference samples, descriptors, statistics, hashes,
+precision, training schedule or qualification gates. Tiny qualification fixtures
+remain unchanged; they did not exercise large JAX synthesis pools.

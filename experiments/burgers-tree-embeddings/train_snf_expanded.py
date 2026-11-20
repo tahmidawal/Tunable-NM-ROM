@@ -85,8 +85,110 @@ def patch_scientific_progress(project):
                              fromfile='train.jl',tofile='train.jl.scientific-progress'))
 
 
+def gpu_memory_snapshot():
+    """Read-only NVML evidence; never initialize a JAX GPU in the coordinator."""
+    import subprocess
+    record=dict(pid=os.getpid(),cuda_visible_devices=os.environ.get('CUDA_VISIBLE_DEVICES'))
+    for label,query in [('devices','--query-gpu=uuid,memory.total,memory.used,memory.free'),
+                        ('compute_processes','--query-compute-apps=pid,gpu_uuid,used_memory')]:
+        try:
+            answer=subprocess.run(['nvidia-smi',query,'--format=csv,noheader,nounits'],
+                capture_output=True,text=True,timeout=15,check=False)
+            record[label]=dict(returncode=answer.returncode,stdout=answer.stdout,stderr=answer.stderr)
+        except (OSError,subprocess.SubprocessError) as exc:record[label]=dict(error=repr(exc))
+    return record
+
+
+def prepare_matched_data(out, ns):
+    """Cluster-only subprocess: owns every reference-synthesis GPU allocation."""
+    from common import save,digest,preflight,jax,jnp
+    from neural.build_data import resolve
+    from neural import expanded_cases as E
+    import data
+    assert os.environ.get('SLURM_JOB_ID')
+    assert str(ns).startswith('/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-')
+    assert not (out/'data-preparation.json').exists()
+    preparation=dict(status='preparing',pid=os.getpid(),parent_pid=os.getppid(),meta=preflight(),
+        process_role='Dedicated GPU synthesis worker; must exit before Julia starts',
+        gpu_before=gpu_memory_snapshot(),final_test_opened=False)
+    save(out/'data-preparation.json',preparation)
+    started=time.monotonic()
+    try:
+        result=prepare_matched_data_fields(out,ns)
+        preparation.update(result,status='complete',gpu_after_synthesis=gpu_memory_snapshot())
+    except BaseException as exc:
+        preparation.update(status='failed',error=repr(exc),traceback=traceback.format_exc());raise
+    finally:
+        preparation['elapsed_wall_seconds']=time.monotonic()-started
+        save(out/'data-preparation.json',preparation)
+
+
+def prepare_matched_data_fields(out, ns):
+    from common import save,digest,jax,jnp
+    from neural.build_data import resolve
+    from neural import expanded_cases as E
+    import data
+    original_path = resolve(ns/'b6parent/output/coordinate_data.json', ns)
+    original = json.loads(original_path.read_text())
+    groups, provenance = {}, []
+    for cohort, job, expected in [('train', 'b8trainrefs', 160), ('dev', 'b8devrefs', 52)]:
+        rows = [dict(row, family='primary') for row in original['groups'][cohort]['sources']]
+        rp = resolve(ns/job/'output/result.json', ns); record = json.loads(rp.read_text())
+        assert record['cohort'] == cohort and record['all_ladders_pass'] and not record['final_test_opened']
+        definitions = E.definitions(cohort)
+        assert record['spec']['definitions'] == definitions
+        assert len(record['cases']) == len(definitions)
+        for row, definition in zip(record['cases'], definitions):
+            assert all(row[k] == v for k, v in definition.items())
+            assert row['complete'] and row['provisional_ladder_pass']
+            last = row['levels'][-1]; assert last['N'] == 512 and last['dt'] == .00015625
+            rows.append(dict(case=row['case'], family=row['family'], definition=row['definition'], nu=row['nu'],
+                             file=str(rp.parent/last['file']), sha256=last['sha256']))
+        assert len(rows) == expected and len({r['case'] for r in rows}) == expected
+        groups[cohort] = rows; provenance.append(dict(job=job, sha256=digest(rp)))
+    assert not ({r['case'] for r in groups['train']} & {r['case'] for r in groups['dev']})
+    axis = np.linspace(0., 1., 128)
+    xy = np.stack(np.meshgrid(axis, axis, indexing='ij'), -1).reshape(-1, 2).T
+    shape = (1, 16384, 212, 11)
+    fieldpath = out/'u.f64'
+    fields = np.memmap(fieldpath, mode='w+', dtype='<f8', shape=shape, order='F')
+    descriptors = []; synth = jax.jit(data.synth_grid)
+    for index, row in enumerate(groups['train']+groups['dev']):
+        path = resolve(row['file'], ns); assert digest(path) == row['sha256']
+        with np.load(path) as v:
+            assert np.array_equal(v['times'], data.TIMES)
+            b = v['coefficients']
+            d = descriptor(definition=row['definition'], nu=row['nu']) if 'definition' in row else descriptor(v['parameters'])
+            y = np.asarray(synth(jnp.asarray(b), jnp.asarray(axis))).reshape(11, 16384)
+        assert np.isfinite(y).all(); fields[0, :, index, :] = y.T; descriptors.append(d)
+        if index % 16 == 0: print('SNF_SOURCE_SYNTHESIS', index+1, 212, flush=True)
+    fields.flush(); del fields
+    raw = np.stack(descriptors, axis=1)
+    mean = raw[:, :160].mean(axis=1); scale = raw[:, :160].std(axis=1)
+    scale = np.where(scale < 1e-12, 1., scale)
+    normalized = (raw-mean[:, None])/scale[:, None]
+    shapes = dict(x=write_binary(out/'x.f64', xy), u=list(shape),
+                  t=write_binary(out/'t.f64', data.TIMES), mu=write_binary(out/'mu.f64', normalized))
+    # Julia TOML stdlib reads explicit shapes; arrays are little-endian Float64,
+    # column-major. No NPZ, Python package, or implicit reshape convention.
+    (out/'raw-data.toml').write_text('dtype = "Float64"\nbyte_order = "little"\norder = "F"\ntrain_count = 160\ndev_count = 52\n'+
+        ''.join(f'{k}_shape = {json.dumps(v)}\n' for k, v in shapes.items()))
+    save(out/'descriptor_statistics.json', dict(mean=mean, scale=scale, raw=raw,
+         schema=['background', 'nu']+[f'gaussian{n}_{k}' for n in [1,2]
+                 for k in ['amplitude','cx','cy','sigma_t','sigma_n','sin2theta','cos2theta']],
+         fitting_cases=160, time='Native training-only time mean/std; 17 total hyper inputs',
+         constant_dimension_scale=1., online_use=False))
+    save(out/'matched_sources.json', dict(primary_record_sha256=digest(original_path), expanded=provenance, groups=groups))
+    return dict(train_trajectories=160,dev_trajectories=52,
+        raw_files={k:dict(file=k+'.f64',shape=v,sha256=digest(out/(k+'.f64'))) for k,v in shapes.items()},
+        raw_data_manifest_sha256=digest(out/'raw-data.toml'),
+        descriptor_statistics_sha256=digest(out/'descriptor_statistics.json'),
+        matched_sources_sha256=digest(out/'matched_sources.json'))
+
+
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument('--out'); ap.add_argument('--fixture', action='store_true')
+    ap.add_argument('--prepare-data-only',action='store_true',help=argparse.SUPPRESS)
     ap.add_argument('--qualification-job', default='b8snftrainfix')
     ap.add_argument('--boundary-envelope', action='store_true')
     ap.add_argument('--boundary-qualification-job', default='b8snfboundary')
@@ -95,10 +197,17 @@ def main():
     a = ap.parse_args()
     if a.fixture:
         fixture(); return
+    if a.prepare_data_only:
+        assert a.out and os.environ.get('SLURM_JOB_ID')
+        os.environ['JAX_PLATFORMS']='cuda'
+        prepare_matched_data(Path(a.out),Path(os.environ['STUDY_NAMESPACE']))
+        return
+    # This process only orchestrates files and Julia; it must not own a GPU pool.
+    os.environ['JAX_PLATFORMS']='cpu'
     assert a.out and 0 < a.timeout_seconds <= 6900
     assert a.qualification_job.replace('-', '').isalnum()
     # Imports below this point may initialize accelerators; tiny fixture does not.
-    from common import HERE, save, digest, preflight, jax, jnp
+    from common import HERE, save, digest, jax
     from neural.build_data import resolve
     from neural import expanded_cases as E
     from qualify_native_competitors import command
@@ -116,7 +225,8 @@ def main():
         assert os.environ.get('SLURM_JOB_ID'), 'Scientific synthesis/training requires a cluster allocation'
         ns = Path(os.environ['STUDY_NAMESPACE'])
         assert str(ns).startswith('/cluster/tufts/paralab/tawal01/burgers-tree-embeddings-')
-        result['meta'] = preflight()
+        assert jax.default_backend()=='cpu','Coordinator must not initialize a GPU backend'
+        result['coordinator']=dict(pid=os.getpid(),jax_backend='cpu',scientific_computation=False)
         qpath = resolve(ns/a.qualification_job/'output/result.json', ns)
         qualification = json.loads(qpath.read_text())
         retention = HERE/'manifests'/('retention-'+a.qualification_job+'.json')
@@ -189,61 +299,33 @@ def main():
             source_patches=qualification['patches'], resolved_manifest_sha256=digest(project/'Manifest.toml'),
             lux_patched_rule_sha256=digest(lux_rule), adapter_sha256=digest(adapter))
         save(out/'result.json', result)
-        original_path = resolve(ns/'b6parent/output/coordinate_data.json', ns)
-        original = json.loads(original_path.read_text())
-        groups, provenance = {}, []
-        for cohort, job, expected in [('train', 'b8trainrefs', 160), ('dev', 'b8devrefs', 52)]:
-            rows = [dict(row, family='primary') for row in original['groups'][cohort]['sources']]
-            rp = resolve(ns/job/'output/result.json', ns); record = json.loads(rp.read_text())
-            assert record['cohort'] == cohort and record['all_ladders_pass'] and not record['final_test_opened']
-            definitions = E.definitions(cohort)
-            assert record['spec']['definitions'] == definitions
-            assert len(record['cases']) == len(definitions)
-            for row, definition in zip(record['cases'], definitions):
-                assert all(row[k] == v for k, v in definition.items())
-                assert row['complete'] and row['provisional_ladder_pass']
-                last = row['levels'][-1]; assert last['N'] == 512 and last['dt'] == .00015625
-                rows.append(dict(case=row['case'], family=row['family'], definition=row['definition'], nu=row['nu'],
-                                 file=str(rp.parent/last['file']), sha256=last['sha256']))
-            assert len(rows) == expected and len({r['case'] for r in rows}) == expected
-            groups[cohort] = rows; provenance.append(dict(job=job, sha256=digest(rp)))
-        assert not ({r['case'] for r in groups['train']} & {r['case'] for r in groups['dev']})
-        axis = np.linspace(0., 1., 128)
-        xy = np.stack(np.meshgrid(axis, axis, indexing='ij'), -1).reshape(-1, 2).T
-        shape = (1, 16384, 212, 11)
-        fieldpath = out/'u.f64'
-        fields = np.memmap(fieldpath, mode='w+', dtype='<f8', shape=shape, order='F')
-        descriptors = []; synth = jax.jit(data.synth_grid)
-        for index, row in enumerate(groups['train']+groups['dev']):
-            path = resolve(row['file'], ns); assert digest(path) == row['sha256']
-            with np.load(path) as v:
-                assert np.array_equal(v['times'], data.TIMES)
-                b = v['coefficients']
-                d = descriptor(definition=row['definition'], nu=row['nu']) if 'definition' in row else descriptor(v['parameters'])
-                y = np.asarray(synth(jnp.asarray(b), jnp.asarray(axis))).reshape(11, 16384)
-            assert np.isfinite(y).all(); fields[0, :, index, :] = y.T; descriptors.append(d)
-            if index % 16 == 0: print('SNF_SOURCE_SYNTHESIS', index+1, 212, flush=True)
-        fields.flush(); del fields
-        raw = np.stack(descriptors, axis=1)
-        mean = raw[:, :160].mean(axis=1); scale = raw[:, :160].std(axis=1)
-        scale = np.where(scale < 1e-12, 1., scale)
-        normalized = (raw-mean[:, None])/scale[:, None]
-        shapes = dict(x=write_binary(out/'x.f64', xy), u=list(shape),
-                      t=write_binary(out/'t.f64', data.TIMES), mu=write_binary(out/'mu.f64', normalized))
-        # Julia TOML stdlib reads explicit shapes; arrays are little-endian Float64,
-        # column-major. No NPZ, Python package, or implicit reshape convention.
-        (out/'raw-data.toml').write_text('dtype = "Float64"\nbyte_order = "little"\norder = "F"\ntrain_count = 160\ndev_count = 52\n'+
-            ''.join(f'{k}_shape = {json.dumps(v)}\n' for k, v in shapes.items()))
-        save(out/'descriptor_statistics.json', dict(mean=mean, scale=scale, raw=raw,
-             schema=['background', 'nu']+[f'gaussian{n}_{k}' for n in [1,2]
-                     for k in ['amplitude','cx','cy','sigma_t','sigma_n','sin2theta','cos2theta']],
-             fitting_cases=160, time='Native training-only time mean/std; 17 total hyper inputs',
-             constant_dimension_scale=1., online_use=False))
-        save(out/'matched_sources.json', dict(primary_record_sha256=digest(original_path), expanded=provenance, groups=groups))
+        result['gpu_memory_before_preparation']=gpu_memory_snapshot()
+        preparation_env=dict(os.environ,JAX_PLATFORMS='cuda',XLA_PYTHON_CLIENT_PREALLOCATE='false')
+        remaining=int(a.timeout_seconds-(time.monotonic()-started));assert remaining>0
+        result['preparation_execution']=command([sys.executable,str(Path(__file__).resolve()),
+            '--out',str(out),'--prepare-data-only'],out/'reference_preparation.log',preparation_env,timeout=remaining)
+        result['gpu_memory_after_preparation_process_exit']=gpu_memory_snapshot()
+        save(out/'result.json',result)
+        assert result['preparation_execution']['returncode']==0,'Reference preparation process did not complete; Julia will not start'
+        prep_path=out/'data-preparation.json';preparation=json.loads(prep_path.read_text())
+        assert preparation['status']=='complete' and preparation['pid']!=os.getpid()
+        assert preparation['meta']['x64'] and preparation['meta']['precision']=='highest'
+        for name,row in preparation['raw_files'].items():
+            assert row['file']==name+'.f64'
+            path=out/row['file'];assert digest(path)==row['sha256']
+            assert path.stat().st_size==8*int(np.prod(row['shape']))
+        for name,key in [('raw-data.toml','raw_data_manifest_sha256'),
+                         ('descriptor_statistics.json','descriptor_statistics_sha256'),
+                         ('matched_sources.json','matched_sources_sha256')]:
+            assert digest(out/name)==preparation[key]
+        result.update(meta=preparation['meta'],data_preparation_sha256=digest(prep_path),
+            preparation_pid=preparation['pid'],preparation_wall_seconds=preparation['elapsed_wall_seconds'],
+            reference_preparation_log_sha256=digest(out/'reference_preparation.log'),
+            gpu_ownership='Coordinator uses CPU JAX only; GPU synthesis subprocess has exited before Julia launch')
         result.update(status='native_expanded_training', train_trajectories=160, dev_trajectories=52,
-            raw_files={k: dict(file=k+'.f64', shape=s, sha256=digest(out/(k+'.f64'))) for k,s in shapes.items()},
-            descriptor_statistics_sha256=digest(out/'descriptor_statistics.json'),
-            matched_sources_sha256=digest(out/'matched_sources.json'),
+            raw_files=preparation['raw_files'],raw_data_manifest_sha256=preparation['raw_data_manifest_sha256'],
+            descriptor_statistics_sha256=preparation['descriptor_statistics_sha256'],
+            matched_sources_sha256=preparation['matched_sources_sha256'],
             config=dict(latent=32, hh=0, hd=5, hyper_width=64, decoder_width=128, requested_epochs=210, native_early_stopping=True,
                 schedule="Seven requested30-epoch stages; actual completed epochs may be fewer",
                 warmup=False, train_batch=262144, validation_batch=262144, hyper_l2=.001,

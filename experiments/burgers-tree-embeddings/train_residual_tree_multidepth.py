@@ -11,6 +11,42 @@ from evaluate_residual_tree import load_group, owned_job, zero_child_audit
 from extend_residual_fits import verified_manifest
 
 
+def fresh_block_jacobian_audit(params, xy, child_k, out, training_root_code):
+    """Small in-allocation derivative check for the actual fresh architecture."""
+    started=time.perf_counter()
+    first=A.children((0,0,0));cells=jnp.asarray(first+[c for parent in first for c in A.children(parent)])
+    assert len(xy)==128**2
+    axis_indices=np.array([16,48,80,112]);ix,iy=np.meshgrid(axis_indices,axis_indices,indexing='ij')
+    indices=(128*ix+iy).reshape(-1);points=xy[jnp.asarray(indices)]
+    dimension=32+20*child_k
+    code=.2*jnp.sin(jnp.arange(dimension,dtype=jnp.float64)+1.)
+    assert training_root_code.shape==(32,)
+    code=code.at[:32].set(training_root_code+.01*jnp.sin(jnp.arange(32,dtype=jnp.float64)+1.))
+    p=dict(params,B=R.feature_matrix(params['feature'],cells,points))
+    full=jax.jit(jax.jacfwd(R.cached,argnums=1))(p,code,points)
+    forward=jax.jit(R.cached_jacobian)(p,code,points)
+    reverse=jax.jit(R.cached_jacobian_reverse)(p,code,points)
+    jax.block_until_ready((full,forward,reverse))
+    checks={}
+    for name,left,right in [('forward_vs_full',forward,full),('reverse_vs_full',reverse,full),('reverse_vs_forward',reverse,forward)]:
+        finite=bool(jnp.isfinite(left).all() & jnp.isfinite(right).all())
+        absolute=float(jnp.max(jnp.abs(left-right))) if finite else None
+        relative=float(jnp.linalg.norm(left-right)/jnp.maximum(jnp.linalg.norm(right),1e-30)) if finite else None
+        checks[name]=dict(finite=finite,max_absolute=absolute,relative=relative,
+            passed=finite and absolute<=1e-9 and relative<=1e-10)
+    filename='fresh_block_jacobian_audit.pkl'
+    sha=checkpoint(out/filename,dict(code=code,cells=cells,points=points,full_autodiff=full,forward_block=forward,reverse_block=reverse,checks=checks))
+    record=dict(file=filename,sha256=sha,checks=checks,passed=all(v['passed'] for v in checks.values()),
+        child_k=child_k,features=int(params['scale'].shape[0]),nodes=20,dimension=dimension,points=16,
+        code_rule='Root: first retained training code +0.01*sin(arange(32)+1); children:0.2*sin(arange(D)+1)[32:]',
+        point_rule='4x4 tensor indices[16,48,80,112] on128x128 quadrature; one point in each depth2 cell',
+        absolute_tolerance=1e-9,relative_tolerance=1e-10,relative_norm='Frobenius relative to comparison target',
+        elapsed_seconds=time.perf_counter()-started,scope='Fresh-model derivative parity only; not field accuracy or PDE trace equivalence')
+    save(out/'fresh_block_jacobian_audit.json',record)
+    assert record['passed'], 'Fresh architecture derivative parity failed; evidence retained'
+    return record
+
+
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--out',required=True);ap.add_argument('--updates',type=int,default=30000)
     ap.add_argument('--train-jobs',required=True);ap.add_argument('--dev-jobs',required=True);ap.add_argument('--warm-job',default='')
@@ -98,8 +134,9 @@ def main():
         assert wr['status'].startswith('complete_')
         warm=read_checkpoint(wp);params=jax.tree.map(jnp.asarray,warm['params']);assert params['scale'].shape==(a.features,) and R.dimensions(params)==(32,a.child_k)
         assert warm['parent_sha256']==digest(pp)
-    zero_preservation=None
+    zero_preservation=None;fresh_derivative_audit=None
     if a.fresh_children:
+        fresh_derivative_audit=fresh_block_jacobian_audit(params,xy,a.child_k,out,jnp.asarray(parent['training_codes'][0]))
         probe=xy[::1024];audit_cells=jnp.asarray([[1,0,0],[1,0,1],[1,1,0],[1,1,1]])
         audit_root=jnp.asarray(parent['training_codes'][0]);audit_code=jnp.concatenate([audit_root,jnp.zeros(4*a.child_k)])
         zero_preservation=float(jnp.max(jnp.abs(R.tree(params,audit_code,probe,audit_cells)-S.apply(root,audit_root,probe))))
@@ -342,7 +379,8 @@ def main():
         objective='Family-balanced physical relative reconstruction; independent jointly fitted parent/child codes for each depth/layout; shared frozen root and shared learned feature/head weights',
         all_final_refit=a.all_final_refit,warm_job=a.warm_job,warm_checkpoint_sha256=None if wp is None else digest(wp),
         parent_job=a.parent_job,parent_retention_sha256=parent_retention,expanded_parent=expanded_parent,
-        fresh_children=a.fresh_children,representative_zero_audit_required=a.fresh_children,initial_zero_child_audit=initial_zero_audit,
+        fresh_children=a.fresh_children,fresh_block_jacobian_audit=fresh_derivative_audit,
+        representative_zero_audit_required=a.fresh_children,initial_zero_child_audit=initial_zero_audit,
         zero_child_preservation_max_abs=zero_preservation,assembled_jacobian=a.assembled_jacobian,derivative_qualification=derivative_proof,
         parent_training_admission='Completed retained matched parent; no standalone parent2percent gate. Representation/PDE gates remain separate',
         reuse_codes=a.reuse_codes,reuse_provenance=reuse_provenance,

@@ -1,0 +1,17 @@
+# Conditional B8 fresh32-child-code control
+
+Prepared only: no launch authorization or automatic extension. Launch decision requires retained fresh16 outcomes plus matched-span/long-fit evidence. In particular, a good full64-feature span with poorly represented converged16-code fields supports testing a wider nonlinear code. Poor full-feature span or unfinished optimization requires diagnosing those issues before interpreting this as a head-capacity remedy.
+
+Use one GPU for at most120allocated minutes, respecting the shared concurrency/accounting and backup requirements. A partial run remains partial. Exact intended invocation:
+
+```
+train_residual_tree_multidepth.py --out OUTPUT --parent-job b8parent32 --fresh-children --parent-initializer gn-only --assembled-jacobian reverse --qualification-job b8implprofile --train-jobs b8trainrefs --dev-jobs b8devrefs --updates 30000 --family-sampling split-primary --spatial-sampling residual-mixture --sampling-alpha .5 --all-final-refit --child-k 32 --features 64 --nodes 20 --seed 2026111989
+```
+
+This keeps the fresh16 recipe's retained expanded parent, data/cohort order, shared64-feature architecture, seed, sampling distribution,30k weight updates, three independently fitted layout/depth banks, fitting rules and final refits. It is a separately initialized architecture:32 independent local codes and32 nonlinear head coefficients instead of16 codes and48 head coefficients. It is not zero extension of the16-code model, transfer learning or optimizer continuation. Matching seeds preserve the feature-network initialization mechanism; head parameter shapes differ. Root weights remain frozen and zero child codes preserve the parent.
+
+At20nodes, assembled dimension increases from352 to672 (32 global variables plus20×local code). Dense Gram/storage arithmetic grows approximately3.64× and nominal cubic dense-factorization work approximately6.96× at the same iteration count; these are scaling estimates, not measured PDE timings. A lower representation error alone cannot establish better complete solve time. Equal-cost global controls and unchanged physical-accuracy gates remain necessary.
+
+Before fitting/training, every new fresh-child invocation runs a small GPU derivative fixture on deterministic4×4 tensor quadrature indices[16,48,80,112] in each axis (one point per depth2cell), a uniform20-node tree and deterministic nonzero codes. Root code is the first retained training code plus0.01*sin(arange(32)+1); child codes follow the recorded0.2sine perturbation, consuming no random draws. Compare forward block Jacobian, reverse block Jacobian and full autodiff of the assembled cached field. Require max absolute discrepancy<=1e-9 and Frobenius relative discrepancy<=1e-10 for every pair. Persist full small matrices, inputs, thresholds, elapsed compilation/execution cost and scalar results; failed parity stops that run with evidence retained. Qualified core modules remain unchanged. This additional fixture does not alter the interpretation of already running fresh16 source, which predates this check; it is not retroactively claimed for that run. Historical nonfresh/default paths do not run the new fixture.
+
+Retain the existing initial/selected representative zero-child direction audits, all unsuccessful fitting recipes and all numerical flags. The32-code model must meet exactly the same representation, actual4096, fine weak-PDE, adaptation and complete-runtime criteria. No gate waiver or automatic scientific-success claim follows from increasing local dimension.

@@ -1,0 +1,34 @@
+{
+  "R": 512,
+  "M": 8192,
+  "N": 256,
+  "dt": 0.005,
+  "fit_cases": [
+    0,
+    1,
+    2
+  ],
+  "fit_time_indices": [
+    0,
+    10,
+    20,
+    30,
+    40,
+    50
+  ],
+  "heldout_cases": [
+    3,
+    4,
+    5
+  ],
+  "supports": [
+    "checkerboard",
+    "three_quarters"
+  ],
+  "max_iterations": 500,
+  "site_economy_fraction_max": 0.8,
+  "reservation_seconds": 1800,
+  "lane_ceiling_seconds": 7200,
+  "governing_protocol": "PROTOCOL-CLOSURE.md",
+  "job_limit_minutes": 30
+}

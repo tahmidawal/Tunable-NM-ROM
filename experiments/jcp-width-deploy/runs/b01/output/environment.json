@@ -1,0 +1,49 @@
+{
+  "job_id": "7385403",
+  "commit": "50deeb549dd680e715bea38032432321dc911729",
+  "backend": "gpu",
+  "x64": true,
+  "matmul_precision": "highest",
+  "gpu": "NVIDIA A100 80GB PCIe, GPU-d3b4eac9-553b-ac7f-475c-a7e58f8c909b",
+  "config": {
+    "R": 512,
+    "M": 8192,
+    "N": 256,
+    "dt": 0.005,
+    "fit_cases": [
+      0,
+      1,
+      2
+    ],
+    "fit_time_indices": [
+      0,
+      10,
+      20,
+      30,
+      40,
+      50
+    ],
+    "heldout_cases": [
+      3,
+      4,
+      5
+    ],
+    "supports": [
+      "checkerboard",
+      "three_quarters"
+    ],
+    "max_iterations": 500,
+    "site_economy_fraction_max": 0.8,
+    "reservation_seconds": 1800,
+    "lane_ceiling_seconds": 7200,
+    "governing_protocol": "PROTOCOL-CLOSURE.md",
+    "job_limit_minutes": 30
+  },
+  "source_sha256": {
+    "run_bridge.py": "c00f98605906dd746938778d2203ccb55c1f1f8f1ec8020701b451355d10977c",
+    "core.py": "e4904a1736f6c3893fb19f01c3320e761d951e937f69414153ab79ce78e1215b",
+    "inputs/bridge-development.npz": "d5b53e7dde7d6c8484022ad52df8d08bfb98639953071543426308b337c81630",
+    "inputs/frozen.pkl": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+    "inputs/rotation_R512.npz": "51149166b53dad386c93fa0682079aec96b61276801d9a6d4f622453d6426772"
+  }
+}

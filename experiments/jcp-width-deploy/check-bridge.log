@@ -1,0 +1,126 @@
+{
+  "scope": "development-only discrete upwind quadrature qualification; not a runtime experiment",
+  "fresh_data_used": false,
+  "rules": {
+    "checkerboard": {
+      "proposed_support_count": 32513,
+      "actual_nonzero_support_count": 32513,
+      "exact_zero_weights": 0,
+      "proposed_stencil_count": 65025,
+      "actual_nonzero_stencil_count": 65025,
+      "dense_count": 65025,
+      "actual_stencil_fraction": 1.0,
+      "weight_range": [
+        1.9999692429907994,
+        1.9999692448490038
+      ],
+      "fit_optimizer_success": true,
+      "fit_optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+      "fit_iterations": 1,
+      "projected_gradient_inf": 1.776899583093652e-09,
+      "training_moment_max": 2.1234178831515125e-05,
+      "heldout_moment_max": 7.539407473893561e-05,
+      "residual_initial_norm_max": 7.050678275591159e-07,
+      "jacobian_action_relative_max": 0.00033763811090089624,
+      "cold_start_field_difference_max": 0.00014658210535271497,
+      "cold_start": [
+        {
+          "case": 3,
+          "rank": 512,
+          "squared_singular_ratio": 0.8111300519677354,
+          "field_difference_initial_norm": 0.00014658210535271497,
+          "coefficient_difference_norm": 0.011188192715695633
+        },
+        {
+          "case": 4,
+          "rank": 512,
+          "squared_singular_ratio": 0.8111300519677354,
+          "field_difference_initial_norm": 3.969108925609601e-05,
+          "coefficient_difference_norm": 0.0016214974019295812
+        },
+        {
+          "case": 5,
+          "rank": 512,
+          "squared_singular_ratio": 0.8111300519677354,
+          "field_difference_initial_norm": 7.499542533965908e-05,
+          "coefficient_difference_norm": 0.0028632138579190508
+        }
+      ],
+      "gates": {
+        "nonnegative_finite": true,
+        "nnls_projected_gradient": true,
+        "heldout_moments": true,
+        "residual_fidelity": true,
+        "action_fidelity": true,
+        "cold_start": false,
+        "site_economy": false
+      },
+      "fidelity_passed": false,
+      "admitted": false,
+      "actual_vs_proposed_gate_changed": false
+    },
+    "three_quarters": {
+      "proposed_support_count": 48896,
+      "actual_nonzero_support_count": 48896,
+      "exact_zero_weights": 0,
+      "proposed_stencil_count": 65025,
+      "actual_nonzero_stencil_count": 65025,
+      "dense_count": 65025,
+      "actual_stencil_fraction": 1.0,
+      "weight_range": [
+        1.1669734143930754,
+        1.4133035870499564
+      ],
+      "fit_optimizer_success": false,
+      "fit_optimizer_message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+      "fit_iterations": 500,
+      "projected_gradient_inf": 1.7173380107371145e-09,
+      "training_moment_max": 0.00016455457989112231,
+      "heldout_moment_max": 0.0014020978196472027,
+      "residual_initial_norm_max": 9.408869657828694e-05,
+      "jacobian_action_relative_max": 0.005105810732432685,
+      "cold_start_field_difference_max": 0.00021940299265984926,
+      "cold_start": [
+        {
+          "case": 3,
+          "rank": 512,
+          "squared_singular_ratio": 0.5146419974362545,
+          "field_difference_initial_norm": 0.00021940299265984926,
+          "coefficient_difference_norm": 0.016746402696100032
+        },
+        {
+          "case": 4,
+          "rank": 512,
+          "squared_singular_ratio": 0.5146419974362545,
+          "field_difference_initial_norm": 0.000207855720838864,
+          "coefficient_difference_norm": 0.008491515794434044
+        },
+        {
+          "case": 5,
+          "rank": 512,
+          "squared_singular_ratio": 0.5146419974362545,
+          "field_difference_initial_norm": 0.000212629219962055,
+          "coefficient_difference_norm": 0.008117867542407254
+        }
+      ],
+      "gates": {
+        "nonnegative_finite": true,
+        "nnls_projected_gradient": true,
+        "heldout_moments": true,
+        "residual_fidelity": false,
+        "action_fidelity": false,
+        "cold_start": false,
+        "site_economy": false
+      },
+      "fidelity_passed": false,
+      "admitted": false,
+      "actual_vs_proposed_gate_changed": false
+    }
+  },
+  "source_sha256": "cf394de399ba4d1afb308196bc4898029b26d8d8b2e314673311f8859c68c1ff",
+  "no_pruning_threshold": true,
+  "eligibility_uses_exact_positive_weights": true,
+  "no_sparse_rollout_or_timing_claim": true,
+  "any_rule_admitted": false,
+  "downstream_rollout_gate_closed": true
+}

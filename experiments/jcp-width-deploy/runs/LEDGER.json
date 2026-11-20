@@ -5,12 +5,28 @@
     {
       "attempt": "f128",
       "job_id": "7385297",
-      "reservation_seconds": 1200
+      "reservation_seconds": 1200,
+      "state": "COMPLETED",
+      "allocated_gpu_seconds": 143,
+      "source_commit": "3276526f8731c54ae41020eab26b353a092049a2",
+      "remote": "/cluster/tufts/paralab/tawal01/jcp-width-deploy-20261119/f128"
     },
     {
       "attempt": "f512",
       "job_id": "7385298",
-      "reservation_seconds": 1200
+      "reservation_seconds": 1200,
+      "state": "COMPLETED",
+      "allocated_gpu_seconds": 264,
+      "source_commit": "3276526f8731c54ae41020eab26b353a092049a2",
+      "remote": "/cluster/tufts/paralab/tawal01/jcp-width-deploy-20261119/f512"
+    },
+    {
+      "attempt": "b01",
+      "job_id": "7385403",
+      "state": "COMPLETED",
+      "allocated_gpu_seconds": 48,
+      "source_commit": "50deeb549dd680e715bea38032432321dc911729",
+      "remote": "/cluster/tufts/paralab/tawal01/jcp-width-deploy-20261119/b01"
     }
   ],
   "preparation_failures": [
@@ -18,5 +34,6 @@
       "description": "Initial staging lacked local runs directory; no payload or scheduler job created. Directory created and exact staging rerun.",
       "gpu_seconds": 0
     }
-  ]
+  ],
+  "total_allocated_gpu_seconds": 455
 }

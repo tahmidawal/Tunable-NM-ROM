@@ -22,9 +22,15 @@ metrics=['error','gradient_error','upwind_advection_error','laplacian_error']
 labels=['Field error / initial reference norm (%)','Gradient error / current reference gradient (%)','Upwind-advection error / current reference advection (%)','Laplacian error / current reference Laplacian (%)']
 colors={(128,2048):'#59646c',(256,2048):'#278696',(256,4096):'#278696',(512,2048):'#a43d69',(512,8192):'#a43d69'}
 styles={(128,2048):'-',(256,2048):'-',(256,4096):'--',(512,2048):'-',(512,8192):'--'}
-plt.rcParams.update({'font.size':10,'axes.titlesize':11,'axes.spines.top':False,'axes.spines.right':False,'svg.fonttype':'none','pdf.fonttype':42,'savefig.bbox':'tight'})
+plt.rcParams.update({'font.size':10,'axes.titlesize':11,'axes.spines.top':False,'axes.spines.right':False,'svg.fonttype':'none','svg.hashsalt':'jcp-width-saved-20261119','pdf.fonttype':42,'savefig.bbox':'tight'})
 def save(fig,stem):
- for ext in ['png','svg','pdf']:fig.savefig(D/f'{stem}.{ext}',dpi=210,metadata={'Creator':'JCP saved-result plot builder'})
+ for ext in ['png','svg','pdf']:
+  md={'Creator':'JCP saved-result plot builder'}
+  if ext=='pdf':md.update(CreationDate=None,ModDate=None)
+  if ext=='svg':md['Date']=None
+  fig.savefig(D/f'{stem}.{ext}',dpi=210,metadata=md)
+  if ext=='svg':
+   path=D/f'{stem}.svg';path.write_text('\n'.join(x.rstrip() for x in path.read_text().splitlines())+'\n')
  plt.close(fig)
 def series(r,m,k):return np.asarray([a['cases'][f'R{r}-case{i}']['arms'][str(m)][k] for i in range(6)])
 plotdata={'scope':a['scope'],'times':times.tolist(),'normalization':dict(error='original initial-field norm',gradient_error='instantaneous reference gradient norm',upwind_advection_error='instantaneous reference advection norm',laplacian_error='instantaneous reference Laplacian norm'),'arms':{},'source_sha256':sha(OLD/'checks/width-results/analysis.json')}
@@ -75,6 +81,38 @@ for ax,(k,title,mult) in zip(axs.flat,map_defs):
 fig.suptitle('Width–test interaction: measured configurations only',fontsize=15)
 fig.text(.5,.002,'Dense discrete upwind model; six development cases. Common independent observer: rows 8193–9216. Blank cells were not measured.',ha='center',fontsize=9)
 fig.tight_layout(rect=(0,.03,1,.97));save(fig,'width-test-map')
+# Main accuracy map adds earlier measured R128 tests; observer maps remain separate.
+full=read(OLD/'checks/full6/analysis.json')
+assert full['saved_array_audit_passed']
+for attempt in ['p03','p04b']:
+ collect=read(OLD/f'runs/{attempt}/collection.json')
+ assert collect['checksum_verified'] and collect['gpu_log_valid'] and collect['no_environmental_warnings'] and collect['scheduler_state']=='COMPLETED'
+expanded=list(table)
+for case in range(6):
+ for m in [256,512,1024]:
+  x=full['cases'][str(case)]['arms'][str(m)]
+  assert x['numerically_eligible']
+  expanded.append(dict(R=128,M=m,case=case,max_discrete_error=max(x['error']),initial_error=x['initial_error'],evolution_distance_max=max(x['evolution_distance']),eligible=x['numerically_eligible']))
+alltests=[256,512,1024,2048,4096,8192]
+fig,axs=plt.subplots(1,3,figsize=(12.5,6.7))
+fullmap={}
+for ax,(key,title) in zip(axs,[('max_discrete_error','Worst maximum field error (%)'),('initial_error','Worst initial projection error (%)'),('evolution_distance_max','Worst evolution distance (%)')]):
+ arr=np.full((len(alltests),3),np.nan)
+ for m in alltests:
+  for r in widths:
+   rows=[z for z in expanded if z['R']==r and z['M']==m]
+   if rows:arr[alltests.index(m),widths.index(r)]=100*max(z[key] for z in rows)
+ fullmap[key]=[[None if not np.isfinite(v) else float(v) for v in row] for row in arr]
+ cmap=plt.get_cmap('viridis').copy();cmap.set_bad('#f1f2f3');im=ax.imshow(np.ma.masked_invalid(arr),origin='lower',aspect='auto',cmap=cmap,norm=LogNorm(vmin=np.nanmin(arr)*.99,vmax=np.nanmax(arr)*1.01))
+ for y,row in enumerate(arr):
+  for x,v in enumerate(row):
+   ax.text(x,y,'not run' if not np.isfinite(v) else f'{v:.3g}',ha='center',va='center',fontsize=10,color='#697078' if not np.isfinite(v) else ('black' if im.norm(v)>.6 else 'white'))
+ ax.set_xticks(range(3),widths);ax.set_yticks(range(len(alltests)),alltests);ax.set_xlabel('Active width R′');ax.set_ylabel('Weak tests M');ax.set_title(title);fig.colorbar(im,ax=ax,shrink=.7)
+fig.suptitle('Accuracy across all measured width–test configurations',fontsize=14)
+fig.text(.5,.012,'Same six development cases and initial-field norm. No interpolation between cells. Independent-observer comparisons are shown separately.',ha='center',fontsize=9)
+fig.tight_layout(rect=(0,.04,1,.97));save(fig,'width-test-accuracy-map')
+plotdata['expanded_accuracy_map']={'test_counts':alltests,'widths':widths,'cells':fullmap,'additional_source_sha256':sha(OLD/'checks/full6/analysis.json')}
+
 # Retain every fixed-M transient counterexample, rather than selecting one.
 fig,axs=plt.subplots(2,3,figsize=(12,6.3),sharex=True,sharey=True)
 reg=[]
@@ -100,7 +138,7 @@ plotdata['denominator_audit']=denoms
 dump(D/'plotted-data.json',plotdata)
 summary={'derivative_case_maxima':{f'R{r}-M{m}':{k:{'median_percent':float(100*np.median(series(r,m,k).max(1))),'worst_percent':float(100*series(r,m,k).max())} for k in metrics} for r,m in arms},'denominator_ranges':{k:{'minimum':min(d['range'][k]['min'] for d in denoms.values()),'maximum':max(d['range'][k]['max'] for d in denoms.values()),'smallest_fraction_of_initial':min(d['range'][k]['min_over_initial'] for d in denoms.values())} for k in metrics},'regressions':reg}
 dump(D/'summary.json',summary)
-(D/'CAPTIONS.md').write_text('''# Saved Burgers manuscript panels\n\nThese plots are deterministic postprocessing of the accepted development results. They introduce no new PDE solve. All are a linear-span, dense discrete-upwind study; they do not establish sparse speed.\n\n**Derivative error through time.** Median and full range across all six development cases for the baseline, wider fixed-test model and wider enriched-test model. The field denominator is the original initial-field norm, whereas derivative and operator denominators are instantaneous corresponding reference norms. Gradient includes the original padded-grid convention. All derivatives are the implemented discrete operators; no analytic/continuum certificate is implied. The Laplacian panel retains errors above unity.\n\n**Casewise derivative maxima.** Each point is one physical case's maximum over all saved times including initialization. Black bars give medians; timing repetitions and time samples are not independent cases. The near-zero-denominator audit and absolute numerator ranges accompany the plot in plotted-data.json.\n\n**Measured width–test map.** Only the five registered width/test cells with a common independent observer are shown; untested cells are grey. Entries are worst casewise temporal maxima, except the initial projection panel and qualification counts. The reported evolution distance is computed from fields relative to the reference's mass projection, not by subtracting scalar errors.\n\n**Transient regressions.** For each existing case, plot the actual field-error change when active width increases at fixed tests. Positive regions retain adverse transient behavior. The native initial projection differs with width; this comparison does not attribute the entire change to time integration alone.\n\n## Glossary\n\n**R′:** active linear-span width. **M:** actual scalar weak tests. **Weak residual:** equation error integrated against test functions. **Independent observer:** unused test rows assessing the residual. **Projection:** the least-squares representation of the reference in a fixed span. **Qualified:** passed registered numerical checks. **Derivative denominator:** norm of the corresponding reference operator at that time. **Percentage point:** absolute difference between two percentage errors. **Case range:** smallest through largest physical-case value.\n''')
-manifest={'sources':{str(p):sha(p) for p in [OLD/'checks/width-results/analysis.json',OLD/'checks/width-results/table.json',L/'build_saved_plots.py']},'outputs':{p.name:sha(p) for p in D.iterdir() if p.is_file() and p.name!='MANIFEST.json'}}
+(D/'CAPTIONS.md').write_text('''# Saved Burgers manuscript panels\n\nThese plots are deterministic postprocessing of the accepted development results. They introduce no new PDE solve. All are a linear-span, dense discrete-upwind study; they do not establish sparse speed.\n\n**Derivative error through time.** Median and full range across all six development cases for the baseline, wider fixed-test model and wider enriched-test model. The field denominator is the original initial-field norm, whereas derivative and operator denominators are instantaneous corresponding reference norms. Gradient includes the original padded-grid convention. All derivatives are the implemented discrete operators; no analytic/continuum certificate is implied. The Laplacian panel retains errors above unity.\n\n**Casewise derivative maxima.** Each point is one physical case's maximum over all saved times including initialization. Black bars give medians; timing repetitions and time samples are not independent cases. The near-zero-denominator audit and absolute numerator ranges accompany the plot in plotted-data.json.\n\n**Expanded accuracy map.** The earlier measured small-test R128 arms are combined with the accepted width follow-up under the same physical cases, target and normalization. No independent residual observers are pooled.\n\n**Measured width–test observer map.** Only the five registered width/test cells with a common independent observer are shown; untested cells are grey. Entries are worst casewise temporal maxima, except the initial projection panel and qualification counts. The reported evolution distance is computed from fields relative to the reference's mass projection, not by subtracting scalar errors.\n\n**Transient regressions.** For each existing case, plot the actual field-error change when active width increases at fixed tests. Positive regions retain adverse transient behavior. The native initial projection differs with width; this comparison does not attribute the entire change to time integration alone.\n\n## Glossary\n\n**R′:** active linear-span width. **M:** actual scalar weak tests. **Weak residual:** equation error integrated against test functions. **Independent observer:** unused test rows assessing the residual. **Projection:** the least-squares representation of the reference in a fixed span. **Qualified:** passed registered numerical checks. **Derivative denominator:** norm of the corresponding reference operator at that time. **Percentage point:** absolute difference between two percentage errors. **Case range:** smallest through largest physical-case value.\n''')
+manifest={'sources':{str(p):sha(p) for p in [OLD/'checks/width-results/analysis.json',OLD/'checks/width-results/table.json',OLD/'checks/full6/analysis.json',OLD/'runs/p03/collection.json',OLD/'runs/p04b/collection.json',L/'build_saved_plots.py']},'outputs':{p.name:sha(p) for p in D.iterdir() if p.is_file() and p.name!='MANIFEST.json'}}
 dump(D/'MANIFEST.json',manifest)
 print(json.dumps(summary,indent=2))

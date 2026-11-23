@@ -1,0 +1,26 @@
+{
+  "authorization": "User explicitly requested consolidation of these three completed branches on 2026-11-23.",
+  "canonical_base": "93f399faad67f94ea2b56fe25f13003143e64694",
+  "canonical_mirror_base": "5a64899fdcfbeb6cfe5b3371af1a8d8a3d2b568f",
+  "branch": "exp/2026-11-23-jcp-consolidated",
+  "source_branches": [
+    {
+      "branch": "exp/2026-11-19-jcp-phase-confirm",
+      "commit": "8394b33cb3c2ce3912598ff80a64fd3b7d9b5e97",
+      "path": "experiments/jcp-phase-confirm"
+    },
+    {
+      "branch": "exp/2026-11-19-jcp-width-deploy",
+      "commit": "d049dda2ab0e7b6e90510e3bbfe0971069617a08",
+      "path": "experiments/jcp-width-deploy"
+    },
+    {
+      "branch": "exp/2026-11-19-jcp-cost-confirm",
+      "commit": "040fb32c1e0ba76505c692974ce7bca22606ec31",
+      "path": "experiments/jcp-cost-confirm"
+    }
+  ],
+  "scope": "Consolidation only; no experiment rerun, altered solver, new cohort access, or changed scientific conclusion.",
+  "consolidation_merge_head": "09cead8d5e03159399fa9449c1f066c4a7f15a0e",
+  "consolidation_mirror_head": "ecd9e2a5f708ce26b2eba0069484c9f5915e389a"
+}

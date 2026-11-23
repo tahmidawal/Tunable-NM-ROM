@@ -37,6 +37,7 @@ def build(run):
     raw_ids=[c['index'] for c in report['cases']]
     assert len(raw_ids)==len(set(raw_ids)) and set(raw_ids)<=set(ids)
     by_id={c['index']:c for c in report['cases']};cases=[]
+    truth_concentration=np.full((n,nt),np.nan)
     matrices={arm:{key:np.full((n,nt),np.nan) for key in ('ordinary','shape','phase','concentration')} for arm in arms}
     for i in ids:
         raw=by_id.get(i);case={'index':i,'present':raw is not None,'qualification':raw.get('qualification',{}) if raw else {},'arms':{}}
@@ -54,15 +55,18 @@ def build(run):
                 a['shape'][i]=np.asarray([m['shape_aligned_relative_error'] for m in metrics],dtype=float)
                 a['phase'][i]=np.linalg.norm(np.asarray([m['phase_displacement'] for m in metrics],dtype=float),axis=1)
                 a['concentration'][i]=np.min(np.asarray([m['pred_centroid_concentration'] for m in metrics],dtype=float),axis=1)
+                if arm=='head_common':
+                    truth_concentration[i]=np.min(np.asarray([m['truth_centroid_concentration'] for m in metrics],dtype=float),axis=1)
                 case['arms'][arm]={'metrics':metrics,'gtol':tol,'rows':r['rows'],'dt':r['dt'],
                     'all_steps_stationary':r['all_steps_stationary'],'jacobian_action_checked':r.get('jacobian_action_checked',False),
                     'initial_error':float(a['ordinary'][i,0]),'evolved_max_error':float(np.max(a['ordinary'][i,1:])),
-                    'evolved_max_shape_error':float(np.max(a['shape'][i,1:]))}
+                    'evolved_max_shape_error':float(np.max(a['shape'][i,1:])),
+                    'evolved_max_phase_displacement':float(np.max(a['phase'][i,1:]))}
         cases.append(case)
     assert [c['index'] for c in cases]==ids
     complete_metrics=all(np.isfinite(matrices[arm][key]).all() for arm in arms for key in ('ordinary','shape','phase','concentration'))
     paired={}
-    for key in ('ordinary','shape'):
+    for key in ('ordinary','shape','phase'):
         head=np.max(matrices['head_common'][key][:,1:],axis=1)
         span=np.max(matrices['span_common'][key][:,1:],axis=1)
         paired[key]=span/np.maximum(head,1e-300)
@@ -80,6 +84,7 @@ def build(run):
     exported={'cohort_role':'untouched confirmation','seed':cfg['eval_seed'],'registered_ids':ids,'observed_ids':raw_ids,
         'complete_metrics':complete_metrics,'source_commit':report['source_commit'],'frozen_protocol':report['frozen_protocol'],
         'registration':report['registration'],'selected_solver_gtol':tol,'times':times,'cases':cases,
+        'truth_min_coordinate_centroid_concentration':truth_concentration,
         'full_cohort_time_statistics':stats,'paired_case_evolved_max_span_over_head':paired,
         'full_qualification_pass_count':full_pass,'expected_case_count':n,
         'parameter_names':['center_x','center_y','center_z','vortex_separation','relative_strength','viscosity']}
@@ -97,17 +102,34 @@ def build(run):
     ax.scatter(ids,paired['shape'],color='#139776',marker='+',label='Aligned error',s=35)
     ax.axhline(1,color='#b52128',ls='--',lw=1);ax.set_yscale('log')
     ax.set_xlabel('Registered case (zero based)');ax.set_ylabel('Span / head evolved-maximum error')
-    ax.set_title('Paired common-initial-field comparison');ax.legend(frameon=False,fontsize=9)
-    handles,labels=axes[0,0].get_legend_handles_labels();fig.legend(handles,labels,loc='lower center',ncol=3,frameon=False)
+    ax.set_title('Paired common-initial-field comparison')
+    handles,labels=axes[0,0].get_legend_handles_labels()
+    ratio_handles,ratio_labels=ax.get_legend_handles_labels()
+    fig.legend(handles+ratio_handles,labels+ratio_labels,loc='lower center',ncol=3,frameon=False)
     fig.suptitle(f'Untouched NS cohort · seed {cfg["eval_seed"]} · full qualification {full_pass}/{n}')
-    fig.tight_layout(rect=(0,.06,1,.95));save(fig,out/'fresh-phase-shape')
+    fig.tight_layout(rect=(0,.10,1,.95));save(fig,out/'fresh-phase-shape')
+    fig,axes=plt.subplots(1,2,figsize=(12,4.5))
+    for arm in arms:
+        axes[0].plot(ids,np.max(matrices[arm]['phase'][:,1:],axis=1),'.',color=COLORS[arm],label=LABELS[arm])
+    axes[0].set_xlabel('Registered case');axes[0].set_ylabel('Maximum evolved displacement (domain fraction)')
+    axes[0].set_title('Physical centroid displacement: every case')
+    p=paired['phase'];higher=np.isfinite(p)&(p<1)
+    axes[1].scatter(np.asarray(ids)[~higher],p[~higher],color=COLORS['head_common'],s=25)
+    axes[1].scatter(np.asarray(ids)[higher],p[higher],color='#c14440',s=40,marker='x')
+    axes[1].axhline(1,color='#b52128',ls='--',lw=1);axes[1].set_yscale('log')
+    axes[1].set_xlabel('Registered case');axes[1].set_ylabel('Common-span / head maximum displacement')
+    axes[1].set_title(f'Phase benefit is not universal: {int(higher.sum())}/{n} head losses')
+    for ax in axes:ax.grid(alpha=.18)
+    fig.legend(*axes[0].get_legend_handles_labels(),loc='lower center',ncol=3,frameon=False)
+    fig.tight_layout(rect=(0,.08,1,1));save(fig,out/'fresh-phase-displacement-pairs')
     fig,axes=plt.subplots(1,2,figsize=(12,4.5))
     for arm in arms:axes[0].scatter(ids,matrices[arm]['ordinary'][:,0]*100,s=25,label=LABELS[arm],color=COLORS[arm])
     axes[0].set_xlabel('Registered case');axes[0].set_ylabel('Time-zero field error (%)');axes[0].set_title('Initial fit kept separate from evolved error')
     for arm in arms:axes[1].plot(ids,np.min(matrices[arm]['concentration'],axis=1),'.',label=LABELS[arm],color=COLORS[arm])
+    axes[1].plot(ids,np.min(truth_concentration,axis=1),'x',label='Reference centroid',color='#222222',markersize=5)
     axes[1].axhline(cfg['centroid_concentration_threshold'],color='#b52128',ls='--')
     axes[1].set_xlabel('Registered case');axes[1].set_ylabel('Minimum coordinate concentration');axes[1].set_title('Centroid diagnostic reliability')
-    fig.legend(*axes[0].get_legend_handles_labels(),loc='lower center',ncol=3,frameon=False)
+    fig.legend(*axes[1].get_legend_handles_labels(),loc='lower center',ncol=2,frameon=False)
     fig.tight_layout(rect=(0,.08,1,1));save(fig,out/'fresh-initial-error-centroid-concentration')
     checks=['initialization','operator','rollout','jacobian','refinement','reference','common_state','passed']
     q=np.asarray([[2 if not c['present'] or key not in c['qualification'] else int(c['qualification'][key]) for key in checks] for c in cases])
@@ -141,12 +163,18 @@ centroid-aligned field errors are both divided by each case's original physical
 initial-field norm. A full-cohort statistic is absent where any registered case
 has missing/nonfinite data. Initial errors are plotted separately. Physical phase
 is the norm of wrapped energy-centroid displacement in unit-domain fractions.
-The concentration line is a descriptive ambiguity threshold, not an accuracy gate.
+The concentration panel includes each prediction and the reference; its line at
+{cfg['centroid_concentration_threshold']:g} is a descriptive ambiguity threshold,
+not an accuracy or trajectory gate.
 
 The paired panel divides each common-span case's maximum evolved error by the
 same head case's maximum evolved error, separately for ordinary and aligned
 errors. Ratios above one favor the head. It does not divide timewise medians or
 select a favorable time. Native-span initialization is labeled separately.
+The separate centroid-displacement pairing applies the same per-case evolved
+maximum rule to physical displacement. Red crosses identify a larger head
+displacement; all such counterexamples are retained. This diagnostic does not
+equate phase displacement with the ordinary or aligned field error.
 
 The reference is the same-grid discrete CNAB2 solution at dt{cfg['reference']['dt']:g},
 checked at dt{cfg['reference']['check_dt']:g}, under the unchanged absolute and

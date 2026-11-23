@@ -1,0 +1,569 @@
+{
+  "config": {
+    "schema": "ns-initializer-untouched-confirmation-v2",
+    "status": "frozen-before-first-case",
+    "n": 64,
+    "rank": 64,
+    "latent": 8,
+    "cohorts": [
+      {
+        "seed": 2026112301,
+        "count": 32
+      }
+    ],
+    "families": [
+      "learned",
+      "pod"
+    ],
+    "input_paths": [
+      "phase",
+      "query"
+    ],
+    "gtols": [
+      1e-07,
+      1e-09,
+      1e-11
+    ],
+    "selected_checks": 384,
+    "policy": {
+      "version": "v2-fixed-anchor-qr-svd",
+      "baseline_budget": 250,
+      "qr_budget": 40,
+      "svd_iterations": 12,
+      "svd_halvings": 8,
+      "svd_cutoff": "max(J.shape) * float64_epsilon * largest_scaled_singular_value",
+      "step_cap_relative": 1e-06,
+      "tie_eps_multiplier": 1024,
+      "stationarity": "max(abs(J.T @ residual)/(column_norms(J)*norm(residual)))",
+      "endpoint_guard": "final_cost <= baseline_cost + 1024*eps*max(baseline_cost,1e-300)",
+      "rank_truncation_does_not_certify_stationarity": true,
+      "controls_per_start": [
+        "original_host_phase",
+        "legacy_compiled_core"
+      ],
+      "anchor": "minimum fresh ordinary-direct objective over controls; seed order then phase/core; fixed per fit and tolerance",
+      "stable_increment_local_preactivation_limit": 0.5,
+      "stable_increment_outside_local_range": "ordinary SiLU difference; no overflowing expm1 branch",
+      "direct_and_anchored_stationarity_required": true,
+      "optional_svd_rollback": false
+    },
+    "max_job_minutes": 30,
+    "arithmetic_audit": {
+      "longdouble_min_explicit_mantissa_bits": 63,
+      "decimal_digits": 50,
+      "decimal_trigger": "direct objective guard fails OR longdouble difference is within0.1band of threshold",
+      "decimal_conversion": "Decimal.from_float exact",
+      "delta_agreement_fraction_of_original_band": 0.01,
+      "scope": "cluster-host small-network arithmetic diagnostic; primary method f64GPU"
+    },
+    "role": "untouched-confirmation",
+    "eval_seed": 2026112301,
+    "eval_cases": 32
+  },
+  "config_sha256": "3d952c5271914adeae3360c964b03bf5049b1af8c0082d0edd447f130f87fc0b",
+  "source_commit": "5d8966a6216d29730465090eee47cabb182b8f6f",
+  "job_id": "7478826",
+  "gpu": "NVIDIA A100-PCIE-40GB, GPU-5fdc5e40-0e0d-7891-eceb-5c9038e8e20d, 40960 MiB",
+  "backend": "gpu",
+  "x64": true,
+  "matmul_precision": "highest",
+  "sources": {
+    "arithmetic_audit.py": "ef3d060e898335e4f58ca8012bd5dd22df740466547f42530639e663626ff678",
+    "build_fresh_phase_plots.py": "8050c888027120973cebe26b8d60b9bddf2386c754df8a5d9fd964255eceeb2b",
+    "build_initializer_plots.py": "de89118887a776e1728ea5839a05dce9da885675c713d3f9caf4305627e71746",
+    "check_arithmetic.py": "cdbdd24ca75ecea7b77727f3980edfae2a46fd40ab7b4a96ad55fba017707d4f",
+    "check_integration.py": "8ac916f3d878881a2b07250dd76229bd1411517b92ece87e9d295c516c4d177d",
+    "check_policy.py": "57976fbcb0de69e085fb72348921a7455cf4a38da3b90f53f9173d88f5128658",
+    "fit_api.py": "57e48f3faa3b883f0a3ce12fce22b9b4a1e19356aef387323afb1fc53980fedc",
+    "frozen_contract.py": "14e801e1e3ac90f1ede81a2326d6fbbab26b91925a27f2bd557a17bd18ec0e56",
+    "legacy_phase.py": "20022aede185666aee300c4dcf864316cfcbbadf0aa84b6195aca1b6b61af54b",
+    "legacy_query.py": "ca4afc0b1560361c6ca3e1f87a788219973a9d26f911b87a3ff7a80b72554620",
+    "query_adapter.py": "11bf12fbc68237e39f581f4fac568871a63b51fd8b835b44612ca85bb740c767",
+    "register_cohort.py": "8e33e51c6ac2c49454609d794f81b1e5d6dbc4a5e8f5ece2ed55278a482521cb",
+    "run_development.py": "1d154aca255bc824d57b38bb49696fe01a3c1380907b5b03598eb39b7e18b979",
+    "run_fresh_initializers.py": "baf79ef8161d27b8513c2926250ded6c126a5bc00ea9487f1e3b58575833bf43",
+    "run_fresh_phase.py": "50c0aaf0a79b61182731d12254c4ed3730d9770809accb0a358075db177a4b23",
+    "shared_geometry.py": "1b5ad080cab71879662ef91dc188ab8d4a7662e7fea01ddb89a7e89a5713e91b",
+    "shared_initializer.py": "d619b1ceb47e872177a526ebf0717a4c5e341c38e3a36f0c7db7c040e94a50de",
+    "support.py": "a9c3f87aebbf002216c2a6dcdb2b1a5baaf0afd0c2d7a77b66c8da245233f684",
+    "vendor/bankio.py": "85991c64ff1fc507e3df57a351f5c31b7a3114cd38e617f22d2e230d81e30051",
+    "vendor/coordnet.py": "d9e9c7fd090396ecb28af9da817f2454e9839a55fa6cd6bc6b9266e7723f6ff9",
+    "vendor/diag_floor.py": "fc951362f184192535cefd6b18a08467746f210bc74f9acd559d41c7b294db8c",
+    "vendor/head_rom.py": "6d07ccfa7cbd64e01efc29091777a6159c35d07416d5e5a03fb9e08a4812204c",
+    "vendor/ns2d_decoder.py": "0b99e6a5d1a335e0f01f92c76c630c88b58f88e20d9095f925bd757e3cec175d",
+    "vendor/ns2d_fom.py": "1e4e75cb8057cd450c33525161fe08e4d336bc02064d76deaad255ad620b90f8",
+    "vendor/ns2d_rom.py": "9f22d36ed533bcb93a47e382067d7a8c4f24585b1154685b5c2effdac7259ac2",
+    "vendor/ns3d_fom.py": "e4ffdbe6ec97dc77c457d4a92ac596cd9bfffa01a37e286f5f1a09358b7daff7",
+    "vendor/ns3d_model.py": "cbce94556cf3701b3f26fe7919f168bb109d5b2c209da8856bf0f2b1a26ac653",
+    "vendor/ns3d_rom.py": "abb8e75df1e03070236a8e068a0f7c45b8007afdc6b90496b4d7e91b9bba5318",
+    "vendor/sep_common.py": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4",
+    "vendor/shift_rom.py": "22921d34d486bc3939f8ad3dfdae220390e78d57bc4ca9e88812290007bda4a3",
+    "vendor/translation_cohort.py": "05c5c082ce359a40c3f0cf3d9b933ad53b3e1c3315f06e569874a384ed1bc6ab"
+  },
+  "assets": {
+    "base_commit": "f90561908e750bf947aac541b159c268f6bcb183",
+    "preserved_sources": {
+      "vendor/bankio.py": {
+        "source": "experiments/jcp-cost-confirm/vendor/bankio.py",
+        "sha256": "85991c64ff1fc507e3df57a351f5c31b7a3114cd38e617f22d2e230d81e30051"
+      },
+      "vendor/coordnet.py": {
+        "source": "experiments/jcp-cost-confirm/vendor/coordnet.py",
+        "sha256": "d9e9c7fd090396ecb28af9da817f2454e9839a55fa6cd6bc6b9266e7723f6ff9"
+      },
+      "vendor/diag_floor.py": {
+        "source": "experiments/jcp-cost-confirm/vendor/diag_floor.py",
+        "sha256": "fc951362f184192535cefd6b18a08467746f210bc74f9acd559d41c7b294db8c"
+      },
+      "vendor/head_rom.py": {
+        "source": "experiments/jcp-cost-confirm/vendor/head_rom.py",
+        "sha256": "6d07ccfa7cbd64e01efc29091777a6159c35d07416d5e5a03fb9e08a4812204c"
+      },
+      "vendor/ns2d_decoder.py": {
+        "source": "experiments/jcp-cost-confirm/vendor/ns2d_decoder.py",
+        "sha256": "0b99e6a5d1a335e0f01f92c76c630c88b58f88e20d9095f925bd757e3cec175d"
+      },
+      "vendor/ns2d_fom.py": {
+        "source": "experiments/jcp-cost-confirm/vendor/ns2d_fom.py",
+        "sha256": "1e4e75cb8057cd450c33525161fe08e4d336bc02064d76deaad255ad620b90f8"
+      },
+      "vendor/ns2d_rom.py": {
+        "source": "experiments/jcp-cost-confirm/vendor/ns2d_rom.py",
+        "sha256": "9f22d36ed533bcb93a47e382067d7a8c4f24585b1154685b5c2effdac7259ac2"
+      },
+      "vendor/ns3d_fom.py": {
+        "source": "experiments/jcp-cost-confirm/vendor/ns3d_fom.py",
+        "sha256": "e4ffdbe6ec97dc77c457d4a92ac596cd9bfffa01a37e286f5f1a09358b7daff7"
+      },
+      "vendor/ns3d_model.py": {
+        "source": "experiments/jcp-cost-confirm/vendor/ns3d_model.py",
+        "sha256": "cbce94556cf3701b3f26fe7919f168bb109d5b2c209da8856bf0f2b1a26ac653"
+      },
+      "vendor/ns3d_rom.py": {
+        "source": "experiments/jcp-cost-confirm/vendor/ns3d_rom.py",
+        "sha256": "abb8e75df1e03070236a8e068a0f7c45b8007afdc6b90496b4d7e91b9bba5318"
+      },
+      "vendor/sep_common.py": {
+        "source": "experiments/jcp-cost-confirm/vendor/sep_common.py",
+        "sha256": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4"
+      },
+      "vendor/shift_rom.py": {
+        "source": "experiments/jcp-cost-confirm/vendor/shift_rom.py",
+        "sha256": "22921d34d486bc3939f8ad3dfdae220390e78d57bc4ca9e88812290007bda4a3"
+      },
+      "vendor/translation_cohort.py": {
+        "source": "experiments/jcp-cost-confirm/vendor/translation_cohort.py",
+        "sha256": "05c5c082ce359a40c3f0cf3d9b933ad53b3e1c3315f06e569874a384ed1bc6ab"
+      },
+      "assets/bank_selected.npz": {
+        "source": "experiments/jcp-cost-confirm/assets/bank_selected.npz",
+        "sha256": "a1af98e2297c41339a037cb427f757fc1f23bb8791132985f29cbda826431bd5"
+      },
+      "assets/head_k8_n64.npz": {
+        "source": "experiments/jcp-cost-confirm/assets/head_k8_n64.npz",
+        "sha256": "4d9d86ce7aa3f7d139c581dfc5ed20b5afd9bcdbab15893eb7b582b5753adbd8"
+      },
+      "assets/pod_bank_probe.npz": {
+        "source": "experiments/jcp-cost-confirm/assets/pod_bank_probe.npz",
+        "sha256": "36bde9e938d26ba8d8a66a4e5e3dedefe58685f6257453a812fbd5cf7e297ff3"
+      },
+      "assets/pod_head_k8_n64.npz": {
+        "source": "experiments/jcp-cost-confirm/assets/pod_head_k8_n64.npz",
+        "sha256": "605637b1a54087d59b88c7f6563c6dafaa4adcea58b04022253abf8196437c02"
+      },
+      "legacy_query.py": {
+        "source": "experiments/jcp-cost-confirm/ns_query.py",
+        "sha256": "ca4afc0b1560361c6ca3e1f87a788219973a9d26f911b87a3ff7a80b72554620"
+      },
+      "legacy_phase.py": {
+        "source": "experiments/jcp-phase-confirm/run_mechanism.py",
+        "sha256": "20022aede185666aee300c4dcf864316cfcbbadf0aa84b6195aca1b6b61af54b"
+      },
+      "shared_geometry.py": {
+        "source": "experiments/jcp-phase-confirm/shared_geometry.py",
+        "sha256": "1b5ad080cab71879662ef91dc188ab8d4a7662e7fea01ddb89a7e89a5713e91b"
+      },
+      "configs/original_dev64.json": {
+        "source": "experiments/jcp-cost-confirm/configs/original_dev64.json",
+        "sha256": "2e8158246fa6c085ccbd2592d36c9afc12053079050f4d3ffdca5cbe95bc8021"
+      }
+    }
+  },
+  "frozen_protocol": {
+    "schema": "immutable-fresh-execution-protocol-v1",
+    "execution_source_commit": "346467d02715bceab7d84bff3d85acbeb3c9b124",
+    "accepted_solver_source_commit": "d173150171b429524fb4dc8280262f2310213ada",
+    "accepted_development_job": 7478133,
+    "accepted_development_records_sha256": "07fff687e06c8e5c39f26e4fd80760d46365281a6698af6e443cc575cd019126",
+    "accepted_development_audit_sha256": "80264a892d3d7a25f57fa66c7e8c9d2c07813fb53d313660f26b69e26c4b1ea0",
+    "eval_seed": 2026112301,
+    "eval_cases": 32,
+    "new_parameters_generated_before_this_freeze": false,
+    "new_physical_fields_generated_before_this_freeze": false,
+    "reference_dt": 0.000125,
+    "reference_check_dt": 6.25e-05,
+    "no_new_training": true,
+    "no_timing_claim": true,
+    "no_case_dependent_repairs_or_reselection": true,
+    "historical_sealed_cohorts_closed": [
+      202609203,
+      202609211,
+      202609221
+    ],
+    "files": {
+      "PROTOCOL.md": "21b35bcd238a2857a6ec32f3f123ab90848e38536e84d76f9ed44493732b9ab6",
+      "PROVENANCE.json": "17e3d71f4e6a7e3cc50752cc61abe536d027dde8706454363c69f832b1af6795",
+      "UNUSED_SEED_AUDIT.json": "62b2859529059b487f69a3e651ac7c3800ecc94f161c23445aaedfaaf5093e1e",
+      "arithmetic_audit.py": "ef3d060e898335e4f58ca8012bd5dd22df740466547f42530639e663626ff678",
+      "assets/bank_selected.npz": "a1af98e2297c41339a037cb427f757fc1f23bb8791132985f29cbda826431bd5",
+      "assets/head_k8_n64.npz": "4d9d86ce7aa3f7d139c581dfc5ed20b5afd9bcdbab15893eb7b582b5753adbd8",
+      "assets/pod_bank_probe.npz": "36bde9e938d26ba8d8a66a4e5e3dedefe58685f6257453a812fbd5cf7e297ff3",
+      "assets/pod_head_k8_n64.npz": "605637b1a54087d59b88c7f6563c6dafaa4adcea58b04022253abf8196437c02",
+      "check_arithmetic.py": "cdbdd24ca75ecea7b77727f3980edfae2a46fd40ab7b4a96ad55fba017707d4f",
+      "check_integration.py": "8ac916f3d878881a2b07250dd76229bd1411517b92ece87e9d295c516c4d177d",
+      "check_policy.py": "57976fbcb0de69e085fb72348921a7455cf4a38da3b90f53f9173d88f5128658",
+      "cluster/fresh.sbatch": "54b22db804bc5c3156d605860764edfc978dd1af7b30c49e881f1fa7151b453f",
+      "cluster/submit_fresh.sh": "b26cc51efbe86be203cae037d6bfca449a390f58892b3ecce394b6bf58a4a849",
+      "configs/fresh-initializers.json": "3d952c5271914adeae3360c964b03bf5049b1af8c0082d0edd447f130f87fc0b",
+      "configs/fresh-phase.json": "ef0c1c698da5965d33976ce32554652ca4342e7fac15359258869b3f4b77a56a",
+      "configs/original_dev64.json": "2e8158246fa6c085ccbd2592d36c9afc12053079050f4d3ffdca5cbe95bc8021",
+      "fit_api.py": "57e48f3faa3b883f0a3ce12fce22b9b4a1e19356aef387323afb1fc53980fedc",
+      "frozen_contract.py": "14e801e1e3ac90f1ede81a2326d6fbbab26b91925a27f2bd557a17bd18ec0e56",
+      "legacy_phase.py": "20022aede185666aee300c4dcf864316cfcbbadf0aa84b6195aca1b6b61af54b",
+      "legacy_query.py": "ca4afc0b1560361c6ca3e1f87a788219973a9d26f911b87a3ff7a80b72554620",
+      "query_adapter.py": "11bf12fbc68237e39f581f4fac568871a63b51fd8b835b44612ca85bb740c767",
+      "register_cohort.py": "8e33e51c6ac2c49454609d794f81b1e5d6dbc4a5e8f5ece2ed55278a482521cb",
+      "run_development.py": "1d154aca255bc824d57b38bb49696fe01a3c1380907b5b03598eb39b7e18b979",
+      "run_fresh_initializers.py": "baf79ef8161d27b8513c2926250ded6c126a5bc00ea9487f1e3b58575833bf43",
+      "run_fresh_phase.py": "50c0aaf0a79b61182731d12254c4ed3730d9770809accb0a358075db177a4b23",
+      "shared_geometry.py": "1b5ad080cab71879662ef91dc188ab8d4a7662e7fea01ddb89a7e89a5713e91b",
+      "shared_initializer.py": "d619b1ceb47e872177a526ebf0717a4c5e341c38e3a36f0c7db7c040e94a50de",
+      "support.py": "a9c3f87aebbf002216c2a6dcdb2b1a5baaf0afd0c2d7a77b66c8da245233f684",
+      "vendor/bankio.py": "85991c64ff1fc507e3df57a351f5c31b7a3114cd38e617f22d2e230d81e30051",
+      "vendor/coordnet.py": "d9e9c7fd090396ecb28af9da817f2454e9839a55fa6cd6bc6b9266e7723f6ff9",
+      "vendor/diag_floor.py": "fc951362f184192535cefd6b18a08467746f210bc74f9acd559d41c7b294db8c",
+      "vendor/head_rom.py": "6d07ccfa7cbd64e01efc29091777a6159c35d07416d5e5a03fb9e08a4812204c",
+      "vendor/ns2d_decoder.py": "0b99e6a5d1a335e0f01f92c76c630c88b58f88e20d9095f925bd757e3cec175d",
+      "vendor/ns2d_fom.py": "1e4e75cb8057cd450c33525161fe08e4d336bc02064d76deaad255ad620b90f8",
+      "vendor/ns2d_rom.py": "9f22d36ed533bcb93a47e382067d7a8c4f24585b1154685b5c2effdac7259ac2",
+      "vendor/ns3d_fom.py": "e4ffdbe6ec97dc77c457d4a92ac596cd9bfffa01a37e286f5f1a09358b7daff7",
+      "vendor/ns3d_model.py": "cbce94556cf3701b3f26fe7919f168bb109d5b2c209da8856bf0f2b1a26ac653",
+      "vendor/ns3d_rom.py": "abb8e75df1e03070236a8e068a0f7c45b8007afdc6b90496b4d7e91b9bba5318",
+      "vendor/sep_common.py": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4",
+      "vendor/shift_rom.py": "22921d34d486bc3939f8ad3dfdae220390e78d57bc4ca9e88812290007bda4a3",
+      "vendor/translation_cohort.py": "05c5c082ce359a40c3f0cf3d9b933ad53b3e1c3315f06e569874a384ed1bc6ab"
+    }
+  },
+  "cohort_registration": {
+    "schema": "untouched-physical-parameter-registration-v1",
+    "seed": 2026112301,
+    "count": 32,
+    "parameters": [
+      [
+        0.9967154204212246,
+        0.727760915535494,
+        0.34846926854633775,
+        0.2353657182510232,
+        0.6625607259046071,
+        0.005390996611032323
+      ],
+      [
+        0.9042178375276578,
+        0.6746276023077437,
+        0.34736640559328236,
+        0.1961573187331434,
+        0.9148187696973574,
+        0.007553032591667202
+      ],
+      [
+        0.15544558788720575,
+        0.6325973679366745,
+        0.8947642734056018,
+        0.13232952834323924,
+        0.7444476130026101,
+        0.006212940524202328
+      ],
+      [
+        0.17725506163025873,
+        0.7464823721818015,
+        0.6507061472431881,
+        0.15333951644437138,
+        0.7321396674793266,
+        0.003978749469275029
+      ],
+      [
+        0.36564349266128326,
+        0.28651005850037625,
+        0.7238180271718032,
+        0.21331577407509672,
+        1.3274975971315965,
+        0.007776027414133565
+      ],
+      [
+        0.9129582435278449,
+        0.4954276753560405,
+        0.35897715808055397,
+        0.16648225880339027,
+        1.137387221959691,
+        0.006561421737619067
+      ],
+      [
+        0.5953419452366838,
+        0.8265595245492581,
+        0.9854684731950196,
+        0.185110961605326,
+        1.0895940678782072,
+        0.0047284893580085
+      ],
+      [
+        0.9256058809766584,
+        0.9558245251266401,
+        0.44861016276064836,
+        0.22114650622364837,
+        0.9541048463689976,
+        0.009619571906434136
+      ],
+      [
+        0.6167736081992603,
+        0.07629810578095275,
+        0.6967761190177334,
+        0.20151510640633213,
+        1.1024732398276382,
+        0.009754841566566533
+      ],
+      [
+        0.45846693696235374,
+        0.7475376645251708,
+        0.6854363705221138,
+        0.13719437387378755,
+        0.8946092724927235,
+        0.004367756719725004
+      ],
+      [
+        0.5257059361174531,
+        0.6724048439339414,
+        0.14809823290591473,
+        0.21567500280718604,
+        0.9430947896331268,
+        0.0034146332541593293
+      ],
+      [
+        0.96088184614919,
+        0.32751828314424114,
+        0.6018206958742144,
+        0.17955712074326002,
+        0.7227341109103506,
+        0.006416983758452199
+      ],
+      [
+        0.6087899821490599,
+        0.16895889026500288,
+        0.4917216961802209,
+        0.1556782286427364,
+        0.8943088119206384,
+        0.0065560665381651125
+      ],
+      [
+        0.41271233433774246,
+        0.5511530065870268,
+        0.8543248585620806,
+        0.21603762708606195,
+        0.8685008184804442,
+        0.0030518103089318097
+      ],
+      [
+        0.33151819413622197,
+        0.4099287944921206,
+        0.39435331810139906,
+        0.19030797503827498,
+        1.1908062472332572,
+        0.00438010202482549
+      ],
+      [
+        0.11149096787578427,
+        0.7182358270519398,
+        0.09390502454677829,
+        0.13054599145201148,
+        1.018046831138916,
+        0.0037865996911496036
+      ],
+      [
+        0.392137152270435,
+        0.45470585920200735,
+        0.5658948976420193,
+        0.23278354008589447,
+        1.2251860251527318,
+        0.0059782239387567715
+      ],
+      [
+        0.7284571240401443,
+        0.6222542088269193,
+        0.21515955189806557,
+        0.19011813925177756,
+        0.7523153629204237,
+        0.003172717043305847
+      ],
+      [
+        0.2642757002593531,
+        0.6302567937351468,
+        0.7349130506932287,
+        0.20507247268710943,
+        0.9276485232126779,
+        0.007624698427171809
+      ],
+      [
+        0.41796071698776616,
+        0.5397402851585831,
+        0.5221320294461016,
+        0.12959511058837808,
+        1.257380043195998,
+        0.0046744357342756475
+      ],
+      [
+        0.8077947915879126,
+        0.2680621282149642,
+        0.48170427529947435,
+        0.2352732479260634,
+        1.2816862729290415,
+        0.005183135328543288
+      ],
+      [
+        0.4601767874263448,
+        0.28657714264802625,
+        0.40931884033170407,
+        0.16148237347408828,
+        0.7700750403424172,
+        0.0031867769659050175
+      ],
+      [
+        0.48215896758461674,
+        0.058776300179825824,
+        0.6125703716960738,
+        0.18229456980461659,
+        1.147296645345787,
+        0.0022920965150782127
+      ],
+      [
+        0.8573763691969001,
+        0.9750676913131772,
+        0.43652999425351524,
+        0.13689490689690276,
+        0.8446985034059571,
+        0.002473721492153389
+      ],
+      [
+        0.26400032274339424,
+        0.94694060441845,
+        0.7855481600138539,
+        0.19698340036607287,
+        0.7688881151854642,
+        0.003957832270471324
+      ],
+      [
+        0.7675466625143529,
+        0.47114974053976477,
+        0.8937303927806534,
+        0.17312875566717684,
+        1.1221044194386347,
+        0.008734799816051351
+      ],
+      [
+        0.18364782248768408,
+        0.13011711687907235,
+        0.9699399889859455,
+        0.17575879269412406,
+        0.845925278985449,
+        0.0023916538057333586
+      ],
+      [
+        0.5337753175408376,
+        0.04420846834828707,
+        0.4055520503450226,
+        0.20499324570207042,
+        0.7861646917473296,
+        0.006788389494087804
+      ],
+      [
+        0.12861871022241833,
+        0.29354286431655274,
+        0.4385204319167003,
+        0.14262278026906727,
+        1.1228575537344017,
+        0.0020063337676848596
+      ],
+      [
+        0.39213823257323455,
+        0.6469000535450538,
+        0.6296643953837742,
+        0.14893301124135444,
+        0.6483756745955324,
+        0.004081669157249616
+      ],
+      [
+        0.6937093548041807,
+        0.8851426218646115,
+        0.09368641531389743,
+        0.17339536510194253,
+        0.9998559791415629,
+        0.0033573073499789854
+      ],
+      [
+        0.08538599181358852,
+        0.18607744340393018,
+        0.7270640808448275,
+        0.2052530921424337,
+        0.7589082067995547,
+        0.0025878991355809877
+      ]
+    ],
+    "parameter_names": [
+      "center_x",
+      "center_y",
+      "center_z",
+      "vortex_separation",
+      "relative_strength",
+      "viscosity"
+    ],
+    "parameter_sha256": "0a0df4e713504c16650c27717eef403333cbfac034c71862d1e4286794471383",
+    "frozen_protocol_sha256": "fd8c83ba4d98c611b9ee6531c3c001503b92f0957fe024f02937b8c459bbc867",
+    "generator_sha256": "e4ffdbe6ec97dc77c457d4a92ac596cd9bfffa01a37e286f5f1a09358b7daff7",
+    "source_freeze_commit": "346467d02715bceab7d84bff3d85acbeb3c9b124",
+    "registration_commit_base": "f17747074e50cfdd3a5a87475c10dbbc4fe11d8e",
+    "registered_at_utc": "2026-11-23T21:59:25.097921+00:00",
+    "known_cohort_overlap_checks": [
+      {
+        "role": "training and head-training prefix",
+        "seed": 202609201,
+        "count": 512,
+        "parameter_sha256": "9f011fd077f94275bbba0aab1d3976fed1c9330147d098558bcf84528cbe9cf2",
+        "exact_overlap_count": 0,
+        "rounded12_overlap_count": 0
+      },
+      {
+        "role": "known development prefix",
+        "seed": 202609202,
+        "count": 64,
+        "parameter_sha256": "c2a2b4e2c2e402483f2882242d396ae67bf7cb35e1d5722c430dcbefc11f440e",
+        "exact_overlap_count": 0,
+        "rounded12_overlap_count": 0
+      },
+      {
+        "role": "exposed November19 cohort",
+        "seed": 2026111901,
+        "count": 16,
+        "parameter_sha256": "ea4c10c63cf423da985b0452fdf7810b7f59428f54ad46cbdd0ac9e9664df9d6",
+        "exact_overlap_count": 0,
+        "rounded12_overlap_count": 0
+      }
+    ],
+    "nonoverlap_pass": true,
+    "historical_sealed_cohorts_not_opened": [
+      202609203,
+      202609211,
+      202609221
+    ],
+    "physical_fields_or_truth_generated": false,
+    "method_outcomes_inspected": false,
+    "scope": "metadata-only registration on cluster; scientific runs still require GPU preflight"
+  }
+}

@@ -23,6 +23,12 @@ evidence, not a replacement for the f64 GPU stationarity requirement.
 The objective-diagnostic bars retain failed ordinary-direct phase and all-control
 flags beside amended objective/arithmetic/full-qualification checks. The first
 two bars are diagnostic, not silently passing old rules.
+For versions with an independent arithmetic audit, the roundoff panel compares
+the returned objective minus the minimum across
+the original controls, normalized by the unchanged objective allowance in each
+arithmetic. It uses Decimal when executed and otherwise the independent
+long-double evaluation. Both dashed lines mark one allowance. No state or
+objective is altered by this plotting calculation.
 
 The field panels use explicit physical reconstructions normalized by the original
 physical initial-field norm. The diagonal shows equal old/new initial error;
@@ -30,5 +36,7 @@ the horizontal line is the original1e-6 agreement bound. All tolerance and input
 paths are retained. This is initialization evidence, not evolution, reference,
 or complete-query cost qualification. Version1 remains a failed attempt: optional
 SVD polishing can change the selected raw minimum and does not guarantee a lower
-failure count. Version2 combines fixed-anchor arithmetic and both legacy controls;
+failure count. This run has 0 QR-checkpoint and 0 final
+ordinary-direct gradient failures across 384 selected fits. Version2
+combines fixed-anchor arithmetic and both legacy controls;
 no isolated attribution to one change is claimed.

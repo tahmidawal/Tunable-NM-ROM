@@ -1,0 +1,28 @@
+{
+  "passed": true,
+  "backend": "gpu",
+  "x64": true,
+  "policy": {
+    "version": "v2-fixed-anchor-qr-svd",
+    "baseline_budget": 250,
+    "qr_budget": 40,
+    "svd_iterations": 12,
+    "svd_halvings": 8,
+    "svd_cutoff": "max(J.shape) * float64_epsilon * largest_scaled_singular_value",
+    "step_cap_relative": 1e-06,
+    "tie_eps_multiplier": 1024,
+    "stationarity": "max(abs(J.T @ residual)/(column_norms(J)*norm(residual)))",
+    "endpoint_guard": "final_cost <= baseline_cost + 1024*eps*max(baseline_cost,1e-300)",
+    "rank_truncation_does_not_certify_stationarity": true,
+    "controls_per_start": [
+      "original_host_phase",
+      "legacy_compiled_core"
+    ],
+    "anchor": "minimum fresh ordinary-direct objective over controls; seed order then phase/core; fixed per fit and tolerance",
+    "stable_increment_local_preactivation_limit": 0.5,
+    "stable_increment_outside_local_range": "ordinary SiLU difference; no overflowing expm1 branch",
+    "direct_and_anchored_stationarity_required": true,
+    "optional_svd_rollback": false
+  },
+  "fixture": "selector/endpoint/rank/fresh-stationarity/cap"
+}

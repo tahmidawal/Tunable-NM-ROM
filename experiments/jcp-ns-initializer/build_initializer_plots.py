@@ -56,6 +56,11 @@ def load(run):
             item['independent_objective_delta_bands']=float(audit['longdouble_delta'])/float(audit['longdouble_original_band']) if 'longdouble_delta' in audit else None
             item['decimal_executed']=audit.get('decimal_required',False)
             item['decimal_objective_pass']=audit.get('decimal_pass')
+            minimum=min(c['direct']['cost'] for c in f['controls'])
+            item['ordinary_direct_objective_delta_bands']=(f['direct_returned_check']['cost']-minimum)/(1024*np.finfo(float).eps*max(minimum,1e-300))
+            anchored_min=f['global_original_anchored_minimum']
+            item['anchored_objective_delta_bands']=(f['anchored_returned_check']['cost']-anchored_min)/(1024*np.finfo(float).eps*max(anchored_min,1e-300))
+            item['independent_decimal_delta_bands']=float(audit['decimal_delta'])/float(audit['decimal_original_band']) if audit.get('decimal_required') and 'decimal_delta' in audit else None
         result.append(item)
     for family in ('learned','pod'):
         for path in ('phase','query'):
@@ -79,6 +84,8 @@ def build(run):
             ('returned_direct_gradient','Returned direct','#1768ac','D')]
     if rows[0]['method_version'].startswith('v2'):
         series.append(('returned_anchored_gradient','Returned anchored','#139776','+'))
+    else:
+        series.insert(2,('qr_fresh_gradient','QR checkpoint','#a85da3','+'))
     for tol in (1e-7,1e-9,1e-11):
         fig,axes=plt.subplots(2,2,figsize=(12,7),sharex=True,sharey=True)
         for ax,(family,path) in zip(axes.flat,[(f,p) for f in ('learned','pod') for p in ('phase','query')]):
@@ -152,6 +159,23 @@ def build(run):
     ax.text(.5,-.23,'First two bars are retained ordinary-arithmetic diagnostics, not relabeled passes of the amended contract.',
             transform=ax.transAxes,ha='center',fontsize=9)
     fig.tight_layout();save(fig,out/'initializer-objective-diagnostics')
+    if any('ordinary_direct_objective_delta_bands' in r for r in rows):
+        fig,ax=plt.subplots(figsize=(8,5))
+        for family in ('learned','pod'):
+            rr=[r for r in rows if r['family']==family]
+            x=[r.get('ordinary_direct_objective_delta_bands') for r in rr]
+            y=[r.get('independent_decimal_delta_bands') if r.get('independent_decimal_delta_bands') is not None
+               else r.get('independent_objective_delta_bands') for r in rr]
+            ax.scatter(x,y,s=20,alpha=.55,color=colors[family],label=family.upper() if family=='pod' else 'Learned')
+        ax.axvline(1,color='#b52128',ls='--',lw=1);ax.axhline(1,color='#b52128',ls='--',lw=1)
+        ax.set_ylim(bottom=min(ax.get_ylim()[0],-.05),top=max(ax.get_ylim()[1],1.1))
+        ax.set_xlabel('Ordinary f64 objective change / original allowance')
+        ax.set_ylabel('Independent objective change / original allowance')
+        ax.set_title('Same returned code, same original mathematical objective\nComparisons use all original control endpoints')
+        ax.legend(frameon=False);ax.grid(alpha=.15)
+        fig.tight_layout();save(fig,out/'initializer-objective-roundoff')
+    qr_failed=sum(r['qr_fresh_gradient']>r['gtol'] for r in rows)
+    final_failed=sum(r['returned_direct_gradient']>r['gtol'] for r in rows)
     captions=f'''# Measured initializer {role_label} figures ({run})
 
 The cohort role is {role_label}. Registered cohorts are
@@ -177,6 +201,12 @@ evidence, not a replacement for the f64 GPU stationarity requirement.
 The objective-diagnostic bars retain failed ordinary-direct phase and all-control
 flags beside amended objective/arithmetic/full-qualification checks. The first
 two bars are diagnostic, not silently passing old rules.
+For versions with an independent arithmetic audit, the roundoff panel compares
+the returned objective minus the minimum across
+the original controls, normalized by the unchanged objective allowance in each
+arithmetic. It uses Decimal when executed and otherwise the independent
+long-double evaluation. Both dashed lines mark one allowance. No state or
+objective is altered by this plotting calculation.
 
 The field panels use explicit physical reconstructions normalized by the original
 physical initial-field norm. The diagonal shows equal old/new initial error;
@@ -184,7 +214,9 @@ the horizontal line is the original1e-6 agreement bound. All tolerance and input
 paths are retained. This is initialization evidence, not evolution, reference,
 or complete-query cost qualification. Version1 remains a failed attempt: optional
 SVD polishing can change the selected raw minimum and does not guarantee a lower
-failure count. Version2 combines fixed-anchor arithmetic and both legacy controls;
+failure count. This run has {qr_failed} QR-checkpoint and {final_failed} final
+ordinary-direct gradient failures across {len(rows)} selected fits. Version2
+combines fixed-anchor arithmetic and both legacy controls;
 no isolated attribution to one change is claimed.
 '''
     (out/'captions.md').write_text(captions)

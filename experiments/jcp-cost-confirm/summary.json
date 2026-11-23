@@ -1,0 +1,657 @@
+{
+  "schema": "jcp-cost-confirm-summary-v1",
+  "status": "completed scoped-negative frozen confirmation",
+  "job_id": "7385300",
+  "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition, GPU-9661d253-c3e5-5734-76a1-2ba412721b83, 97887 MiB",
+  "allocated_gpu_seconds": 269,
+  "allocated_gpu_hours": 0.07472222222222222,
+  "case_count": 16,
+  "config": {
+    "n": 64,
+    "horizon": 0.2,
+    "truth_dt": 0.00025,
+    "reference_absolute_gate": 1e-05,
+    "reference_fraction_of_target_error": 0.01,
+    "rom": {
+      "rows": 584,
+      "dt": 0.01,
+      "gtol": 1e-07,
+      "fit_gtol": 1e-09,
+      "budget": 250,
+      "fit_starts": 4,
+      "roundoff_repair": true
+    },
+    "drift_gate_ratio": 1.1,
+    "schema": "jcp-fresh-frozen-cost-v1",
+    "eval_seed": 2026111901,
+    "case_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "targets": [
+      {
+        "name": "learned_head_m292_dt0.02",
+        "kind": "head",
+        "rows": 292,
+        "dt": 0.02
+      },
+      {
+        "name": "learned_head",
+        "kind": "head",
+        "rows": 584,
+        "dt": 0.01
+      }
+    ],
+    "pod_head_settings": [
+      {
+        "rows": 292,
+        "dt": 0.02
+      },
+      {
+        "rows": 292,
+        "dt": 0.01
+      }
+    ],
+    "classical_candidates": [
+      {
+        "mesh": 40,
+        "scheme": "rk4",
+        "steps": 10
+      },
+      {
+        "mesh": 64,
+        "scheme": "cnab2",
+        "steps": 50
+      }
+    ],
+    "confirmation_repetitions": 5,
+    "sentinel_repetitions": 3,
+    "timing_order_seed": 2026111903,
+    "solver_refinement": {
+      "gtol": 1e-09,
+      "fit_gtol": 1e-11,
+      "absolute_gate": 1e-06,
+      "fraction_of_error": 0.01
+    },
+    "blocked_existing_seeds": [
+      202609201,
+      202609202,
+      202609203,
+      202609211,
+      202609221
+    ],
+    "frozen_comparators": {
+      "learned_head_m292_dt0.02": {
+        "pod": "pod_head_m292_dt0.02",
+        "same_mesh_classical": "fom_m64_cnab2_s50",
+        "any_mesh_classical": "fom_m40_rk4_s10"
+      },
+      "learned_head": {
+        "pod": "pod_head_m292_dt0.01",
+        "same_mesh_classical": "fom_m64_cnab2_s50",
+        "any_mesh_classical": "fom_m40_rk4_s10"
+      }
+    },
+    "frozen_thresholds": {
+      "learned_head_m292_dt0.02": {
+        "median_case_evolved_max_error": 0.0011330844928162122,
+        "worst_evolved_error": 0.0019560039665109563
+      },
+      "learned_head": {
+        "median_case_evolved_max_error": 0.0008586647111746008,
+        "worst_evolved_error": 0.001856325809152054
+      }
+    },
+    "source_result_sha256": "d2e300e4284a6828f6c3fd28858d340bcb0f12ae906392b5fdfb40112ca01d73",
+    "accuracy_contract": "max at five evolved requested outputs; original physical initial-field L2 denominator; initial reported separately",
+    "timing_contract": "host original physical input through six host full fields plus solver diagnostic conversion; native fit/transfers/return included",
+    "scientific_scope": "new original-family confirmation after frozen settings; no selection or old sealed-cohort access",
+    "initial_job_minutes": 30,
+    "allocated_gpu_hours_ceiling": 1.5
+  },
+  "methods": [
+    {
+      "subject": "learned_head_m292_dt0.02",
+      "nominal_all_case_count": 16,
+      "nominal_all_case_median_error": 0.000918663791045337,
+      "nominal_all_case_worst_error": 0.002742100706715013,
+      "nominal_invalid_cases": [
+        15
+      ],
+      "tighter_invalid_cases": [
+        4,
+        5,
+        8,
+        10,
+        15
+      ],
+      "fractional_reference_failed_cases": [],
+      "failed_timed_invocations": 5,
+      "nominal_valid_timed_cases": 15,
+      "valid_subset_median_ms": 21.746588,
+      "time_is_partial_cohort": true,
+      "numerical_pass": false,
+      "timing_drift": {
+        "worst_case_early_late": 1.0302417824164303,
+        "sentinel_start_end": 1.060353305327582
+      },
+      "timing_outlier_count": 2
+    },
+    {
+      "subject": "learned_head",
+      "nominal_all_case_count": 16,
+      "nominal_all_case_median_error": 0.0006853554801015528,
+      "nominal_all_case_worst_error": 0.0024730868929177543,
+      "nominal_invalid_cases": [
+        15
+      ],
+      "tighter_invalid_cases": [
+        4,
+        5,
+        8,
+        10,
+        15
+      ],
+      "fractional_reference_failed_cases": [],
+      "failed_timed_invocations": 5,
+      "nominal_valid_timed_cases": 15,
+      "valid_subset_median_ms": 30.086688,
+      "time_is_partial_cohort": true,
+      "numerical_pass": false,
+      "timing_drift": {
+        "worst_case_early_late": 1.0213625400119053,
+        "sentinel_start_end": 1.007685159512841
+      },
+      "timing_outlier_count": 2
+    },
+    {
+      "subject": "pod_head_m292_dt0.02",
+      "nominal_all_case_count": 16,
+      "nominal_all_case_median_error": 0.0007998402179710784,
+      "nominal_all_case_worst_error": 0.0028726278036678194,
+      "nominal_invalid_cases": [],
+      "tighter_invalid_cases": [
+        8,
+        9,
+        11
+      ],
+      "fractional_reference_failed_cases": [],
+      "failed_timed_invocations": 0,
+      "nominal_valid_timed_cases": 16,
+      "valid_subset_median_ms": 22.063805000000002,
+      "time_is_partial_cohort": false,
+      "numerical_pass": false,
+      "timing_drift": {
+        "worst_case_early_late": 1.0900934193261556,
+        "sentinel_start_end": 1.076244785717954
+      },
+      "timing_outlier_count": 7
+    },
+    {
+      "subject": "pod_head_m292_dt0.01",
+      "nominal_all_case_count": 16,
+      "nominal_all_case_median_error": 0.0005043864988348123,
+      "nominal_all_case_worst_error": 0.0025918965800553035,
+      "nominal_invalid_cases": [],
+      "tighter_invalid_cases": [
+        8,
+        11
+      ],
+      "fractional_reference_failed_cases": [],
+      "failed_timed_invocations": 0,
+      "nominal_valid_timed_cases": 16,
+      "valid_subset_median_ms": 29.074256,
+      "time_is_partial_cohort": false,
+      "numerical_pass": false,
+      "timing_drift": {
+        "worst_case_early_late": 1.0451846010590693,
+        "sentinel_start_end": 1.0277992709569717
+      },
+      "timing_outlier_count": 3
+    },
+    {
+      "subject": "fom_m40_rk4_s10",
+      "nominal_all_case_count": 16,
+      "nominal_all_case_median_error": 0.0001840272001609397,
+      "nominal_all_case_worst_error": 0.0029683232107654846,
+      "nominal_invalid_cases": [],
+      "tighter_invalid_cases": [],
+      "fractional_reference_failed_cases": [
+        1,
+        2,
+        6,
+        10,
+        13
+      ],
+      "failed_timed_invocations": 0,
+      "nominal_valid_timed_cases": 16,
+      "valid_subset_median_ms": 15.420927500000001,
+      "time_is_partial_cohort": false,
+      "numerical_pass": false,
+      "timing_drift": {
+        "worst_case_early_late": 1.1138301125397574,
+        "sentinel_start_end": 1.0140138302310577
+      },
+      "timing_outlier_count": 5
+    },
+    {
+      "subject": "fom_m64_cnab2_s50",
+      "nominal_all_case_count": 16,
+      "nominal_all_case_median_error": 0.0005259767871621441,
+      "nominal_all_case_worst_error": 0.005786922927243281,
+      "nominal_invalid_cases": [],
+      "tighter_invalid_cases": [],
+      "fractional_reference_failed_cases": [],
+      "failed_timed_invocations": 0,
+      "nominal_valid_timed_cases": 16,
+      "valid_subset_median_ms": 50.393119999999996,
+      "time_is_partial_cohort": false,
+      "numerical_pass": true,
+      "timing_drift": {
+        "worst_case_early_late": 1.0187758478278224,
+        "sentinel_start_end": 1.0060775134788298
+      },
+      "timing_outlier_count": 2
+    }
+  ],
+  "comparison_decisions": {
+    "learned_head_m292_dt0.02": {
+      "pod": {
+        "comparator": "pod_head_m292_dt0.02",
+        "fresh_head_accuracy_match": false,
+        "frozen_target_eligible": false,
+        "frozen_comparator_eligible": false,
+        "numerical_pass": false,
+        "timing_drift_pass": true,
+        "qualified_fixed_threshold": false,
+        "qualified_fresh_head_match": false,
+        "observed_ratio_of_median_times": 1.0145869779663828,
+        "paired_case_ids": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14
+        ],
+        "paired_case_ratios": [
+          0.9956314837709426,
+          0.9907368766650332,
+          1.0122647672472742,
+          1.0043302138726464,
+          1.00912116889494,
+          0.9954648592337798,
+          1.0117008922838693,
+          1.0286694170138322,
+          0.989567872623481,
+          1.02405202265816,
+          0.9878470796017091,
+          1.0595838578396706,
+          1.0163608788356557,
+          0.9934650785858975,
+          1.0118911304618798
+        ],
+        "median_paired_case_ratio": 1.00912116889494,
+        "head_faster_case_count": 9,
+        "ratio_direction": "comparator / head; above one means head faster; qualification is explicit"
+      },
+      "same_mesh_classical": {
+        "comparator": "fom_m64_cnab2_s50",
+        "fresh_head_accuracy_match": false,
+        "frozen_target_eligible": false,
+        "frozen_comparator_eligible": false,
+        "numerical_pass": false,
+        "timing_drift_pass": true,
+        "qualified_fixed_threshold": false,
+        "qualified_fresh_head_match": false,
+        "observed_ratio_of_median_times": 2.317288578787624,
+        "paired_case_ids": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14
+        ],
+        "paired_case_ratios": [
+          2.357156412635007,
+          2.2772681948859437,
+          2.3262632674672306,
+          2.337297925557947,
+          2.3488683010562794,
+          2.3501606689468297,
+          2.2879596676242246,
+          2.3185104716197316,
+          2.273457139108486,
+          2.3270522463719403,
+          2.2570737250041377,
+          2.3452679733773363,
+          2.2948686059354375,
+          2.2781408364726428,
+          2.287516361706192
+        ],
+        "median_paired_case_ratio": 2.3185104716197316,
+        "head_faster_case_count": 15,
+        "ratio_direction": "comparator / head; above one means head faster; qualification is explicit"
+      },
+      "any_mesh_classical": {
+        "comparator": "fom_m40_rk4_s10",
+        "fresh_head_accuracy_match": false,
+        "frozen_target_eligible": false,
+        "frozen_comparator_eligible": false,
+        "numerical_pass": false,
+        "timing_drift_pass": false,
+        "qualified_fixed_threshold": false,
+        "qualified_fresh_head_match": false,
+        "observed_ratio_of_median_times": 0.7091194030070374,
+        "paired_case_ids": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14
+        ],
+        "paired_case_ratios": [
+          0.7198590993108358,
+          0.6977639502605751,
+          0.7168275126758594,
+          0.7160211784772673,
+          0.7176034832328785,
+          0.7248427401662163,
+          0.6986597711486219,
+          0.7054295138161445,
+          0.6957385576863775,
+          0.7085184293050382,
+          0.6954033529586123,
+          0.7182236438387575,
+          0.7020036988253366,
+          0.6915599049248189,
+          0.7090955755311777
+        ],
+        "median_paired_case_ratio": 0.7085184293050382,
+        "head_faster_case_count": 0,
+        "ratio_direction": "comparator / head; above one means head faster; qualification is explicit"
+      }
+    },
+    "learned_head": {
+      "pod": {
+        "comparator": "pod_head_m292_dt0.01",
+        "fresh_head_accuracy_match": false,
+        "frozen_target_eligible": false,
+        "frozen_comparator_eligible": false,
+        "numerical_pass": false,
+        "timing_drift_pass": true,
+        "qualified_fixed_threshold": false,
+        "qualified_fresh_head_match": false,
+        "observed_ratio_of_median_times": 0.9663495031423864,
+        "paired_case_ids": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14
+        ],
+        "paired_case_ratios": [
+          0.9538163716163983,
+          0.973687264580806,
+          0.9833596919293859,
+          0.9485197403849928,
+          0.9622083767835754,
+          0.9601448701973834,
+          0.9964074325118578,
+          0.9773092674718122,
+          0.937838984239343,
+          0.9825513529438668,
+          0.956389624209172,
+          0.9946489577980137,
+          0.9592762865695784,
+          0.9596254671856703,
+          0.9740161650893386
+        ],
+        "median_paired_case_ratio": 0.9622083767835754,
+        "head_faster_case_count": 0,
+        "ratio_direction": "comparator / head; above one means head faster; qualification is explicit"
+      },
+      "same_mesh_classical": {
+        "comparator": "fom_m64_cnab2_s50",
+        "fresh_head_accuracy_match": false,
+        "frozen_target_eligible": false,
+        "frozen_comparator_eligible": false,
+        "numerical_pass": false,
+        "timing_drift_pass": true,
+        "qualified_fixed_threshold": false,
+        "qualified_fresh_head_match": false,
+        "observed_ratio_of_median_times": 1.6749307866655179,
+        "paired_case_ids": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14
+        ],
+        "paired_case_ratios": [
+          1.692851187773096,
+          1.6832472370435498,
+          1.7044214875487258,
+          1.663206148603994,
+          1.681808583340626,
+          1.7060968531386826,
+          1.6902071003974035,
+          1.6618123344275038,
+          1.6346865022332315,
+          1.6764522901291095,
+          1.6694388197188927,
+          1.6682077362709522,
+          1.6416016298225589,
+          1.6999523418280786,
+          1.6473678905782225
+        ],
+        "median_paired_case_ratio": 1.6764522901291095,
+        "head_faster_case_count": 15,
+        "ratio_direction": "comparator / head; above one means head faster; qualification is explicit"
+      },
+      "any_mesh_classical": {
+        "comparator": "fom_m40_rk4_s10",
+        "fresh_head_accuracy_match": false,
+        "frozen_target_eligible": false,
+        "frozen_comparator_eligible": false,
+        "numerical_pass": false,
+        "timing_drift_pass": false,
+        "qualified_fixed_threshold": false,
+        "qualified_fresh_head_match": false,
+        "observed_ratio_of_median_times": 0.5125498526125575,
+        "paired_case_ids": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14
+        ],
+        "paired_case_ratios": [
+          0.516984925041678,
+          0.5157535875758064,
+          0.525209778513623,
+          0.5095160585015219,
+          0.5138098619635079,
+          0.5261988826373213,
+          0.5161278507953898,
+          0.5056226751953778,
+          0.5002576955460548,
+          0.5104300280575914,
+          0.5143533150604808,
+          0.5108781822058146,
+          0.502168365174611,
+          0.5160431089552907,
+          0.5106592031586014
+        ],
+        "median_paired_case_ratio": 0.5138098619635079,
+        "head_faster_case_count": 0,
+        "ratio_direction": "comparator / head; above one means head faster; qualification is explicit"
+      }
+    }
+  },
+  "fixed_threshold_eligibility": {
+    "learned_head_m292_dt0.02": {
+      "learned_head_m292_dt0.02": false,
+      "pod_head_m292_dt0.02": false,
+      "fom_m64_cnab2_s50": false,
+      "fom_m40_rk4_s10": false
+    },
+    "learned_head": {
+      "learned_head": false,
+      "pod_head_m292_dt0.01": false,
+      "fom_m64_cnab2_s50": false,
+      "fom_m40_rk4_s10": false
+    }
+  },
+  "audit": {
+    "schema": "fresh-cost-audit-v1",
+    "passed": true,
+    "errors": [],
+    "subjects": {
+      "fom_m64_cnab2_s50": {
+        "invocations": 80,
+        "failures": 0,
+        "numerical_checks": 0,
+        "numerical_failures": 0,
+        "fractional_reference_failures": 0,
+        "timing_outliers": 2
+      },
+      "learned_head_m292_dt0.02": {
+        "invocations": 80,
+        "failures": 5,
+        "numerical_checks": 16,
+        "numerical_failures": 5,
+        "fractional_reference_failures": 0,
+        "timing_outliers": 2
+      },
+      "pod_head_m292_dt0.02": {
+        "invocations": 80,
+        "failures": 0,
+        "numerical_checks": 16,
+        "numerical_failures": 3,
+        "fractional_reference_failures": 0,
+        "timing_outliers": 7
+      },
+      "fom_m40_rk4_s10": {
+        "invocations": 80,
+        "failures": 0,
+        "numerical_checks": 0,
+        "numerical_failures": 0,
+        "fractional_reference_failures": 5,
+        "timing_outliers": 5
+      },
+      "pod_head_m292_dt0.01": {
+        "invocations": 80,
+        "failures": 0,
+        "numerical_checks": 16,
+        "numerical_failures": 2,
+        "fractional_reference_failures": 0,
+        "timing_outliers": 3
+      },
+      "learned_head": {
+        "invocations": 80,
+        "failures": 5,
+        "numerical_checks": 16,
+        "numerical_failures": 5,
+        "fractional_reference_failures": 0,
+        "timing_outliers": 2
+      }
+    },
+    "invocations": 516,
+    "reference_cases": 16,
+    "numerical_checks": 64,
+    "all_numerical_checks_pass": false,
+    "reference_max_refinement": 4.144579920426371e-06,
+    "max_solver_refinement": 1.0754010022401218e-10,
+    "source_hashes": {
+      "output/paired/result.json": "3d48452a8cf12a4cee4b0b22a6b13ff661a43dd6707362944f6deac807274731",
+      "output/paired/invocations.jsonl": "aedde248ab2866346b582c2d0bf8849df2799cab13edf1ee1549314bc30dd284",
+      "output/provenance.json": "d6e257c1058830616eae44a735b902ff7b59b54334d9c8aa8d7b93d0344a93b4",
+      "output/numerical_qualification.json": "59bf14eb57f62d4727bc6e6a679d6b2436a1b55104206a51e271da955e5c3a5c",
+      "output/references.json": "9d654448e75f8f81da8a3945c8ff4d4b6524ca1d92e066f707e77ba33b2db1a7",
+      "job.log": "e26605d91f2ec6c36e8663d39d592100dbf5805f4fdeb08972a1cc326a5ea674"
+    }
+  },
+  "no_new_speed_claim": true,
+  "fresh_reselection": false,
+  "held_out_cases_dropped": false,
+  "metric_note": "all-case nominal accuracy includes returned but rejected solves as diagnostics; valid timing-subset medians are separate and not accuracy-cost evidence",
+  "remaining_experiments": [
+    "A development-only initializer robustness repair and then a different untouched confirmation cohort are needed before an all-case production claim.",
+    "If pursuing the coarse-classical comparison, refine the physical reference sufficiently and repeat a separately registered same-allocation timing block with the same frozen comparator; current thresholds and nominal head failure still preclude the current claim.",
+    "No more timing candidate search or fresh-cohort tuning belongs to this closed batch."
+  ]
+}

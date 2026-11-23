@@ -1,0 +1,242 @@
+{
+  "config": {
+    "n": 64,
+    "horizon": 0.2,
+    "truth_dt": 0.00025,
+    "reference_absolute_gate": 1e-05,
+    "reference_fraction_of_target_error": 0.01,
+    "rom": {
+      "rows": 584,
+      "dt": 0.01,
+      "gtol": 1e-07,
+      "fit_gtol": 1e-09,
+      "budget": 250,
+      "fit_starts": 4,
+      "roundoff_repair": true
+    },
+    "drift_gate_ratio": 1.1,
+    "schema": "jcp-fresh-frozen-cost-v1",
+    "eval_seed": 2026111901,
+    "case_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "targets": [
+      {
+        "name": "learned_head_m292_dt0.02",
+        "kind": "head",
+        "rows": 292,
+        "dt": 0.02
+      },
+      {
+        "name": "learned_head",
+        "kind": "head",
+        "rows": 584,
+        "dt": 0.01
+      }
+    ],
+    "pod_head_settings": [
+      {
+        "rows": 292,
+        "dt": 0.02
+      },
+      {
+        "rows": 292,
+        "dt": 0.01
+      }
+    ],
+    "classical_candidates": [
+      {
+        "mesh": 40,
+        "scheme": "rk4",
+        "steps": 10
+      },
+      {
+        "mesh": 64,
+        "scheme": "cnab2",
+        "steps": 50
+      }
+    ],
+    "confirmation_repetitions": 5,
+    "sentinel_repetitions": 3,
+    "timing_order_seed": 2026111903,
+    "solver_refinement": {
+      "gtol": 1e-09,
+      "fit_gtol": 1e-11,
+      "absolute_gate": 1e-06,
+      "fraction_of_error": 0.01
+    },
+    "blocked_existing_seeds": [
+      202609201,
+      202609202,
+      202609203,
+      202609211,
+      202609221
+    ],
+    "frozen_comparators": {
+      "learned_head_m292_dt0.02": {
+        "pod": "pod_head_m292_dt0.02",
+        "same_mesh_classical": "fom_m64_cnab2_s50",
+        "any_mesh_classical": "fom_m40_rk4_s10"
+      },
+      "learned_head": {
+        "pod": "pod_head_m292_dt0.01",
+        "same_mesh_classical": "fom_m64_cnab2_s50",
+        "any_mesh_classical": "fom_m40_rk4_s10"
+      }
+    },
+    "frozen_thresholds": {
+      "learned_head_m292_dt0.02": {
+        "median_case_evolved_max_error": 0.0011330844928162122,
+        "worst_evolved_error": 0.0019560039665109563
+      },
+      "learned_head": {
+        "median_case_evolved_max_error": 0.0008586647111746008,
+        "worst_evolved_error": 0.001856325809152054
+      }
+    },
+    "source_result_sha256": "d2e300e4284a6828f6c3fd28858d340bcb0f12ae906392b5fdfb40112ca01d73",
+    "accuracy_contract": "max at five evolved requested outputs; original physical initial-field L2 denominator; initial reported separately",
+    "timing_contract": "host original physical input through six host full fields plus solver diagnostic conversion; native fit/transfers/return included",
+    "scientific_scope": "new original-family confirmation after frozen settings; no selection or old sealed-cohort access",
+    "initial_job_minutes": 30,
+    "allocated_gpu_hours_ceiling": 1.5
+  },
+  "subjects": [
+    {
+      "name": "learned_head_m292_dt0.02",
+      "family": "target",
+      "mesh": 64,
+      "metadata": {
+        "kind": "head",
+        "rank": 64,
+        "latent": 8,
+        "actual_scalar_weak_rows": 292,
+        "actual_online_unknowns_including_frame": 11,
+        "solver": "compiled adaptive diagonally scaled LM; returned-state stationarity",
+        "settings": {
+          "rows": 292,
+          "dt": 0.02,
+          "gtol": 1e-07,
+          "fit_gtol": 1e-09,
+          "budget": 250,
+          "fit_starts": 4,
+          "roundoff_repair": true
+        },
+        "assets_manifest_sha256": "eddd2df62dff6f02886b822bd5e834b59084fed4f5ba198b5276db0cf9e0b1cd",
+        "initialization": "native from same original physical input field; four sequential compiled starts; recomputed each call"
+      }
+    },
+    {
+      "name": "learned_head",
+      "family": "target",
+      "mesh": 64,
+      "metadata": {
+        "kind": "head",
+        "rank": 64,
+        "latent": 8,
+        "actual_scalar_weak_rows": 584,
+        "actual_online_unknowns_including_frame": 11,
+        "solver": "compiled adaptive diagonally scaled LM; returned-state stationarity",
+        "settings": {
+          "rows": 584,
+          "dt": 0.01,
+          "gtol": 1e-07,
+          "fit_gtol": 1e-09,
+          "budget": 250,
+          "fit_starts": 4,
+          "roundoff_repair": true
+        },
+        "assets_manifest_sha256": "eddd2df62dff6f02886b822bd5e834b59084fed4f5ba198b5276db0cf9e0b1cd",
+        "initialization": "native from same original physical input field; four sequential compiled starts; recomputed each call"
+      }
+    },
+    {
+      "name": "pod_head_m292_dt0.02",
+      "family": "pod",
+      "mesh": 64,
+      "metadata": {
+        "kind": "head",
+        "rank": 64,
+        "latent": 8,
+        "actual_scalar_weak_rows": 292,
+        "actual_online_unknowns_including_frame": 11,
+        "solver": "compiled adaptive diagonally scaled LM; returned-state stationarity",
+        "settings": {
+          "rows": 292,
+          "dt": 0.02,
+          "gtol": 1e-07,
+          "fit_gtol": 1e-09,
+          "budget": 250,
+          "fit_starts": 4,
+          "roundoff_repair": true
+        },
+        "assets_manifest_sha256": "a1644dc54561202852ba9f107c992b5fae162f2e9e12688fee57b304f73913c0",
+        "initialization": "native from same original physical input field; four sequential compiled starts; recomputed each call"
+      }
+    },
+    {
+      "name": "pod_head_m292_dt0.01",
+      "family": "pod",
+      "mesh": 64,
+      "metadata": {
+        "kind": "head",
+        "rank": 64,
+        "latent": 8,
+        "actual_scalar_weak_rows": 292,
+        "actual_online_unknowns_including_frame": 11,
+        "solver": "compiled adaptive diagonally scaled LM; returned-state stationarity",
+        "settings": {
+          "rows": 292,
+          "dt": 0.01,
+          "gtol": 1e-07,
+          "fit_gtol": 1e-09,
+          "budget": 250,
+          "fit_starts": 4,
+          "roundoff_repair": true
+        },
+        "assets_manifest_sha256": "a1644dc54561202852ba9f107c992b5fae162f2e9e12688fee57b304f73913c0",
+        "initialization": "native from same original physical input field; four sequential compiled starts; recomputed each call"
+      }
+    },
+    {
+      "name": "fom_m40_rk4_s10",
+      "family": "classical",
+      "mesh": 40,
+      "metadata": {
+        "scheme": "rk4",
+        "steps": 10,
+        "same_output_mesh": 64,
+        "input_and_output_transforms_timed": true
+      }
+    },
+    {
+      "name": "fom_m64_cnab2_s50",
+      "family": "classical",
+      "mesh": 64,
+      "metadata": {
+        "scheme": "cnab2",
+        "steps": 50,
+        "same_output_mesh": 64,
+        "input_and_output_transforms_timed": true
+      }
+    }
+  ],
+  "selection_performed": false,
+  "frozen_before_truth": true,
+  "scope": "fresh physical cohort; frozen models and comparators"
+}

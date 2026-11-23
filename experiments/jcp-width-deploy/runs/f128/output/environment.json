@@ -1,0 +1,88 @@
+{
+  "config": {
+    "version": "FRESH-WIDTH-20261119",
+    "reference_arithmetic": "neighbor-difference",
+    "mesh_intervals": 256,
+    "bank_width": 128,
+    "solve_rows": [
+      2048
+    ],
+    "observer_rows": 1024,
+    "case_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "cohort": "fresh8",
+    "seed_first_draw": 2026111902,
+    "seed_first_count": 8,
+    "dt": 0.005,
+    "horizon": 0.25,
+    "solver_gtols": {
+      "prod": 1e-05,
+      "tight": 1e-07,
+      "tighter": 1e-08
+    },
+    "solver_max_iterations": 200,
+    "reference_tolerances": [
+      [
+        1e-12,
+        1e-10
+      ],
+      [
+        1e-14,
+        1e-12
+      ]
+    ],
+    "reference_max_disagreement": 1e-08,
+    "tangent_relative_eigenvalue_threshold": 1e-12,
+    "lane_budget_gpu_hours": 2,
+    "initial_job_limit_minutes": 45,
+    "timing_repetitions": 1,
+    "physical_reference_scope": "same-grid same-step discrete FOM only",
+    "cohort_phase": "frozen-fresh8",
+    "job_limit_minutes": 20,
+    "width_followup": true,
+    "initialization": "mass-qr",
+    "observer_start": 8192
+  },
+  "checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+  "rotation_sha256": "51149166b53dad386c93fa0682079aec96b61276801d9a6d4f622453d6426772",
+  "source_sha256": {
+    "core.py": "e4904a1736f6c3893fb19f01c3320e761d951e937f69414153ab79ce78e1215b",
+    "run.py": "097328c9ad96bacc6849145616bd2c0055f3773dd57c608202f52c169fda8c14",
+    "vendor/engines.py": "820039e5840abaf92dc911f9de8c6a427f97cbd2617f1e7a5169e66c19fa62e4",
+    "vendor/sep_common.py": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4"
+  },
+  "job_id": "7385297",
+  "commit": "3276526f8731c54ae41020eab26b353a092049a2",
+  "gpu": "NVIDIA A100 80GB PCIe, GPU-e1155fbe-2d60-1685-178c-9d7f9cbab295",
+  "backend": "gpu",
+  "x64": true,
+  "matmul_precision": "highest",
+  "tangent_ranks": {
+    "1e-10": 128,
+    "1e-12": 128,
+    "1e-14": 128
+  },
+  "scaled_tangent_rank": 128,
+  "grid_nodes": 65025,
+  "actual_unknowns": 128,
+  "free_frame_variables": 0,
+  "mass_per_node": 1.52587890625e-05,
+  "wall_start": 1795134390.5603282,
+  "buffer_residual_rows": 9216,
+  "no_production_timing_claim": true,
+  "observer_start_row_zero_based": 8192,
+  "width_admission_sha256": "e5fca235fdcfd0d0fdc16cd1dfd81682f0255530cde97c8c996dbefdb302d827",
+  "initialization_qr_ranks": {
+    "1e-10": 128,
+    "1e-12": 128,
+    "1e-14": 128
+  }
+}

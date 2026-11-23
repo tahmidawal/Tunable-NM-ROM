@@ -1,0 +1,47 @@
+{
+  "schema": "ns-initializer-exposed-development-v1",
+  "status": "registered-before-outcomes",
+  "n": 64,
+  "rank": 64,
+  "latent": 8,
+  "cohorts": [
+    {
+      "seed": 202609202,
+      "count": 16
+    },
+    {
+      "seed": 2026111901,
+      "count": 16
+    }
+  ],
+  "families": [
+    "learned",
+    "pod"
+  ],
+  "input_paths": [
+    "phase",
+    "query"
+  ],
+  "gtols": [
+    1e-07,
+    1e-09,
+    1e-11
+  ],
+  "selected_checks": 384,
+  "policy": {
+    "version": "v1-qr-svd-unchanged-acceptance",
+    "baseline_budget": 250,
+    "qr_budget": 40,
+    "svd_iterations": 12,
+    "svd_halvings": 8,
+    "svd_cutoff": "max(J.shape) * float64_epsilon * largest_scaled_singular_value",
+    "step_cap_relative": 1e-06,
+    "tie_eps_multiplier": 1024,
+    "stationarity": "max(abs(J.T @ residual)/(column_norms(J)*norm(residual)))",
+    "endpoint_guard": "final_cost <= baseline_cost + 1024*eps*max(baseline_cost,1e-300)",
+    "rank_truncation_does_not_certify_stationarity": true
+  },
+  "new_test_seed_reserved_not_generated": 2026112301,
+  "new_test_count_reserved": 32,
+  "max_job_minutes": 20
+}

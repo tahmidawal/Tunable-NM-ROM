@@ -3,6 +3,8 @@ import os
 import numpy as np
 import shared_initializer as I
 import support as S
+import check_arithmetic as C
+from arithmetic_audit import NetworkAudit
 
 def main():
     assert I.jax.default_backend()=='gpu' and I.jax.config.jax_enable_x64
@@ -29,6 +31,13 @@ def main():
     assert info['reason']!='stationarity' or after['gradient']<=1e-11
     assert info['original_endpoint_guard']
     assert len(info['history'])<=I.POLICY['svd_iterations']*I.POLICY['svd_halvings']
+    assert C.check_saturation()['passed']
+    for filename in ('head_k8_n64.npz','pod_head_k8_n64.npz'):
+        pp,zz=S.load_head(S.HERE/'assets'/filename)
+        assert C.check_network(pp,zz[0])['passed']
+        tt=np.asarray(I.H.head_apply(pp,I.jnp.asarray(zz[0])))+1e-3
+        audit=NetworkAudit(pp).compare([{'seed_index':0,'kind':'fixture','code':zz[0]}],zz[0],tt,False)
+        assert audit['passed'] and audit['decimal_required']
     print('initializer policy fixtures PASS',flush=True)
     output=os.environ.get('FIXTURE_OUTPUT')
     if output:S.dump(output,{'passed':True,'backend':I.jax.default_backend(),

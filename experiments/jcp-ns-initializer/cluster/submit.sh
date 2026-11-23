@@ -16,7 +16,9 @@ git diff --quiet HEAD -- "$LANE" || { echo 'commit all experiment files first' >
 [[ -z "$(git ls-files --others --exclude-standard "$LANE")" ]] || { echo 'untracked experiment files' >&2; exit 2; }
 mkdir -p "$LOCAL"
 git rev-parse HEAD > "$LOCAL/COMMIT.txt"
-git archive --format=tar.gz --output="$LOCAL/code.tar.gz" HEAD "$LANE"
+git archive --format=tar.gz --output="$LOCAL/code.tar.gz" HEAD \
+  "$LANE/PROTOCOL.md" "$LANE"/*.json "$LANE"/*.py \
+  "$LANE/vendor" "$LANE/assets" "$LANE/configs" "$LANE/cluster"
 cp "$LANE/cluster/job.sbatch" "$LOCAL/job.sbatch"
 sed -i "s/ctol_jni_d01/ctol_jni_$RUN_ID/" "$LOCAL/job.sbatch"
 cd "$LOCAL"

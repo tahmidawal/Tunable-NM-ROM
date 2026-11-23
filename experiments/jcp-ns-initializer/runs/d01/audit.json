@@ -1,0 +1,38 @@
+{
+  "schema": "development-v1-local-evidence-audit",
+  "records": 384,
+  "integrity_pass": true,
+  "failure_counts": {
+    "original_phase_pass": 19,
+    "original_compiled_pass": 21,
+    "common_baseline_pass": 21,
+    "qr_only_pass": 17,
+    "repaired_pass": 19,
+    "phase_objective_quality": 45,
+    "initial_field_agreement_pass": 0,
+    "old_new_initial_agreement_pass": 0,
+    "initializer_qualified": 60
+  },
+  "max_host_saved_stationarity_difference": 5.3134508570359327e-17,
+  "scaled_J_condition_range": [
+    1.1775088540841658,
+    1.4339074357198103
+  ],
+  "phase_raw_array_missing_records": [
+    "fits/learned_query_202609202_09_1e-11.json",
+    "fits/learned_query_2026111901_00_1e-11.json",
+    "fits/learned_query_2026111901_03_1e-11.json",
+    "fits/learned_phase_2026111901_11_1e-11.json",
+    "fits/pod_phase_202609202_05_1e-09.json",
+    "fits/pod_phase_202609202_05_1e-11.json",
+    "fits/pod_query_202609202_11_1e-11.json",
+    "fits/pod_phase_2026111901_14_1e-11.json"
+  ],
+  "limitation": "All four phase endpoint codes/common objectives retained; eight raw-min residual arrays absent. No scientific failure waived.",
+  "scheduler_gpu_seconds": 154,
+  "job_id": 7477604,
+  "source_commit": "4a7b261fe32c977f61b605a03bcf5cca6c1d4ffb",
+  "all_sha256_verified": true,
+  "fresh_cohort_opened": false,
+  "retained_negative_v1": true
+}

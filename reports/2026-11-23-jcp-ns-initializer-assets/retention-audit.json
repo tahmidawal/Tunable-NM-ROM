@@ -1,0 +1,128 @@
+{
+  "integrity_passed": true,
+  "scope": "exact raw/input/archive hashes, archive-to-Git provenance, GPU and precision logs, terminal scheduler records; owner cleanup records separately labeled",
+  "runs": [
+    {
+      "run": "d01",
+      "job_id": 7477604,
+      "source_commit": "4a7b261fe32c977f61b605a03bcf5cca6c1d4ffb",
+      "state": "COMPLETED",
+      "node": "pax023",
+      "gpu": "NVIDIA L40S, GPU-25f5638a-03c8-ae95-c0bc-c1167e0b411c, 46068 MiB",
+      "allocated_gpu_seconds": 154,
+      "verified_result_files": 903,
+      "result_bytes": 19099200,
+      "verified_source_files": 30,
+      "inputs": [
+        {
+          "path": "COMMIT.txt",
+          "sha256": "483cd9fb4346335cdba2e03b40a55f66faead2c27bb853b8eb84bf07b76da751",
+          "bytes": 41
+        },
+        {
+          "path": "code.tar.gz",
+          "sha256": "dcf1a0eb6ec827fd2ec1a4f50251a991f5d0b704252ae40095fc8e67d1d3a018",
+          "bytes": 12274177
+        },
+        {
+          "path": "job.sbatch",
+          "sha256": "209db0e60c7664de1551b9dc9a5a94baf25eaeeeed9ead3e06f4e5d4c3bae0b8",
+          "bytes": 1334
+        }
+      ],
+      "archive": [
+        {
+          "path": "result.tar.gz",
+          "sha256": "399c42df0034da5d1dedb1a343173b835eb0c61adfe9dc4c4f2845c3722ea35d",
+          "bytes": 3918092
+        }
+      ],
+      "results_manifest_sha256": "089e19916a0b8316a1757652250fa74952892b5adf641f91f7cd440baa8d3155",
+      "remote_removed_from_owner_closeout": true,
+      "remote_job_directory": "/cluster/tufts/paralab/tawal01/jcp-ns-initializer-20261123/d01",
+      "provenance_sha256": "f921ff7a2e9156987c48685d765002ba857111f1ee78183ab85f22494a2e936e"
+    },
+    {
+      "run": "d02",
+      "job_id": 7478133,
+      "source_commit": "d173150171b429524fb4dc8280262f2310213ada",
+      "state": "COMPLETED",
+      "node": "pax024",
+      "gpu": "NVIDIA L40S, GPU-95f0cf5d-bff7-6d7c-c5ae-3f60b4170b50, 46068 MiB",
+      "allocated_gpu_seconds": 289,
+      "verified_result_files": 904,
+      "result_bytes": 180015751,
+      "verified_source_files": 33,
+      "inputs": [
+        {
+          "path": "COMMIT.txt",
+          "sha256": "58ee5e8d6c447ae6b8cafabed01719b98f70711b9044617a1c3c5d46e62a9ac4",
+          "bytes": 41
+        },
+        {
+          "path": "code.tar.gz",
+          "sha256": "ff3b78fe7a39dc909a85eb5222a5b02b92db0ffa7fbd3593eafd03c5c08a7513",
+          "bytes": 12281533
+        },
+        {
+          "path": "job.sbatch",
+          "sha256": "53bca2cae8dbedd2181ddbe984e0562a139dd3c2a3deb11e7bc98fa6ec85c22f",
+          "bytes": 1334
+        }
+      ],
+      "archive": [
+        {
+          "path": "result.tar.gz",
+          "sha256": "bb49f609c3d1a0ae5e824f8ed628369edd8ba02d2839f36da1c4e12d97cee17f",
+          "bytes": 40464673
+        }
+      ],
+      "results_manifest_sha256": "4ace17b31b8fedfbd3efcd3d9c88147e56fb4a1633726b502cf5e7966c4cd21a",
+      "remote_removed_from_owner_closeout": true,
+      "remote_job_directory": "/cluster/tufts/paralab/tawal01/jcp-ns-initializer-20261123/d02",
+      "provenance_sha256": "40828e26c1641435b0f09d5ada5f1c075fab1dca106e44566230c6da4700169d"
+    },
+    {
+      "run": "f01",
+      "job_id": 7478826,
+      "source_commit": "5d8966a6216d29730465090eee47cabb182b8f6f",
+      "state": "COMPLETED",
+      "node": "pax003",
+      "gpu": "NVIDIA A100-PCIE-40GB, GPU-5fdc5e40-0e0d-7891-eceb-5c9038e8e20d, 40960 MiB",
+      "allocated_gpu_seconds": 786,
+      "verified_result_files": 1455,
+      "result_bytes": 471886119,
+      "verified_source_files": 49,
+      "inputs": [
+        {
+          "path": "COMMIT.txt",
+          "sha256": "0e82292d44d7ae85fca1d609774f5c770077e99dc740a9015af4c360fcaf9b7e",
+          "bytes": 41
+        },
+        {
+          "path": "code.tar.gz",
+          "sha256": "dfafb01854084fb6cd6d3f7c93260922f12d607b52c4e92533286aceb4cf776a",
+          "bytes": 12305143
+        },
+        {
+          "path": "job.sbatch",
+          "sha256": "54b22db804bc5c3156d605860764edfc978dd1af7b30c49e881f1fa7151b453f",
+          "bytes": 1621
+        }
+      ],
+      "archive": [
+        {
+          "path": "result.tar.gz",
+          "sha256": "97904dfc95f8e3e67e939ef190c4ac24af89e3179d163b76b2f63ced510b68f4",
+          "bytes": 203118380
+        }
+      ],
+      "results_manifest_sha256": "3adf589dee4fac28301c8b227ce93d4189c5c8b09ffe28e407ee7666919623bf",
+      "remote_removed_from_owner_closeout": false,
+      "remote_job_directory": "/cluster/tufts/paralab/tawal01/jcp-ns-initializer-20261123/f01",
+      "provenance_sha256": "119ad92808aa2abe68db4792514869a757bc61ff8684bdc445d26f0d54142bdf"
+    }
+  ],
+  "allocated_gpu_seconds": 1229,
+  "all_owner_closeouts_present": false
+}

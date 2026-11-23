@@ -33,12 +33,25 @@ def audit(run):
     assert cfg["reference"]["dt"] == .000125 and cfg["reference"]["check_dt"] == .0000625
     assert summary["backend"] == "gpu" and summary["x64"] and summary["matmul_precision"] == "highest"
     assert [c["index"] for c in summary["cases"]] == list(range(32))
+    assert summary["source_commit"] == (run.parent.parent / "COMMIT.txt").read_text().strip()
+    assert str(summary["job_id"]) == (run.parent.parent / "JOB_ID.txt").read_text().strip()
+    registration = summary["registration"]
+    assert registration["seed"] == cfg["eval_seed"] and registration["count"] == cfg["eval_cases"]
+    registered_parameters = np.asarray(registration["parameters"], dtype=np.float64)
+    assert hashlib.sha256(registered_parameters.tobytes()).hexdigest() == registration["parameter_sha256"]
+    operator = summary["operator_checks"]
+    operator_pass = (max(operator[name] for name in ("A_relative", "derivative_relative", "diffusion_relative",
+                                                     "tensor_relative", "subset_test_orthogonality"))
+                     <= cfg["qualification"]["operator"] and operator["shift_sign_relative"] <= 1e-5)
+    assert summary["operator_pass"] == operator_pass
     expected_runs = set(itertools.product(cfg["arms"], cfg["solver_gtols"]))
     step_count, initial_count = 0, 0
     initial_failures, trajectory_failures, sources = [], [], []
     head_values, span_values, concentrations = [], [], []
     for case in summary["cases"]:
         ci = case["index"]
+        assert np.array_equal(np.asarray(case["parameters"]), registered_parameters[ci])
+        assert case["normalization"] > 0 and np.isfinite(case["normalization"])
         directory = run / f"case_{ci:03d}"
         assert len(case["runs"]) == len(expected_runs)
         assert {(r["arm"], r["gtol"]) for r in case["runs"]} == expected_runs
@@ -49,6 +62,12 @@ def audit(run):
             assert sha(p) == initial["audit_array_sha256"]
             arrays = np.load(p, allow_pickle=False)
             fit = initial["fit"]
+            assert initial["gtol"] == gtol and initial["normalization"] == case["normalization"]
+            assert np.array_equal(arrays["returned_code"], np.asarray(initial["code"]))
+            assert np.array_equal(arrays["target"], np.asarray(initial["target"]))
+            anchor_index = min(range(len(fit["controls"])), key=lambda i: fit["controls"][i]["direct"]["cost"])
+            assert np.array_equal(arrays["anchor_code"], np.asarray(fit["controls"][anchor_index]["code"]))
+            assert np.array_equal(arrays["control_codes"], np.asarray([x["code"] for x in fit["controls"]]))
             for name, label in (("returned", "direct_returned_check"), ("returned_anchored", "anchored_returned_check")):
                 residual, jacobian = arrays[name + "_residual"], arrays[name + "_jacobian"]
                 assert residual.dtype == jacobian.dtype == np.float64
@@ -112,6 +131,7 @@ def audit(run):
             states = np.load(p, allow_pickle=False)
             assert states["coefficients"].shape == (21, 64) and states["centers"].shape == (21, 3)
             assert states["states"].shape == (21, 11 if result["arm"] == "head_common" else 67)
+            assert all(states[name].dtype == np.float64 for name in ("states", "centers", "coefficients", "times"))
             assert np.all(np.isfinite(states["states"]))
             if result["gtol"] == min(cfg["solver_gtols"]):
                 arm_metrics[result["arm"]] = {

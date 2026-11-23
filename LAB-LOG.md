@@ -12,7 +12,9 @@ below it is append-only, oldest first.
 
 ---
 
-# Where things stand — 2026-11-19
+# Where things stand — 2026-11-23
+
+**JCP consolidation and Navier–Stokes initializer repair ACTIVE (Codex, 2026-11-23).** The user approved merging the completed November 19 phase, width and cost branches into one JCP branch, then repairing the Navier–Stokes initializer, testing new untouched cases and updating the plots. Consolidation preserves the original evidence and failed checks. Initializer development will use exposed cases; the revised method and validation protocol will be frozen before new-case outcomes are generated. The new work does not resume the separate paused Burgers campaign. The prior cost/reference and sparse-deployment failures remain unresolved unless separately demonstrated otherwise.
 
 **JCP physical-diagnostics and frozen-confirmation follow-up COMPLETE (Codex, 2026-11-19).** All requested phase/shape, derivative, width–test and accuracy–cost figures are saved. Frozen Burgers width/test confirmation passes on all 8 fresh cases: worst initialization-inclusive discrete-reference error falls from 2.972355% to 0.203092%. The head advantage persists after the declared physical-centroid alignment; fresh Navier–Stokes confirmation remains formally unqualified because 2 initial fits miss strict stationarity. No fresh cost comparison qualifies; both tested sparse rules fail admission, so sparse rollout and downstream timing were not run. All 5 jobs are terminal (992 allocated GPU-seconds). [Measured report and figures](reports/2026-11-19-jcp-physical-diagnostics-and-confirmation.md). The three new experiment branches are backed up separately and remain unmerged pending the user’s decision; designated large regenerable cost arrays remain local with hashes. Separate tree-study and paused-campaign state are unchanged.
 
@@ -22121,3 +22123,14 @@ All eligible lane blobs match the remote mirrors. Phase and width scientific evi
 **Independent review and reproduction.** The reviewer found no scientific blocker to reporting this finite batch within the stated claim limits; the coordinator resolved the backup prerequisite. Report generation is deterministic, all 79 registered artifacts match source and frozen hashes, and all 40 local link occurrences resolve. Report SHA-256: `c9669874d25f3fbd61e3b2619d37e6e92b30e81053f6590c0c5cfdfe3c8f93d9`. Evidence integrity passes separately from retained scientific qualification failures.
 
 **Open work, conditional on claims.** First develop a robust Navier–Stokes initializer/stopping rule on exposed data, then freeze it and confirm on different untouched cases. A new performance claim additionally needs qualified solvers, sufficiently refined references, frozen comparators/accuracy criteria and clean paired timing. Efficient wider-model sparse deployment needs economical sampled initialization and reduced actual evaluated work before reached-state checks, trajectories, time–quadrature interaction and cost. Continuum derivatives, longer horizons or data efficiency require their own studies only if claimed. No unrelated tree-study work or paused campaign was resumed.
+
+
+## 2026-11-23
+
+### Codex — authorized JCP consolidation complete; initializer work started
+
+The user explicitly approved merging the three completed November 19 branches into one JCP branch, then asked for subagents to repair the Navier–Stokes initializer, test new untouched cases and update the plots. The consolidation agent merged phase-confirm, width-deploy and cost-confirm without conflicts into `exp/2026-11-23-jcp-consolidated`, worktree `worktrees/2026-11-23-jcp-consolidated`, from the canonical corrected fork. Original source ancestry and exact scientific Git trees pass independent coordinator checks in `reports/2026-11-23-jcp-ns-initializer-assets/merge-audit.json`. The lane's complete per-file manifest is copied beside that audit as `consolidation.json`.
+
+Verified handoff source: `f90561908e750bf947aac541b159c268f6bcb183`; code-only remote mirror: `4821a182e7b158f70b0b3726021d0e34c6b3b8fb`. Original scientific outcomes and failed qualification checks are unchanged. The same designated large regenerable cost outputs remain excluded from the remote mirror and additional checkout, while preserved in source Git and the original worktree. No source worktree was deleted. No GPU job was needed for consolidation.
+
+The consolidation agent ceased writes before the repair agent took sole ownership of this same JCP worktree. New repair code lives in `experiments/jcp-ns-initializer`, with its own namespace `/cluster/tufts/paralab/tawal01/jcp-ns-initializer-20261123/`. The independent reviewer remains read-only; the coordinator owns main reports and the canonical log. Development will use exposed cohorts, preserve the original fitting objective, starts, stationarity thresholds and selector allowance, and retain failed attempts. New-case confirmation follows a source/configuration freeze and review. The prior cost/reference/accuracy-target and sparse-deployment failures are not waived by an initializer repair. No unrelated paused campaign was resumed.

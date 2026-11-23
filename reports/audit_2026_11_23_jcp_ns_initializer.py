@@ -34,6 +34,30 @@ def objective_guard(value, baseline):
     return bool(value <= baseline + 1024 * np.finfo(np.float64).eps * max(baseline, 1e-300))
 
 
+def precision_record_verdict(record):
+    """Reconstruct a recorded independent arithmetic decision without a model call."""
+    assert record["longdouble_explicit_mantissa_bits"] >= 63
+    with localcontext() as context:
+        context.prec = 50
+        costs = list(map(Decimal, record["longdouble_objective_strings"]))
+        minimum = min(costs[:-1])
+        band = Decimal(1024) * Decimal.from_float(float(np.finfo(np.float64).eps)) * max(minimum, Decimal.from_float(1e-300))
+        verdict = costs[-1] - minimum <= band
+        assert verdict == record["longdouble_pass"]
+        assert record["ordinary_direct_guard"] or record["decimal_required"]
+        if record["decimal_required"]:
+            assert record["decimal_digits"] == 50
+            costs = list(map(Decimal, record["decimal_objective_strings"]))
+            minimum = min(costs[:-1])
+            band = Decimal(1024) * Decimal.from_float(float(np.finfo(np.float64).eps)) * max(minimum, Decimal.from_float(1e-300))
+            exact_pass = costs[-1] - minimum <= band
+            agreement = Decimal(record["longdouble_decimal_delta_max_discrepancy"]) <= band * Decimal('.01')
+            assert exact_pass == record["decimal_pass"] and agreement == record["longdouble_decimal_delta_agreement"]
+            verdict = verdict and exact_pass and agreement
+    assert verdict == record["passed"]
+    return bool(verdict)
+
+
 def audit_run(run):
     run = Path(run).resolve()
     records = read(run / "records.json")

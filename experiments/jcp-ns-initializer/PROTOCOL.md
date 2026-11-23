@@ -167,6 +167,55 @@ usage. Commit and mirror every attempted implementation before running it.
 Pull outputs with hashes before cleanup. No scientific arrays are generated
 on the local workstation beyond sub-minute implementation fixtures.
 
+## Frozen fresh execution contract
+
+The accepted solver is exactly the independently audited v2 implementation.
+Freeze execution source, assets, these gates and both fresh configuration files
+before generating the new parameter tuple table. The registration is tied to
+that immutable source/config manifest. At run time, verify every frozen hash
+and the hash of the actually supplied configuration, then verify regenerated
+parameter bytes against registration before processing cases.
+
+One unique allocation runs: GPU/policy fixtures; a complete-query/phase API
+integration fixture on original-development seed202609202 case0; all384 fresh
+initializer checks; then all32 fresh phase trajectories. The integration
+fixture compares the inherited compiled query with the inherited host rollout
+at the same physical input, selected code, weak tests and time step. It must
+pass before any fresh initial field or reference is generated. A fixture failure
+is retained and aborts execution; it is not a fresh-case selection mechanism.
+
+The new phase driver separately executes and audits its actual initial fits
+at the original phase tolerances $10^{-7}$ and $10^{-9}$ and uses the tighter
+selected code for every trajectory. The full fresh initializer matrix also
+checks $10^{-11}$, both learned/POD heads and both physical input paths.
+Every actual phase initializer retains all controls, direct/anchored arrays,
+independent arithmetic audit and all individual gates. Its qualification is
+their conjunction, never overwritten by the legacy stop-reason test.
+
+Evolve head/common-span/native-span using unchanged host LM and original
+rollout tolerances $10^{-7}$ and $10^{-9}$, $M=584$, $\Delta t=0.01$,
+$t\in[0,0.2]$. Report each case's maximum evolved error, with time-zero fit
+error separate. Retain all32 cases and all steps, including failures. Apply
+the original Jacobian-action check at every tighter-trajectory step; the
+looser trajectories are not labeled as separately action-checked.
+
+Verify actual time-zero head and common-span rollout fields against one
+another and against the qualified initializer field under the $10^{-12}$
+bound. Check both reference time-zero fields against the original physical
+input under $10^{-12}$. Keep the original operator, reference absolute/fraction
+and solver-field-refinement gates. Ordinary and shape-aligned field errors use
+the norm of the original physical initial field. Centroid displacement is a
+wrapped domain fraction; divergence is the divergence norm divided by the
+gradient norm. Energy and each centroid concentration retain their original
+definitions and do not use the field-error normalization.
+
+Optional manifold-distance fits, physical-tangent spectra and same-state reset
+experiments are explicitly not run in this fresh batch. Their historical
+results remain historical. The new complete-query adapter uses the same
+audited initializer, but its fresh numerical wiring fixture is not a cost
+study: prior classical/reference/timing failures remain unresolved, and no
+repaired-method speed point or cross-job wall-time comparison is produced.
+
 ## Glossary
 
 - **Selected fit:** the returned result after fitting the same four starting codes.

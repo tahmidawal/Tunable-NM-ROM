@@ -1,0 +1,186 @@
+{
+  "config": {
+    "schema": "ns-initializer-exposed-development-v2",
+    "status": "registered-before-outcomes",
+    "n": 64,
+    "rank": 64,
+    "latent": 8,
+    "cohorts": [
+      {
+        "seed": 202609202,
+        "count": 16
+      },
+      {
+        "seed": 2026111901,
+        "count": 16
+      }
+    ],
+    "families": [
+      "learned",
+      "pod"
+    ],
+    "input_paths": [
+      "phase",
+      "query"
+    ],
+    "gtols": [
+      1e-07,
+      1e-09,
+      1e-11
+    ],
+    "selected_checks": 384,
+    "policy": {
+      "version": "v2-fixed-anchor-qr-svd",
+      "baseline_budget": 250,
+      "qr_budget": 40,
+      "svd_iterations": 12,
+      "svd_halvings": 8,
+      "svd_cutoff": "max(J.shape) * float64_epsilon * largest_scaled_singular_value",
+      "step_cap_relative": 1e-06,
+      "tie_eps_multiplier": 1024,
+      "stationarity": "max(abs(J.T @ residual)/(column_norms(J)*norm(residual)))",
+      "endpoint_guard": "final_cost <= baseline_cost + 1024*eps*max(baseline_cost,1e-300)",
+      "rank_truncation_does_not_certify_stationarity": true,
+      "controls_per_start": [
+        "original_host_phase",
+        "legacy_compiled_core"
+      ],
+      "anchor": "minimum fresh ordinary-direct objective over controls; seed order then phase/core; fixed per fit and tolerance",
+      "stable_increment_local_preactivation_limit": 0.5,
+      "stable_increment_outside_local_range": "ordinary SiLU difference; no overflowing expm1 branch",
+      "direct_and_anchored_stationarity_required": true,
+      "optional_svd_rollback": false
+    },
+    "new_test_seed_reserved_not_generated": 2026112301,
+    "new_test_count_reserved": 32,
+    "max_job_minutes": 20,
+    "arithmetic_audit": {
+      "longdouble_min_explicit_mantissa_bits": 63,
+      "decimal_digits": 50,
+      "decimal_trigger": "direct objective guard fails OR longdouble difference is within0.1band of threshold",
+      "decimal_conversion": "Decimal.from_float exact",
+      "delta_agreement_fraction_of_original_band": 0.01,
+      "scope": "cluster-host small-network arithmetic diagnostic; primary method f64GPU"
+    }
+  },
+  "config_sha256": "ae71c0515708853b6c379e85cc4c284cd9006c00a585ea7453bd6e1638d6d6b5",
+  "source_commit": "d173150171b429524fb4dc8280262f2310213ada",
+  "job_id": "7478133",
+  "gpu": "NVIDIA L40S, GPU-95f0cf5d-bff7-6d7c-c5ae-3f60b4170b50, 46068 MiB",
+  "backend": "gpu",
+  "x64": true,
+  "matmul_precision": "highest",
+  "sources": {
+    "arithmetic_audit.py": "ef3d060e898335e4f58ca8012bd5dd22df740466547f42530639e663626ff678",
+    "check_arithmetic.py": "cdbdd24ca75ecea7b77727f3980edfae2a46fd40ab7b4a96ad55fba017707d4f",
+    "check_policy.py": "57976fbcb0de69e085fb72348921a7455cf4a38da3b90f53f9173d88f5128658",
+    "legacy_phase.py": "20022aede185666aee300c4dcf864316cfcbbadf0aa84b6195aca1b6b61af54b",
+    "legacy_query.py": "ca4afc0b1560361c6ca3e1f87a788219973a9d26f911b87a3ff7a80b72554620",
+    "run_development.py": "1d154aca255bc824d57b38bb49696fe01a3c1380907b5b03598eb39b7e18b979",
+    "shared_geometry.py": "1b5ad080cab71879662ef91dc188ab8d4a7662e7fea01ddb89a7e89a5713e91b",
+    "shared_initializer.py": "d619b1ceb47e872177a526ebf0717a4c5e341c38e3a36f0c7db7c040e94a50de",
+    "support.py": "a9c3f87aebbf002216c2a6dcdb2b1a5baaf0afd0c2d7a77b66c8da245233f684",
+    "vendor/bankio.py": "85991c64ff1fc507e3df57a351f5c31b7a3114cd38e617f22d2e230d81e30051",
+    "vendor/coordnet.py": "d9e9c7fd090396ecb28af9da817f2454e9839a55fa6cd6bc6b9266e7723f6ff9",
+    "vendor/diag_floor.py": "fc951362f184192535cefd6b18a08467746f210bc74f9acd559d41c7b294db8c",
+    "vendor/head_rom.py": "6d07ccfa7cbd64e01efc29091777a6159c35d07416d5e5a03fb9e08a4812204c",
+    "vendor/ns2d_decoder.py": "0b99e6a5d1a335e0f01f92c76c630c88b58f88e20d9095f925bd757e3cec175d",
+    "vendor/ns2d_fom.py": "1e4e75cb8057cd450c33525161fe08e4d336bc02064d76deaad255ad620b90f8",
+    "vendor/ns2d_rom.py": "9f22d36ed533bcb93a47e382067d7a8c4f24585b1154685b5c2effdac7259ac2",
+    "vendor/ns3d_fom.py": "e4ffdbe6ec97dc77c457d4a92ac596cd9bfffa01a37e286f5f1a09358b7daff7",
+    "vendor/ns3d_model.py": "cbce94556cf3701b3f26fe7919f168bb109d5b2c209da8856bf0f2b1a26ac653",
+    "vendor/ns3d_rom.py": "abb8e75df1e03070236a8e068a0f7c45b8007afdc6b90496b4d7e91b9bba5318",
+    "vendor/sep_common.py": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4",
+    "vendor/shift_rom.py": "22921d34d486bc3939f8ad3dfdae220390e78d57bc4ca9e88812290007bda4a3",
+    "vendor/translation_cohort.py": "05c5c082ce359a40c3f0cf3d9b933ad53b3e1c3315f06e569874a384ed1bc6ab"
+  },
+  "assets": {
+    "base_commit": "f90561908e750bf947aac541b159c268f6bcb183",
+    "preserved_sources": {
+      "vendor/bankio.py": {
+        "source": "experiments/jcp-cost-confirm/vendor/bankio.py",
+        "sha256": "85991c64ff1fc507e3df57a351f5c31b7a3114cd38e617f22d2e230d81e30051"
+      },
+      "vendor/coordnet.py": {
+        "source": "experiments/jcp-cost-confirm/vendor/coordnet.py",
+        "sha256": "d9e9c7fd090396ecb28af9da817f2454e9839a55fa6cd6bc6b9266e7723f6ff9"
+      },
+      "vendor/diag_floor.py": {
+        "source": "experiments/jcp-cost-confirm/vendor/diag_floor.py",
+        "sha256": "fc951362f184192535cefd6b18a08467746f210bc74f9acd559d41c7b294db8c"
+      },
+      "vendor/head_rom.py": {
+        "source": "experiments/jcp-cost-confirm/vendor/head_rom.py",
+        "sha256": "6d07ccfa7cbd64e01efc29091777a6159c35d07416d5e5a03fb9e08a4812204c"
+      },
+      "vendor/ns2d_decoder.py": {
+        "source": "experiments/jcp-cost-confirm/vendor/ns2d_decoder.py",
+        "sha256": "0b99e6a5d1a335e0f01f92c76c630c88b58f88e20d9095f925bd757e3cec175d"
+      },
+      "vendor/ns2d_fom.py": {
+        "source": "experiments/jcp-cost-confirm/vendor/ns2d_fom.py",
+        "sha256": "1e4e75cb8057cd450c33525161fe08e4d336bc02064d76deaad255ad620b90f8"
+      },
+      "vendor/ns2d_rom.py": {
+        "source": "experiments/jcp-cost-confirm/vendor/ns2d_rom.py",
+        "sha256": "9f22d36ed533bcb93a47e382067d7a8c4f24585b1154685b5c2effdac7259ac2"
+      },
+      "vendor/ns3d_fom.py": {
+        "source": "experiments/jcp-cost-confirm/vendor/ns3d_fom.py",
+        "sha256": "e4ffdbe6ec97dc77c457d4a92ac596cd9bfffa01a37e286f5f1a09358b7daff7"
+      },
+      "vendor/ns3d_model.py": {
+        "source": "experiments/jcp-cost-confirm/vendor/ns3d_model.py",
+        "sha256": "cbce94556cf3701b3f26fe7919f168bb109d5b2c209da8856bf0f2b1a26ac653"
+      },
+      "vendor/ns3d_rom.py": {
+        "source": "experiments/jcp-cost-confirm/vendor/ns3d_rom.py",
+        "sha256": "abb8e75df1e03070236a8e068a0f7c45b8007afdc6b90496b4d7e91b9bba5318"
+      },
+      "vendor/sep_common.py": {
+        "source": "experiments/jcp-cost-confirm/vendor/sep_common.py",
+        "sha256": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4"
+      },
+      "vendor/shift_rom.py": {
+        "source": "experiments/jcp-cost-confirm/vendor/shift_rom.py",
+        "sha256": "22921d34d486bc3939f8ad3dfdae220390e78d57bc4ca9e88812290007bda4a3"
+      },
+      "vendor/translation_cohort.py": {
+        "source": "experiments/jcp-cost-confirm/vendor/translation_cohort.py",
+        "sha256": "05c5c082ce359a40c3f0cf3d9b933ad53b3e1c3315f06e569874a384ed1bc6ab"
+      },
+      "assets/bank_selected.npz": {
+        "source": "experiments/jcp-cost-confirm/assets/bank_selected.npz",
+        "sha256": "a1af98e2297c41339a037cb427f757fc1f23bb8791132985f29cbda826431bd5"
+      },
+      "assets/head_k8_n64.npz": {
+        "source": "experiments/jcp-cost-confirm/assets/head_k8_n64.npz",
+        "sha256": "4d9d86ce7aa3f7d139c581dfc5ed20b5afd9bcdbab15893eb7b582b5753adbd8"
+      },
+      "assets/pod_bank_probe.npz": {
+        "source": "experiments/jcp-cost-confirm/assets/pod_bank_probe.npz",
+        "sha256": "36bde9e938d26ba8d8a66a4e5e3dedefe58685f6257453a812fbd5cf7e297ff3"
+      },
+      "assets/pod_head_k8_n64.npz": {
+        "source": "experiments/jcp-cost-confirm/assets/pod_head_k8_n64.npz",
+        "sha256": "605637b1a54087d59b88c7f6563c6dafaa4adcea58b04022253abf8196437c02"
+      },
+      "legacy_query.py": {
+        "source": "experiments/jcp-cost-confirm/ns_query.py",
+        "sha256": "ca4afc0b1560361c6ca3e1f87a788219973a9d26f911b87a3ff7a80b72554620"
+      },
+      "legacy_phase.py": {
+        "source": "experiments/jcp-phase-confirm/run_mechanism.py",
+        "sha256": "20022aede185666aee300c4dcf864316cfcbbadf0aa84b6195aca1b6b61af54b"
+      },
+      "shared_geometry.py": {
+        "source": "experiments/jcp-phase-confirm/shared_geometry.py",
+        "sha256": "1b5ad080cab71879662ef91dc188ab8d4a7662e7fea01ddb89a7e89a5713e91b"
+      },
+      "configs/original_dev64.json": {
+        "source": "experiments/jcp-cost-confirm/configs/original_dev64.json",
+        "sha256": "2e8158246fa6c085ccbd2592d36c9afc12053079050f4d3ffdca5cbe95bc8021"
+      }
+    }
+  }
+}

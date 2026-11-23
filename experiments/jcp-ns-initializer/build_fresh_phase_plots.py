@@ -36,7 +36,7 @@ def build(run):
     times=np.arange(round(cfg['horizon']/cfg['dt'])+1)*cfg['dt'];nt=len(times)
     raw_ids=[c['index'] for c in report['cases']]
     assert len(raw_ids)==len(set(raw_ids)) and set(raw_ids)<=set(ids)
-    by_id={c['index']:c for c in report['cases']};cases=[]
+    by_id={c['index']:c for c in report['cases']};cases=[];actual_fits=[]
     truth_concentration=np.full((n,nt),np.nan)
     matrices={arm:{key:np.full((n,nt),np.nan) for key in ('ordinary','shape','phase','concentration')} for arm in arms}
     for i in ids:
@@ -44,6 +44,15 @@ def build(run):
         if raw is not None:
             case.update(parameters=raw['parameters'],initial_qualification=raw['initial_qualification'],reference=raw['reference'],
                         actual_common_initial_state_checks=raw.get('actual_common_initial_state_checks',[]))
+            case['actual_initial_fit_invocations']=[]
+            for fit_tol in cfg['fit_gtols']:
+                source=root/f'case_{i:03d}'/f'initial_g{fit_tol:g}.json'
+                detail=json.loads(source.read_text())
+                entry={'case':i,'gtol':fit_tol,'qualified':detail['qualified'],
+                    'qualification':detail['qualification'],
+                    'ordinary_direct_objective_guard':detail['ordinary_direct_objective_guard'],
+                    'source':str(source.relative_to(root)),'source_sha256':sha(source)}
+                case['actual_initial_fit_invocations'].append(entry);actual_fits.append(entry)
             for arm in arms:
                 rr=[r for r in raw['runs'] if r['arm']==arm and r['gtol']==tol]
                 if not rr:continue
@@ -81,12 +90,14 @@ def build(run):
                 'minimum':np.where(valid,np.min(data,axis=0),np.nan),'maximum':np.where(valid,np.max(data,axis=0),np.nan)}
     out=HERE/'plots'/run/'phase';out.mkdir(parents=True,exist_ok=True)
     full_pass=sum(bool(c['qualification'].get('passed',False)) for c in cases)
+    actual_direct_flags=sum(not f['ordinary_direct_objective_guard'] for f in actual_fits)
     exported={'cohort_role':'untouched confirmation','seed':cfg['eval_seed'],'registered_ids':ids,'observed_ids':raw_ids,
         'complete_metrics':complete_metrics,'source_commit':report['source_commit'],'frozen_protocol':report['frozen_protocol'],
         'registration':report['registration'],'selected_solver_gtol':tol,'times':times,'cases':cases,
         'truth_min_coordinate_centroid_concentration':truth_concentration,
         'full_cohort_time_statistics':stats,'paired_case_evolved_max_span_over_head':paired,
         'full_qualification_pass_count':full_pass,'expected_case_count':n,
+        'actual_phase_initial_fit_count':len(actual_fits),'actual_phase_initial_fit_ordinary_direct_flags':actual_direct_flags,
         'parameter_names':['center_x','center_y','center_z','vortex_separation','relative_strength','viscosity']}
     dump(out/'plotted-data.json',exported)
     fig,axes=plt.subplots(2,2,figsize=(12,8))
@@ -182,8 +193,11 @@ fractional gates. This is not a continuum-error claim. Actual initial fits,
 operator checks, all rollout stops, tighter-trajectory Jacobian-action checks,
 solver refinement, both reference initial fields and actual common time-zero
 states are independently qualified. Loose trajectories are not separately
-Jacobian-action checked. Original-direct initializer objective flags remain in
-the companion initializer evidence and are not silently relabeled.
+Jacobian-action checked. The {len(actual_fits)} actual phase initializer invocations
+retain {actual_direct_flags} ordinary-direct objective flags in this export, alongside
+their separate qualification checks. These are distinct from the standalone
+initializer matrix's flags. Neither set is silently relabeled as a pass under
+the original ordinary-arithmetic objective comparison.
 
 The head, bank, four starting-code identities and solver method were frozen
 before this cohort. The new initializer changes arithmetic and bounded fitting

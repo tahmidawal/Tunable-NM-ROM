@@ -30,8 +30,11 @@ fractional gates. This is not a continuum-error claim. Actual initial fits,
 operator checks, all rollout stops, tighter-trajectory Jacobian-action checks,
 solver refinement, both reference initial fields and actual common time-zero
 states are independently qualified. Loose trajectories are not separately
-Jacobian-action checked. Original-direct initializer objective flags remain in
-the companion initializer evidence and are not silently relabeled.
+Jacobian-action checked. The 64 actual phase initializer invocations
+retain 24 ordinary-direct objective flags in this export, alongside
+their separate qualification checks. These are distinct from the standalone
+initializer matrix's flags. Neither set is silently relabeled as a pass under
+the original ordinary-arithmetic objective comparison.
 
 The head, bank, four starting-code identities and solver method were frozen
 before this cohort. The new initializer changes arithmetic and bounded fitting

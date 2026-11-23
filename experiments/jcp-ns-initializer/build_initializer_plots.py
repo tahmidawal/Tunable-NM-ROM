@@ -189,6 +189,8 @@ divided by the displayed unchanged tolerance. The dashed line is one; values
 above it fail. Original host and compiled-core returned codes are freshly
 evaluated by the common ordinary-direct evaluator. The compiled control is a
 standalone core replay, not bitwise reproduction of an earlier whole query.
+Normalized values at or below1e-16 are displayed at1e-16 on the logarithmic axis;
+the exact gradients remain in the exported data.
 V2 also shows the fixed-anchor gradient; both direct and anchored tests must
 pass. Vertical dotted lines separate registered cohorts where applicable. Full qualification
 counts include the objective and actual physical-field checks, not only gradients.
@@ -211,7 +213,9 @@ objective is altered by this plotting calculation.
 The field panels use explicit physical reconstructions normalized by the original
 physical initial-field norm. The diagonal shows equal old/new initial error;
 the horizontal line is the original1e-6 agreement bound. All tolerance and input
-paths are retained. This is initialization evidence, not evolution, reference,
+paths are retained. Physical-field gaps at or below1e-18 are displayed at1e-18
+on the logarithmic axis; exact values remain in the exported JSON.
+This is initialization evidence, not evolution, reference,
 or complete-query cost qualification. Version1 remains a failed attempt: optional
 SVD polishing can change the selected raw minimum and does not guarantee a lower
 failure count. This run has {qr_failed} QR-checkpoint and {final_failed} final

@@ -1,0 +1,157 @@
+{
+  "schema": "jcp-head-fresh-confirmation-v1",
+  "status": "frozen_before_fresh_truth_generation",
+  "n": 64,
+  "rank": 64,
+  "k": 8,
+  "eval_seed": 2026111901,
+  "eval_cases": 16,
+  "initial_case_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "closed_seeds": [
+    202609203,
+    202609211,
+    202609221
+  ],
+  "horizon": 0.2,
+  "dt_truth": 0.00025,
+  "truth_scheme": "cnab2",
+  "truth_output_dt": 0.01,
+  "operator": "exact discrete quadratic tensor, independently checked on dense fields",
+  "expanded_test_rows": 1168,
+  "test_settings": [
+    {
+      "rows": 584,
+      "dt": 0.01
+    }
+  ],
+  "frame": "free co-moving increment,3 extra unknowns in both arms",
+  "arms": [
+    "head_common",
+    "span_common",
+    "span_native"
+  ],
+  "primary_comparison": [
+    "head_common",
+    "span_common"
+  ],
+  "common_ic": "identical reconstruction of multistart head fit, same coefficients/frame at t0",
+  "native_ic": "span Euclidean projection of identical original physical u0; separately labeled",
+  "head_fit_starts": 4,
+  "solver": {
+    "algorithm": "adaptive diagonally-scaled LM with accepted/rejected trial history",
+    "gtols": [
+      1e-07,
+      1e-09
+    ],
+    "budget": 250,
+    "initial_damping": 0.0001,
+    "stationarity": "max_j abs(J_j^T r)/(||J_j||2 max(||r||2,1e-30))",
+    "stagnation": "rejected-trial or representable-step termination saved; never accepted as stationarity",
+    "roundoff_acceptance": {
+      "cost_relative_band_eps": 1024,
+      "only_when_gradient_below": 1e-05,
+      "trial_gradient_at_most_fraction": 0.5,
+      "step_norm_relative_max": 1e-06,
+      "all_changes_recorded": true,
+      "no_stationarity_gate_relaxation": true
+    }
+  },
+  "qualification": {
+    "operator_relative": 1e-09,
+    "jacobian_action_relative": 1e-06,
+    "shared_ic_relative": 1e-12,
+    "tight_tighter_field_difference": 1e-06,
+    "tight_tighter_fraction_of_physical_error": 0.01,
+    "stationarity_required": true,
+    "nonfinite_allowed": false,
+    "budget_termination_allowed": false,
+    "reference_absolute": 1e-05,
+    "reference_fraction_of_rom_error": 0.01,
+    "tight_tighter_normalization": "norm of original physical initial field",
+    "pilot_field_reproducibility": 1e-10
+  },
+  "primary_criteria": {
+    "head_benefit": "Compare all 16 paired common-IC maximum evolved field errors; report ratio distribution and counts irrespective of favorable outcome.",
+    "phase_shape": "Physical wrapped energy-weighted circular centroids and diagnostic Fourier alignment; check each coordinate concentration at each time.",
+    "no_retuning": "No choice of settings, cases or model after fresh truth generation. No new training."
+  },
+  "stopping_gates": [
+    "backend/precision/source mismatch invalidates attempt",
+    "qualification failure reported; no fresh-cohort tuning",
+    "retain all 16 outcomes and every operational attempt"
+  ],
+  "diagnostics": [
+    "per-time errors,energy,divergence,physical centroid,shape-aligned error",
+    "coefficients,head codes,frame increments and accumulated centers",
+    "minimized and independent1168-row residuals",
+    "solver accepted/rejected histories,stationarity and termination",
+    "physical trial tangent normalized spectra including3frame variables",
+    "multistart fixed-frame distance from span to head",
+    "same-previous-state span solve seeded by reached head coefficients"
+  ],
+  "compute": {
+    "namespace": "/cluster/tufts/paralab/tawal01/jcp-phase-confirm-20261119",
+    "gpu_hours_ceiling": 1.5,
+    "initial_job_minutes": 20,
+    "one_active_job": true,
+    "gpu_per_job": 1,
+    "partition": "gpu",
+    "precision": "f64/highest"
+  },
+  "outputs": "summary.json, case_*/trajectory arrays, histories,source/config/hardware metadata; measured plots only",
+  "reference_refinement": {
+    "dt": 0.00025,
+    "tighter_dt": 0.000125,
+    "scope": "same grid discrete FOM, not continuum",
+    "check_original_output_grid": true
+  },
+  "time_refinement_scope": "method-setting robustness: diffusion row weights also depend on dt; no temporal order claim",
+  "physical_tangent": {
+    "include_frame": true,
+    "gram_eigenvalue_relative_cutoff": 1e-12,
+    "absolute_cutoff": 1e-30,
+    "report_all_eigenvalues_and_retained_rank": true
+  },
+  "amendment": "fresh confirmation, unchanged accepted p03b solver and selected method",
+  "independent_shell": {
+    "first_row_zero_based": 584,
+    "last_exclusive": 1168,
+    "full_residual_vector_saved": true
+  },
+  "shared_state_geometry": true,
+  "reproducibility_reference": null,
+  "reproducibility_case_indices": [],
+  "family": "original periodic NS3D two-potential family; source INITIAL_AMPLITUDE=0.2",
+  "fit_selection": {
+    "only_if_raw_minimum_is_nonstationary": true,
+    "stationarity_gate_unchanged": true,
+    "objective_tie_band": "1024 * float64 epsilon * max(raw_minimum_cost,1e-300)",
+    "choose": "lowest-cost stationary candidate within band; otherwise preserve original winner and failure",
+    "retain": "all candidate final codes, costs, gradients, histories; raw/selected indices; tie band; physical coefficient difference"
+  },
+  "cohort_registration": "COHORT_REGISTRATION.json",
+  "expected_parameter_sha256": "ea4c10c63cf423da985b0452fdf7810b7f59428f54ad46cbdd0ac9e9664df9d6",
+  "centroid_diagnostic": {
+    "concentration_threshold": 0.1,
+    "threshold_scope": "preregistered descriptive ambiguity flag, not a theorem or pass/fail accuracy gate",
+    "normalization": "domain length=1; phase norm uses wrapped coordinate displacement",
+    "report_all_coordinates": true
+  }
+}

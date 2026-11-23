@@ -1,0 +1,66 @@
+{
+  "job_id": 7478826,
+  "source_commit": "5d8966a6216d29730465090eee47cabb182b8f6f",
+  "source_result_commit": "5a5564250bdf4659df90eecaaf05bb9f8182dc35",
+  "verified_result_codeonly_mirror": "eccdcaa9c2def0ff18a67055b62c2ca300c14064",
+  "checksums_verified": true,
+  "raw_results_immutable": true,
+  "all_individual_raw_files_mirrored": true,
+  "aggregate_archive_backup_policy": "Local Git retains the aggregate result.tar.gz; all individual contents are mirrored, and its checksum is retained.",
+  "result_archive_sha256": "97904dfc95f8e3e67e939ef190c4ac24af89e3179d163b76b2f63ced510b68f4",
+  "source_archive_sha256": "dfafb01854084fb6cd6d3f7c93260922f12d607b52c4e92533286aceb4cf776a",
+  "result_manifest_sha256": "3adf589dee4fac28301c8b227ce93d4189c5c8b09ffe28e407ee7666919623bf",
+  "remote_job_directory_removed_and_absence_verified": true,
+  "remote_namespace_removed_and_absence_verified": true,
+  "remote_cleanup_receipt_sha256": "0652693dae233300049ecd5699c4a0608d0a0753caf5591ee020b990009c2f04",
+  "owned_jobs_queued_or_running": false,
+  "runs": [
+    {
+      "run": "d01",
+      "job_id": "7477604",
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "node": "pax023",
+      "allocated_gpu_seconds": 154,
+      "result_manifest_sha256": "089e19916a0b8316a1757652250fa74952892b5adf641f91f7cd440baa8d3155"
+    },
+    {
+      "run": "d02",
+      "job_id": "7478133",
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "node": "pax024",
+      "allocated_gpu_seconds": 289,
+      "result_manifest_sha256": "4ace17b31b8fedfbd3efcd3d9c88147e56fb4a1633726b502cf5e7966c4cd21a"
+    },
+    {
+      "run": "f01",
+      "job_id": "7478826",
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "node": "pax003",
+      "allocated_gpu_seconds": 786,
+      "result_manifest_sha256": "3adf589dee4fac28301c8b227ce93d4189c5c8b09ffe28e407ee7666919623bf"
+    }
+  ],
+  "total_allocated_gpu_seconds": 1229,
+  "standalone_initializer_checks": 384,
+  "standalone_initializer_qualified": 384,
+  "standalone_initializer_failure_counts": {
+    "repaired_pass": 0,
+    "phase_objective_quality": 0,
+    "ordinary_direct_objective_guard": 195,
+    "arithmetic_audit_pass": 0,
+    "increment_checks_pass": 0,
+    "activation_ranges_pass": 0,
+    "initial_field_agreement_pass": 0,
+    "old_new_initial_agreement_pass": 0,
+    "initializer_qualified": 0
+  },
+  "actual_phase_initial_fit_count": 64,
+  "actual_phase_initial_fit_ordinary_direct_flags": 24,
+  "full_trajectory_cases_qualified": 32,
+  "expected_trajectory_cases": 32,
+  "new_timing_or_speed_claim": false,
+  "historical_cost_and_deployment_failures_unchanged": true
+}

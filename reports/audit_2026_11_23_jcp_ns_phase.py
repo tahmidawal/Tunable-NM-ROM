@@ -46,6 +46,7 @@ def audit(run):
     assert summary["operator_pass"] == operator_pass
     expected_runs = set(itertools.product(cfg["arms"], cfg["solver_gtols"]))
     step_count, initial_count = 0, 0
+    initial_ordinary_flags, initial_decimal_audits = 0, 0
     initial_failures, trajectory_failures, sources = [], [], []
     head_values, span_values, concentrations = [], [], []
     for case in summary["cases"]:
@@ -88,6 +89,8 @@ def audit(run):
             quality = objective_guard(anchored["cost"], min(c["anchored"]["cost"] for c in fit["controls"]))
             original_flag = objective_guard(direct["cost"], min(c["direct"]["cost"] for c in fit["controls"]))
             assert original_flag == initial["ordinary_direct_objective_guard"]
+            initial_ordinary_flags += int(not original_flag)
+            initial_decimal_audits += int(initial["arithmetic_audit"]["decimal_required"])
             assert quality == fit["global_original_objective_quality"]
             core_pass = bool(direct["finite"] and anchored["finite"] and direct["gradient"] <= gtol
                              and anchored["gradient"] <= gtol and quality)
@@ -184,6 +187,8 @@ def audit(run):
     assert all_pass == summary["qualification"]["all_cases_pass"]
     return {"integrity_passed": True, "scope": "retained arrays, raw solver records, exact coverage and metric aggregation; field/refinement norms source-reviewed",
             "case_count": 32, "actual_initial_fit_invocations": initial_count, "recorded_trajectory_steps": step_count,
+            "actual_initial_ordinary_direct_objective_flags": initial_ordinary_flags,
+            "actual_initial_decimal_audits": initial_decimal_audits,
             "scientific_phase_confirmation_passed": all_pass,
             "initial_failures": initial_failures, "trajectory_failures": trajectory_failures,
             "case_checks": [{"case": c["index"], **c["qualification"]} for c in summary["cases"]],

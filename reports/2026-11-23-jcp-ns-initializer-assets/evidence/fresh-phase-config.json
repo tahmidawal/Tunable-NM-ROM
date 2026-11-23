@@ -1,0 +1,53 @@
+{
+  "schema": "ns-repaired-untouched-phase-v1",
+  "status": "frozen-before-first-case",
+  "eval_seed": 2026112301,
+  "eval_cases": 32,
+  "n": 64,
+  "rank": 64,
+  "k": 8,
+  "horizon": 0.2,
+  "dt": 0.01,
+  "rows": 584,
+  "expanded_rows": 1168,
+  "fit_gtols": [
+    1e-07,
+    1e-09
+  ],
+  "solver_gtols": [
+    1e-07,
+    1e-09
+  ],
+  "budget": 250,
+  "arms": [
+    "head_common",
+    "span_common",
+    "span_native"
+  ],
+  "reference": {
+    "dt": 0.000125,
+    "check_dt": 6.25e-05,
+    "scheme": "cnab2",
+    "scope": "same-grid discrete solution"
+  },
+  "qualification": {
+    "initial_agreement": 1e-06,
+    "common_state": 1e-12,
+    "operator": 1e-09,
+    "jacobian_action": 1e-06,
+    "field_absolute": 1e-06,
+    "field_fraction": 0.01,
+    "reference_absolute": 1e-05,
+    "reference_fraction": 0.01
+  },
+  "centroid_concentration_threshold": 0.1,
+  "optional_manifold_distance": "not run",
+  "optional_physical_tangent": "not run",
+  "optional_same_state_reset": "not run",
+  "primary_error": "max evolved time relative physical field error; t0 separate",
+  "field_normalization": "norm of original physical F.initial",
+  "max_job_minutes": 30,
+  "no_new_training": true,
+  "no_timing_claim": true,
+  "no_case_dependent_repair": true
+}

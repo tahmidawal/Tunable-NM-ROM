@@ -1,0 +1,42 @@
+{
+  "passed": true,
+  "source_commit": "e34631ed1024f2b34ad44daeb2c1efedd99cb0a7",
+  "remote_ref": "refs/heads/codeonly/exp/2026-11-23-jcp-consolidated",
+  "verified_remote_commit": "daf56aff82eff040e258d60a293ef213c98ec958",
+  "eligible_experiment_files_byte_identical": 3448,
+  "all_raw_manifest_files_tracked_and_mirrored": 3262,
+  "excluded_large_aggregate_archives": [
+    {
+      "path": "experiments/jcp-ns-initializer/runs/f01/result.tar.gz",
+      "mode": "100644",
+      "blob": "c60ff0c573b08a6a55caee1d89296254bbb2a02b",
+      "bytes": 203118380
+    }
+  ],
+  "large_archive_scope": "local aggregate retained and checksum-verified; every individual raw member is mirrored",
+  "merge_preservation": [
+    {
+      "lane": "phase-confirm",
+      "original_commit": "8394b33cb3c2ce3912598ff80a64fd3b7d9b5e97",
+      "ancestor": true,
+      "original_scientific_files_unchanged": true
+    },
+    {
+      "lane": "width-deploy",
+      "original_commit": "d049dda2ab0e7b6e90510e3bbfe0971069617a08",
+      "ancestor": true,
+      "original_scientific_files_unchanged": true
+    },
+    {
+      "lane": "cost-confirm",
+      "original_commit": "040fb32c1e0ba76505c692974ce7bca22606ec31",
+      "ancestor": true,
+      "original_scientific_files_unchanged": true
+    }
+  ],
+  "independent_cluster_cleanup": {
+    "owned_queued_jobs": [],
+    "owned_namespace_exists": false,
+    "scope": "read-only independent cluster check"
+  }
+}

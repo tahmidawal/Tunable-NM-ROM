@@ -1,0 +1,691 @@
+{
+  "sources": [
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/runs/d01/output/records.json",
+      "sha256": "a150e468dc192cb70bb68584d2d855b4991169a3fd70c4a57ab7c72bf1a74010",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/d01-records.json"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/runs/d01/output/summary.json",
+      "sha256": "61051d53719e72f2f5413391bc994d4ed656520c0bac6ffd05d710b2a1b82d7f",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/d01-summary.json"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/runs/d01/output/provenance.json",
+      "sha256": "f921ff7a2e9156987c48685d765002ba857111f1ee78183ab85f22494a2e936e",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/d01-provenance.json"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/runs/d02/output/records.json",
+      "sha256": "07fff687e06c8e5c39f26e4fd80760d46365281a6698af6e443cc575cd019126",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/d02-records.json"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/runs/d02/output/summary.json",
+      "sha256": "74c7dc0ae169528eda23b8909dbb7b97a005ff26c39d9796f4b103034a1af026",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/d02-summary.json"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/runs/d02/output/provenance.json",
+      "sha256": "40828e26c1641435b0f09d5ada5f1c075fab1dca106e44566230c6da4700169d",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/d02-provenance.json"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/runs/f01/output/initializers/records.json",
+      "sha256": "d66ebfb727420608f67783137556e2a7d14964b6ce360de2da5f1795d2499367",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/f01-records.json"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/runs/f01/output/initializers/summary.json",
+      "sha256": "8da3385fed7a19c3bc321555911d463a2746df6b92aab67b3e65c93de5b1d315",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/f01-summary.json"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/runs/f01/output/initializers/provenance.json",
+      "sha256": "119ad92808aa2abe68db4792514869a757bc61ff8684bdc445d26f0d54142bdf",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/f01-provenance.json"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/FROZEN_PROTOCOL.json",
+      "sha256": "fd8c83ba4d98c611b9ee6531c3c001503b92f0957fe024f02937b8c459bbc867",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/frozen-protocol.json"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/FRESH_COHORT_REGISTRATION.json",
+      "sha256": "22bcc264b995a09bec2351de9b7e5ea4cec7c38fe7714d7d16bf5c01fa85c104",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/fresh-cohort-registration.json"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/PROTOCOL.md",
+      "sha256": "21b35bcd238a2857a6ec32f3f123ab90848e38536e84d76f9ed44493732b9ab6",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/protocol.md"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/runs/f01/output/phase/summary.json",
+      "sha256": "ca6b63081283d36ab9f98cfd26681c0fb97c7224b23fe8d5181636874f041415",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/fresh-phase.json"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/configs/fresh-initializers.json",
+      "sha256": "3d952c5271914adeae3360c964b03bf5049b1af8c0082d0edd447f130f87fc0b",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/fresh-initializers-config.json"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/configs/fresh-phase.json",
+      "sha256": "ef0c1c698da5965d33976ce32554652ca4342e7fac15359258869b3f4b77a56a",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/fresh-phase-config.json"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/registration/cluster_replay.json",
+      "sha256": "ada639ea0e20bb91c237ba5b67e4fc11aa865f5c5dda648b388055402f77c3d2",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/cluster-metadata-replay.json"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/runs/f01/output/integration/summary.json",
+      "sha256": "fa1c014b7ce772cd08b5487c891cc50cbd775dda8478d5b06df4ba62638bffa8",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/old-case-integration-fixture.json"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/runs/d01/RESULTS.sha256",
+      "sha256": "089e19916a0b8316a1757652250fa74952892b5adf641f91f7cd440baa8d3155",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/d01-RESULTS.sha256"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/runs/d01/INPUTS.sha256",
+      "sha256": "105c8539491fee60deda71ee2a35fdcbe3a9995302e18b6ee74d192b9cc84c5b",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/d01-INPUTS.sha256"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/runs/d01/RESULT_ARCHIVE.sha256",
+      "sha256": "916ffbab08282b322d7fd85335bae50b71667d9b8b6c241355f8985f3cfa6a96",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/d01-RESULT_ARCHIVE.sha256"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/runs/d01/sacct.txt",
+      "sha256": "a551216c5268963f0fa9fd60bcef664a9b3731b342bd2939bb3084695bad625f",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/d01-sacct.txt"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/runs/d01/CLOSEOUT.json",
+      "sha256": "e702f8456e752e48b32e58a61db2ae6057931e4244725aa63b279a1dde579f97",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/d01-CLOSEOUT.json"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/runs/d02/RESULTS.sha256",
+      "sha256": "4ace17b31b8fedfbd3efcd3d9c88147e56fb4a1633726b502cf5e7966c4cd21a",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/d02-RESULTS.sha256"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/runs/d02/INPUTS.sha256",
+      "sha256": "585362a2a400a131a13b21848945d3556388001acb4354be5125133c7637b3ba",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/d02-INPUTS.sha256"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/runs/d02/RESULT_ARCHIVE.sha256",
+      "sha256": "599836e06c834246dea1ad59c25665641c3f4646bd5c911445c708f2af466c6b",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/d02-RESULT_ARCHIVE.sha256"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/runs/d02/sacct.txt",
+      "sha256": "b3e629388d8f2ffc1a97b408f2e5097e211c8f9c283ca7d319d3ec26b61b57ed",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/d02-sacct.txt"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/runs/d02/CLOSEOUT.json",
+      "sha256": "eadf993e9aac5aa3058f12320fefebf22a8cb8441be8221149b312809e692abb",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/d02-CLOSEOUT.json"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/runs/f01/RESULTS.sha256",
+      "sha256": "3adf589dee4fac28301c8b227ce93d4189c5c8b09ffe28e407ee7666919623bf",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/f01-RESULTS.sha256"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/runs/f01/INPUTS.sha256",
+      "sha256": "cb7f79dd8c692ff7cfd33abfa69704fe3cb9476d4653ac198271c035ec01eb02",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/f01-INPUTS.sha256"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/runs/f01/RESULT_ARCHIVE.sha256",
+      "sha256": "6c747dfe05744dc42fbe8cc43ddee362661d0eabc3ec32f52a01d127ad51feb7",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/f01-RESULT_ARCHIVE.sha256"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/runs/f01/sacct.txt",
+      "sha256": "bc3942e7a4faf35a9aa6e61c7c9d61b26bb3858a7023db1cf8a3555d81e0a9a1",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/f01-sacct.txt"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/runs/f01/CLOSEOUT.json",
+      "sha256": "c8f2abaebeee5c1d0942ca24a8080cd69ae48b07256054599ce01b7b292740f3",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/evidence/f01-CLOSEOUT.json"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d01/MANIFEST.json",
+      "sha256": "9207d9ab5f808d9d807e9a1879a527d8b3acb7fe5e9aed6b06df084932ae22ce",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d01/MANIFEST.json"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d01/captions.md",
+      "sha256": "d69bc17c73fe901d5300db31069d9d5685a4bd6331ca0a8a9c087b6aa1b36d5f",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d01/captions.md"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d01/initializer-field-agreement.pdf",
+      "sha256": "62c0cd3cf8e4431b8978e3dffe632698394184e298a00ddeb9f861c274379ac2",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d01/initializer-field-agreement.pdf"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d01/initializer-field-agreement.png",
+      "sha256": "eb961235d679a654b904cf4ea24bcb89dbaffdd1971b8cea09ab06b03c1172df",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d01/initializer-field-agreement.png"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d01/initializer-field-agreement.svg",
+      "sha256": "c79dbda2187dd50c2286050949fb61d7ea75bc07ab4e935219b4f79e2149cf50",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d01/initializer-field-agreement.svg"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d01/initializer-objective-diagnostics.pdf",
+      "sha256": "1d4c21732a4e5bdd0aad472f3dbb4ecb81e6fc01e0dfb8d34d6088dc265759ca",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d01/initializer-objective-diagnostics.pdf"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d01/initializer-objective-diagnostics.png",
+      "sha256": "93ef3423cfc5152deab5e54e9a1cf8c446e544ea6aab3d8eef85d89507518df7",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d01/initializer-objective-diagnostics.png"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d01/initializer-objective-diagnostics.svg",
+      "sha256": "2dad503966e32ab992d6ac145a0051cc3cb6e0dee0ef091e71d787b7d2ba1407",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d01/initializer-objective-diagnostics.svg"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d01/initializer-qualification-matrix.pdf",
+      "sha256": "a338a3c71947a70d7808251800c499926eabac035b34e6aa2376c38fa1652087",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d01/initializer-qualification-matrix.pdf"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d01/initializer-qualification-matrix.png",
+      "sha256": "5d7f888bf0f673b8f46b5a5a7ef060b31a740f990d843be4151f697b757fc852",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d01/initializer-qualification-matrix.png"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d01/initializer-qualification-matrix.svg",
+      "sha256": "2baf9647fd3ef5ebba40b7de830a10353f882e27816e62b38fa91d1d886ba61e",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d01/initializer-qualification-matrix.svg"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d01/initializer-stationarity-1e-07.pdf",
+      "sha256": "bb3f10a44bea9f0e40d2d166fb1063b3b14070bc3f471a6216acc85218f86c1a",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d01/initializer-stationarity-1e-07.pdf"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d01/initializer-stationarity-1e-07.png",
+      "sha256": "fc24d29b816eac778c232a88b02dbe0b137f5a9e96f18d6e7193dabf14dd4c61",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d01/initializer-stationarity-1e-07.png"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d01/initializer-stationarity-1e-07.svg",
+      "sha256": "86177e3c1e8298ace3dc1948b2bfab63ee1629359a9000cbc3be5bb634404f60",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d01/initializer-stationarity-1e-07.svg"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d01/initializer-stationarity-1e-09.pdf",
+      "sha256": "65fd8d170a44b0bc0928317067f38f21349335d64e2e3d1368591fc610da2406",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d01/initializer-stationarity-1e-09.pdf"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d01/initializer-stationarity-1e-09.png",
+      "sha256": "433454ac7831cac0115c8fddea6166ad51142b536fc468224ac73ec15fa49c41",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d01/initializer-stationarity-1e-09.png"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d01/initializer-stationarity-1e-09.svg",
+      "sha256": "fc7944c41b3c5ebb4307e192743be380097663b46dd8bcff1ce1e1fb4d0867c6",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d01/initializer-stationarity-1e-09.svg"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d01/initializer-stationarity-1e-11.pdf",
+      "sha256": "7cafe6b6eb85724031d0a48dd6d77bb8ce7edf4009f3647ba0b1ec0b080f6603",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d01/initializer-stationarity-1e-11.pdf"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d01/initializer-stationarity-1e-11.png",
+      "sha256": "9cca6439834deb23018a4c79c6ddf17c1e9e343b1067ef8fbbd6d81c003a993d",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d01/initializer-stationarity-1e-11.png"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d01/initializer-stationarity-1e-11.svg",
+      "sha256": "6fb119fb435bd38900c2591e3367e3d1c1bf6f257b3c41bce68486b9a705533f",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d01/initializer-stationarity-1e-11.svg"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d01/plotted-data.json",
+      "sha256": "22a138f37d84889999040f92b28244a552524e3e7471a3e9d94b3b501a67ebe6",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d01/plotted-data.json"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d02/MANIFEST.json",
+      "sha256": "921a966f7f37dc8b1ec1effba9ca8060f443e21f2c44e0e7fb1e33888e7e1fee",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d02/MANIFEST.json"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d02/captions.md",
+      "sha256": "b7c33d3d9b0474d196fcb56bd0beb36f1331cb0874b5958757f5006b8064d4a3",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d02/captions.md"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d02/initializer-field-agreement.pdf",
+      "sha256": "f3753d5229c667994446ace5c69515be05b2d8ee680c413beaf788a4571bb51b",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d02/initializer-field-agreement.pdf"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d02/initializer-field-agreement.png",
+      "sha256": "03bc5ed9f79d1c9e6deb2b88296cdf4c7b012a47c22263d7375f560f20e2a222",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d02/initializer-field-agreement.png"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d02/initializer-field-agreement.svg",
+      "sha256": "c3952f63327ba4f523ffde41cc2f421bd0d4d0e63d7a4617457cf676f384abd3",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d02/initializer-field-agreement.svg"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d02/initializer-objective-diagnostics.pdf",
+      "sha256": "484b8f85396eff16de7d92b05caceedbff140ddab680c113a751b35a1a705f11",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d02/initializer-objective-diagnostics.pdf"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d02/initializer-objective-diagnostics.png",
+      "sha256": "9743f446d0787aa80ddcb310d3b4abcc44cda11e401224f8fb8173c003725fe7",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d02/initializer-objective-diagnostics.png"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d02/initializer-objective-diagnostics.svg",
+      "sha256": "7dec79f9dba2b2b904d4edae6799618596e92cb1a7049226f471c2ca81adf400",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d02/initializer-objective-diagnostics.svg"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d02/initializer-objective-roundoff.pdf",
+      "sha256": "63a4747eba09e2163c9d50cbdd0a7b0a382909b802071bc02583c55a4ee1089a",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d02/initializer-objective-roundoff.pdf"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d02/initializer-objective-roundoff.png",
+      "sha256": "abe7eba2312167ce4ae91067f65024764daf5acaa0f6e74ae7d8b52370ae441d",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d02/initializer-objective-roundoff.png"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d02/initializer-objective-roundoff.svg",
+      "sha256": "40831c7fafa2205957c068fc228a27c54b70cdc671c54737ce4125bcbd6acf16",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d02/initializer-objective-roundoff.svg"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d02/initializer-qualification-matrix.pdf",
+      "sha256": "d2075e10c346cab7898cdb0eeaa658b9dc5c7a4b58eac16a50e3bffbca38661d",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d02/initializer-qualification-matrix.pdf"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d02/initializer-qualification-matrix.png",
+      "sha256": "6f65799b9f1a0c12f82846846428dd92979a7d36c0fafbb62ef9c2ab5f1e99f9",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d02/initializer-qualification-matrix.png"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d02/initializer-qualification-matrix.svg",
+      "sha256": "34dff211acc22a333d96d51891ee2c54af52935ad034640accde5520fc31d851",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d02/initializer-qualification-matrix.svg"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d02/initializer-stationarity-1e-07.pdf",
+      "sha256": "964c4e56c4a8892873bc34cfbff956b0559953813479ede059384c434ffb4ed3",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d02/initializer-stationarity-1e-07.pdf"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d02/initializer-stationarity-1e-07.png",
+      "sha256": "b937d99a6afc65c02b50cf76bd70bb31a4ffe64ac019f51e2e6f58ba70472d5b",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d02/initializer-stationarity-1e-07.png"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d02/initializer-stationarity-1e-07.svg",
+      "sha256": "5ff59052116716a50d4085935eb27b75e6da92f29187ce728aef6c4abf662eb3",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d02/initializer-stationarity-1e-07.svg"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d02/initializer-stationarity-1e-09.pdf",
+      "sha256": "d929fe27a22a97c0830090cf4d9813ea1abb112fcce9b042a9f3feb69920241e",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d02/initializer-stationarity-1e-09.pdf"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d02/initializer-stationarity-1e-09.png",
+      "sha256": "868742dae3ea1859537ba5f682c780463af6b2a896811cedd255647994b4b7c0",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d02/initializer-stationarity-1e-09.png"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d02/initializer-stationarity-1e-09.svg",
+      "sha256": "d8327e3eb2697283eac39d0d7faffbf910bd1f57695d2e52ece61262072dfd1f",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d02/initializer-stationarity-1e-09.svg"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d02/initializer-stationarity-1e-11.pdf",
+      "sha256": "38ba49be8f529b42c90e07f9db226d3e9aec0dd9ee2a43eba8378b84f33c9459",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d02/initializer-stationarity-1e-11.pdf"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d02/initializer-stationarity-1e-11.png",
+      "sha256": "d2a6ef6eb4ed666b3671fe0924a4171c36c68b2c0fad03c648c7f95da4302692",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d02/initializer-stationarity-1e-11.png"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d02/initializer-stationarity-1e-11.svg",
+      "sha256": "6fbc6a8981dc157c6e7fc9deee78d5b1c53925ac417a86975f9394163b3fba54",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d02/initializer-stationarity-1e-11.svg"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/d02/plotted-data.json",
+      "sha256": "d3751931357dc624e8f60faab7dc7e013796f0fe696647eb8e04729e32e8cc69",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/d02/plotted-data.json"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/initializers/MANIFEST.json",
+      "sha256": "309c4bbff161fdeddc0ba581f2650331107e71221f2ad45d4d0519de8c410afe",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/initializers/MANIFEST.json"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/initializers/captions.md",
+      "sha256": "196b3c0a0eb300a95f35e172db7bc1f1d1f7f1c2272848e4809d74f91fe3b8f0",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/initializers/captions.md"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/initializers/initializer-field-agreement.pdf",
+      "sha256": "d804f4f3ac3367ffa53dcaa73bdb3c13db4844e12e604e8ead5b0ca5819cb975",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/initializers/initializer-field-agreement.pdf"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/initializers/initializer-field-agreement.png",
+      "sha256": "b2856a27d38ad54fe4a30cdfd2aa2c630499a9ca6358b5438f21978dfe1c6e7b",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/initializers/initializer-field-agreement.png"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/initializers/initializer-field-agreement.svg",
+      "sha256": "4cd2497d6315913b425727939ad2844122551081358d0ef878673e7b5255881d",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/initializers/initializer-field-agreement.svg"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/initializers/initializer-objective-diagnostics.pdf",
+      "sha256": "ae73ab04a126a3981b9067f0300c5054eb50c23d394d0cc2da8c5a86bf4af272",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/initializers/initializer-objective-diagnostics.pdf"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/initializers/initializer-objective-diagnostics.png",
+      "sha256": "a5097c55fda0f3cdd83c581ccb54976fbbaf61981d8d69ff567d4f68b79ff065",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/initializers/initializer-objective-diagnostics.png"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/initializers/initializer-objective-diagnostics.svg",
+      "sha256": "702dce6282110cfec6025bdcd09102b4a088793a4eb00b80563770e67a7c27f0",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/initializers/initializer-objective-diagnostics.svg"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/initializers/initializer-objective-roundoff.pdf",
+      "sha256": "df304ad1f9f878b69cbac848c393d545f0ad5a83c502b31adc41fa94238afff7",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/initializers/initializer-objective-roundoff.pdf"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/initializers/initializer-objective-roundoff.png",
+      "sha256": "004c006c514457f1f8343e0916279e59225d16d7b68a37c3e047a9dfe2fa1da1",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/initializers/initializer-objective-roundoff.png"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/initializers/initializer-objective-roundoff.svg",
+      "sha256": "f13e467cf38f79af2f9c59c9b3a937f6074f09a02131b87d762a3d81fd643d78",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/initializers/initializer-objective-roundoff.svg"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/initializers/initializer-qualification-matrix.pdf",
+      "sha256": "f9809bd24bb6c462e73219f0fcfd4fef63ddcf4ca7862de2f9a4ec8f54415402",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/initializers/initializer-qualification-matrix.pdf"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/initializers/initializer-qualification-matrix.png",
+      "sha256": "e6ed6ac68fdb297dea07a4fe5599cc9f88582948f64578f447105454d2a17083",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/initializers/initializer-qualification-matrix.png"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/initializers/initializer-qualification-matrix.svg",
+      "sha256": "959bf89672047f00e2c20529c9f203f391b82bfd6e532410aae845775a9dc4c2",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/initializers/initializer-qualification-matrix.svg"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/initializers/initializer-stationarity-1e-07.pdf",
+      "sha256": "469c3c8fb12bf126d35b64e8ea36429b3c203d07dc3b8a61afe988ddbe9b92fe",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/initializers/initializer-stationarity-1e-07.pdf"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/initializers/initializer-stationarity-1e-07.png",
+      "sha256": "ce62b9e65993f3c62183c5cb554d5998869162a5193e68abc0eba9f139ea118e",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/initializers/initializer-stationarity-1e-07.png"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/initializers/initializer-stationarity-1e-07.svg",
+      "sha256": "d004cfaef85ab4bfe356701b64b424b16eab6d2ffe6a1c67f34d1457a7acdd52",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/initializers/initializer-stationarity-1e-07.svg"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/initializers/initializer-stationarity-1e-09.pdf",
+      "sha256": "a42b83f41923952a09047515ef80d9024916097db53c844a506813262c3c8b89",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/initializers/initializer-stationarity-1e-09.pdf"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/initializers/initializer-stationarity-1e-09.png",
+      "sha256": "ed400228fe198bd28f95fdcbf9ad1964276d8040a6b26a5837a022062b738a4d",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/initializers/initializer-stationarity-1e-09.png"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/initializers/initializer-stationarity-1e-09.svg",
+      "sha256": "c5a1db312e73571e77c8f9cfee2c56e4c5a505b248c2ecc1494aa80cca72568a",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/initializers/initializer-stationarity-1e-09.svg"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/initializers/initializer-stationarity-1e-11.pdf",
+      "sha256": "b4a9a0dcb02ebb34b7c97e18bd3eb183bcacb80e675a0a4c5538ce9ddb8383d3",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/initializers/initializer-stationarity-1e-11.pdf"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/initializers/initializer-stationarity-1e-11.png",
+      "sha256": "0fc28f361b186fb24c15c717d8eba4d8bbaf3d5285d8e4b776ac2654d41e5e79",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/initializers/initializer-stationarity-1e-11.png"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/initializers/initializer-stationarity-1e-11.svg",
+      "sha256": "a51206acb59dd8f5be929710cedc2c83b69af33674b35a40e451213e81461dca",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/initializers/initializer-stationarity-1e-11.svg"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/initializers/plotted-data.json",
+      "sha256": "9477149e01dd4b5a8102bd916aab1a4498aac085595f902b71a1ab72702b66f3",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/initializers/plotted-data.json"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/phase/MANIFEST.json",
+      "sha256": "b46f33788d4d4d0fa9ccb045c14aff628caf44ce5213584b9cf073c33671c34c",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/phase/MANIFEST.json"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/phase/captions.md",
+      "sha256": "643100975be90695d060d33e8fbfe4e11eaf0f6a6dd20c24629ef5aea2e86c81",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/phase/captions.md"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/phase/fresh-all-cases-ordinary.pdf",
+      "sha256": "339d91d617053af979a2201e932a256b5201f3dbbd49f74253ed3f79bb753d38",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/phase/fresh-all-cases-ordinary.pdf"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/phase/fresh-all-cases-ordinary.png",
+      "sha256": "f87a69f5d024a97450eac43c669b1d6db1247ccb044f92bc148188a648fc93b9",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/phase/fresh-all-cases-ordinary.png"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/phase/fresh-all-cases-ordinary.svg",
+      "sha256": "5d7e971aba9899fcf02f5fb80e4f3532a83b2837ea737a92bb929f5b79743372",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/phase/fresh-all-cases-ordinary.svg"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/phase/fresh-all-cases-shape.pdf",
+      "sha256": "5626e5747566bd5ba0905cba40f736e5bf88eb10316626b8888df40aec11d57b",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/phase/fresh-all-cases-shape.pdf"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/phase/fresh-all-cases-shape.png",
+      "sha256": "61ec783e802832a21e3f7861ac7886b8de6f4f5d6b4d4287e3e055fa70d19945",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/phase/fresh-all-cases-shape.png"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/phase/fresh-all-cases-shape.svg",
+      "sha256": "7db7a8e632cbb4d843b4dfb620e9242a29a8be82fae32963a0aa09f0c741b7aa",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/phase/fresh-all-cases-shape.svg"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/phase/fresh-initial-error-centroid-concentration.pdf",
+      "sha256": "788e7290cbfa173a99d5e9092ca3be50052d27bd2e392f63b57e348af549199f",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/phase/fresh-initial-error-centroid-concentration.pdf"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/phase/fresh-initial-error-centroid-concentration.png",
+      "sha256": "25f24b515316e14dd1a070cd40c804b98996d65469cf27ee212ef5c370d60acb",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/phase/fresh-initial-error-centroid-concentration.png"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/phase/fresh-initial-error-centroid-concentration.svg",
+      "sha256": "e8a0810c39183e0fafbc92300a05e71e10dd177f426a073c14db5f0913e611af",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/phase/fresh-initial-error-centroid-concentration.svg"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/phase/fresh-phase-displacement-pairs.pdf",
+      "sha256": "632f6fc8b6a6532cb2f5d7120aeac283b096d0c1b54113f2c27166792fe56fda",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/phase/fresh-phase-displacement-pairs.pdf"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/phase/fresh-phase-displacement-pairs.png",
+      "sha256": "b93d4e4cedad31d4ad61e1e65b07538e528f17d6e433d497579ba63e75df563f",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/phase/fresh-phase-displacement-pairs.png"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/phase/fresh-phase-displacement-pairs.svg",
+      "sha256": "266be72fd3ed26523fb9af439587e503222392f62774fef62e492485417f262e",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/phase/fresh-phase-displacement-pairs.svg"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/phase/fresh-phase-shape.pdf",
+      "sha256": "abc2e12d03b97a41785792a63730293933520f88cc6e13b5d426f0082fc0a898",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/phase/fresh-phase-shape.pdf"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/phase/fresh-phase-shape.png",
+      "sha256": "ec594bd47c129f1363e37b84bedfae060e9f9db4553ff8e151eea6f00acbbba1",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/phase/fresh-phase-shape.png"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/phase/fresh-phase-shape.svg",
+      "sha256": "50afd85bd6a84ed52fcbe312d3c9e8888cd39f3da66a05e2d3e78d138d095f4c",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/phase/fresh-phase-shape.svg"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/phase/fresh-trajectory-qualification.pdf",
+      "sha256": "44d8b099462363d5c771cb8e62efb0e9f241200517bd42b93a37f947b0862bbc",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/phase/fresh-trajectory-qualification.pdf"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/phase/fresh-trajectory-qualification.png",
+      "sha256": "5409c379d008744b5f1d077f87fb1b16f7bc034d3f77e19dc451f3fdef6b9f8b",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/phase/fresh-trajectory-qualification.png"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/phase/fresh-trajectory-qualification.svg",
+      "sha256": "5ab77c58c5d9322aa9a60b8d4dd8d706b3ff3e0527819b52a17edd681ba4f381",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/phase/fresh-trajectory-qualification.svg"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/plots/f01/phase/plotted-data.json",
+      "sha256": "5fdb1a71ad9063b70b4f39209eb7fcb4aa2953abc892280c73cd2acde92a8b0f",
+      "copy": "2026-11-23-jcp-ns-initializer-assets/figures/f01/phase/plotted-data.json"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/build_initializer_plots.py",
+      "sha256": "908cf53d664de3420262c81e13e5b2aa93586eed1d06534d0b928121c4d458ec"
+    },
+    {
+      "source": "worktrees/2026-11-23-jcp-consolidated/experiments/jcp-ns-initializer/build_fresh_phase_plots.py",
+      "sha256": "97c692d589801d2deed69bfbc25d46747a128d049dfe2268b23c02bac15c5aeb"
+    },
+    {
+      "source": "reports/2026-11-23-jcp-ns-initializer-assets/development-v1-audit.json",
+      "sha256": "41038377b8fd313d40ab96e3ce7ea7112382cb9472cc340e590ac4a921667510"
+    },
+    {
+      "source": "reports/2026-11-23-jcp-ns-initializer-assets/development-v2-audit.json",
+      "sha256": "172f311865f77a375f5262eab33c4bf6c33764ede6fc5d1d0af7ba3155d6c59a"
+    },
+    {
+      "source": "reports/2026-11-23-jcp-ns-initializer-assets/fresh-initializer-audit.json",
+      "sha256": "7d9ab2562731df580576cd0fbc7ba07ec201c88aec15b337da7e336313da8157"
+    },
+    {
+      "source": "reports/2026-11-23-jcp-ns-initializer-assets/fresh-phase-audit.json",
+      "sha256": "a44897f819ac4168882d9b3d0c75e9fd50b6b93dc8cd622caf7ad77297f8ba41"
+    },
+    {
+      "source": "reports/2026-11-23-jcp-ns-initializer-assets/freeze-audit.json",
+      "sha256": "5d5ecc85c020412e27570866bc9d532a2e84df0cf4ad24738dbcb73656077cbc"
+    },
+    {
+      "source": "reports/2026-11-23-jcp-ns-initializer-assets/consolidation.json",
+      "sha256": "485bd5d2d21fc2e8f516d8fab2717f72cb08939b14dc474973bd0c3923a15b62"
+    },
+    {
+      "source": "reports/2026-11-23-jcp-ns-initializer-assets/merge-audit.json",
+      "sha256": "72a9cd402118127023d62e4d24bb79d61d497b433328eb918025db07963ccbcf"
+    },
+    {
+      "source": "reports/2026-11-23-jcp-ns-initializer-assets/retention-audit.json",
+      "sha256": "eadcc366836f2c73f147421449f949a75cfa459757307f4d765208abe114db0d"
+    },
+    {
+      "source": "reports/2026-11-23-jcp-ns-initializer-assets/plot-audit.json",
+      "sha256": "cb7d43a21de3a2604c1b63eff17c9e3ec36797a73b32cf6c2f8cca72facd8827"
+    },
+    {
+      "source": "reports/2026-11-23-jcp-ns-initializer-assets/backup-audit.json",
+      "sha256": "f2abf7a35be28300ab6fbe0e1d5fc16f39ae06041aafe004291ed3da5bd2904b"
+    },
+    {
+      "source": "reports/2026-11-23-jcp-ns-initializer-assets/independent-review.json",
+      "sha256": "26a52041741c6b86caac6c5d757fa67461a543e906e2b30e98abbed8d4015b15"
+    },
+    {
+      "source": "reports/audit_2026_11_23_jcp_ns_initializer.py",
+      "sha256": "1d7c12b50c715af30f86d289b83f6c2ec0dbe348f015707f76c44fdd4a312732"
+    },
+    {
+      "source": "reports/audit_2026_11_23_jcp_ns_phase.py",
+      "sha256": "3a18bcab98bde9e07912587e364c08328123c4fbb0756a085e4117647711fbf7"
+    },
+    {
+      "source": "reports/audit_2026_11_23_jcp_ns_freeze.py",
+      "sha256": "6b3ee2a1e76c4f9498c5bf5ec4d79beddf96cba10103663c707b9d5b53650512"
+    },
+    {
+      "source": "reports/audit_2026_11_23_jcp_ns_retention.py",
+      "sha256": "67fdf762e325c05c05a672465c2943918bf1aff8e2e557c629fb38f6b1e2f84e"
+    },
+    {
+      "source": "reports/audit_2026_11_23_jcp_ns_backup.py",
+      "sha256": "b34c22cb1dcf1f0d1e7f3974a2052240121c9e26f5a29ba5da84891d75fee6ee"
+    },
+    {
+      "source": "reports/build_2026_11_23_jcp_ns_initializer.py",
+      "sha256": "b04ad3745e1386cfc8a5faed4148f41e9e1850b2d7baea34101459af229ceca4"
+    }
+  ],
+  "report_sha256": "f57ea891578ded3280e8ce6465e69c44ec2a5587e71cf30974676377f650a23a"
+}
